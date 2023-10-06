@@ -2,17 +2,25 @@
 import '@app/globals.css'
 
 import { createTestWallet, generateWalletMnemonic } from '@common/wallet';
+import { getTelegram } from '@common/telegram';
 
 import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 export default function CreateWalletPage() {
   const router = useRouter()
 
   function confirmCreation(mnemonic: string) {
-      const wallet = createTestWallet(mnemonic)
+      const telegram = getTelegram();
 
-      if (wallet) {
-        router.replace('/dashboard/main')
+      if (telegram) {
+        // TODO: Need to request pin before creating wallet
+        const wallet = createTestWallet(mnemonic)
+
+        if (wallet) {
+          telegram.completeOnboarding(wallet.publicKey)
+          router.replace('/dashboard/main')
+        }
       }
   }
 
