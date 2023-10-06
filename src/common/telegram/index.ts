@@ -1,12 +1,6 @@
 import { HexString } from '@common/types';
-
-type WebApp = {
-	sendData: (data: HexString) => void;
-};
-
-type Telegram = {
-	WebApp: WebApp;
-};
+import { ITelegram, Telegram } from './types';
+import { getMessageFactory } from './message-factory';
 
 declare global {
   interface Window {
@@ -14,16 +8,19 @@ declare global {
   }
 }
 
-export interface ITelegram {
-	completeOnboarding: (publicKey: HexString) => void;
-}
-
 export const getTelegram = (): ITelegram | null => {
 	const telegram = window.Telegram;
 
 	const completeOnboarding = (telegram: Telegram): (publicKey: HexString) => void => {
 		return function(publicKey: HexString): void {
-			return telegram.WebApp.sendData(publicKey)
+			const messageFactory = getMessageFactory();
+			const data = messageFactory.prepareWalletCreationData(publicKey);
+
+			if (data) {
+				return telegram.WebApp.sendData(data);
+			} else {
+				console.error("Response creation failed");
+			}
 		}
 	};
 

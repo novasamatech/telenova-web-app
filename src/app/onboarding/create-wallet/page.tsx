@@ -19,7 +19,8 @@ export default function CreateWalletPage() {
 
         if (wallet) {
           telegram.completeOnboarding(wallet.publicKey)
-          router.replace('/dashboard/main')
+        } else {
+          console.error("Can't create wallet");
         }
       }
   }
