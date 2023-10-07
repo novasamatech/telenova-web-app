@@ -1,5 +1,6 @@
 import { HexString } from '@common/types';
 import { ITelegramMessageFactory } from './types';
+import { convertUint8ArrayToWordArray } from '@common/utils/wordArray';
 
 const {
 	u8aToHex,
@@ -11,41 +12,28 @@ enum MessageType {
 	ExtrinsicSubmitted = 1
 };
 
-const HASH_LENGTH = 64;
-const Hmac = require('crypto-js/hmac-sha3.js');
+const Hmac = require('crypto-js/hmac-sha512.js');
 const CryptoJSHex = require('crypto-js/enc-hex.js')
-
-// https://gist.github.com/getify/7325764#file-gistfile1-js-L24
-function convertUint8ArrayToWordArray(u8Array: Uint8Array) {
-	var words = [], i = 0, len = u8Array.length;
-
-	while (i < len) {
-		words.push(
-			(u8Array[i++] << 24) |
-			(u8Array[i++] << 16) |
-			(u8Array[i++] << 8)  |
-			(u8Array[i++])
-		);
-	}
-
-	return {
-		sigBytes: words.length * 4,
-		words: words
-	};
-}
 
 function preparePayload(secretKey: string, type: MessageType, content: Uint8Array): Uint8Array {
 	var messageContent = new Uint8Array(1 + content.length);
 	messageContent[0] = type;
 	messageContent.set(content, 1);
 
-	const hash = Hmac(secretKey, convertUint8ArrayToWordArray(messageContent)).toString(CryptoJSHex);
+	const hashHex = Hmac(convertUint8ArrayToWordArray(messageContent), secretKey).toString(CryptoJSHex);
+	const hash = hexToU8a(hashHex); 
 
-	var message = new Uint8Array(HASH_LENGTH + 1 + content.length);
-	message.set(hexToU8a(hash));
-	message.set(messageContent, HASH_LENGTH);
+	var message = new Uint8Array(hash.length + messageContent.length);
+	message.set(hash);
+	message.set(messageContent, hash.length);
 
 	return message;
+}
+
+export function signedWalletCreationData(publicKey: HexString, secretKey: string): HexString | null {
+	const content = hexToU8a(publicKey);
+	const payload = preparePayload(secretKey, MessageType.WalletCreated, content);
+	return u8aToHex(payload);
 }
 
 export const getMessageFactory = (): ITelegramMessageFactory => {
@@ -60,13 +48,10 @@ export const getMessageFactory = (): ITelegramMessageFactory => {
 	}
 
 	function prepareWalletCreationData(publicKey: HexString): HexString | null {
-		const content = hexToU8a(publicKey);
-		const secretKey = getSecretKey()
+		const secretKey = getSecretKey();
 
 		if (secretKey) {
-			const payload = preparePayload(secretKey, MessageType.WalletCreated, content);
-
-			return u8aToHex(payload);
+			return signedWalletCreationData(publicKey, secretKey);
 		} else {
 			return null
 		}
