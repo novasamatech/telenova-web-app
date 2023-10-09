@@ -40,7 +40,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./telegram_bot
+          context: .
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }}
