@@ -1,6 +1,6 @@
-const WordArray = require('crypto-js/lib-typedarrays.js')
+const WordArray = require('crypto-js/lib-typedarrays.js');
 
-export function convertUint8ArrayToWordArray(typedArray: Uint8Array): WordArray {
+export function convertUint8ArrayToWordArray(typedArray) {
 	var typedArrayByteLength = typedArray.byteLength;
 
 	// we need to store in big endian Uint32 byte array
