@@ -18,18 +18,11 @@ export function DashboardMainPage() {
       navigate(Paths.ONBOARDING, { replace: true});
   }
 
-  function answerQuery() {
-
-  }
-
   return (
     <div className="h-screen flex flex-col justify-center items-center">
       <label>{wallet ? wallet.publicKey : ""}</label>
       <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
           Reset Wallet
-      </button>
-      <button className="btn btn-blue mt-4" onClick={() => answerQuery()}>
-          Answer Query
       </button>
     </div>
   );
