@@ -62,3 +62,8 @@ export const getMnemonic = (password: string): string | null => {
 		return null;
 	}
 }
+
+export const resetWallet = () => {
+	localStorage.removeItem(PUBLIC_KEY_STORE);
+	secureLocalStorage.removeItem(MNEMONIC_STORE);
+}
