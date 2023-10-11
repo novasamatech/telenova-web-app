@@ -1,5 +1,8 @@
 name: Build and deploy new image
 
+concurrency:
+  group: ${{ github.workflow }}
+
 on: 
   workflow_dispatch:
   pull_request:
