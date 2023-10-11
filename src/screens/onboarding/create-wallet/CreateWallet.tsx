@@ -1,15 +1,11 @@
 'use client';
-import '@app/globals.css'
 
 import { createTestWallet, generateWalletMnemonic } from '@common/wallet';
 import { getTelegram } from '@common/telegram';
 
-import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
-export default function CreateWalletPage() {
-  const router = useRouter()
-
+export function CreateWalletPage() {
   function confirmCreation(mnemonic: string) {
       const telegram = getTelegram();
 

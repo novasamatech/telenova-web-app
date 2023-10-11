@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@app/*": ["./src/app/*"],
+      "@app/*": ["./src/screens/*"],
       "@common/*": ["./src/common/*"]
     }
   },
