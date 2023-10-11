@@ -68,6 +68,8 @@ jobs:
             cd ./nova-wallet-web-app
             echo ${{ secrets.PAT_FOR_DOCKER_REGISTRY }} | docker login ghcr.io -u stepanLav --password-stdin
             docker-compose down
+            rm .env
+            echo "NEXT_PUBLIC_BOT_KEY=${{ secrets.NEXT_PUBLIC_BOT_KEY }}" >> .env
             docker-compose pull
             docker-compose up -d
       
