@@ -11,8 +11,6 @@ export function Main() {
   useEffect(() => {
     const wallet = getWallet();
 
-    console.log('Deciding flow...');
-
     if (wallet) {
       navigate(Paths.DASHBOARD, { replace: true });
     } else {
