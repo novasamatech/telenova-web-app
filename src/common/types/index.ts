@@ -8,3 +8,7 @@ const {
 export function unwrapHexString(string: string): HexString {
 	return u8aToHex(hexToU8a(string))
 }
+
+export type ChainId = HexString;
+export type Address = string;
+export type AccountId = HexString;
