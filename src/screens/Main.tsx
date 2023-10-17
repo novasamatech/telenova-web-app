@@ -9,6 +9,9 @@ export function Main() {
   const appRoutes = useRoutes(routesConfig);
 
   useEffect(() => {
+    let currentUrl = window.location.href;
+    console.log(`Current url: ${currentUrl}`);
+
     const wallet = getWallet();
 
     if (wallet) {
@@ -16,9 +19,6 @@ export function Main() {
     } else {
       navigate(Paths.ONBOARDING, { replace: true });
     }
-
-    let currentUrl = window.location.href;
-    console.log(`Current url: ${currentUrl}`);
   }, [])
 
   return  (
