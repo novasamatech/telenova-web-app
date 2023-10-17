@@ -16,6 +16,9 @@ export function Main() {
     } else {
       navigate(Paths.ONBOARDING, { replace: true });
     }
+
+    let currentUrl = window.location.href;
+    console.log(`Current url: ${currentUrl}`);
   }, [])
 
   return  (

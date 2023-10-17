@@ -9,7 +9,8 @@ const {
 
 enum MessageType {
 	WalletCreated = 0,
-	ExtrinsicSubmitted = 1
+	ExtrinsicSubmitted = 1,
+	GiftCreated = 2
 };
 
 const Hmac = require('crypto-js/hmac-sha512.js');
@@ -57,7 +58,12 @@ export const getMessageFactory = (): ITelegramMessageFactory => {
 		}
 	}
 
+	function prepareGiftCreationData(secretKey: HexString): string | null {
+		return `gift ${secretKey}`;
+	}
+
 	return {
-		prepareWalletCreationData
+		prepareWalletCreationData,
+		prepareGiftCreationData
 	};
 }

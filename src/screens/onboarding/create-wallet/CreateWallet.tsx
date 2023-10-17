@@ -14,7 +14,7 @@ export function CreateWalletPage() {
         const wallet = createTestWallet(mnemonic)
 
         if (wallet) {
-          telegram.completeOnboarding(wallet.publicKey)
+          telegram.completeGiftQuery(wallet.publicKey)
         } else {
           console.error("Can't create wallet");
         }
