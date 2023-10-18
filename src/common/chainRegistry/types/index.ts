@@ -40,14 +40,14 @@ export const enum ConnectionStatus {
   NONE = 'NONE',
   CONNECTED = 'CONNECTED',
   CONNECTING = 'CONNECTING',
-  ERROR = 'ERROR',
+  ERROR = 'ERROR'
 }
 
-export type Connection {
+export type Connection = {
   api: ApiPromise
 }
 
-export type ConnectionRequest {
+export type ConnectionRequest = {
   chain: Chain,
   onConnected: (chainId: HexString, connection: Connection) => void,
   onDisconnected: (chainId: HexString) => void,
@@ -56,7 +56,7 @@ export type ConnectionRequest {
 
 export interface IChainConnectionService {
   getConnection: (chainId: HexString) => Connection | undefined;
-  createConnections: (requests: ConnectionRequest[]);
+  createConnections: (requests: ConnectionRequest[]) => void;
 }
 
 export interface IRuntimeProviderService {
