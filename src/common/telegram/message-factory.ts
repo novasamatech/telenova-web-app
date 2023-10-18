@@ -59,7 +59,7 @@ export const getMessageFactory = (): ITelegramMessageFactory => {
 	}
 
 	function prepareGiftCreationData(secretKey: HexString): string | null {
-		return `gift ${secretKey}`;
+		return `gift 1 DOT ${secretKey}`;
 	}
 
 	return {
