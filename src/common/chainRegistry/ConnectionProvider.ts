@@ -24,6 +24,9 @@ type InternalConnectionState = {
   activeNodeIndex?: number;
   timeoutId?: any;
   connection?: Connection;
+  onConnectedUnsubscribe?: () => void;
+  onDisconnectedUnsubscribe?: () => void;
+  onErrorUnsubscribe?: () => void;
 }
 
 export const useConnections = (): IChainConnectionService => {
@@ -114,6 +117,8 @@ export const useConnections = (): IChainConnectionService => {
   };
 
   const connectToChain = async (chainId: ChainId, node: RpcNode, attempt: number): Promise<void> => {
+    console.info(`🔶 Connecting with attemp ${attempt} ==> ${chainId}`);
+
     const provider = createWebsocketProvider(node.url, chainId);
 
     const onAutoBalanceError = async () => {
@@ -125,6 +130,8 @@ export const useConnections = (): IChainConnectionService => {
       subscribeConnected(chainId, provider);
       subscribeDisconnected(chainId, provider);
       subscribeError(chainId, provider, onAutoBalanceError);
+
+      await provider.connect();
     } else {
       updateConnectionState(chainId, {
         connectionStatus: ConnectionStatus.ERROR,
@@ -137,6 +144,20 @@ export const useConnections = (): IChainConnectionService => {
 
     if (state) {
       try {
+        const { onErrorUnsubscribe, onDisconnectedUnsubscribe, onConnectedUnsubscribe } = state;
+        
+        if (onErrorUnsubscribe) {
+          onErrorUnsubscribe();
+        }
+
+        if (onDisconnectedUnsubscribe) {
+          onDisconnectedUnsubscribe();
+        }
+
+        if (onConnectedUnsubscribe) {
+          onConnectedUnsubscribe();
+        }
+
         await state.connection?.api.disconnect();
       } catch (e) {
         console.warn(e);
@@ -159,7 +180,10 @@ export const useConnections = (): IChainConnectionService => {
         chainId,
         {
           timeoutId: undefined,
-          connection: undefined
+          connection: undefined,
+          onConnectedUnsubscribe: undefined,
+          onDisconnectedUnsubscribe: undefined,
+          onErrorUnsubscribe: undefined
         }
       )
     }
@@ -170,7 +194,7 @@ export const useConnections = (): IChainConnectionService => {
 
     const CachedWsProvider = createCachedProvider(WsProvider, chainId, getMetadata);
 
-    return new CachedWsProvider(rpcUrl, 2000);
+    return new CachedWsProvider(rpcUrl, false);
   };
 
   const subscribeConnected = (chainId: ChainId, provider: ProviderInterface) => {
@@ -197,7 +221,11 @@ export const useConnections = (): IChainConnectionService => {
       }
     };
 
-    provider.on('connected', handler);
+    const unsubscribe = provider.on('connected', handler);
+
+    updateInternalState(chainId, {
+      onConnectedUnsubscribe: unsubscribe
+    });
   };
 
   const subscribeDisconnected = (chainId: ChainId, provider: ProviderInterface) => {
@@ -205,7 +233,11 @@ export const useConnections = (): IChainConnectionService => {
       notifyDisconnected(chainId);
     };
 
-    provider.on('disconnected', handler);
+    const unsubscribe = provider.on('disconnected', handler);
+
+    updateInternalState(chainId, {
+      onDisconnectedUnsubscribe: unsubscribe
+    });
   };
 
   const subscribeError = (chainId: ChainId, provider: ProviderInterface, onError?: () => void) => {
@@ -217,7 +249,11 @@ export const useConnections = (): IChainConnectionService => {
       onError?.();
     };
 
-    provider.on('error', handler);
+    const unsubscribe = provider.on('error', handler);
+
+    updateInternalState(chainId, {
+      onErrorUnsubscribe: unsubscribe
+    });
   };
 
   const notifyConnected = (chainId: ChainId, connection: Connection) => {
