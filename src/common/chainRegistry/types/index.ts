@@ -27,8 +27,23 @@ export type RuntimeMetadata = {
   metadata?: HexString;
 };
 
-export interface IChainConnectionService {
+export type ConnectionState = {
+  chainId: ChainId;
+  connectionStatus: ConnectionStatus;
+  allNodes: RpcNode[];
+  activeNode?: RpcNode;
+  connection?: Connection;
+};
 
+export const enum ConnectionStatus {
+  NONE = 'NONE',
+  CONNECTED = 'CONNECTED',
+  CONNECTING = 'CONNECTING',
+  ERROR = 'ERROR',
+}
+
+export interface IChainConnectionService {
+  getConnection: (chainId: HexString) => Promise<Connection | undefined>;
 }
 
 export interface IRuntimeProviderService {
