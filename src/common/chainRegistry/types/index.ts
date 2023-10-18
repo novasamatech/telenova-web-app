@@ -31,7 +31,8 @@ export type ConnectionState = {
   chainId: ChainId;
   connectionStatus: ConnectionStatus;
   allNodes: RpcNode[];
-  activeNode?: RpcNode;
+  actionNodeIndex?: number;
+  timeoutId?: any;
   connection?: Connection;
 };
 
@@ -42,8 +43,20 @@ export const enum ConnectionStatus {
   ERROR = 'ERROR',
 }
 
+export type Connection {
+  api: ApiPromise
+}
+
+export type ConnectionRequest {
+  chain: Chain,
+  onConnected: (chainId: HexString, connection: Connection) => void,
+  onDisconnected: (chainId: HexString) => void,
+  getMetadata: (chainId: ChainId) => Promise<RuntimeMetadata | undefined>
+}
+
 export interface IChainConnectionService {
-  getConnection: (chainId: HexString) => Promise<Connection | undefined>;
+  getConnection: (chainId: HexString) => Connection | undefined;
+  createConnections: (requests: ConnectionRequest[]);
 }
 
 export interface IRuntimeProviderService {
