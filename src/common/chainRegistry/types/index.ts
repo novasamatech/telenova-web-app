@@ -17,6 +17,11 @@ export type Chain = {
   addressPrefix: number;
 };
 
+export type ChainAsset = {
+  chain: Chain;
+  asset: Asset;
+}
+
 export type RpcNode = {
   url: string;
   name: string;
@@ -48,10 +53,15 @@ export type Connection = {
 }
 
 export type ConnectionRequest = {
-  chain: Chain,
-  onConnected: (chainId: HexString, connection: Connection) => void,
-  onDisconnected: (chainId: HexString) => void,
-  getMetadata: (chainId: ChainId) => Promise<RuntimeMetadata | undefined>
+  chain: Chain;
+  onConnected: (chainId: HexString, connection: Connection) => void;
+  onDisconnected: (chainId: HexString) => void;
+  getMetadata: (chainId: ChainId) => Promise<RuntimeMetadata | undefined>;
+}
+
+export interface IChainProviderService {
+  getAllChains: () => Promise<Chain[]>;
+  getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
 }
 
 export interface IChainConnectionService {
