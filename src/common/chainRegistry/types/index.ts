@@ -35,10 +35,6 @@ export type RuntimeMetadata = {
 export type ConnectionState = {
   chainId: ChainId;
   connectionStatus: ConnectionStatus;
-  allNodes: RpcNode[];
-  actionNodeIndex?: number;
-  timeoutId?: any;
-  connection?: Connection;
 };
 
 export const enum ConnectionStatus {
@@ -54,8 +50,8 @@ export type Connection = {
 
 export type ConnectionRequest = {
   chain: Chain;
-  onConnected: (chainId: HexString, connection: Connection) => void;
-  onDisconnected: (chainId: HexString) => void;
+  onConnected: (chainId: ChainId, connection: Connection) => void;
+  onDisconnected: (chainId: ChainId) => void;
   getMetadata: (chainId: ChainId) => Promise<RuntimeMetadata | undefined>;
 }
 
@@ -65,13 +61,13 @@ export interface IChainProviderService {
 }
 
 export interface IChainConnectionService {
-  getConnection: (chainId: HexString) => Connection | undefined;
+  connectionStates: (Record<ChainId, ConnectionState>);
+  getConnection: (chainId: ChainId) => Connection | undefined;
   createConnections: (requests: ConnectionRequest[]) => void;
 }
 
 export interface IRuntimeProviderService {
-  getMetadata: (chainId: HexString) => Promise<RuntimeMetadata | undefined>;
-  syncMetadata: (api: ApiPromise) => Promise<RuntimeMetadata>;
+  getMetadata: (chainId: ChainId) => Promise<RuntimeMetadata | undefined>;
   subscribeMetadata: (api: ApiPromise) => UnsubscribePromise;
 }
 

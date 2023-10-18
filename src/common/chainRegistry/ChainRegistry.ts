@@ -1,1 +1,0 @@
-import { polkadot, kusama, westend } from '@common/chainRegistry/knownChains';

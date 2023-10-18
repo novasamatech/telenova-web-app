@@ -12,21 +12,6 @@ export const useRuntimeProvider = (): IRuntimeProviderService => {
     return await metadataStorage.fetch(chainId);
   };
 
-  const syncMetadata = async (api: ApiPromise): Promise<RuntimeMetadata> => {
-    const [metadata, version] = await Promise.all([api.rpc.state.getMetadata(), api.rpc.state.getRuntimeVersion()]);
-
-    const newMetadata: RuntimeMetadata = {
-      metadata: metadata.toHex(),
-      version: version.specVersion.toNumber()
-    };
-
-    const chainId = api.genesisHash.toHex()
-
-    await metadataStorage.save(metadata, chainId)
-
-    return newMetadata;
-  };
-
   const subscribeMetadata = (api: ApiPromise): UnsubscribePromise => {
     return api.rpc.state.subscribeRuntimeVersion(async (version) => {
       const chainId = api.genesisHash.toHex();
@@ -45,9 +30,25 @@ export const useRuntimeProvider = (): IRuntimeProviderService => {
     });
   };
 
+  const syncMetadata = async (api: ApiPromise): Promise<RuntimeMetadata> => {
+    const [metadata, version] = await Promise.all([api.rpc.state.getMetadata(), api.rpc.state.getRuntimeVersion()]);
+
+    const newMetadata: RuntimeMetadata = {
+      metadata: metadata.toHex(),
+      version: version.specVersion.toNumber()
+    };
+
+    const chainId = api.genesisHash.toHex()
+
+    await metadataStorage.save(metadata, chainId)
+
+    console.info(`🟢 Synced metadata v${newMetadata.version} ==> ${chainId}`);
+
+    return newMetadata;
+  };
+
   return {
     getMetadata,
-    syncMetadata,
     subscribeMetadata,
   };
 };

@@ -19,30 +19,28 @@ const AUTO_BALANCE_TIMEOUT = 1000;
 const MAX_ATTEMPTS = 3;
 const PROGRESSION_BASE = 2;
 
+type InternalConnectionState = {
+  request: ConnectionRequest;
+  activeNodeIndex?: number;
+  timeoutId?: any;
+  connection?: Connection;
+}
+
 export const useConnections = (): IChainConnectionService => {
-  const connectionRequests = useRef<Record<ChainId, ConnectionRequest>>({});
+  const internalStates = useRef<Record<ChainId, InternalConnectionState>>({});
   const [connectionStates, setConnectionStates] = useState<Record<ChainId, ConnectionState>>({});
 
   const getConnection = (chainId: ChainId): Connection | undefined => {
-    return connectionStates[chainId]?.connection;
+    return internalStates.current[chainId]?.connection;
   } 
 
   const createConnections = (requests: ConnectionRequest[]) => {
-    const newConnectionRequests = requests.reduce<Record<ChainId, ConnectionRequest>>((acc, request) => {
-      acc[request.chain.chainId] = request;
-
-      return acc;
-    }, connectionRequests.current);
-
-    connectionRequests.current = newConnectionRequests
-
     const newConnectionStates = requests.reduce<Record<ChainId, ConnectionState>>((acc, { chain }) => {
       const { chainId, nodes } = chain;
 
       const newState: ConnectionState = {
         chainId: chainId,
-        connectionStatus: ConnectionStatus.NONE,
-        allNodes: nodes
+        connectionStatus: ConnectionStatus.NONE
       };
 
       acc[chainId] = newState
@@ -52,32 +50,46 @@ export const useConnections = (): IChainConnectionService => {
 
     setConnectionStates(newConnectionStates);
 
-    Object.values(connectionStates).forEach(function (state) {
-        if (state.connectionStatus == ConnectionStatus.NONE) {
-            connectWithAutoBalance(state.chainId, 0);
-        }
+    const newInternalStates = requests.reduce<Record<ChainId, InternalConnectionState>>((acc, request) => {
+      const newState: InternalConnectionState = {
+        request: request
+      };
+
+      acc[request.chain.chainId] = newState
+
+      return acc;
+    }, internalStates.current);
+
+    internalStates.current = newInternalStates;
+
+    requests.forEach(function (request) {
+        connectWithAutoBalance(request.chain.chainId, 0);
     });
   };
 
   const connectWithAutoBalance = async (chainId: ChainId, attempt = 0): Promise<void> => {
     if (Number.isNaN(attempt)) attempt = 0;
 
-    const state = connectionStates[chainId];
+    const state = internalStates.current[chainId];
 
-    if (!state || state.allNodes.length == 0) return;
+    if (!state || state.request.chain.nodes.length == 0) return;
 
-    let nodeIndex = state.actionNodeIndex ?? 0;
+    let nodes = state.request.chain.nodes;
+    let nodeIndex = state.activeNodeIndex ?? 0;
 
     if (attempt >= MAX_ATTEMPTS) {
-      nodeIndex = (nodeIndex + 1) % state.allNodes.length
+      nodeIndex = (nodeIndex + 1) % nodes.length
       attempt = 0
     }
 
-    const node = state.allNodes[nodeIndex];
+    const node = nodes[nodeIndex];
 
     updateConnectionState(chainId, {
-      actionNodeIndex: nodeIndex,
-      connectionStatus: ConnectionStatus.CONNECTING,
+      connectionStatus: ConnectionStatus.CONNECTING
+    });
+
+    updateInternalState(chainId, {
+      activeNodeIndex: nodeIndex,
       timeoutId: undefined
     });
 
@@ -85,14 +97,14 @@ export const useConnections = (): IChainConnectionService => {
       const currentTimeout = AUTO_BALANCE_TIMEOUT * (PROGRESSION_BASE ^ attempt);
 
       const timeoutId = setTimeout(async () => {
-        updateConnectionState(chainId, {
+        updateInternalState(chainId, {
           timeoutId: undefined
         });
 
         connectToChain(chainId, node, attempt);
       }, currentTimeout);
 
-      updateConnectionState(chainId, {
+      updateInternalState(chainId, {
         timeoutId: timeoutId
       });
 
@@ -121,7 +133,7 @@ export const useConnections = (): IChainConnectionService => {
   };
 
   const disconnectFromChain = async (chainId: ChainId): Promise<void> => {
-    const state = connectionStates[chainId]
+    const state = internalStates.current[chainId]
 
     if (state) {
       try {
@@ -139,7 +151,13 @@ export const useConnections = (): IChainConnectionService => {
       updateConnectionState(
         chainId,
         {
-          connectionStatus: ConnectionStatus.NONE,
+          connectionStatus: ConnectionStatus.NONE
+        }
+      )
+
+      updateInternalState(
+        chainId,
+        {
           timeoutId: undefined,
           connection: undefined
         }
@@ -148,7 +166,7 @@ export const useConnections = (): IChainConnectionService => {
   }
 
   const createWebsocketProvider = (rpcUrl: string, chainId: ChainId): ProviderInterface => {
-    const getMetadata = connectionRequests.current[chainId]?.getMetadata
+    const getMetadata = internalStates.current[chainId]?.request.getMetadata
 
     const CachedWsProvider = createCachedProvider(WsProvider, chainId, getMetadata);
 
@@ -157,31 +175,25 @@ export const useConnections = (): IChainConnectionService => {
 
   const subscribeConnected = (chainId: ChainId, provider: ProviderInterface) => {
     const handler = async () => {
-      console.info('🟢 connected ==> ', chainId);
-
       const api = await ApiPromise.create({ provider, throwOnConnect: true, throwOnUnknown: true });
+
       if (api) {
-        updateConnectionState(
-          chainId,
-          {
-            connectionStatus: ConnectionStatus.CONNECTED,
-            connection: {
-              api: api
-            }
-          }
-        );
+        console.info('🟢 connection provider received ==> ', chainId);
 
-        notifyConnected(chainId);
+        const connection: Connection = {
+          api: api
+        };
+
+        updateConnectionState(chainId, { connectionStatus: ConnectionStatus.CONNECTED });
+        updateInternalState(chainId, { connection: connection });
+
+        notifyConnected(chainId, connection);
       } else {
-        await provider.disconnect();
+        console.info('🔴 no connection provider ==> ', chainId);
 
-        updateConnectionState(
-          chainId,
-          {
-            connectionStatus: ConnectionStatus.ERROR,
-            connection: undefined
-          }
-        )
+        updateConnectionState(chainId, { connectionStatus: ConnectionStatus.ERROR });
+
+        updateInternalState(chainId, { connection: undefined });
       }
     };
 
@@ -190,8 +202,6 @@ export const useConnections = (): IChainConnectionService => {
 
   const subscribeDisconnected = (chainId: ChainId, provider: ProviderInterface) => {
     const handler = async () => {
-      console.info('🔶 disconnected ==> ', chainId);
-
       notifyDisconnected(chainId);
     };
 
@@ -202,9 +212,7 @@ export const useConnections = (): IChainConnectionService => {
     const handler = () => {
       console.info('🔴 error ==> ', chainId);
 
-      updateConnectionState(chainId, {
-        connectionStatus: ConnectionStatus.ERROR,
-      });
+      updateConnectionState(chainId, { connectionStatus: ConnectionStatus.ERROR });
 
       onError?.();
     };
@@ -212,16 +220,12 @@ export const useConnections = (): IChainConnectionService => {
     provider.on('error', handler);
   };
 
-  const notifyConnected = (chainId: ChainId) => {
-    const connection = getConnection(chainId);
-
-    if (connection) {
-        connectionRequests.current[chainId]?.onConnected(chainId, connection);
-    }
+  const notifyConnected = (chainId: ChainId, connection: Connection) => {
+    internalStates.current[chainId]?.request.onConnected(chainId, connection);
   }
 
   const notifyDisconnected = (chainId: ChainId) => {
-      connectionRequests.current[chainId]?.onDisconnected(chainId);
+    internalStates.current[chainId]?.request.onDisconnected(chainId);
   }
 
   const updateConnectionState = (
@@ -232,8 +236,7 @@ export const useConnections = (): IChainConnectionService => {
       const currentState = currentStates[chainId];
 
       if (currentState) {
-        const updatedState = {...currentState, updates };
-
+        const updatedState = {...currentState, ...updates };
         return {
           ...currentStates,
           [chainId]: updatedState
@@ -244,7 +247,21 @@ export const useConnections = (): IChainConnectionService => {
     });
   };
 
+  const updateInternalState = (
+    chainId: ChainId,
+    updates: Partial<InternalConnectionState>
+  ) => {
+    const currentState = internalStates.current[chainId];
+
+    if (currentState) {
+        const updatedState = {...currentState, ...updates };
+        
+        internalStates.current[chainId] = updatedState;
+      }
+  }
+
   return {
+    connectionStates,
     getConnection,
     createConnections
   };
