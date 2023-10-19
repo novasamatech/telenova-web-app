@@ -11,11 +11,6 @@ export interface ExtrinsicBuilder {
     build(options?: Partial<ExtrinsicBuildingOptions>): SubmittableExtrinsic<'promise'>
 }
 
-export interface ExtrinsicBuilderFactory {
-
-    forChain(chainId: ChainId): ExtrinsicBuilder | undefined
-}
-
 export type ExtrinsicBuilding = (builder: ExtrinsicBuilder) => void
 
 export interface ExtrinsicBuildingOptions {
