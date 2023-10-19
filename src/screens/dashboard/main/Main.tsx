@@ -49,6 +49,19 @@ export function DashboardMainPage() {
         )
     }
 
+    async function handleFee() {
+        extrinsicService.estimateFee(polkadot.chainId, (builder) =>
+            builder.addCall(builder.api.tx.system.remark("Hello"))
+        ).then(
+            fee => {
+                alert("Fee: " + fee)
+            },
+            failure => {
+                alert("Failed to calculate fee: " + failure)
+            }
+        )
+    }
+
     return (
         <div className="h-screen flex flex-col justify-center items-center">
             <label>{wallet ? wallet.publicKey : ""}</label>
@@ -57,6 +70,9 @@ export function DashboardMainPage() {
             </button>
             <button className="btn btn-blue mt-4" onClick={handleSign}>
                 Sign
+            </button>
+            <button className="btn btn-blue mt-4" onClick={handleFee}>
+                Calculate Fee
             </button>
         </div>
     );
