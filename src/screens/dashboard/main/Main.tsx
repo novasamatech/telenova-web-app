@@ -8,72 +8,72 @@ import {polkadot} from "@common/chainRegistry/knownChains";
 import {useExtrinsicProvider} from "@common/extrinsicService/ExtrinsicProvider";
 
 export function DashboardMainPage() {
-    const [wallet, setWallet] = useState<Wallet | null>(null)
-    const navigate = useNavigate();
-    const {getAllChains, getConnection} = useChainRegistry();
-    const extrinsicService = useExtrinsicProvider()
+  const [wallet, setWallet] = useState<Wallet | null>(null)
+  const navigate = useNavigate();
+  const {getAllChains, getConnection} = useChainRegistry();
+  const extrinsicService = useExtrinsicProvider()
 
 
-    useEffect(() => {
-        const wallet = getWallet()
-        setWallet(wallet)
-    }, [setWallet])
+  useEffect(() => {
+    const wallet = getWallet()
+    setWallet(wallet)
+  }, [setWallet])
 
-    useEffect(() => {
-        (async () => {
-            const chains = await getAllChains();
-            console.info(`All chains ${chains}`);
+  useEffect(() => {
+    (async () => {
+      const chains = await getAllChains();
+      console.info(`All chains ${chains}`);
 
-            for (const chain of chains) {
-                const connection = getConnection(chain.chainId);
-                console.log(`Connection ${connection}`);
-            }
-        })();
-    }, [getConnection]);
+      for (const chain of chains) {
+        const connection = getConnection(chain.chainId);
+        console.log(`Connection ${connection}`);
+      }
+    })();
+  }, [getConnection]);
 
-    function clearWallet() {
-        resetWallet();
-        navigate(Paths.ONBOARDING, {replace: true});
-    }
+  function clearWallet() {
+    resetWallet();
+    navigate(Paths.ONBOARDING, {replace: true});
+  }
 
-    async function handleSign() {
-        extrinsicService.submitExtrinsic(polkadot.chainId, (builder) =>
-            builder.addCall(builder.api.tx.system.remark("Hello"))
-        ).then(
-            hash => {
-                alert("Success: " + hash)
-            },
-            failure => {
-                alert("Failed: " + failure)
-            }
-        )
-    }
+  async function handleSign() {
+    extrinsicService.submitExtrinsic(polkadot.chainId, (builder) =>
+      builder.addCall(builder.api.tx.system.remark("Hello"))
+    ).then(
+      hash => {
+        alert("Success: " + hash)
+      },
+      failure => {
+        alert("Failed: " + failure)
+      }
+    )
+  }
 
-    async function handleFee() {
-        extrinsicService.estimateFee(polkadot.chainId, (builder) =>
-            builder.addCall(builder.api.tx.system.remark("Hello"))
-        ).then(
-            fee => {
-                alert("Fee: " + fee)
-            },
-            failure => {
-                alert("Failed to calculate fee: " + failure)
-            }
-        )
-    }
+  async function handleFee() {
+    extrinsicService.estimateFee(polkadot.chainId, (builder) =>
+      builder.addCall(builder.api.tx.system.remark("Hello"))
+    ).then(
+      fee => {
+        alert("Fee: " + fee)
+      },
+      failure => {
+        alert("Failed to calculate fee: " + failure)
+      }
+    )
+  }
 
-    return (
-        <div className="h-screen flex flex-col justify-center items-center">
-            <label>{wallet ? wallet.publicKey : ""}</label>
-            <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
-                Reset Wallet
-            </button>
-            <button className="btn btn-blue mt-4" onClick={handleSign}>
-                Sign
-            </button>
-            <button className="btn btn-blue mt-4" onClick={handleFee}>
-                Calculate Fee
-            </button>
-        </div>
-    );
+  return (
+    <div className="h-screen flex flex-col justify-center items-center">
+      <label>{wallet ? wallet.publicKey : ""}</label>
+      <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
+        Reset Wallet
+      </button>
+      <button className="btn btn-blue mt-4" onClick={handleSign}>
+        Sign
+      </button>
+      <button className="btn btn-blue mt-4" onClick={handleFee}>
+        Calculate Fee
+      </button>
+    </div>
+  );
 }

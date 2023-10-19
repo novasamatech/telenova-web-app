@@ -2,13 +2,13 @@ import {Wallet} from './types'
 import {HexString, unwrapHexString} from '@common/types'
 
 const {
-    mnemonicGenerate,
-    mnemonicToMiniSecret,
-    sr25519PairFromSeed
+  mnemonicGenerate,
+  mnemonicToMiniSecret,
+  sr25519PairFromSeed
 } = require('@polkadot/util-crypto');
 
 const {
-    u8aToHex
+  u8aToHex
 } = require('@polkadot/util')
 
 const AES = require('crypto-js/aes')
@@ -29,47 +29,47 @@ const keyring = new Keyring({type: 'sr25519'});
 
 
 export const getWallet = (): Wallet | null => {
-    const publicKey = localStorage.getItem(PUBLIC_KEY_STORE);
+  const publicKey = localStorage.getItem(PUBLIC_KEY_STORE);
 
-    if (publicKey) {
-        return {publicKey: unwrapHexString(publicKey)};
-    } else {
-        return null;
-    }
+  if (publicKey) {
+    return {publicKey: unwrapHexString(publicKey)};
+  } else {
+    return null;
+  }
 }
 
 export const generateWalletMnemonic = (): string => {
-    return mnemonicGenerate();
+  return mnemonicGenerate();
 }
 
 export const createTestWallet = (mnemonic: string): Wallet | null => {
-    return createWallet(mnemonic, TEST_PIN);
+  return createWallet(mnemonic, TEST_PIN);
 }
 
 export const createWallet = (mnemonic: string, password: string): Wallet | null => {
-    const seed = mnemonicToMiniSecret(mnemonic);
-    const keypair = sr25519PairFromSeed(seed);
+  const seed = mnemonicToMiniSecret(mnemonic);
+  const keypair = sr25519PairFromSeed(seed);
 
-    const encryptedMnemonic = AES.encrypt(mnemonic, password).toString();
+  const encryptedMnemonic = AES.encrypt(mnemonic, password).toString();
 
-    const publicKey: HexString = u8aToHex(keypair.publicKey);
+  const publicKey: HexString = u8aToHex(keypair.publicKey);
 
-    secureLocalStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
-    localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
+  secureLocalStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
+  localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
 
-    return {publicKey: publicKey};
+  return {publicKey: publicKey};
 }
 
 export const getMnemonic = (password: string): string | null => {
-    const encryptedMnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
+  const encryptedMnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
 
-    if (encryptedMnemonic) {
-        const mnemonic = AES.decrypt(encryptedMnemonic, password);
+  if (encryptedMnemonic) {
+    const mnemonic = AES.decrypt(encryptedMnemonic, password);
 
-        return mnemonic.toString(CryptoJS.enc.Utf8)
-    } else {
-        return null;
-    }
+    return mnemonic.toString(CryptoJS.enc.Utf8)
+  } else {
+    return null;
+  }
 }
 
 /**
@@ -78,17 +78,17 @@ export const getMnemonic = (password: string): string | null => {
  * @param password
  */
 export const getKeyringPair = (password: string): KeyringPair | undefined => {
-    try {
-        const mnemonic = getMnemonic(password)
-        if (mnemonic === null) return undefined
+  try {
+    const mnemonic = getMnemonic(password)
+    if (mnemonic === null) return undefined
 
-        return keyring.createFromUri(mnemonic);
-    } catch (e) {
-        return undefined
-    }
+    return keyring.createFromUri(mnemonic);
+  } catch (e) {
+    return undefined
+  }
 }
 
 export const resetWallet = () => {
-    localStorage.removeItem(PUBLIC_KEY_STORE);
-    secureLocalStorage.removeItem(MNEMONIC_STORE);
+  localStorage.removeItem(PUBLIC_KEY_STORE);
+  secureLocalStorage.removeItem(MNEMONIC_STORE);
 }
