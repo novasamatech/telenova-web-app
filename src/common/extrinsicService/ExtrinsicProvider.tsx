@@ -75,13 +75,15 @@ export const ExtrinsicProvider = ({children}: PropsWithChildren) => {
         })
 
         return promise.then(keyringPair => {
-                return extrinsic.signAndSend(keyringPair).finally(() => {
-                        keyringPair.lock()
-                        setExtrinsicState(ProviderStateContent())
+                return extrinsic.signAsync(keyringPair).then(() => {
+                    keyringPair.lock()
+                    return extrinsic.send()
                     }
                 )
             }
-        )
+        ).finally(() => {
+            setExtrinsicState(ProviderStateContent())
+        })
     }
 
     let content;
