@@ -4,6 +4,7 @@ import { getWallet } from '@common/wallet'
 import { ErrorBoundary } from 'react-error-boundary';
 import { Paths, routesConfig } from '@common/routing';
 import { ChainRegistry } from '@common/chainRegistry';
+import {ExtrinsicProvider} from "@common/extrinsicService/ExtrinsicProvider";
 
 export function Main() {
   const navigate = useNavigate();
@@ -21,7 +22,9 @@ export function Main() {
 
   return  (
       <ChainRegistry>
+        <ExtrinsicProvider>
         { appRoutes }
+        </ExtrinsicProvider>
       </ChainRegistry>
   );
 }
