@@ -3,6 +3,7 @@ import { useNavigate, useRoutes } from 'react-router-dom';
 import { getWallet } from '@common/wallet'
 import { ErrorBoundary } from 'react-error-boundary';
 import { Paths, routesConfig } from '@common/routing';
+import { ChainRegistry } from '@common/chainRegistry';
 
 export function Main() {
   const navigate = useNavigate();
@@ -19,8 +20,8 @@ export function Main() {
   }, [])
 
   return  (
-      <div>
+      <ChainRegistry>
         { appRoutes }
-      </div>
+      </ChainRegistry>
   );
 }
