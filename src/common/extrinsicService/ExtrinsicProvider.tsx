@@ -74,8 +74,14 @@ export const ExtrinsicProvider = ({children}: PropsWithChildren) => {
             setExtrinsicState(providerState)
         })
 
-       return promise.then(keyringPair => extrinsic.signAndSend(keyringPair))
-           .finally(() => setExtrinsicState(ProviderStateContent()))
+        return promise.then(keyringPair => {
+                return extrinsic.signAndSend(keyringPair).finally(() => {
+                        keyringPair.lock()
+                        setExtrinsicState(ProviderStateContent())
+                    }
+                )
+            }
+        )
     }
 
     let content;
@@ -84,7 +90,7 @@ export const ExtrinsicProvider = ({children}: PropsWithChildren) => {
             content = children
             break;
         case "auth":
-            content = <PasswordPage onResolve={extrinsicState.resolve} onReject={extrinsicState.reject} />
+            content = <PasswordPage onResolve={extrinsicState.resolve} onReject={extrinsicState.reject}/>
     }
 
     return (
