@@ -62,7 +62,7 @@ export interface IChainProviderService {
 
 export interface IChainConnectionService {
   connectionStates: (Record<ChainId, ConnectionState>);
-  getConnection: (chainId: ChainId) => Connection | undefined;
+  getConnection: (chainId: ChainId) => Promise<Connection>;
   createConnections: (requests: ConnectionRequest[]) => void;
 }
 

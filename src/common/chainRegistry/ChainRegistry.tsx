@@ -7,9 +7,10 @@ import { Chain, ChainAsset, ConnectionState, Connection, ConnectionRequest, Runt
 import { ChainId } from '@common/types';
 
 type ChainRegistryContextProps = {
+	isRegistryReady: boolean;
 	getAllChains: () => Promise<Chain[]>;
   	getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
-	getConnection: (chainId: ChainId) => Connection | undefined;
+	getConnection: (chainId: ChainId) => Promise<Connection>;
 	connectionStates: (Record<ChainId, ConnectionState>);
 }
 
@@ -17,12 +18,14 @@ const ChainRegistryContext = createContext<ChainRegistryContextProps>({} as Chai
 
 export const ChainRegistry = ({ children }: PropsWithChildren) => {
 	const { getAllChains, getAssetBySymbol } = useChains();
+	const [isRegistryReady, setIsRegistryReady] = useState(false);
 	const { connectionStates, createConnections, getConnection } = useConnections();
 	const { getMetadata, subscribeMetadata } = useRuntimeProvider();
 
 	useEffect(() => {
     	(async () => {
-      		await setupConnections();
+			await setupConnections();
+			setIsRegistryReady(true);
     	})();
   	}, []);
 
@@ -50,7 +53,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
 	}
 
 	return (
-    	<ChainRegistryContext.Provider value={{ getAllChains, getAssetBySymbol, getConnection, connectionStates }}>
+    	<ChainRegistryContext.Provider value={{ isRegistryReady, getAllChains, getAssetBySymbol, getConnection, connectionStates }}>
       		{children}
     	</ChainRegistryContext.Provider>
   	);

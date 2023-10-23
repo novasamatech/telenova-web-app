@@ -4,6 +4,7 @@ import { getWallet } from '@common/wallet'
 import { ErrorBoundary } from 'react-error-boundary';
 import { Paths, routesConfig } from '@common/routing';
 import { ChainRegistry } from '@common/chainRegistry';
+import {BalanceProvider} from "@common/balances/BalanceProvider";
 
 export function Main() {
   const navigate = useNavigate();
@@ -21,7 +22,9 @@ export function Main() {
 
   return  (
       <ChainRegistry>
-        { appRoutes }
+        <BalanceProvider>
+          { appRoutes }
+        </BalanceProvider>
       </ChainRegistry>
   );
 }

@@ -3,12 +3,16 @@ import { useState, useEffect } from 'react'
 import { Wallet, getWallet, resetWallet } from '@common/wallet'
 import { useNavigate } from 'react-router-dom';
 import { Paths } from '@common/routing'
-import { useChainRegistry } from '@common/chainRegistry'; 
+import { useChainRegistry } from '@common/chainRegistry';
+import { useBalances } from "@common/balances/BalanceProvider";
+import {ChainAssetAccountId} from "@common/types";
+import {IAssetBalance} from "@common/balances/types";
 
 export function DashboardMainPage() {
   const [wallet, setWallet] = useState<Wallet | null>(null)
   const navigate = useNavigate();
-  const { getAllChains, getConnection } = useChainRegistry();
+  const { isRegistryReady, getAllChains, getConnection } = useChainRegistry();
+  const { subscribeBalance } = useBalances();
 
   useEffect(() => {
     const wallet = getWallet()
@@ -16,16 +20,26 @@ export function DashboardMainPage() {
   }, [setWallet])
 
   useEffect(() => {
+      if(!isRegistryReady || !wallet) {
+          return;
+      }
+
     (async () => {
           const chains = await getAllChains();
           console.info(`All chains ${chains}`);
 
           for (const chain of chains) {
-            const connection = getConnection(chain.chainId);
-            console.log(`Connection ${connection}`);
+              const account: ChainAssetAccountId = {
+                  chainId: chain.chainId,
+                  assetId: chain.assets[0].assetId,
+                  accountId: wallet.publicKey
+              }
+              subscribeBalance(account, (balance: IAssetBalance) => {
+                 console.log(`Balance ${chain.chainId} => ${balance.total().toString()}`);
+              });
           }
       })();
-  }, [getConnection]);
+  }, [isRegistryReady, wallet]);
 
   function clearWallet() {
       resetWallet();

@@ -9,10 +9,10 @@ export interface IBalanceService {
 
 export const createBalanceService = (connection: Connection): IBalanceService => {
     async function subscribe(accountId: AccountId, onUpdate: (result: IAssetBalance) => void): Promise<() => void> {
-        return await connection.api.query.system.account(accountId, (accountInfo: any) => {
+        return  connection.api.query.system.account.multi([accountId], (accountInfoList: any[]) => {
             let frozen: BN
 
-            const data = accountInfo.data;
+            const data = accountInfoList[0].data;
             if (data.miscFrozen || data.feeFrozen) {
                 const miscFrozen = new BN(data.miscFrozen);
                 const feeFrozen = new BN(data.feeFrozen);

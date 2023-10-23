@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState, useRef } from 'react';
+import { createContext, PropsWithChildren, useContext, useRef } from 'react';
 import { useChainRegistry } from '@common/chainRegistry';
 import {IAssetBalance} from "@common/balances/types";
 import { ChainAssetAccountId, chainAssetAccountIdToString } from '@common/types';
@@ -28,7 +28,9 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 		const key = chainAssetAccountIdToString(account);
 		let currentState = accountToState.current[key];
 
-		if (currentState) {
+		if (!currentState) {
+			registerNewSubscription(account, onUpdate, unsubscribeId);
+		} else {
 			const currentBalance = currentState.current;
 
 			currentState.updaters[unsubscribeId] = onUpdate;
@@ -39,27 +41,6 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 			if (currentBalance) {
 				onUpdate(currentBalance);
 			}
-		} else {
-			const connection = getConnection(account.chainId);
-
-			unsubscribeToAccount.current[unsubscribeId] = account;
-
-			if (connection) {
-				const service = createBalanceService(connection);
-
-				setupSubscriptionState(account, unsubscribeId, onUpdate);
-
-				const unsubscribe = await service.subscribe(account.accountId, (balance: IAssetBalance) => {
-					notifySubscribers(account, balance);
-				});
-
-				if (!setupUnsubscribeOnState(account, unsubscribe)) {
-					console.warn(`Can't setup unsubscribe ${chainAssetAccountIdToString(account)}`);
-
-					// looks like we have already unsubscribed
-					unsubscribe();
-				}
-			}
 		}
 
 		return unsubscribeId;
@@ -69,23 +50,14 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 		const account = unsubscribeToAccount.current[unsubscribeId];
 		delete unsubscribeToAccount.current[unsubscribeId];
 
-		if (account) {
-			const stateKey = chainAssetAccountIdToString(account);
-			let state = accountToState.current[stateKey];
-			delete state.updaters[unsubscribeId];
-
-			const hasOtherSubscribers = Object.keys(state.updaters).length > 0
-
-			if (!hasOtherSubscribers && state.unsubscribe) {
-				state.unsubscribe();
-			}
-
-			if (hasOtherSubscribers) {
-				accountToState.current[stateKey] = state;
-			} else {
-				delete accountToState.current[stateKey];
-			}
+		if (!account) {
+			return;
 		}
+
+		const stateKey = chainAssetAccountIdToString(account);
+		let state = accountToState.current[stateKey];
+		delete state.updaters[unsubscribeId];
+		accountToState.current[stateKey] = state;
 	};
 
 	function setupSubscriptionState(
@@ -104,6 +76,33 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
 		const stateKey = chainAssetAccountIdToString(account);
 		accountToState.current[stateKey] = state;
+	}
+
+	async function registerNewSubscription(
+		account: ChainAssetAccountId,
+		onUpdate: (balance: IAssetBalance) => void,
+		unsubscribeId: number
+	): Promise<void> {
+		const connection = await getConnection(account.chainId);
+
+		unsubscribeToAccount.current[unsubscribeId] = account;
+
+		const service = createBalanceService(connection);
+
+		setupSubscriptionState(account, unsubscribeId, onUpdate);
+
+		const unsubscribe = await service.subscribe(account.accountId, (balance: IAssetBalance) => {
+			console.log(`New balance: ${balance.total().toString()}`);
+
+			notifySubscribers(account, balance);
+		});
+
+		if (!setupUnsubscribeOnState(account, unsubscribe)) {
+			console.warn(`Can't setup unsubscribe ${chainAssetAccountIdToString(account)}`);
+
+			// looks like we have already unsubscribed
+			unsubscribe();
+		}
 	}
 
 	function setupUnsubscribeOnState(account: ChainAssetAccountId, unsubscribe: () => void): boolean {
