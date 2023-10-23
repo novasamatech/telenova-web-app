@@ -1,15 +1,15 @@
 import {Connection} from "@common/chainRegistry/types";
-import {AccountId} from "@common/types";
+import {Address} from "@common/types";
 import {BN} from "@polkadot/util";
 import {IAssetBalance} from "@common/balances/types";
 
 export interface IBalanceService {
-    subscribe: (accountId: AccountId, onUpdate: (result: IAssetBalance) => void) => Promise<() => void>;
+    subscribe: (address: Address, onUpdate: (result: IAssetBalance) => void) => Promise<() => void>;
 }
 
 export const createBalanceService = (connection: Connection): IBalanceService => {
-    async function subscribe(accountId: AccountId, onUpdate: (result: IAssetBalance) => void): Promise<() => void> {
-        return  connection.api.query.system.account.multi([accountId], (accountInfoList: any[]) => {
+    async function subscribe(address: Address, onUpdate: (result: IAssetBalance) => void): Promise<() => void> {
+        return  connection.api.query.system.account.multi([address], (accountInfoList: any[]) => {
             let frozen: BN
 
             const data = accountInfoList[0].data;

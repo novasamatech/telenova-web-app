@@ -1,7 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useRef } from 'react';
 import { useChainRegistry } from '@common/chainRegistry';
 import {IAssetBalance} from "@common/balances/types";
-import { ChainAssetAccountId, chainAssetAccountIdToString } from '@common/types';
+import { ChainAssetAddress, chainAssetAccountIdToString } from '@common/types';
 import { useNumId } from '@common/utils/NumId';
 import {SubscriptionState} from "@common/subscription/types";
 import {createBalanceService} from "@common/balances/BalanceService";
@@ -11,7 +11,7 @@ type UpdateCallback = (balance: IAssetBalance) => void;
 type UpdaterCallbackStore = Record<number, UpdateCallback>
 
 type BalanceProviderContextProps = {
-	subscribeBalance: (account: ChainAssetAccountId, onUpdate: UpdateCallback) => number;
+	subscribeBalance: (account: ChainAssetAddress, onUpdate: UpdateCallback) => number;
 	unsubscribeBalance: (unsubscribeId: number) => void;
 }
 
@@ -20,10 +20,10 @@ const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as 
 export const BalanceProvider = ({ children }: PropsWithChildren) => {
 	const { nextId } = useNumId();
 	const { getConnection } = useChainRegistry();
-	const unsubscribeToAccount = useRef<Record<number, ChainAssetAccountId>>({});
+	const unsubscribeToAccount = useRef<Record<number, ChainAssetAddress>>({});
 	const accountToState = useRef<StateStore>({});
 
-	const subscribeBalance = (account: ChainAssetAccountId, onUpdate: (balance: IAssetBalance) => void): number => {
+	const subscribeBalance = (account: ChainAssetAddress, onUpdate: (balance: IAssetBalance) => void): number => {
 		const  unsubscribeId = nextId();
 		const key = chainAssetAccountIdToString(account);
 		let currentState = accountToState.current[key];
@@ -61,7 +61,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 	};
 
 	function setupSubscriptionState(
-		account: ChainAssetAccountId,
+		account: ChainAssetAddress,
 		unsubscribeId: number,
 		onUpdate: (balance: IAssetBalance) => void
 	) {
@@ -79,7 +79,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 	}
 
 	async function registerNewSubscription(
-		account: ChainAssetAccountId,
+		account: ChainAssetAddress,
 		onUpdate: (balance: IAssetBalance) => void,
 		unsubscribeId: number
 	): Promise<void> {
@@ -91,7 +91,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
 		setupSubscriptionState(account, unsubscribeId, onUpdate);
 
-		const unsubscribe = await service.subscribe(account.accountId, (balance: IAssetBalance) => {
+		const unsubscribe = await service.subscribe(account.address, (balance: IAssetBalance) => {
 			console.log(`New balance: ${balance.total().toString()}`);
 
 			notifySubscribers(account, balance);
@@ -105,7 +105,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 		}
 	}
 
-	function setupUnsubscribeOnState(account: ChainAssetAccountId, unsubscribe: () => void): boolean {
+	function setupUnsubscribeOnState(account: ChainAssetAddress, unsubscribe: () => void): boolean {
 		const stateKey = chainAssetAccountIdToString(account);
 		let state = accountToState.current[stateKey];
 
@@ -119,7 +119,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 		}
 	}
 
-	function notifySubscribers(account: ChainAssetAccountId, balance: IAssetBalance) {
+	function notifySubscribers(account: ChainAssetAddress, balance: IAssetBalance) {
 		const stateKey = chainAssetAccountIdToString(account);
 		const state = accountToState.current[stateKey];
 

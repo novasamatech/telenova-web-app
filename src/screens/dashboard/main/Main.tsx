@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { Paths } from '@common/routing'
 import { useChainRegistry } from '@common/chainRegistry';
 import { useBalances } from "@common/balances/BalanceProvider";
-import {ChainAssetAccountId} from "@common/types";
+import {ChainAssetAddress} from "@common/types";
 import {IAssetBalance} from "@common/balances/types";
+import {encodeAddress} from "@polkadot/util-crypto";
 
 export function DashboardMainPage() {
   const [wallet, setWallet] = useState<Wallet | null>(null)
@@ -29,13 +30,14 @@ export function DashboardMainPage() {
           console.info(`All chains ${chains}`);
 
           for (const chain of chains) {
-              const account: ChainAssetAccountId = {
+              const address = encodeAddress(wallet.publicKey, chain.addressPrefix);
+              const account: ChainAssetAddress = {
                   chainId: chain.chainId,
                   assetId: chain.assets[0].assetId,
-                  accountId: wallet.publicKey
+                  address: address
               }
               subscribeBalance(account, (balance: IAssetBalance) => {
-                 console.log(`Balance ${chain.chainId} => ${balance.total().toString()}`);
+                 console.log(`Balance ${address} => ${balance.total().toString()}`);
               });
           }
       })();

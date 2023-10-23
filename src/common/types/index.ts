@@ -19,18 +19,18 @@ export type ChainAssetId = {
     assetId: AssetId;
 };
 
-export type ChainAssetAccountId = {
+export type ChainAssetAddress = {
 	chainId: ChainId;
     assetId: AssetId;
-    accountId: AccountId;	
+    address: Address;
 };
 
 export function chainAssetIdToString(value: ChainAssetId): string {
 	return `${value.chainId} - ${value.assetId}`;
 }
 
-export  function chainAssetAccountIdToString(value: ChainAssetAccountId): string {
+export  function chainAssetAccountIdToString(value: ChainAssetAddress): string {
 	const partial = chainAssetIdToString({chainId: value.chainId, assetId: value.assetId});
 
-	return `${partial} - ${value.accountId}`;
+	return `${partial} - ${value.address}`;
 }
