@@ -1,4 +1,5 @@
 import { signedWalletCreationData } from '@common/telegram/message-factory';
+import {HexString} from "@common/types";
 
 type MessageTestWalletCreationItem = {
 	publicKey: HexString,
@@ -9,7 +10,7 @@ type MessageTestWalletCreationItem = {
 describe("Message factory payload creation", () => {
   	test("Wallet creation payload", () => {
   		// calculated using sha512 from https://www.liavaag.org/English/SHA-Generator/HMAC/
-    	const testVectors: [MessageTestWalletCreationItem] = [
+    	const testVectors: MessageTestWalletCreationItem[] = [
     		{
     			publicKey: "0x1111111111111111111111111111111111111111111111111111111111111111",
     			secretKey: "test_secret",

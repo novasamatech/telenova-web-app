@@ -87,7 +87,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 		const chain = await getChain(account.chainId);
 
 		if (!chain) {
-			return;
+			throw `No chain found ${account.chainId}`;
 		}
 
 		const address = encodeAddress(account.publicKey, chain.addressPrefix);

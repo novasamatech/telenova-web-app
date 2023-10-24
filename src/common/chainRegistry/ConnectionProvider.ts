@@ -3,17 +3,16 @@ import {ProviderInterface} from '@polkadot/rpc-provider/types';
 import {useRef, useState} from 'react';
 
 import {
-  Connection,
   ConnectionRequest,
   ConnectionState,
   ConnectionStatus,
+  Connection,
   IChainConnectionService,
   RpcNode
 } from '@common/chainRegistry/types';
 
 import {ChainId} from '@common/types';
 import {createCachedProvider} from './CachedMetadataConnection';
-import {chain} from "@polkadot/types/interfaces/definitions";
 
 const CONNECTION_RETRY_DELAY = 2000;
 
@@ -49,8 +48,8 @@ export const useConnections = (): IChainConnectionService => {
   }
 
   const createConnections = (requests: ConnectionRequest[]) => {
-    const newConnectionStates = requests.reduce<Record<ChainId, ConnectionState>>((acc, { chain }) => {
-      const { chainId, nodes } = chain;
+    const newConnectionStates = requests.reduce<Record<ChainId, ConnectionState>>((acc, {chain}) => {
+      const {chainId, nodes} = chain;
 
       const newState: ConnectionState = {
         chainId: chainId,
@@ -196,7 +195,7 @@ export const useConnections = (): IChainConnectionService => {
       const currentState = currentStates[chainId];
 
       if (currentState) {
-        const updatedState = {...currentState, ...updates };
+        const updatedState = {...currentState, ...updates};
         return {
           ...currentStates,
           [chainId]: updatedState
@@ -215,7 +214,7 @@ export const useConnections = (): IChainConnectionService => {
 
     if (currentState) {
       internalStates.current[chainId] = {...currentState, ...updates};
-      }
+    }
   }
 
   return {
