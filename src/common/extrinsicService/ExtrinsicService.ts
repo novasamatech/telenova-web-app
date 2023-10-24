@@ -6,29 +6,29 @@ import {ApiTypes} from "@polkadot/api-base/types/base";
 
 interface ExtrinsicService {
 
-  prepareExtrinsic<ApiType extends ApiTypes>(
-    chainId: ChainId,
-    building: ExtrinsicBuilding,
-    options?: Partial<ExtrinsicBuildingOptions>,
-  ): Promise<SubmittableExtrinsic<ApiType>>
+    prepareExtrinsic<ApiType extends ApiTypes>(
+        chainId: ChainId,
+        building: ExtrinsicBuilding,
+        options?: Partial<ExtrinsicBuildingOptions>,
+    ): Promise<SubmittableExtrinsic<ApiType>>
 }
 
 export function useExtrinsicService(): ExtrinsicService {
-  const extrinsicBuilderFactory = useExtrinsicBuilderFactory()
+    const extrinsicBuilderFactory = useExtrinsicBuilderFactory()
 
-  const prepareExtrinsic = async (
-    chainId: ChainId,
-    building: ExtrinsicBuilding,
-    options?: Partial<ExtrinsicBuildingOptions>,
-  ):Promise<SubmittableExtrinsic<any>> => {
-    const extrinsicBuilder = await extrinsicBuilderFactory.forChain(chainId)
+    const prepareExtrinsic = async (
+        chainId: ChainId,
+        building: ExtrinsicBuilding,
+        options?: Partial<ExtrinsicBuildingOptions>,
+    ): Promise<SubmittableExtrinsic<any>> => {
+        const extrinsicBuilder = await extrinsicBuilderFactory.forChain(chainId)
 
-    building(extrinsicBuilder)
+        building(extrinsicBuilder)
 
-    return extrinsicBuilder.build(options)
-  }
+        return extrinsicBuilder.build(options)
+    }
 
-  return {
-    prepareExtrinsic
-  }
+    return {
+        prepareExtrinsic
+    }
 }

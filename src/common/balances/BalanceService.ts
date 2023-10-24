@@ -9,7 +9,7 @@ export interface IBalanceService {
 
 export const createBalanceService = (connection: Connection): IBalanceService => {
     async function subscribe(address: Address, onUpdate: (result: IAssetBalance) => void): Promise<() => void> {
-        return  connection.api.query.system.account.multi([address], (accountInfoList: any[]) => {
+        return connection.api.query.system.account.multi([address], (accountInfoList: any[]) => {
             let frozen: BN
 
             const data = accountInfoList[0].data;
@@ -26,12 +26,16 @@ export const createBalanceService = (connection: Connection): IBalanceService =>
             const total = free.add(reserved);
             const transferable = free.gt(frozen) ? free.sub(frozen) : new BN(0);
 
-            const  totalString = total.toString();
+            const totalString = total.toString();
             const transferableString = transferable.toString();
 
             const assetBalance: IAssetBalance = {
-                total: () => { return totalString },
-                transferable: () => { return transferableString }
+                total: () => {
+                    return totalString
+                },
+                transferable: () => {
+                    return transferableString
+                }
             }
 
             onUpdate(assetBalance);
