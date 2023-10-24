@@ -1,13 +1,12 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import {createContext, PropsWithChildren, useContext, useEffect, useRef, useState} from 'react';
 
 import { useChains } from './ChainProvider';
 import { useConnections } from './ConnectionProvider';
 import { useRuntimeProvider } from './RuntimeProvider';
 import { Chain, ChainAsset, ConnectionState, Connection, ConnectionRequest, RuntimeMetadata } from './types';
-import { ChainId } from '@common/types';
+import {ChainId, StateResolution} from '@common/types';
 
 type ChainRegistryContextProps = {
-		isRegistryReady: boolean;
 		getAllChains: () => Promise<Chain[]>;
 		getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
 		getChain: (chainId: ChainId) => Promise<Chain | undefined>;
@@ -23,12 +22,44 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
 	const { connectionStates, createConnections, getConnection } = useConnections();
 	const { getMetadata, subscribeMetadata } = useRuntimeProvider();
 
+	const setupWaiters = useRef<StateResolution<void>[]>([]);
+
 	useEffect(() => {
     	(async () => {
 			await setupConnections();
 			setIsRegistryReady(true);
     	})();
   	}, []);
+
+	useEffect(() => {
+		if (!isRegistryReady) {
+			return;
+		}
+
+		const waiters = setupWaiters.current
+		setupWaiters.current = []
+
+		for (const waiter of waiters) {
+			waiter.resolve();
+		}
+
+	}, [isRegistryReady]);
+
+	async function isReady(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (isRegistryReady) {
+				resolve();
+			} else {
+				setupWaiters.current.push({resolve, reject});
+			}
+		});
+	}
+
+	const getReadyConnection = async (chainId: ChainId): Promise<Connection> => {
+		await isReady();
+
+		return await getConnection(chainId);
+	}
 
 	const setupConnections = async () => {
 		const chains = await getAllChains();
@@ -54,7 +85,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
 	}
 
 	return (
-    	<ChainRegistryContext.Provider value={{ isRegistryReady, getAllChains, getAssetBySymbol, getChain, getConnection, connectionStates }}>
+    	<ChainRegistryContext.Provider value={{ getAllChains, getAssetBySymbol, getChain, getConnection: getReadyConnection, connectionStates }}>
       		{children}
     	</ChainRegistryContext.Provider>
   	);

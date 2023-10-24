@@ -1,3 +1,5 @@
+import {Connection} from "@common/chainRegistry/types";
+
 export type HexString = `0x${string}`
 
 const {
@@ -24,6 +26,8 @@ export type ChainAssetAccount = {
     assetId: AssetId;
     publicKey: PublicKey;
 };
+
+export type StateResolution<T> = {resolve: (value: T) => void, reject: () => void}
 
 export function chainAssetIdToString(value: ChainAssetId): string {
 	return `${value.chainId} - ${value.assetId}`;

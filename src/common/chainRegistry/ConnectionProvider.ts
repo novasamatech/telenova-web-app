@@ -11,12 +11,12 @@ import {
   RpcNode
 } from '@common/chainRegistry/types';
 
-import {ChainId} from '@common/types';
+import {ChainId, StateResolution} from '@common/types';
 import {createCachedProvider} from './CachedMetadataConnection';
 
 const CONNECTION_RETRY_DELAY = 2000;
 
-type InternalStateResolution = {resolve: (connection: Connection) => void, reject: () => void}
+type InternalStateResolution = StateResolution<Connection>;
 
 type InternalConnectionState = {
   request: ConnectionRequest;
@@ -31,13 +31,19 @@ export const useConnections = (): IChainConnectionService => {
   const [connectionStates, setConnectionStates] = useState<Record<ChainId, ConnectionState>>({});
 
   async function storeOrResolveConnection(chainId: ChainId, resolution: InternalStateResolution): Promise<void> {
-    const connection = internalStates.current[chainId]?.connection
+    const state = internalStates.current[chainId];
+
+    if (!state) {
+      throw Error(`Connection is not set for chain ${chainId}`);
+    }
+
+    const connection = state.connection
 
     if(connection) {
       await connection.api.isReady;
       resolution.resolve(connection);
     } else {
-      internalStates.current[chainId]?.connectionPromises.push(resolution);
+      state.connectionPromises.push(resolution);
     }
   }
 

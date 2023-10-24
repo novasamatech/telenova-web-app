@@ -14,7 +14,7 @@ import {useExtrinsicProvider} from "@common/extrinsicService/ExtrinsicProvider";
 export function DashboardMainPage() {
   const [wallet, setWallet] = useState<Wallet | null>(null)
   const navigate = useNavigate();
-  const { isRegistryReady, getAllChains, getConnection } = useChainRegistry();
+  const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
   const extrinsicService = useExtrinsicProvider();
 
@@ -24,7 +24,7 @@ export function DashboardMainPage() {
   }, [setWallet])
 
   useEffect(() => {
-      if(!isRegistryReady || !wallet) {
+      if(!wallet) {
           return;
       }
 
@@ -45,7 +45,7 @@ export function DashboardMainPage() {
           });
       }
     })();
-  }, [isRegistryReady, wallet]);
+  }, [wallet]);
 
   function clearWallet() {
     resetWallet();
