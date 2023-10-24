@@ -58,6 +58,7 @@ export type ConnectionRequest = {
 export interface IChainProviderService {
   getAllChains: () => Promise<Chain[]>;
   getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
+  getChain: (chainId: ChainId) => Promise<Chain | undefined>;
 }
 
 export interface IChainConnectionService {
@@ -69,8 +70,4 @@ export interface IChainConnectionService {
 export interface IRuntimeProviderService {
   getMetadata: (chainId: ChainId) => Promise<RuntimeMetadata | undefined>;
   subscribeMetadata: (api: ApiPromise) => UnsubscribePromise;
-}
-
-export interface IChainRegistryService {
-  
 }

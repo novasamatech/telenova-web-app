@@ -12,25 +12,25 @@ export function unwrapHexString(string: string): HexString {
 export type ChainId = HexString;
 export type AssetId = number;
 export type Address = string;
-export type AccountId = HexString;
+export type PublicKey = HexString;
 
 export type ChainAssetId = {
 	chainId: ChainId;
     assetId: AssetId;
 };
 
-export type ChainAssetAddress = {
+export type ChainAssetAccount = {
 	chainId: ChainId;
     assetId: AssetId;
-    address: Address;
+    publicKey: PublicKey;
 };
 
 export function chainAssetIdToString(value: ChainAssetId): string {
 	return `${value.chainId} - ${value.assetId}`;
 }
 
-export  function chainAssetAccountIdToString(value: ChainAssetAddress): string {
+export  function chainAssetAccountIdToString(value: ChainAssetAccount): string {
 	const partial = chainAssetIdToString({chainId: value.chainId, assetId: value.assetId});
 
-	return `${partial} - ${value.address}`;
+	return `${partial} - ${value.publicKey}`;
 }

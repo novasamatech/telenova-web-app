@@ -7,17 +7,18 @@ import { Chain, ChainAsset, ConnectionState, Connection, ConnectionRequest, Runt
 import { ChainId } from '@common/types';
 
 type ChainRegistryContextProps = {
-	isRegistryReady: boolean;
-	getAllChains: () => Promise<Chain[]>;
-  	getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
-	getConnection: (chainId: ChainId) => Promise<Connection>;
-	connectionStates: (Record<ChainId, ConnectionState>);
+		isRegistryReady: boolean;
+		getAllChains: () => Promise<Chain[]>;
+		getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
+		getChain: (chainId: ChainId) => Promise<Chain | undefined>;
+		getConnection: (chainId: ChainId) => Promise<Connection>;
+		connectionStates: (Record<ChainId, ConnectionState>);
 }
 
 const ChainRegistryContext = createContext<ChainRegistryContextProps>({} as ChainRegistryContextProps);
 
 export const ChainRegistry = ({ children }: PropsWithChildren) => {
-	const { getAllChains, getAssetBySymbol } = useChains();
+	const { getAllChains, getAssetBySymbol, getChain } = useChains();
 	const [isRegistryReady, setIsRegistryReady] = useState(false);
 	const { connectionStates, createConnections, getConnection } = useConnections();
 	const { getMetadata, subscribeMetadata } = useRuntimeProvider();
@@ -53,7 +54,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
 	}
 
 	return (
-    	<ChainRegistryContext.Provider value={{ isRegistryReady, getAllChains, getAssetBySymbol, getConnection, connectionStates }}>
+    	<ChainRegistryContext.Provider value={{ isRegistryReady, getAllChains, getAssetBySymbol, getChain, getConnection, connectionStates }}>
       		{children}
     	</ChainRegistryContext.Provider>
   	);
