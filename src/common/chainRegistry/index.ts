@@ -1,1 +1,1 @@
-export { ChainRegistry, useChainRegistry } from './ChainRegistry'
+export {ChainRegistry, useChainRegistry} from './ChainRegistry'
