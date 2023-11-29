@@ -1,5 +1,5 @@
 export default {
-  text: 'var(--black-black900)',
+  'text-primary': 'var(--black-black900)',
   'text-on-button': 'var(--white-white900)',
   'text-on-button-disabled': 'var(--gray-gray300)',
   'text-hint': 'var(--gray-gray700)',

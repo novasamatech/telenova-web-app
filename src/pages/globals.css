@@ -1,6 +1,51 @@
+@import '../styles/fonts.css';
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar for Firefox */
+* {
+  scrollbar-width: thin;
+}
+
+/* Scrollbar for other Browsers */
+/* Width */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px; /* horizontal scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-track:vertical {
+  margin: 2px 0;
+}
+
+::-webkit-scrollbar-track:horizontal {
+  margin: 0 2px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-background-default);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--focus-container-border);
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;

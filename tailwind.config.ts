@@ -3,15 +3,17 @@ const { nextui } = require('@nextui-org/react');
 
 import fontSizes from './tw-config-consts/font-sizes';
 import colors from './tw-config-consts/colors';
+const defaultTheme = require('tailwindcss/defaultTheme');
 
-const config: Config = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/screens/**/*.{js,ts,jsx,tsx,mdx}',
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
-  ],
+export default {
+  mode: 'jit',
+  content: ['./src/pages/**/*.{js,ts,jsx,tsx,mdx}', './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', ...defaultTheme.fontFamily.sans],
+        manrope: ['Manrope', ...defaultTheme.fontFamily.sans],
+      },
       fontSize: fontSizes,
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -24,5 +26,4 @@ const config: Config = {
   },
   darkMode: 'class',
   plugins: [nextui()],
-};
-export default config;
+} satisfies Config;
