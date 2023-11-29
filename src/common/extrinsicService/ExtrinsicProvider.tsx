@@ -84,7 +84,7 @@ export const ExtrinsicProvider = ({children}: PropsWithChildren) => {
         });
     }
 
-    let content;
+    let content;    
     switch (extrinsicState.kind) {
         case "content":
             content = children

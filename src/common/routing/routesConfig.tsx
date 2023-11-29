@@ -1,6 +1,6 @@
 import {Navigate, RouteObject} from 'react-router-dom';
 import {Paths} from './paths';
-import {DashboardMainPage} from '@app/dashboard';
+import {DashboardMain} from '@app/dashboard';
 import {OnboardingStartPage, CreateWalletPage, ImportWalletPage} from '@app/onboarding';
 import {TransferPage} from '@app/transfer/Transfer';
 import {SplashPage} from '@app/splash/Splash';
@@ -19,7 +19,7 @@ export const routesConfig: RouteObject[] = [
         element: <ImportWalletPage/>
     },
     {path: Paths.TRANSFER, element: <TransferPage/>},
-    {path: Paths.DASHBOARD, element: <DashboardMainPage/>},
+    {path: Paths.DASHBOARD, element: <DashboardMain/>},
 
     {path: '*', element: <SplashPage/>}
 ];
