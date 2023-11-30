@@ -60,6 +60,7 @@ export const createWallet = (mnemonic: string, password: string): Wallet | null 
     return {publicKey: publicKey};
 }
 
+// localstorage or cloud if restor wallet
 export const getMnemonic = (password: string): string | null => {
     const encryptedMnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
 

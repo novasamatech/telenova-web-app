@@ -1,17 +1,17 @@
 // TelegramProvider
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import Script from 'next/script';
-import type { ITelegramUser, IWebApp } from '@common/telegram/types';
+import type { WebAppUser, WebApp } from '@common/telegram/types';
 
 export interface ITelegramContext {
-  webApp?: IWebApp;
-  user?: ITelegramUser;
+  webApp?: WebApp;
+  user?: WebAppUser;
 }
 
 export const TelegramContext = createContext<ITelegramContext>({});
 
 export const TelegramProvider = ({ children }: { children: React.ReactNode }) => {
-  const [webApp, setWebApp] = useState<IWebApp | null>(null);
+  const [webApp, setWebApp] = useState<WebApp | null>(null);
 
   useEffect(() => {
     let isMounted = true;
