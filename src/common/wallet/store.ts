@@ -56,7 +56,8 @@ export const createWallet = (mnemonic: string, password: string): Wallet | null 
 
     secureLocalStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
     localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
-
+    window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
+    
     return {publicKey: publicKey};
 }
 

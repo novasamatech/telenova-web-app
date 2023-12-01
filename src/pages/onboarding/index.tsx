@@ -1,30 +1,46 @@
-import { Paths } from '@common/routing';
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useTelegram } from '@common/providers/telegramProvider';
 import { useRouter } from 'next/router';
 
 import { Avatar } from '@nextui-org/react';
+import { Paths } from '@/common/routing';
+import { TitleText, BodyText, CaptionText } from '@/components/Typography';
+import Icon from '@/components/Icon/Icon';
 
 export default function OnboardingStartPage() {
   const router = useRouter();
-  const { user, webApp } = useTelegram();
-  console.log(user, webApp, 2);
+  const { webApp } = useTelegram();
+
+  webApp?.MainButton?.show();
+  webApp?.MainButton?.onClick(() => {
+    router.push(Paths.ONBOARDING_PASSWORD);
+  });
 
   return (
-    <div className="h-screen flex flex-col justify-center align-center m-6">
-      <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026708c" size="lg" className="w-20 h-20" />
-      <h1 className="text-header-title">Welcome to Nova Wallet!</h1>
-      <p>
+    <div className="h-screen flex flex-col items-center m-4">
+      <Avatar src="" size="lg" className="w-[128px] h-[128px]" name="Nova" />
+      <TitleText className="mt-6 mb-3">Welcome to Nova Wallet!</TitleText>
+      <BodyText className="text-text-hint mb-7" align="center">
         Welcome aboard! Securely store, send, and receive your Polkadot funds with ease. Dive into Polkadot funds
         management!
-      </p>
-      <span>Easy crypto operations</span>
-      <p>Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.</p>
-      <button className="btn mt-4 bg-text-link" onClick={() => router.push(Paths.ONBOARDING_CREATE_WALLET)}>
-        Create Wallet
-      </button>
-      <button className="btn btn-blue mt-4" onClick={() => router.push(Paths.ONBOARDING_IMPORT_WALLET)}>
-        Import Wallet
-      </button>
+      </BodyText>
+      <div className="flex gap-4 mb-6">
+        <Icon name="dotLogo" size={48} />
+        <p>
+          <CaptionText>Easy crypto operations</CaptionText>
+          <BodyText className="text-text-hint">
+            Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
+          </BodyText>
+        </p>
+      </div>
+      <div className="flex gap-4">
+        <Icon name="dotLogo" size={48} />
+        <p>
+          <CaptionText>Easy crypto operations</CaptionText>
+          <BodyText className="text-text-hint">
+            Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
+          </BodyText>
+        </p>
+      </div>
     </div>
   );
 }

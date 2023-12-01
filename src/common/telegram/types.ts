@@ -20,6 +20,11 @@ export interface ITelegramMessageFactory {
 export type EventType = 'themeChanged' | 'viewportChanged' | 'mainButtonClicked';
 
 export interface WebApp {
+  CloudStorage: {
+    getItem(key: string, callback: (value: string | null) => void): string | null;
+    setItem(key: string, value: string): void;
+    removeItem(key: string): void;
+  };
   /**
    * A string with raw data transferred to the Web App, convenient for validating data.
    * WARNING: Validate data from this field before using it on the bot's server.

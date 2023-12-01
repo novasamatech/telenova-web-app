@@ -1,35 +1,21 @@
-import {HexString} from '@common/types';
-import {ITelegram, Telegram} from './types';
-import {getMessageFactory} from './message-factory';
+import { HexString } from '@common/types';
+import { Telegram } from './types';
+import { getMessageFactory } from './message-factory';
 
 declare global {
-    interface Window {
-        Telegram: Telegram;
-    }
+  interface Window {
+    Telegram: Telegram;
+  }
 }
+export const completeOnboarding = (publicKey: HexString) => {
+  const telegram = window.Telegram;
+  const messageFactory = getMessageFactory();
+  const data = messageFactory.prepareWalletCreationData(publicKey);
 
-export const getTelegram = (): ITelegram | null => {
-    const telegram = window.Telegram;
-
-    const completeOnboarding = (telegram: Telegram): (publicKey: HexString) => void => {
-        return function (publicKey: HexString): void {
-            const messageFactory = getMessageFactory();
-            const data = messageFactory.prepareWalletCreationData(publicKey);
-
-            if (data) {
-                return telegram.WebApp.sendData(data);
-            } else {
-                console.error("Response creation failed");
-            }
-        }
-    };
-
-
-    if (telegram) {
-        return {
-            completeOnboarding: completeOnboarding(telegram)
-        };
-    } else {
-        return null;
-    }
+  if (data && telegram) {
+    // this working only if we start app from keyboard
+    return telegram.WebApp.sendData(data);
+  } else {
+    console.error('Response creation failed');
+  }
 };

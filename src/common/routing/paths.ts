@@ -3,6 +3,7 @@ export const Paths = {
 
   ONBOARDING: '/onboarding',
   ONBOARDING_CREATE_WALLET: '/onboarding/create-wallet',
+  ONBOARDING_PASSWORD: '/onboarding/password',
   ONBOARDING_IMPORT_WALLET: '/onboarding/import-wallet',
 
   TRANSFER: '/transfer',

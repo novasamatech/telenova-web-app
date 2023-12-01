@@ -13,13 +13,9 @@ function App({ Component, pageProps }: AppProps) {
   return render ? (
     <TelegramProvider>
       <NextUIProvider>
-        <ChainRegistry>
-          <ExtrinsicProvider>
-            <BalanceProvider>
-              <Component {...pageProps} />
-            </BalanceProvider>
-          </ExtrinsicProvider>
-        </ChainRegistry>
+        <ExtrinsicProvider>
+          <Component {...pageProps} />
+        </ExtrinsicProvider>
       </NextUIProvider>
     </TelegramProvider>
   ) : null;

@@ -1,15 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { encodeAddress } from '@polkadot/util-crypto';
 import { Wallet, getWallet, resetWallet } from '@common/wallet';
-import { Paths } from '@common/routing';
 import { useChainRegistry } from '@common/chainRegistry';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
-import { encodeAddress } from '@polkadot/util-crypto';
 import { polkadot } from '@common/chainRegistry/knownChains';
 import { useExtrinsicProvider } from '@common/extrinsicService/ExtrinsicProvider';
-import { useRouter } from 'next/router';
+import { Paths } from '@/common/routing';
 
 export function DashboardMain() {
   const [wallet, setWallet] = useState<Wallet | null>(null);

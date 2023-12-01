@@ -1,34 +1,24 @@
-'use client';
+import { useEffect } from 'react';
+import Image from 'next/image';
 
-import { createTestWallet, generateWalletMnemonic } from '@common/wallet';
-import { getTelegram } from '@common/telegram';
-
-import { useState, useEffect } from 'react';
+import { getWallet } from '@common/wallet';
+import { completeOnboarding } from '@common/telegram';
+import { BodyText } from '@/components/Typography';
 
 export default function CreateWalletPage() {
-  function confirmCreation(mnemonic: string) {
-    const telegram = getTelegram();
-
-    if (telegram) {
-      // TODO: Need to request pin before creating wallet
-      const wallet = createTestWallet(mnemonic);
-
-      if (wallet) {
-        telegram.completeOnboarding(wallet.publicKey);
-      } else {
-        console.error("Can't create wallet");
-      }
+  useEffect(() => {
+    const wallet = getWallet();
+    if (!wallet) {
+      console.error("Can't create wallet");
+      return;
     }
-  }
-
-  const newMnemonic = generateWalletMnemonic();
+    completeOnboarding(wallet.publicKey);
+  }, []);
 
   return (
     <div className="h-screen flex flex-col justify-center items-center">
-      <label>{newMnemonic}</label>
-      <button className="btn btn-blue mt-4" onClick={() => confirmCreation(newMnemonic)}>
-        Confirm
-      </button>
+      <Image src="/images/create-gif.gif" width={256} height={256} alt="create wallet" />
+      <BodyText>Creating your wallet</BodyText>
     </div>
   );
 }
