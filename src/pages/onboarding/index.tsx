@@ -1,19 +1,28 @@
-import { useTelegram } from '@common/providers/telegramProvider';
+import { useEffect } from 'react';
+import { Avatar } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 
-import { Avatar } from '@nextui-org/react';
+import { useTelegram } from '@common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
 import { TitleText, BodyText, CaptionText } from '@/components/Typography';
 import Icon from '@/components/Icon/Icon';
 
 export default function OnboardingStartPage() {
   const router = useRouter();
-  const { webApp } = useTelegram();
+  const { MainButton } = useTelegram();
 
-  webApp?.MainButton?.show();
-  webApp?.MainButton?.onClick(() => {
-    router.push(Paths.ONBOARDING_PASSWORD);
-  });
+  useEffect(() => {
+    MainButton?.show();
+    MainButton?.onClick(() => {
+      router.push(Paths.ONBOARDING_PASSWORD);
+      MainButton?.showProgress(false);
+    });
+
+    return () => {
+      MainButton?.hideProgress();
+      MainButton?.disable();
+    };
+  }, [MainButton]);
 
   return (
     <div className="h-screen flex flex-col items-center m-4">

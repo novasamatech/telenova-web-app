@@ -1,22 +1,22 @@
 'use client';
-import { useEffect } from 'react';
-import { createWallet, generateWalletMnemonic } from '@common/wallet';
+import { useRouter } from 'next/router';
 import { Avatar } from '@nextui-org/react';
+
 import { useTelegram } from '@/common/providers/telegramProvider';
+import { Paths } from '@/common/routing';
+import { createWallet, generateWalletMnemonic } from '@common/wallet';
 import { BodyText, TitleText } from '@/components/Typography';
 import PasswordForm from '@/components/PasswordForm/PasswordForm';
-import { useRouter } from 'next/router';
-import { Paths } from '@/common/routing';
 
 export default function PasswordPage() {
-  const { user, webApp } = useTelegram();
+  const { user, MainButton } = useTelegram();
   const router = useRouter();
 
-  webApp?.MainButton?.disable();
+  MainButton?.disable();
 
   const handleSubmit = (password: string) => {
-    webApp?.MainButton?.enable();
-    webApp?.MainButton?.onClick(() => {
+    MainButton?.enable();
+    MainButton?.onClick(() => {
       router.push(Paths.ONBOARDING_CREATE_WALLET);
 
       const mnemonic = generateWalletMnemonic();

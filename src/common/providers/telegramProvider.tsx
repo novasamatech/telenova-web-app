@@ -1,11 +1,11 @@
-// TelegramProvider
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import Script from 'next/script';
-import type { WebAppUser, WebApp } from '@common/telegram/types';
+import type { WebAppUser, WebApp, MainButton } from '@common/telegram/types';
 
 export interface ITelegramContext {
   webApp?: WebApp;
   user?: WebAppUser;
+  MainButton?: MainButton;
 }
 
 export const TelegramContext = createContext<ITelegramContext>({});
@@ -35,7 +35,7 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
     return webApp
       ? {
           webApp,
-          unsafeData: webApp.initDataUnsafe,
+          MainButton: webApp.MainButton,
           user: webApp.initDataUnsafe.user,
         }
       : {};

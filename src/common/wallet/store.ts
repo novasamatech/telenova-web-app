@@ -16,7 +16,6 @@ const CryptoJS = require("crypto-js");
 
 
 import secureLocalStorage from "react-secure-storage";
-import {Signer} from "@polkadot/types/types";
 
 const PUBLIC_KEY_STORE = "publicKey";
 const MNEMONIC_STORE = "mnemonic";
@@ -29,14 +28,21 @@ const keyring = new Keyring({type: 'sr25519'});
 
 
 export const getWallet = (): Wallet | null => {
-    const publicKey = localStorage.getItem(PUBLIC_KEY_STORE);
+  const publicKey = localStorage.getItem(PUBLIC_KEY_STORE);
 
-    if (publicKey) {
-        return {publicKey: unwrapHexString(publicKey)};
-    } else {
-        return null;
-    }
-}
+  if (publicKey) {
+    return { publicKey: unwrapHexString(publicKey) };
+  } else {
+    // check if we have a public key in the cloud and get it
+    let publicKeyFromCloud = null;
+
+    window.Telegram.WebApp.CloudStorage.getItem(PUBLIC_KEY_STORE, (_err: string | null, value: string | null) => {
+      publicKeyFromCloud = value;
+    });
+
+    return publicKeyFromCloud;
+  }
+};
 
 export const generateWalletMnemonic = (): string => {
     return mnemonicGenerate();
@@ -56,7 +62,10 @@ export const createWallet = (mnemonic: string, password: string): Wallet | null 
 
     secureLocalStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
     localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
+
+    // what we keep in the CloudStorage?
     window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
+    window.Telegram.WebApp.CloudStorage.setItem(PUBLIC_KEY_STORE, publicKey);
     
     return {publicKey: publicKey};
 }
@@ -93,4 +102,5 @@ export const getKeyringPair = (password: string): KeyringPair | undefined => {
 export const resetWallet = () => {
     localStorage.removeItem(PUBLIC_KEY_STORE);
     secureLocalStorage.removeItem(MNEMONIC_STORE);
+    window.Telegram.WebApp.CloudStorage.removeItem([MNEMONIC_STORE, PUBLIC_KEY_STORE]);
 }

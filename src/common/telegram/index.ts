@@ -14,7 +14,7 @@ export const completeOnboarding = (publicKey: HexString) => {
 
   if (data && telegram) {
     // this working only if we start app from keyboard
-    return telegram.WebApp.sendData(data);
+    telegram.WebApp.sendData(data);
   } else {
     console.error('Response creation failed');
   }
