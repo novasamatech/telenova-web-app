@@ -63,7 +63,7 @@ export const createWallet = (mnemonic: string, password: string): Wallet | null 
     secureLocalStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
     localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
 
-    // what we keep in the CloudStorage?
+    // what shoud we keep in the CloudStorage?
     window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
     window.Telegram.WebApp.CloudStorage.setItem(PUBLIC_KEY_STORE, publicKey);
     
@@ -102,5 +102,5 @@ export const getKeyringPair = (password: string): KeyringPair | undefined => {
 export const resetWallet = () => {
     localStorage.removeItem(PUBLIC_KEY_STORE);
     secureLocalStorage.removeItem(MNEMONIC_STORE);
-    window.Telegram.WebApp.CloudStorage.removeItem([MNEMONIC_STORE, PUBLIC_KEY_STORE]);
+    window.Telegram.WebApp.CloudStorage.removeItems([MNEMONIC_STORE, PUBLIC_KEY_STORE]);
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import ConfettiExplosion from 'react-confetti-explosion';
 
@@ -8,6 +7,7 @@ import { getWallet } from '@common/wallet';
 import { completeOnboarding } from '@common/telegram';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
+import Icon from '@/components/Icon/Icon';
 
 export default function CreateWalletPage() {
   const router = useRouter();
@@ -30,16 +30,25 @@ export default function CreateWalletPage() {
         router.push(Paths.DASHBOARD);
       });
     }, 2000);
+
+    return () => {
+      MainButton?.hide();
+      MainButton?.setText('Continue');
+      MainButton?.hideProgress();
+    };
   }, [MainButton]);
 
   return isLoading ? (
     <div className="flex flex-col justify-center items-center">
-      <Image src="/images/create-gif.gif" width={256} height={256} alt="create wallet" />
+      <Icon name="createWallet" size={256} alt="create wallet" />
       <BodyText>Creating your wallet</BodyText>
     </div>
   ) : (
     <div className="h-screen flex flex-col justify-center items-center m-5">
-      <ConfettiExplosion particleCount={250} />
+      <div className="bg-blue-500 rounded-full p-9">
+        <ConfettiExplosion particleCount={250} />
+        <Icon name="firework" size={60} alt='firework'/>
+      </div>
       <TitleText className="m-3">Your wallet has been created!</TitleText>
       <BodyText className="text-text-hint" align="center">
         Your gateway to the world of digital assets is now open, and your financial future is in your hands. Safely

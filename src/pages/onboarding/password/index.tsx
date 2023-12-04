@@ -22,14 +22,6 @@ export default function PasswordPage() {
       const mnemonic = generateWalletMnemonic();
       createWallet(mnemonic, password);
     });
-    // const keyringPair = getKeyringPair(password);
-    // console.log(password, wallet, mnemonic);
-
-    // if (keyringPair === undefined) {
-    //   alert('Wrong password!');
-    // } else {
-    //   onResolve(keyringPair);
-    // }
   };
 
   return (

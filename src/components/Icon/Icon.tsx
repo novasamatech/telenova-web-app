@@ -20,7 +20,7 @@ const Icon = ({ name, size = 24, className, alt = '' }: Props) => {
   return (
     <Image
       className={className}
-      src={`images/${iconPath}`}
+      src={`/images/${iconPath}`}
       alt={alt}
       width={size}
       height={size}

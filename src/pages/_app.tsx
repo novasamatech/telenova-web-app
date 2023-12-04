@@ -10,9 +10,13 @@ function App({ Component, pageProps }: AppProps) {
   useEffect(() => setRender(true), []);
   return (
     <NextUIProvider>
-      <TelegramProvider>
-        <ExtrinsicProvider>{render && <Component {...pageProps} />} </ExtrinsicProvider>
-      </TelegramProvider>
+      <ExtrinsicProvider>
+        {render && (
+          <TelegramProvider>
+            <Component {...pageProps} />
+          </TelegramProvider>
+        )}
+      </ExtrinsicProvider>
     </NextUIProvider>
   );
 }

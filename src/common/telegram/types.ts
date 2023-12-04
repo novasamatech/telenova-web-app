@@ -22,8 +22,11 @@ export type EventType = 'themeChanged' | 'viewportChanged' | 'mainButtonClicked'
 export interface WebApp {
   CloudStorage: {
     getItem(key: string, callback: (error: string | null, value: string | null) => void): string | null;
+    getItems(key: string, callback: (error: string | null, value: string | null) => void): string | null;
     setItem(key: string, value: string): void;
     removeItem(keys: string | string[], callback?: (error: string | null) => void): void;
+    removeItems(keys: string | string[], callback?: (error: string | null) => void): void;
+
   };
   /**
    * A string with raw data transferred to the Web App, convenient for validating data.

@@ -41,7 +41,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
   };
 
   return (
-    <form className="flex flex-col my-8 gap-4 w-full">
+    <form className="flex flex-col my-8 gap-4 w-full items-center">
       <Input
         isClearable
         variant="flat"

@@ -1,6 +1,7 @@
 const AllIcons = {
-  ethLogo: 'eth-logo.svg',
+  createWallet: 'create-gif.gif',
   dotLogo: 'dot-icon.svg',
+  firework: 'firework.png',
 } as const;
 
 export type IconNames = keyof typeof AllIcons;
