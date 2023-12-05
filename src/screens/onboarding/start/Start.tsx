@@ -1,4 +1,3 @@
-import {Outlet} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
 import {Paths} from '@common/routing'
 

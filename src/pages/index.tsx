@@ -1,11 +1,10 @@
 import React from 'react';
-import {BrowserRouter as Router} from 'react-router-dom';
-import {Main} from '@app/Main';
+import { getWallet } from '@common/wallet';
+import OnboardingStartPage from './onboarding';
+import DashboardMainPage from './dashboard';
 
 export default function App() {
-    return (
-        <Router>
-            <Main/>
-        </Router>
-    );
+  const wallet = getWallet();
+
+  return wallet ? <DashboardMainPage /> : <OnboardingStartPage />;
 }
