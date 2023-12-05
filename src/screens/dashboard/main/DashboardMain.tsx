@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { Wallet, getWallet, resetWallet } from '@common/wallet';
 import { useChainRegistry } from '@common/chainRegistry';

@@ -1,6 +1,6 @@
+'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import ConfettiExplosion from 'react-confetti-explosion';
+import { useRouter } from 'next/navigation';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { getWallet } from '@common/wallet';
@@ -11,7 +11,7 @@ import Icon from '@/components/Icon/Icon';
 
 export default function CreateWalletPage() {
   const router = useRouter();
-  const { MainButton } = useTelegram();
+  const { MainButton, wallet } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function CreateWalletPage() {
       MainButton?.onClick(() => {
         router.push(Paths.DASHBOARD);
       });
-    }, 2000);
+    }, 3000);
 
     return () => {
       MainButton?.hide();
@@ -46,8 +46,7 @@ export default function CreateWalletPage() {
   ) : (
     <div className="h-screen flex flex-col justify-center items-center m-5">
       <div className="bg-blue-500 rounded-full p-9">
-        <ConfettiExplosion particleCount={250} />
-        <Icon name="firework" size={60} alt='firework'/>
+        <Icon name="firework" size={60} alt="firework" />
       </div>
       <TitleText className="m-3">Your wallet has been created!</TitleText>
       <BodyText className="text-text-hint" align="center">

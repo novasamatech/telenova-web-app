@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Avatar } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
