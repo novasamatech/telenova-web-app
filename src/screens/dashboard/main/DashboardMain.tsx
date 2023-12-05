@@ -11,7 +11,7 @@ import { polkadot } from '@common/chainRegistry/knownChains';
 import { useExtrinsicProvider } from '@common/extrinsicService/ExtrinsicProvider';
 import { Paths } from '@/common/routing';
 
-export function DashboardMain() {
+export const DashboardMain = () => {
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
@@ -99,4 +99,4 @@ export function DashboardMain() {
       </button>
     </div>
   );
-}
+};

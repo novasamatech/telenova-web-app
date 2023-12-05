@@ -1,28 +1,22 @@
-import {Wallet} from './types'
-import {HexString, unwrapHexString} from '@common/types'
+import { Wallet } from './types';
+import { HexString, unwrapHexString } from '@common/types';
 
-const {
-    mnemonicGenerate,
-    mnemonicToMiniSecret,
-    sr25519PairFromSeed
-} = require('@polkadot/util-crypto');
+const { mnemonicGenerate, mnemonicToMiniSecret, sr25519PairFromSeed } = require('@polkadot/util-crypto');
 
-const {
-    u8aToHex
-} = require('@polkadot/util')
+const { u8aToHex } = require('@polkadot/util');
 
-const AES = require('crypto-js/aes')
-const CryptoJS = require("crypto-js");
+const AES = require('crypto-js/aes');
+const CryptoJS = require('crypto-js');
 
-import secureLocalStorage from "react-secure-storage";
+import secureLocalStorage from 'react-secure-storage';
 
-const PUBLIC_KEY_STORE = "publicKey";
-const MNEMONIC_STORE = "mnemonic";
+const PUBLIC_KEY_STORE = 'publicKey';
+const MNEMONIC_STORE = 'mnemonic';
 
-import {Keyring} from '@polkadot/api';
-import {KeyringPair} from "@polkadot/keyring/types";
+import { Keyring } from '@polkadot/api';
+import { KeyringPair } from '@polkadot/keyring/types';
 
-const keyring = new Keyring({type: 'sr25519'});
+const keyring = new Keyring({ type: 'sr25519' });
 
 export const getWallet = (): Wallet | null => {
   const publicKey = localStorage.getItem(PUBLIC_KEY_STORE);
@@ -50,16 +44,16 @@ export const backupMnemonic = (mnemonic: string, password: string): void => {
 };
 
 export const getMnemonic = (password: string): string | null => {
-    const encryptedMnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
+  const encryptedMnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
 
-    if (encryptedMnemonic) {
-        const mnemonic = AES.decrypt(encryptedMnemonic, password);
+  if (encryptedMnemonic) {
+    const mnemonic = AES.decrypt(encryptedMnemonic, password);
 
-        return mnemonic.toString(CryptoJS.enc.Utf8)
-    } else {
-        return null;
-    }
-}
+    return mnemonic.toString(CryptoJS.enc.Utf8);
+  } else {
+    return null;
+  }
+};
 
 /**
  * Returns decrypted keyring pair for user's wallet
@@ -67,18 +61,18 @@ export const getMnemonic = (password: string): string | null => {
  * @param password
  */
 export const getKeyringPair = (password: string): KeyringPair | undefined => {
-    try {
-        const mnemonic = getMnemonic(password)
-        if (mnemonic === null) return undefined
+  try {
+    const mnemonic = getMnemonic(password);
+    if (mnemonic === null) return undefined;
 
-        return keyring.createFromUri(mnemonic);
-    } catch (e) {
-        return undefined
-    }
-}
+    return keyring.createFromUri(mnemonic);
+  } catch (e) {
+    return undefined;
+  }
+};
 
 export const resetWallet = () => {
-    localStorage.removeItem(PUBLIC_KEY_STORE);
-    secureLocalStorage.removeItem(MNEMONIC_STORE);
-    window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
-}
+  localStorage.removeItem(PUBLIC_KEY_STORE);
+  secureLocalStorage.removeItem(MNEMONIC_STORE);
+  window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
+};

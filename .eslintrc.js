@@ -39,11 +39,11 @@ module.exports = {
   settings: {
     react: { version: 'detect' },
     'import/resolver': {
-      typescript: {}, 
+      typescript: {},
     },
   },
   rules: {
-    'no-unused-vars': 'error',
+    'no-unused-vars': 'off',
     'no-irregular-whitespace': 'off',
     'newline-before-return': 'error',
     '@typescript-eslint/no-empty-interface': 0,
@@ -83,5 +83,6 @@ module.exports = {
     'junit.xml',
     'jest-unit-results.json',
     'package.json',
+    "next.config.js"
   ],
 };

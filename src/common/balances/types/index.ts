@@ -1,4 +1,4 @@
 export interface IAssetBalance {
-    total: () => string;
-    transferable: () => string;
-};
+  total: () => string;
+  transferable: () => string;
+}

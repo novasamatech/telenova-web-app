@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
 import { BodyText } from '@/components/Typography';
