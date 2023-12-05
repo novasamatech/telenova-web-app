@@ -1,27 +1,27 @@
-import {useRef} from 'react';
+import { useRef } from 'react';
 
-import {IRepositoryService} from './types';
+import { IRepositoryService } from './types';
 
 export const useRepository = <K extends string, V>(): IRepositoryService<K, V> => {
-    const store = useRef<Record<K, V>>({} as Record<K, V>);
+  const store = useRef<Record<K, V>>({} as Record<K, V>);
 
-    function fetch(key: K): Promise<V | undefined> {
-        return new Promise(function (resolve, reject) {
-            resolve(store.current[key]);
-        });
-    }
+  function fetch(key: K): Promise<V | undefined> {
+    return new Promise(function (resolve, reject) {
+      resolve(store.current[key]);
+    });
+  }
 
-    function save(value: V, key: K): Promise<void> {
-        return new Promise(function (resolve, reject) {
-            var newStore = store.current;
-            newStore[key] = value;
-            store.current = newStore;
-            resolve();
-        });
-    }
+  function save(value: V, key: K): Promise<void> {
+    return new Promise(function (resolve, reject) {
+      var newStore = store.current;
+      newStore[key] = value;
+      store.current = newStore;
+      resolve();
+    });
+  }
 
-    return {
-        fetch,
-        save
-    };
+  return {
+    fetch,
+    save,
+  };
 };

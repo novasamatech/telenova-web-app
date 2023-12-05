@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import Script from 'next/script';
 import type { WebAppUser, WebApp, MainButton } from '@common/telegram/types';
 

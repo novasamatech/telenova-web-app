@@ -5,7 +5,7 @@ import { TelegramProvider } from '@common/providers/telegramProvider';
 import { ExtrinsicProvider } from '@common/extrinsicService/ExtrinsicProvider';
 import './globals.css';
 
-function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   const [render, setRender] = useState(false);
   useEffect(() => setRender(true), []);
 
@@ -20,5 +20,5 @@ function App({ Component, pageProps }: AppProps) {
       </ExtrinsicProvider>
     </NextUIProvider>
   );
-}
+};
 export default App;
