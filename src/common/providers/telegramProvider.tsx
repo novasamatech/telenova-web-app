@@ -14,21 +14,11 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
   const [webApp, setWebApp] = useState<WebApp | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const initializeTelegramWebApp = () => {
-      const app = (window as any).Telegram?.WebApp;
-      if (app && isMounted) {
-        app.ready();
-        setWebApp(app);
-      }
-    };
-
-    initializeTelegramWebApp();
-
-    return () => {
-      isMounted = false;
-    };
+    const app = (window as any).Telegram?.WebApp;
+    if (app) {
+      app.ready();
+      setWebApp(app);
+    }
   }, []);
 
   const value = useMemo(() => {
@@ -44,7 +34,7 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
   /* Make sure to include script tag with "beforeInteractive" strategy to pre-load web-app script */
   return (
     <TelegramContext.Provider value={value}>
-      {/* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document */}
+      {/* eslint-disable-next-line */}
       <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
       {children}
     </TelegramContext.Provider>

@@ -34,21 +34,21 @@ export default function OnboardingStartPage() {
       </BodyText>
       <div className="flex gap-4 mb-6">
         <Icon name="dotLogo" size={48} />
-        <p>
+        <div>
           <CaptionText>Easy crypto operations</CaptionText>
           <BodyText className="text-text-hint">
             Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
           </BodyText>
-        </p>
+        </div>
       </div>
       <div className="flex gap-4">
         <Icon name="dotLogo" size={48} />
-        <p>
+        <div>
           <CaptionText>Easy crypto operations</CaptionText>
           <BodyText className="text-text-hint">
             Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
           </BodyText>
-        </p>
+        </div>
       </div>
     </div>
   );

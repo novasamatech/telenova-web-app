@@ -38,6 +38,9 @@ module.exports = {
   },
   settings: {
     react: { version: 'detect' },
+    'import/resolver': {
+      typescript: {}, 
+    },
   },
   rules: {
     'no-unused-vars': 'off',

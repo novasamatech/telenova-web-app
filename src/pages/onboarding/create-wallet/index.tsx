@@ -11,16 +11,17 @@ import Icon from '@/components/Icon/Icon';
 
 export default function CreateWalletPage() {
   const router = useRouter();
-  const { MainButton } = useTelegram();
+  const { MainButton, webApp } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const wallet = getWallet();
     if (!wallet) {
       console.error("Can't create wallet");
+
       return;
     }
-    completeOnboarding(wallet.publicKey);
+    completeOnboarding(wallet.publicKey, webApp);
     setTimeout(() => {
       setIsLoading(false);
       MainButton?.show();
@@ -47,7 +48,7 @@ export default function CreateWalletPage() {
     <div className="h-screen flex flex-col justify-center items-center m-5">
       <div className="bg-blue-500 rounded-full p-9">
         <ConfettiExplosion particleCount={250} />
-        <Icon name="firework" size={60} alt='firework'/>
+        <Icon name="firework" size={60} alt="firework" />
       </div>
       <TitleText className="m-3">Your wallet has been created!</TitleText>
       <BodyText className="text-text-hint" align="center">

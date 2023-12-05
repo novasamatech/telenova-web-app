@@ -20,7 +20,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
   const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
   const [hintColor, setHintColor] = useState<Variants>('default');
 
-  useEffect(() => {    
+  useEffect(() => {
     if (password.length === 0 || !isPasswordValid || !isConfirmPasswordValid || password !== confirmPassword) return;
     onSubmit(password);
   }, [password, confirmPassword, isPasswordValid, isConfirmPasswordValid]);
@@ -33,7 +33,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
     const hasSpecialCharacter = /[!@#$%^&*(),.?":{}|<>]/.test(value);
     const isValid = hasValidLength && hasNumber && hasSpecialCharacter;
 
-    if (confirmPassword.length !==0) {
+    if (confirmPassword.length !== 0) {
       setIsConfirmPasswordValid(confirmPassword === value);
     }
     setHintColor(isValid ? 'success' : 'error');
@@ -50,8 +50,8 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         className="max-w-sm text-left"
         value={password}
         isInvalid={!isPasswordValid}
-        onBlur={validatePassword}
         errorMessage={!isPasswordValid && password.length < 8 && 'Enter 8-character password here'}
+        onBlur={validatePassword}
         onValueChange={setPassword}
         onClear={() => setPassword('')}
       />
@@ -62,13 +62,13 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         type="password"
         className="max-w-sm"
         value={confirmPassword}
-        onBlur={() => setIsConfirmPasswordValid(confirmPassword === password)}
         isInvalid={!isPasswordValid || !isConfirmPasswordValid}
         errorMessage={!isConfirmPasswordValid && 'Passwords do not match'}
+        onBlur={() => setIsConfirmPasswordValid(confirmPassword === password)}
         onValueChange={setConfirmPassword}
         onClear={() => setConfirmPassword('')}
       />
-      <BodyText as="span" className={VariantStyles[hintColor]} >
+      <BodyText as="span" className={VariantStyles[hintColor]}>
         <ul className="list-disc space-y-1 ml-5">
           <li>8 characters minimum</li>
           <li>Include 1 number (0-9)</li>

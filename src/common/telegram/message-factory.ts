@@ -30,6 +30,7 @@ function preparePayload(secretKey: string, type: MessageType, content: Uint8Arra
 export function signedWalletCreationData(publicKey: HexString, secretKey: string): HexString | null {
   const content = hexToU8a(publicKey);
   const payload = preparePayload(secretKey, MessageType.WalletCreated, content);
+
   return u8aToHex(payload);
 }
 

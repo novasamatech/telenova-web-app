@@ -1,20 +1,14 @@
 import { HexString } from '@common/types';
-import { Telegram } from './types';
+import { WebApp } from './types';
 import { getMessageFactory } from './message-factory';
 
-declare global {
-  interface Window {
-    Telegram: Telegram;
-  }
-}
-export const completeOnboarding = (publicKey: HexString) => {
-  const telegram = window.Telegram;
+export const completeOnboarding = (publicKey: HexString, webApp: WebApp | undefined) => {
   const messageFactory = getMessageFactory();
   const data = messageFactory.prepareWalletCreationData(publicKey);
 
-  if (data && telegram) {
-    // this working only if we start app from keyboard
-    telegram.WebApp.sendData(data);
+  if (data && webApp) {
+    // this's working only if we start app from keyboard
+    webApp.sendData(data);
   } else {
     console.error('Response creation failed');
   }

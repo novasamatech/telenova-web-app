@@ -1,4 +1,9 @@
 import { HexString } from '@common/types';
+declare global {
+  interface Window {
+    Telegram: Telegram;
+  }
+}
 
 export type Telegram = {
   WebApp: WebApp;
@@ -26,7 +31,6 @@ export interface WebApp {
     setItem(key: string, value: string): void;
     removeItem(keys: string | string[], callback?: (error: string | null) => void): void;
     removeItems(keys: string | string[], callback?: (error: string | null) => void): void;
-
   };
   /**
    * A string with raw data transferred to the Web App, convenient for validating data.
