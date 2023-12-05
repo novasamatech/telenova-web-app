@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
 import { BodyText } from '@/components/Typography';
+import { cnTw } from '@/common/utils/twMerge';
 
 interface PasswordFormProps {
   onSubmit: (password: string) => void;
@@ -68,7 +69,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         onValueChange={setConfirmPassword}
         onClear={() => setConfirmPassword('')}
       />
-      <BodyText as="span" className={VariantStyles[hintColor]}>
+      <BodyText as="span" className={cnTw('self-start', VariantStyles[hintColor])}>
         <ul className="list-disc space-y-1 ml-5">
           <li>8 characters minimum</li>
           <li>Include 1 number (0-9)</li>

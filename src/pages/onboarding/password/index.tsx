@@ -4,7 +4,7 @@ import { Avatar } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
-import { createWallet, generateWalletMnemonic, storeMnemonic } from '@common/wallet';
+import { createWallet, generateWalletMnemonic, backupMnemonic } from '@common/wallet';
 import { BodyText, TitleText } from '@/components/Typography';
 import PasswordForm from '@/components/PasswordForm/PasswordForm';
 
@@ -21,7 +21,7 @@ export default function PasswordPage() {
 
       const mnemonic = generateWalletMnemonic();
       createWallet(mnemonic);
-      storeMnemonic(mnemonic, password);
+      backupMnemonic(mnemonic, password);
     });
   };
 

@@ -40,12 +40,12 @@ export const createWallet = (mnemonic: string): void => {
   const publicKey: HexString = u8aToHex(keypair.publicKey);
 
   localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
+  secureLocalStorage.setItem(MNEMONIC_STORE, mnemonic);
 };
 
-export const storeMnemonic = (mnemonic: string, password: string): void => {
+export const backupMnemonic = (mnemonic: string, password: string): void => {
   const encryptedMnemonic = AES.encrypt(mnemonic, password).toString();
 
-  secureLocalStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
   window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
 };
 

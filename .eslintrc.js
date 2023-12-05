@@ -43,7 +43,7 @@ module.exports = {
     },
   },
   rules: {
-    'no-unused-vars': 'off',
+    'no-unused-vars': 'error',
     'no-irregular-whitespace': 'off',
     'newline-before-return': 'error',
     '@typescript-eslint/no-empty-interface': 0,
@@ -53,13 +53,7 @@ module.exports = {
     'react/display-name': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-sort-props': ['error', { callbacksLast: true, noSortAlphabetically: true }],
-    'react/function-component-definition': [
-      'error',
-      {
-        namedComponents: 'arrow-function',
-        unnamedComponents: 'arrow-function',
-      },
-    ],
+    'react/function-component-definition': 'off',
     'i18n-json/identical-keys': ['error', { filePath: localePath }],
     'i18n-json/identical-placeholders': ['error', { filePath: localePath }],
     'i18next/no-literal-string': [
