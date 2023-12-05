@@ -106,6 +106,7 @@ export const BalanceProvider = ({children}: PropsWithChildren) => {
             notifySubscribers(account, balance);
         });
 
+        // TODO: We don't want to remove subscription on blockchain anyway
         if (!setupUnsubscribeOnState(account, unsubscribe)) {
             console.warn(`Can't setup unsubscribe ${chainAssetAccountIdToString(account)}`);
 
@@ -132,6 +133,7 @@ export const BalanceProvider = ({children}: PropsWithChildren) => {
         const stateKey = chainAssetAccountIdToString(account);
         const state = accountToState.current[stateKey];
 
+        // TODO: Update state with balance here
         if (state) {
             Object.values(state.updaters).forEach((callback) => {
                 callback(balance);
