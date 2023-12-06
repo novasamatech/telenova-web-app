@@ -51,8 +51,6 @@ export const DashboardMain = () => {
 
   useEffect(() => {
     MainButton?.hide();
-    console.log(publicKey);
-
     if (!publicKey) {
       return;
     }
@@ -68,7 +66,6 @@ export const DashboardMain = () => {
         };
 
         const address = encodeAddress(publicKey, chain.addressPrefix);
-        console.log(publicKey, account, address);
         subscribeBalance(account, (balance: IAssetBalance) => {
           console.log(`Balance ${address} => ${balance.total().toString()}`);
         });

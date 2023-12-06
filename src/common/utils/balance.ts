@@ -58,12 +58,6 @@ export const formatBalance = (balance = '0', precision = 0): FormattedBalance =>
     divider = TEN.pow(new BNWithConfig(12));
     suffix = Suffix.TRILLIONS;
   }
-  console.log(
-    1,
-    decimalPlaces,
-    suffix,
-    new BNWithConfig(bnBalance).div(divider).decimalPlaces(decimalPlaces).toFormat(),
-  );
 
   return {
     formattedValue: new BNWithConfig(bnBalance).div(divider).decimalPlaces(decimalPlaces).toFormat(),
