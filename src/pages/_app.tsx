@@ -2,7 +2,7 @@ import { AppProps } from 'next/app';
 import { useEffect, useState } from 'react';
 import { NextUIProvider } from '@nextui-org/react';
 import { TelegramProvider } from '@common/providers/telegramProvider';
-import { ExtrinsicProvider } from '@common/extrinsicService/ExtrinsicProvider';
+import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import './globals.css';
 
 const App = ({ Component, pageProps }: AppProps) => {
@@ -11,13 +11,13 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <NextUIProvider>
-      <ExtrinsicProvider>
+      <GlobalStateProvider>
         {render && (
           <TelegramProvider>
             <Component {...pageProps} />
           </TelegramProvider>
         )}
-      </ExtrinsicProvider>
+      </GlobalStateProvider>
     </NextUIProvider>
   );
 };

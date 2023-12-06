@@ -25,7 +25,7 @@ export default function OnboardingStartPage() {
   }, [MainButton]);
 
   return (
-    <div className="h-screen flex flex-col items-center m-4">
+    <div className="h-screen flex flex-col items-center p-4">
       <Avatar src="" size="lg" className="w-[128px] h-[128px]" name="Nova" />
       <TitleText className="mt-6 mb-3">Welcome to Nova Wallet!</TitleText>
       <BodyText className="text-text-hint mb-7" align="center">
@@ -33,7 +33,7 @@ export default function OnboardingStartPage() {
         management!
       </BodyText>
       <div className="flex gap-4 mb-6">
-        <Icon name="dotLogo" size={48} />
+        <Icon name="DOT" size={48} />
         <div>
           <CaptionText>Easy crypto operations</CaptionText>
           <BodyText className="text-text-hint">
@@ -42,7 +42,7 @@ export default function OnboardingStartPage() {
         </div>
       </div>
       <div className="flex gap-4">
-        <Icon name="dotLogo" size={48} />
+        <Icon name="DOT" size={48} />
         <div>
           <CaptionText>Easy crypto operations</CaptionText>
           <BodyText className="text-text-hint">
