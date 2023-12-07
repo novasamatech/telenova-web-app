@@ -7,6 +7,7 @@
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--gray-gray50);
 }
 
 /* Scrollbar for Firefox */
@@ -47,9 +48,6 @@ body {
 }
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
-
   /* color pallete */
   --gray-gray900: #444651;
   --gray-gray800: #595b6a;
@@ -100,9 +98,4 @@ body {
   --white-white900: #ffffff;
 
   --pink-pink600: #ff007a;
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background-color: rgb(var(--background-rgb));
 }

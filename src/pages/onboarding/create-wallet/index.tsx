@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import ConfettiExplosion from 'react-confetti-explosion';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { getWallet } from '@common/wallet';
+import { useGlobalContext } from '@/common/providers/contextProvider';
 import { completeOnboarding } from '@common/telegram';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
@@ -12,32 +12,34 @@ import Icon from '@/components/Icon/Icon';
 export default function CreateWalletPage() {
   const router = useRouter();
   const { MainButton, webApp } = useTelegram();
+  const { publicKey } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const wallet = getWallet();
-    if (!wallet) {
+    if (!publicKey) {
       console.error("Can't create wallet");
 
       return;
     }
-    completeOnboarding(wallet.publicKey, webApp);
+    completeOnboarding(publicKey, webApp);
+
+    MainButton?.onClick(() => {
+      router.push(Paths.DASHBOARD);
+    });
+
     setTimeout(() => {
       setIsLoading(false);
       MainButton?.show();
       MainButton?.setText('Get started');
       MainButton?.hideProgress();
-      MainButton?.onClick(() => {
-        router.push(Paths.DASHBOARD);
-      });
     }, 2000);
 
     return () => {
-      MainButton?.hide();
       MainButton?.setText('Continue');
+      MainButton?.hide();
       MainButton?.hideProgress();
     };
-  }, [MainButton]);
+  }, []);
 
   return isLoading ? (
     <div className="min-h-screen flex flex-col justify-center items-center">
@@ -45,7 +47,7 @@ export default function CreateWalletPage() {
       <BodyText>Creating your wallet</BodyText>
     </div>
   ) : (
-    <div className="h-screen flex flex-col justify-center items-center m-5">
+    <div className="min-h-screen flex flex-col justify-center items-center p-5">
       <div className="bg-blue-500 rounded-full p-9">
         <ConfettiExplosion particleCount={250} />
         <Icon name="firework" size={60} alt="firework" />

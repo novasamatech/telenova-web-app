@@ -9,6 +9,14 @@ export type Asset = {
   precision: number;
 };
 
+export type AssetWithBalance = Asset & {
+  name: string;
+  balance: string;
+  assetId: number;
+  symbol: string;
+  precision: number;
+};
+
 export type Chain = {
   chainId: ChainId;
   name: string;

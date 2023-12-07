@@ -28,13 +28,15 @@ export const generateWalletMnemonic = (): string => {
   return mnemonicGenerate();
 };
 
-export const createWallet = (mnemonic: string): void => {
+export const createWallet = (mnemonic: string): HexString => {
   const seed = mnemonicToMiniSecret(mnemonic);
   const keypair = sr25519PairFromSeed(seed);
   const publicKey: HexString = u8aToHex(keypair.publicKey);
 
   localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
   secureLocalStorage.setItem(MNEMONIC_STORE, mnemonic);
+
+  return publicKey;
 };
 
 export const backupMnemonic = (mnemonic: string, password: string): void => {

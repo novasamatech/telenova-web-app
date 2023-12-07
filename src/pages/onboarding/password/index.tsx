@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { Avatar } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
+import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
 import { createWallet, generateWalletMnemonic, backupMnemonic } from '@common/wallet';
 import { BodyText, TitleText } from '@/components/Typography';
@@ -10,6 +11,7 @@ import PasswordForm from '@/components/PasswordForm/PasswordForm';
 
 export default function PasswordPage() {
   const { user, MainButton } = useTelegram();
+  const { setPublicKey } = useGlobalContext();
   const router = useRouter();
 
   MainButton?.disable();
@@ -20,13 +22,15 @@ export default function PasswordPage() {
       router.push(Paths.ONBOARDING_CREATE_WALLET);
 
       const mnemonic = generateWalletMnemonic();
-      createWallet(mnemonic);
+      const publicKey = createWallet(mnemonic);
+
+      setPublicKey(publicKey);
       backupMnemonic(mnemonic, password);
     });
   };
 
   return (
-    <div className="flex flex-col items-center text-center p-4">
+    <div className="min-h-screen flex flex-col items-center text-center p-4">
       <Avatar src={user?.photo_url} size="lg" className="w-[64px] h-[64px]" name={user?.first_name[0]} />
       <TitleText className="m-4 px-6">Hey {user?.first_name || 'friend'}! Let’s secure your new wallet</TitleText>
       <BodyText className="text-text-hint px-6">
