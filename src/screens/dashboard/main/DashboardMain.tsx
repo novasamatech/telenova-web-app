@@ -16,7 +16,7 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { BodyText, CaptionText, Icon, AssetsList, Plate, Price } from '@/components';
 
-// temp mock
+// TODO: remove temp mock
 const mockAssets = [
   {
     name: 'polkadot',

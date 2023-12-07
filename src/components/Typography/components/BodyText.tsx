@@ -3,5 +3,5 @@ import { TypographyProps } from '../common/types';
 import TextBase from '../common/TextBase';
 
 export const BodyText = ({ className, ...props }: TypographyProps) => (
-  <TextBase className={cnTw('text-body', className)} {...props} />
+  <TextBase className={cnTw('text-body', className)} align="center" {...props} />
 );

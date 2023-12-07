@@ -1,6 +1,6 @@
+import Image from 'next/image';
 import { FootnoteText } from '../Typography';
 import AllIcons, { IconNames } from './types';
-import Image from 'next/image';
 
 type Props = {
   name: IconNames;
@@ -8,9 +8,10 @@ type Props = {
   className?: string;
   alt?: string;
   text?: string;
+  priority?: boolean;
 };
 
-const Icon = ({ name, size = 24, className, text, alt = '' }: Props) => {
+const Icon = ({ name, size = 24, className, text, priority, alt = '' }: Props) => {
   let iconPath = AllIcons[name];
 
   if (!iconPath) {
@@ -27,6 +28,7 @@ const Icon = ({ name, size = 24, className, text, alt = '' }: Props) => {
         alt={alt}
         width={size}
         height={size}
+        priority={priority}
         data-testid={`${name}-img`}
       />
       <FootnoteText as="span">{text}</FootnoteText>
@@ -38,6 +40,7 @@ const Icon = ({ name, size = 24, className, text, alt = '' }: Props) => {
       alt={alt}
       width={size}
       height={size}
+      priority={priority}
       data-testid={`${name}-img`}
     />
   );

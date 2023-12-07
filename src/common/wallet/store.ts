@@ -10,11 +10,9 @@ const CryptoJS = require('crypto-js');
 
 import secureLocalStorage from 'react-secure-storage';
 
-const PUBLIC_KEY_STORE = 'publicKey';
-const MNEMONIC_STORE = 'mnemonic';
-
 import { Keyring } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
 
 const keyring = new Keyring({ type: 'sr25519' });
 
@@ -28,7 +26,7 @@ export const generateWalletMnemonic = (): string => {
   return mnemonicGenerate();
 };
 
-export const createWallet = (mnemonic: string): HexString => {
+export const createWallet = (mnemonic: string): Wallet => {
   const seed = mnemonicToMiniSecret(mnemonic);
   const keypair = sr25519PairFromSeed(seed);
   const publicKey: HexString = u8aToHex(keypair.publicKey);
@@ -36,7 +34,7 @@ export const createWallet = (mnemonic: string): HexString => {
   localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
   secureLocalStorage.setItem(MNEMONIC_STORE, mnemonic);
 
-  return publicKey;
+  return { publicKey: publicKey };
 };
 
 export const backupMnemonic = (mnemonic: string, password: string): void => {
@@ -77,4 +75,13 @@ export const resetWallet = () => {
   localStorage.removeItem(PUBLIC_KEY_STORE);
   secureLocalStorage.removeItem(MNEMONIC_STORE);
   window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
+};
+
+export const initializeWalletFromCloud = (password: string, encryptedMnemonic: string): boolean => {
+  const mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
+  if (!mnemonic) return false;
+
+  createWallet(mnemonic);
+
+  return true;
 };
