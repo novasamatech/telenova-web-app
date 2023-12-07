@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
+import { MNEMONIC_STORE } from '@/common/utils/constants';
 
 export default function OnboardingPage() {
   const { webApp } = useTelegram();
@@ -9,7 +10,7 @@ export default function OnboardingPage() {
   const [mnemonic, setMnenonic] = useState<string | null>(null);
 
   useEffect(() => {
-    webApp?.CloudStorage.getItem('mnemonic', (_err, value) => {
+    webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
       setMnenonic(value);
     });
 

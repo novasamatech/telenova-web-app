@@ -48,7 +48,6 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
       MainButton?.disable();
     }
   }, [password]);
-  console.log(password);
 
   return (
     <>

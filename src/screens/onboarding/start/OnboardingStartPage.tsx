@@ -36,7 +36,7 @@ export const OnboardingStartPage = () => {
         <Icon name="DOT" size={48} />
         <div>
           <CaptionText>Easy crypto operations</CaptionText>
-          <BodyText className="text-text-hint">
+          <BodyText className="text-text-hint" align="left">
             Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
           </BodyText>
         </div>
@@ -45,7 +45,7 @@ export const OnboardingStartPage = () => {
         <Icon name="DOT" size={48} />
         <div>
           <CaptionText>Easy crypto operations</CaptionText>
-          <BodyText className="text-text-hint">
+          <BodyText className="text-text-hint" align="left">
             Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
           </BodyText>
         </div>

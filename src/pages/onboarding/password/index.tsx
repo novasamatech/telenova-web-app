@@ -22,7 +22,7 @@ export default function PasswordPage() {
       router.push(Paths.ONBOARDING_CREATE_WALLET);
 
       const mnemonic = generateWalletMnemonic();
-      const publicKey = createWallet(mnemonic);
+      const { publicKey } = createWallet(mnemonic);
 
       setPublicKey(publicKey);
       backupMnemonic(mnemonic, password);

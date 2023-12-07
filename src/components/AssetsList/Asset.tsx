@@ -16,8 +16,6 @@ export const AssetBalance = ({ value, asset, className, imgClassName }: Props) =
   const { precision, symbol } = asset;
   const { formattedValue, suffix } = formatBalance(value, precision);
 
-  console.log(suffix, formattedValue);
-
   return (
     <span className={cnTw('flex items-center gap-x-2', className)}>
       <Icon name={symbol} size={40} alt="logo" className={imgClassName} />
