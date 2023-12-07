@@ -1,20 +1,20 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { Paths } from '@/common/routing';
+// import { Paths } from '@/common/routing';
 
 export const RestoreWalletPage = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const { MainButton } = useTelegram();
 
   useEffect(() => {
     MainButton?.disable();
-    MainButton?.onClick(() => {
-      router.push(Paths.DASHBOARD);
-      MainButton?.showProgress(false);
-    });
+    // MainButton?.onClick(() => {
+    //   router.push(Paths.DASHBOARD);
+    //   MainButton?.showProgress(false);
+    // });
 
     return () => {
       MainButton?.hideProgress();
