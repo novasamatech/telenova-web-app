@@ -51,7 +51,7 @@ export default function CreateWalletPage() {
         <Icon name="firework" size={60} alt="firework" />
       </div>
       <TitleText className="m-3">Your wallet has been created!</TitleText>
-      <BodyText className="text-text-hint" align="center">
+      <BodyText className="text-text-hint">
         Your gateway to the world of digital assets is now open, and your financial future is in your hands. Safely
         store, send, and receive funds with confidence.
         <br />

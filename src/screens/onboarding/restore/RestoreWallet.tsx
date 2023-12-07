@@ -1,29 +1,74 @@
 'use client';
-import { useEffect } from 'react';
-// import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
-// import { Paths } from '@/common/routing';
+import { Avatar, Input } from '@nextui-org/react';
+import { BodyText, TitleText } from '@/components/Typography';
+import { Paths } from '@/common/routing';
+import { initializeWalletFromCloud } from '@/common/wallet';
 
-export const RestoreWalletPage = () => {
-  // const router = useRouter();
-  const { MainButton } = useTelegram();
+type Props = {
+  mnemonic: string;
+};
+
+export const RestoreWalletPage = ({ mnemonic }: Props) => {
+  const router = useRouter();
+  const { MainButton, user } = useTelegram();
+  const [password, setPassword] = useState('');
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
 
   useEffect(() => {
+    MainButton?.show();
     MainButton?.disable();
-    // MainButton?.onClick(() => {
-    //   router.push(Paths.DASHBOARD);
-    //   MainButton?.showProgress(false);
-    // });
 
     return () => {
-      MainButton?.hideProgress();
+      MainButton?.disable();
     };
-  }, [MainButton]);
+  }, []);
+
+  useEffect(() => {
+    if (password.length) {
+      MainButton?.enable();
+
+      MainButton?.onClick(() => {
+        if (password.length < 8) {
+          setIsPasswordValid(false);
+
+          return;
+        }
+        const isWalletInitialized = initializeWalletFromCloud(password, mnemonic);
+        setIsPasswordValid(isWalletInitialized);
+
+        if (isWalletInitialized) {
+          router.push(Paths.DASHBOARD);
+        }
+      });
+    } else {
+      MainButton?.disable();
+    }
+  }, [password]);
+  console.log(password);
 
   return (
-    <div className="h-screen flex justify-center items-center">
-      <label>Import Wallet Goes Here</label>
-    </div>
+    <>
+      <Avatar src={user?.photo_url} size="lg" className="w-[64px] h-[64px]" name={user?.first_name[0]} />
+      <TitleText className="m-4 px-6">Welcome back {user?.first_name || 'friend'}!</TitleText>
+      <BodyText as="span" className="text-text-hint px-6 mb-8">
+        We&apos;ve discovered a backup of your existing wallet in the cloud. To restore it just enter your password.
+      </BodyText>
+      <Input
+        isClearable
+        variant="flat"
+        placeholder="Enter 8-character password here"
+        type="password"
+        className="max-w-sm text-left"
+        value={password}
+        isInvalid={!isPasswordValid}
+        errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}
+        onValueChange={setPassword}
+        onClear={() => setPassword('')}
+      />
+    </>
   );
 };

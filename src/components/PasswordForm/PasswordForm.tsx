@@ -69,7 +69,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         onValueChange={setConfirmPassword}
         onClear={() => setConfirmPassword('')}
       />
-      <BodyText as="span" className={cnTw('self-start', VariantStyles[hintColor])}>
+      <BodyText align="left" as="span" className={cnTw('self-start', VariantStyles[hintColor])}>
         <ul className="list-disc space-y-1 ml-5">
           <li>8 characters minimum</li>
           <li>Include 1 number (0-9)</li>
