@@ -1,2 +1,2 @@
-export { OnboardingStartPage } from './start/Start';
-export { ImportWalletPage } from './import-wallet/ImportWallet';
+export { OnboardingStartPage } from './start/OnboardingStartPage';
+export { RestoreWalletPage } from './restore/RestoreWallet';

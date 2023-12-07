@@ -28,7 +28,7 @@ export default function PasswordPage() {
   return (
     <div className="flex flex-col items-center text-center m-4">
       <Avatar src={user?.photo_url} size="lg" className="w-[64px] h-[64px]" name={user?.first_name[0]} />
-      <TitleText className="m-4 px-6">Hey {user?.first_name}! Let’s secure your new wallet</TitleText>
+      <TitleText className="m-4 px-6">Hey {user?.first_name || 'friend'}! Let’s secure your new wallet</TitleText>
       <BodyText className="text-text-hint px-6" align="center">
         It&apos;s like locking the door to your financial fortress. Your chosen password will be the key to ensure your
         assets are safe and sound.

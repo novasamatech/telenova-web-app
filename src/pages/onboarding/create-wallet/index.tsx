@@ -40,8 +40,8 @@ export default function CreateWalletPage() {
   }, [MainButton]);
 
   return isLoading ? (
-    <div className="flex flex-col justify-center items-center">
-      <Icon name="createWallet" size={256} alt="create wallet" />
+    <div className="min-h-screen flex flex-col justify-center items-center">
+      <Icon name="createWallet" size={256} alt="create wallet" priority />
       <BodyText>Creating your wallet</BodyText>
     </div>
   ) : (
