@@ -74,6 +74,7 @@ export const getKeyringPair = (password: string): KeyringPair | undefined => {
 export const resetWallet = () => {
   localStorage.removeItem(PUBLIC_KEY_STORE);
   secureLocalStorage.removeItem(MNEMONIC_STORE);
+  window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
 };
 
 export const initializeWalletFromCloud = (password: string, encryptedMnemonic: string): boolean => {

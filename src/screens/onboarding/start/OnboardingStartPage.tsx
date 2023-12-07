@@ -37,7 +37,7 @@ export const OnboardingStartPage = () => {
         <div>
           <CaptionText>Easy crypto operations</CaptionText>
           <BodyText className="text-text-hint" align="left">
-            Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
+            Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.
           </BodyText>
         </div>
       </div>
@@ -46,7 +46,7 @@ export const OnboardingStartPage = () => {
         <div>
           <CaptionText>Easy crypto operations</CaptionText>
           <BodyText className="text-text-hint" align="left">
-            Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.{' '}
+            Welcome aboard! Securely store, send, and receive your Polkadot funds with ease.
           </BodyText>
         </div>
       </div>
