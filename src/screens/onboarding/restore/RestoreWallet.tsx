@@ -62,6 +62,9 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         placeholder="Enter 8-character password here"
         type="password"
         className="max-w-sm text-left"
+        classNames={{
+          inputWrapper: ['bg-bg-input'],
+        }}
         value={password}
         isInvalid={!isPasswordValid}
         errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}
