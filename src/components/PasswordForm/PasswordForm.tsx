@@ -48,6 +48,9 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         variant="flat"
         placeholder="Enter 8-character password here"
         type="password"
+        classNames={{
+          inputWrapper: ['bg-bg-input'],
+        }}
         className="max-w-sm text-left"
         value={password}
         isInvalid={!isPasswordValid}
@@ -58,13 +61,15 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
       />
       <Input
         isClearable
-        variant="flat"
         placeholder="Confirm password"
         type="password"
-        className="max-w-sm"
+        classNames={{
+          inputWrapper: ['bg-bg-input'],
+        }}
+        className="max-w-sm text-left"
         value={confirmPassword}
         isInvalid={!isPasswordValid || !isConfirmPasswordValid}
-        errorMessage={!isConfirmPasswordValid && 'Passwords do not match'}
+        errorMessage={!isConfirmPasswordValid && 'Passwords did not match'}
         onBlur={() => setIsConfirmPasswordValid(confirmPassword === password)}
         onValueChange={setConfirmPassword}
         onClear={() => setConfirmPassword('')}
