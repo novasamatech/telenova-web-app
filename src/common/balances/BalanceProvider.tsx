@@ -103,13 +103,14 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     const unsubscribe = await service.subscribe(address, (balance: IAssetBalance) => {
       console.log(`New balance: ${balance.total().toString()}`);
 
+      updateBalance(account, balance);
       notifySubscribers(account, balance);
     });
 
     if (!setupUnsubscribeOnState(account, unsubscribe)) {
-      console.warn(`Can't setup unsubscribe ${chainAssetAccountIdToString(account)}`);
+      // this should never happen but let's cleanup remote subscription anyway
 
-      // looks like we have already unsubscribed
+      console.warn(`Can't setup unsubscribe ${chainAssetAccountIdToString(account)}`);
       unsubscribe();
     }
   }
@@ -125,6 +126,18 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
       return true;
     } else {
       return false;
+    }
+  }
+
+  function updateBalance(account: ChainAssetAccount, newBalance: IAssetBalance) {
+    const stateKey = chainAssetAccountIdToString(account);
+    const state = accountToState.current[stateKey];
+
+    if (state) {
+      state.current = newBalance;
+      accountToState.current[stateKey] = state;
+    } else {
+      console.warn(`Can't update balance for state key ${stateKey}`);
     }
   }
 
