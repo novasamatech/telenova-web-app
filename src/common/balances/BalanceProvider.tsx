@@ -108,7 +108,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     });
 
     if (!setupUnsubscribeOnState(account, unsubscribe)) {
-      // this should never happen but let's cleanup remote subscription anyway        
+      // this should never happen but let's cleanup remote subscription anyway
 
       console.warn(`Can't setup unsubscribe ${chainAssetAccountIdToString(account)}`);
       unsubscribe();
@@ -137,7 +137,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
       state.current = newBalance;
       accountToState.current[stateKey] = state;
     } else {
-      console.warn(`Can't update balance for state key ${stateKey}`)
+      console.warn(`Can't update balance for state key ${stateKey}`);
     }
   }
 
