@@ -1,1 +1,1 @@
-export {DashboardMainPage} from './main/Main'
+export { DashboardMain } from './main/DashboardMain';
