@@ -14,7 +14,11 @@ export interface ITelegram {
 }
 
 export interface ITelegramMessageFactory {
-  prepareWalletCreationData: (publicKey: HexString) => HexString | null;
+  prepareWalletCreationData: (publicKey: HexString) => string | null;
+}
+
+export interface ITelegramBotApi {
+  submitWallet: (publicKey: HexString) => Promise<void>;
 }
 
 // tg types.ts

@@ -16,29 +16,38 @@ export default function CreateWalletPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!publicKey) {
-      console.error("Can't create wallet");
+    (async () => {
+      if (!publicKey) {
+        console.error("Can't create wallet when public key is missing");
 
-      return;
-    }
-    completeOnboarding(publicKey, webApp);
+        return;
+      }
 
-    MainButton?.onClick(() => {
-      router.push(Paths.DASHBOARD);
-    });
+      if (!webApp) {
+        console.error("Can't create wallet when web app is missing");
 
-    setTimeout(() => {
-      setIsLoading(false);
-      MainButton?.show();
-      MainButton?.setText('Get started');
-      MainButton?.hideProgress();
-    }, 2000);
+        return;
+      }
 
-    return () => {
-      MainButton?.setText('Continue');
-      MainButton?.hide();
-      MainButton?.hideProgress();
-    };
+      await completeOnboarding(publicKey, webApp);
+
+      MainButton?.onClick(() => {
+        router.push(Paths.DASHBOARD);
+      });
+
+      setTimeout(() => {
+        setIsLoading(false);
+        MainButton?.show();
+        MainButton?.setText('Get started');
+        MainButton?.hideProgress();
+      }, 2000);
+
+      return () => {
+        MainButton?.setText('Continue');
+        MainButton?.hide();
+        MainButton?.hideProgress();
+      };
+    })();
   }, []);
 
   return isLoading ? (
