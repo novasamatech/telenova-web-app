@@ -29,6 +29,7 @@ export default function CreateWalletPage() {
         return;
       }
 
+      // TODO: Handle errors here and display retry page maybe
       await completeOnboarding(publicKey, webApp);
 
       MainButton?.onClick(() => {
