@@ -19,67 +19,93 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
+  const [isDirty, setIsDirty] = useState(false);
   const [hintColor, setHintColor] = useState<Variants>('default');
 
   useEffect(() => {
-    if (password.length === 0 || !isPasswordValid || !isConfirmPasswordValid || password !== confirmPassword) return;
+    if (password.length === 0 || !isPasswordValid || password !== confirmPassword) return;
     onSubmit(password);
   }, [password, confirmPassword, isPasswordValid, isConfirmPasswordValid]);
 
-  const validatePassword = (e: React.FocusEvent) => {
-    const { value } = e.target as HTMLInputElement;
+  const validatePassword = (value: string) => {
     // Password validation logic
-    const hasValidLength = value.length >= 8;
-    const hasNumber = /\d/.test(value);
-    const hasSpecialCharacter = /[!@#$%^&*(),.?":{}|<>]/.test(value);
-    const isValid = hasValidLength && hasNumber && hasSpecialCharacter;
+    const regex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+    const hasValidFormat = regex.test(value);
 
     if (confirmPassword.length !== 0) {
       setIsConfirmPasswordValid(confirmPassword === value);
     }
-    setHintColor(isValid ? 'success' : 'error');
-    setIsPasswordValid(isValid);
+    setHintColor(hasValidFormat ? 'success' : 'error');
+    setIsPasswordValid(hasValidFormat);
+  };
+
+  const validateOnChange = (value: string) => {
+    setPassword(value);
+    if (isDirty) {
+      validatePassword(value);
+    }
+  };
+
+  const validateConfirmPassword = (value: string) => {
+    setIsConfirmPasswordValid(value === password);
+    setConfirmPassword(value);
+  };
+
+  const validateOnBlur = () => {
+    setIsDirty(true);
+    validatePassword(password);
   };
 
   return (
-    <form className="flex flex-col my-8 gap-4 w-full items-center">
+    <form className="flex flex-col mt-8 gap-4 w-full items-center">
       <Input
         isClearable
         variant="flat"
         placeholder="Enter 8-character password here"
         type="password"
         classNames={{
-          inputWrapper: ['bg-bg-input'],
+          inputWrapper: [
+            'bg-bg-input border-1',
+            'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+            !isPasswordValid && 'border-border-danger',
+          ],
         }}
         className="max-w-sm text-left"
         value={password}
         isInvalid={!isPasswordValid}
-        errorMessage={!isPasswordValid && password.length < 8 && 'Enter 8-character password here'}
-        onBlur={validatePassword}
-        onValueChange={setPassword}
+        errorMessage={!isPasswordValid && 'Enter correct 8-character password here'}
+        onBlur={validateOnBlur}
+        onValueChange={validateOnChange}
         onClear={() => setPassword('')}
       />
       <Input
         isClearable
+        variant="flat"
         placeholder="Confirm password"
         type="password"
         classNames={{
-          inputWrapper: ['bg-bg-input'],
+          inputWrapper: [
+            'bg-bg-input border-1',
+            'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+            !isConfirmPasswordValid && 'border-border-danger',
+          ],
         }}
         className="max-w-sm text-left"
         value={confirmPassword}
-        isInvalid={!isPasswordValid || !isConfirmPasswordValid}
+        isInvalid={!isConfirmPasswordValid}
         errorMessage={!isConfirmPasswordValid && 'Passwords did not match'}
-        onBlur={() => setIsConfirmPasswordValid(confirmPassword === password)}
-        onValueChange={setConfirmPassword}
+        onValueChange={validateConfirmPassword}
         onClear={() => setConfirmPassword('')}
       />
-      <BodyText align="left" as="span" className={cnTw('self-start', VariantStyles[hintColor])}>
-        <ul className="list-disc space-y-1 ml-5">
+      <BodyText align="left" as="span" className={cnTw('self-start mt-4', VariantStyles[hintColor])}>
+        <ul className="list-disc space-y-1 ml-5  mb-1">
           <li>8 characters minimum</li>
-          <li>Include 1 number (0-9)</li>
-          <li>At least 1 special character (e.g., @, #, %)</li>
+          <li>Include at least 1 number (0-9)</li>
+          <li>Include at least 1 letter (a-z)</li>
         </ul>
+        <BodyText align="left" className="text-text-hint">
+          Make your password stronger - special characters (e.g., @, #, %) and uppercase letters are recommended
+        </BodyText>
       </BodyText>
     </form>
   );

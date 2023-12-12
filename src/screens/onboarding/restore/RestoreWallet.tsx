@@ -21,10 +21,6 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
   useEffect(() => {
     MainButton?.show();
     MainButton?.disable();
-
-    return () => {
-      MainButton?.disable();
-    };
   }, []);
 
   useEffect(() => {
@@ -63,7 +59,10 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         type="password"
         className="max-w-sm text-left"
         classNames={{
-          inputWrapper: ['bg-bg-input'],
+          inputWrapper: [
+            'bg-bg-input border-1',
+            'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+          ],
         }}
         value={password}
         isInvalid={!isPasswordValid}
