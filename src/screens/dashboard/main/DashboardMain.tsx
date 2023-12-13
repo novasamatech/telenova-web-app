@@ -15,63 +15,48 @@ import { Paths } from '@/common/routing';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { BodyText, CaptionText, Icon, AssetsList, Plate, Price } from '@/components';
-
-// TODO: remove temp mock
-const mockAssets = [
-  {
-    name: 'polkadot',
-    symbol: 'DOT',
-    balance: '0',
-    assetId: 123,
-    precision: 10,
-  },
-  {
-    name: 'kusama',
-    symbol: 'KSM',
-    balance: '0',
-    assetId: 234,
-    precision: 5,
-  },
-  {
-    name: 'westend',
-    symbol: 'WND',
-    balance: '0',
-    assetId: 345,
-    precision: 10,
-  },
-];
+import { updateAssetsBalance } from '@/common/utils/balance';
 
 export const DashboardMain = () => {
   const router = useRouter();
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
   const extrinsicService = useExtrinsicProvider();
-  const { publicKey } = useGlobalContext();
+  const { publicKey, setAssets, assets } = useGlobalContext();
   const { user, MainButton } = useTelegram();
 
   useEffect(() => {
     MainButton?.hide();
-    if (!publicKey) {
+    if (!publicKey || assets.length) {
+      console.warn('No public key');
+
       return;
     }
     (async () => {
       const chains = await getAllChains();
-      console.info(`All chains ${chains}`);
+      console.info(`Found all ${chains.length} chains`);
 
       for (const chain of chains) {
         const account: ChainAssetAccount = {
           chainId: chain.chainId,
-          assetId: chain.assets[0].assetId,
           publicKey: publicKey,
+          name: chain.name,
+          assetId: chain.assets[0].assetId,
+          symbol: chain.assets[0].symbol,
+          precision: chain.assets[0].precision,
         };
 
         const address = encodeAddress(publicKey, chain.addressPrefix);
+        setAssets((prevAssets) => [...prevAssets, { ...account, address }]);
+
         subscribeBalance(account, (balance: IAssetBalance) => {
-          console.log(`Balance ${address} => ${balance.total().toString()}`);
+          console.info(`${address} ${chain.name} => balance: ${balance.total().toString()}`);
+
+          setAssets((prevAssets) => updateAssetsBalance(prevAssets, chain, balance));
         });
       }
     })();
-  }, []);
+  }, [publicKey]);
 
   function clearWallet() {
     resetWallet();
@@ -115,7 +100,7 @@ export const DashboardMain = () => {
     <div className="min-h-screen flex flex-col p-4">
       <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6">
         <Avatar src={user?.photo_url} className="w-10 h-10" name={user?.first_name[0]} />
-        <CaptionText className="self-center">Good morning, {user?.first_name || 'friend'}</CaptionText>
+        <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
         <Icon name="settings" size={40} />
       </div>
       <Plate className="p-4 flex flex-col items-center mb-2">
@@ -129,7 +114,7 @@ export const DashboardMain = () => {
       </Plate>
       <Plate className="p-4 flex flex-col mb-2">
         <CaptionText>Assets</CaptionText>
-        <AssetsList assets={mockAssets} />
+        <AssetsList />
       </Plate>
 
       <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>

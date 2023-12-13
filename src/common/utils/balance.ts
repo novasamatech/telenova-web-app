@@ -1,4 +1,7 @@
 import BigNumber from 'bignumber.js';
+import { AssetAccount } from '../types';
+import { Chain } from '../chainRegistry/types';
+import { IAssetBalance } from '../balances/types';
 
 const ZERO_BALANCE = '0';
 
@@ -121,4 +124,16 @@ export const formatFiatBalance = (balance = '0', precision = 0): FormattedBalanc
     suffix,
     decimalPlaces,
   };
+};
+
+export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, balance: IAssetBalance) => {
+  return prevAssets.map((asset) =>
+    asset?.chainId === chain.chainId
+      ? {
+          ...asset,
+          totalBalance: balance.total().toString(),
+          transferableBalance: balance.transferable().toString(),
+        }
+      : asset,
+  );
 };

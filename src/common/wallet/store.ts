@@ -77,11 +77,9 @@ export const resetWallet = () => {
   window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
 };
 
-export const initializeWalletFromCloud = (password: string, encryptedMnemonic: string): boolean => {
+export const initializeWalletFromCloud = (password: string, encryptedMnemonic: string): Wallet | null => {
   const mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
-  if (!mnemonic) return false;
+  if (!mnemonic) return null;
 
-  createWallet(mnemonic);
-
-  return true;
+  return createWallet(mnemonic);
 };

@@ -20,6 +20,15 @@ export type ChainAssetAccount = {
   chainId: ChainId;
   assetId: AssetId;
   publicKey: PublicKey;
+  symbol: string;
+  name: string;
+  precision: number;
+};
+
+export type AssetAccount = ChainAssetAccount & {
+  address: Address;
+  totalBalance?: string;
+  transferableBalance?: string;
 };
 
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
