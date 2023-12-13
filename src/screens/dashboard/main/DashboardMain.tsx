@@ -28,8 +28,6 @@ export const DashboardMain = () => {
   useEffect(() => {
     MainButton?.hide();
     if (!publicKey || assets.length) {
-      console.warn('No public key');
-
       return;
     }
     (async () => {
