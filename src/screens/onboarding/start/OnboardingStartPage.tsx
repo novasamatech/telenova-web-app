@@ -25,10 +25,10 @@ export const OnboardingStartPage = () => {
   }, [MainButton]);
 
   return (
-    <div className="h-screen flex flex-col items-center p-4">
+    <>
       <Avatar src="" size="lg" className="w-[128px] h-[128px]" name="Nova" />
       <TitleText className="mt-6 mb-3">Welcome to Nova Wallet!</TitleText>
-      <BodyText className="text-text-hint mb-7">
+      <BodyText className="text-text-hint mb-8">
         Welcome aboard! Securely store, send, and receive your Polkadot funds with ease. Dive into Polkadot funds
         management!
       </BodyText>
@@ -50,6 +50,6 @@ export const OnboardingStartPage = () => {
           </BodyText>
         </div>
       </div>
-    </div>
+    </>
   );
 };

@@ -24,7 +24,7 @@ export default function OnboardingPage() {
   if (isLoading) return <div>LOADING</div>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center text-center p-4">
+    <div className="min-h-screen w-full flex flex-col items-center text-center p-4">
       {mnemonic ? <RestoreWalletPage mnemonic={mnemonic} /> : <OnboardingStartPage />}
     </div>
   );

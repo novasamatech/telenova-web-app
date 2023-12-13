@@ -15,6 +15,7 @@ export default function PasswordPage() {
   const router = useRouter();
 
   MainButton?.disable();
+  MainButton?.show();
 
   const handleSubmit = (password: string) => {
     MainButton?.enable();
