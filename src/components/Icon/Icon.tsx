@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { FootnoteText } from '../Typography';
 import AllIcons, { IconNames } from './types';
 
 type Props = {
@@ -7,11 +6,9 @@ type Props = {
   size?: number;
   className?: string;
   alt?: string;
-  text?: string;
-  priority?: boolean;
 };
 
-const Icon = ({ name, size = 24, className, text, priority, alt = '' }: Props) => {
+const Icon = ({ name, size = 24, className, alt = '' }: Props) => {
   let iconPath = AllIcons[name];
 
   if (!iconPath) {
@@ -20,28 +17,15 @@ const Icon = ({ name, size = 24, className, text, priority, alt = '' }: Props) =
     return <div style={{ width: size, height: size, borderRadius: 10, backgroundColor: 'lightgrey' }} />;
   }
 
-  return text ? (
-    <div className="text-center">
-      <Image
-        className={className}
-        src={`/images/${iconPath}`}
-        alt={alt}
-        width={size}
-        height={size}
-        priority={priority}
-        data-testid={`${name}-img`}
-      />
-      <FootnoteText as="span">{text}</FootnoteText>
-    </div>
-  ) : (
+  return (
     <Image
       className={className}
       src={`/images/${iconPath}`}
       alt={alt}
       width={size}
       height={size}
-      priority={priority}
       data-testid={`${name}-img`}
+      priority
     />
   );
 };

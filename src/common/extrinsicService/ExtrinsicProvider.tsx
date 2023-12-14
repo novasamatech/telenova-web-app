@@ -6,7 +6,7 @@ import { SubmittableResultResult } from '@polkadot/api-base/types/submittable';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
 import { ApiTypes } from '@polkadot/api-base/types/base';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { PasswordPage } from '@app/password/Password';
+import { PasswordPage } from '@/screens/password/Password';
 
 type ExtrinsicProviderContextProps = {
   estimateFee: (

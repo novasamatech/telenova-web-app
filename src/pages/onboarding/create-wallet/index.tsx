@@ -7,7 +7,6 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { completeOnboarding } from '@common/telegram';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
-import Icon from '@/components/Icon/Icon';
 
 export default function CreateWalletPage() {
   const router = useRouter();
@@ -42,25 +41,29 @@ export default function CreateWalletPage() {
         MainButton?.setText('Get started');
         MainButton?.hideProgress();
       }, 2000);
-
-      return () => {
-        MainButton?.setText('Continue');
-        MainButton?.hide();
-        MainButton?.hideProgress();
-      };
     })();
+
+    return () => {
+      MainButton?.setText('Continue');
+      MainButton?.hide();
+      MainButton?.hideProgress();
+    };
   }, []);
 
   return isLoading ? (
     <div className="min-h-screen flex flex-col justify-center items-center">
-      <Icon name="createWallet" size={256} alt="create wallet" priority />
-      <BodyText>Creating your wallet</BodyText>
+      <video autoPlay loop muted playsInline preload="auto" width={350}>
+        <source src={'/videos/create-wallet.webm'} type="video/webm" />
+      </video>
+      <BodyText className="text-icon-on-neutral">Creating your wallet...</BodyText>
     </div>
   ) : (
     <div className="min-h-screen flex flex-col justify-center items-center p-5">
-      <div className="bg-blue-500 rounded-full p-9">
+      <div className="bg-blue-500 rounded-full p-3 w-[114px] h-[114px]">
         <ConfettiExplosion particleCount={250} />
-        <Icon name="firework" size={60} alt="firework" />
+        <video autoPlay loop muted playsInline width={90} preload="auto">
+          <source src={'/videos/firework1.webm'} type="video/webm" />
+        </video>
       </div>
       <TitleText className="m-3">Your wallet has been created!</TitleText>
       <BodyText className="text-text-hint">

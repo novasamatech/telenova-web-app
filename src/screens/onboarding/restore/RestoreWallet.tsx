@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
+import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Avatar, Input } from '@nextui-org/react';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
@@ -15,16 +16,14 @@ type Props = {
 export const RestoreWalletPage = ({ mnemonic }: Props) => {
   const router = useRouter();
   const { MainButton, user } = useTelegram();
+  const { setPublicKey } = useGlobalContext();
+
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
 
   useEffect(() => {
     MainButton?.show();
     MainButton?.disable();
-
-    return () => {
-      MainButton?.disable();
-    };
   }, []);
 
   useEffect(() => {
@@ -37,10 +36,11 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
 
           return;
         }
-        const isWalletInitialized = initializeWalletFromCloud(password, mnemonic);
-        setIsPasswordValid(isWalletInitialized);
+        const wallet = initializeWalletFromCloud(password, mnemonic);
+        setIsPasswordValid(Boolean(wallet));
 
-        if (isWalletInitialized) {
+        if (wallet) {
+          setPublicKey(wallet?.publicKey);
           router.push(Paths.DASHBOARD);
         }
       });
@@ -63,7 +63,10 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         type="password"
         className="max-w-sm text-left"
         classNames={{
-          inputWrapper: ['bg-bg-input'],
+          inputWrapper: [
+            'bg-bg-input border-1',
+            'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+          ],
         }}
         value={password}
         isInvalid={!isPasswordValid}

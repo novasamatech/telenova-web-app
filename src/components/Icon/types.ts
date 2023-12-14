@@ -1,6 +1,4 @@
 const AllIcons = {
-  createWallet: 'create-gif.gif',
-  firework: 'firework.png',
   DOT: 'DOT.svg',
   WND: 'WND.svg',
   KSM: 'KSM.svg',
@@ -8,6 +6,9 @@ const AllIcons = {
   send: 'Send.svg',
   receive: 'Receive.svg',
   buy: 'Buy.svg',
+  address: 'Address.svg',
+  user: 'User.svg',
+  chevronForward: 'chevron-forward.svg',
 } as const;
 
 export type IconNames = keyof typeof AllIcons;

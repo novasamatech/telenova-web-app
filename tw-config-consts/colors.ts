@@ -10,9 +10,9 @@ export default {
   'text-danger': 'var(--red-red500)',
   'text-positive': 'var(--green-green800)',
 
-  'iсon-on-color': 'var(--white-white900)',
+  'icon-on-color': 'var(--white-white900)',
   'icon-neutral': 'var(--gray-gray600)',
-  'iсon-on-neutral': 'var(--gray-gray900)',
+  'icon-on-neutral': 'var(--gray-gray900)',
   'icon-link': 'var(--blue-blue600)',
 
   'border-active': 'var(--blue-blue600)',

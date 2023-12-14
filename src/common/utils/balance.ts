@@ -1,4 +1,7 @@
 import BigNumber from 'bignumber.js';
+import { AssetAccount } from '../types';
+import { Chain } from '../chainRegistry/types';
+import { IAssetBalance } from '../balances/types';
 
 const ZERO_BALANCE = '0';
 
@@ -122,3 +125,48 @@ export const formatFiatBalance = (balance = '0', precision = 0): FormattedBalanc
     decimalPlaces,
   };
 };
+
+export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, balance: IAssetBalance) => {
+  return prevAssets.map((asset) =>
+    asset?.chainId === chain.chainId
+      ? {
+          ...asset,
+          totalBalance: balance.total().toString(),
+          transferableBalance: balance.transferable().toString(),
+        }
+      : asset,
+  );
+};
+
+// async function handleSign() {
+//   extrinsicService
+//     .submitExtrinsic(polkadot.chainId, (builder) => builder.addCall(builder.api.tx.system.remark('Hello')))
+//     .then(
+//       (hash) => {
+//         alert('Success: ' + hash);
+//       },
+//       (failure) => {
+//         alert('Failed: ' + failure);
+//       },
+//     );
+// }
+
+// async function handleFee() {
+//   extrinsicService
+//     .estimateFee(polkadot.chainId, (builder) =>
+//       builder.addCall(
+//         builder.api.tx.balances.transferKeepAlive(
+//           '0xcc23ed33549e874ae7c7653fc5d95b3242dc7df5742664b4809e337a13126433',
+//           '1234',
+//         ),
+//       ),
+//     )
+//     .then(
+//       (fee) => {
+//         alert('Fee: ' + fee);
+//       },
+//       (failure) => {
+//         alert('Failed to calculate fee: ' + failure);
+//       },
+//     );
+// }

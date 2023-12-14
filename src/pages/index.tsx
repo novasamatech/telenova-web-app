@@ -10,7 +10,7 @@ export default function App() {
 
   useEffect(() => {
     setPublicKey(wallet?.publicKey);
-  }, [wallet]);
+  }, []);
 
   return wallet ? <DashboardMainPage /> : <OnboardingStartPage />;
 }
