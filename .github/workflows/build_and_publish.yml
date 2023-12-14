@@ -70,9 +70,9 @@ jobs:
             docker-compose down
             rm .env
             echo "NEXT_PUBLIC_BOT_KEY=${{ secrets.NEXT_PUBLIC_BOT_KEY }}" >> .env
-            docker image prune -f
             docker-compose pull
             docker-compose up -d
+            docker image prune -f
       
       - name: Notify Telegram channel
         uses: appleboy/telegram-action@master
