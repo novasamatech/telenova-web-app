@@ -137,3 +137,36 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, ba
       : asset,
   );
 };
+
+// async function handleSign() {
+//   extrinsicService
+//     .submitExtrinsic(polkadot.chainId, (builder) => builder.addCall(builder.api.tx.system.remark('Hello')))
+//     .then(
+//       (hash) => {
+//         alert('Success: ' + hash);
+//       },
+//       (failure) => {
+//         alert('Failed: ' + failure);
+//       },
+//     );
+// }
+
+// async function handleFee() {
+//   extrinsicService
+//     .estimateFee(polkadot.chainId, (builder) =>
+//       builder.addCall(
+//         builder.api.tx.balances.transferKeepAlive(
+//           '0xcc23ed33549e874ae7c7653fc5d95b3242dc7df5742664b4809e337a13126433',
+//           '1234',
+//         ),
+//       ),
+//     )
+//     .then(
+//       (fee) => {
+//         alert('Fee: ' + fee);
+//       },
+//       (failure) => {
+//         alert('Failed to calculate fee: ' + failure);
+//       },
+//     );
+// }
