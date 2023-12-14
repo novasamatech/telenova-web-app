@@ -1,15 +1,8 @@
 import { HexString } from '@common/types';
 import { WebApp } from './types';
-import { getMessageFactory } from './message-factory';
+import { getTelegramBotApi } from './bot-api';
 
-export const completeOnboarding = (publicKey: HexString, webApp: WebApp | undefined) => {
-  const messageFactory = getMessageFactory();
-  const data = messageFactory.prepareWalletCreationData(publicKey);
-
-  if (data && webApp) {
-    // this's working only if we start app from keyboard
-    webApp.sendData(data);
-  } else {
-    console.error('Response creation failed');
-  }
+export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): Promise<void> => {
+  const botApi = getTelegramBotApi(webApp);
+  await botApi.submitWallet(publicKey);
 };
