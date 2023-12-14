@@ -14,7 +14,7 @@ const fontSizes: Required<Config>['theme']['fontSize'] = {
   // MEDIUM
   headline: ['0.9375rem', { lineHeight: '1.375rem', letterSpacing: '-0.01em', fontWeight: 500 }],
   body: ['0.875rem', { lineHeight: '1.25rem', letterSpacing: '-0.154px', fontWeight: 500 }],
-  'help-text': ['0.625rem', { lineHeight: '0.875rem', letterSpacing: '-0.01em', fontWeight: 500 }],
+  'help-text': ['0.8125rem', { lineHeight: '1.125rem', letterSpacing: '-0.01em', fontWeight: 500 }],
 };
 
 export default fontSizes;

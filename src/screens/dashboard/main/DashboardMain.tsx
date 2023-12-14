@@ -9,19 +9,16 @@ import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
-import { polkadot } from '@common/chainRegistry/knownChains';
-import { useExtrinsicProvider } from '@common/extrinsicService/ExtrinsicProvider';
 import { Paths } from '@/common/routing';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { BodyText, CaptionText, Icon, AssetsList, Plate, Price } from '@/components';
+import { BodyText, CaptionText, Icon, AssetsList, Plate, Price, IconButton } from '@/components';
 import { updateAssetsBalance } from '@/common/utils/balance';
 
 export const DashboardMain = () => {
   const router = useRouter();
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
-  const extrinsicService = useExtrinsicProvider();
   const { publicKey, setAssets, assets } = useGlobalContext();
   const { user, MainButton } = useTelegram();
 
@@ -61,39 +58,6 @@ export const DashboardMain = () => {
     router.replace(Paths.ONBOARDING);
   }
 
-  async function handleSign() {
-    extrinsicService
-      .submitExtrinsic(polkadot.chainId, (builder) => builder.addCall(builder.api.tx.system.remark('Hello')))
-      .then(
-        (hash) => {
-          alert('Success: ' + hash);
-        },
-        (failure) => {
-          alert('Failed: ' + failure);
-        },
-      );
-  }
-
-  async function handleFee() {
-    extrinsicService
-      .estimateFee(polkadot.chainId, (builder) =>
-        builder.addCall(
-          builder.api.tx.balances.transferKeepAlive(
-            '0xcc23ed33549e874ae7c7653fc5d95b3242dc7df5742664b4809e337a13126433',
-            '1234',
-          ),
-        ),
-      )
-      .then(
-        (fee) => {
-          alert('Fee: ' + fee);
-        },
-        (failure) => {
-          alert('Failed to calculate fee: ' + failure);
-        },
-      );
-  }
-
   return (
     <div className="min-h-screen flex flex-col p-4">
       <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6">
@@ -105,9 +69,9 @@ export const DashboardMain = () => {
         <BodyText className="text-text-hint">Total balance</BodyText>
         <Price amount="0" />
         <div className="grid grid-cols-3 w-full justify-items-center mt-4">
-          <Icon name="send" size={50} text="Send" />
-          <Icon name="receive" size={50} text="Receive" />
-          <Icon name="buy" size={50} text="Buy" />
+          <IconButton text="Send" iconName="send" color="primary" onClick={() => router.push(Paths.TRANSFER)} />
+          <IconButton text="Receive" iconName="receive" color="success" onClick={() => router.push(Paths.TRANSFER)} />
+          <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => router.push(Paths.TRANSFER)} />
         </div>
       </Plate>
       <Plate className="p-4 flex flex-col mb-2">
