@@ -31,7 +31,7 @@ export default function CreateWalletPage() {
       MainButton?.show();
       MainButton?.setText('Get started');
       MainButton?.hideProgress();
-    }, 2500);
+    }, 3000);
 
     return () => {
       MainButton?.setText('Continue');
