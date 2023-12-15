@@ -24,7 +24,7 @@ export const DashboardMain = () => {
 
   useEffect(() => {
     MainButton?.hide();
-    if (!publicKey || assets.length) {
+    if (!publicKey) {
       return;
     }
     (async () => {
@@ -40,9 +40,11 @@ export const DashboardMain = () => {
           symbol: chain.assets[0].symbol,
           precision: chain.assets[0].precision,
         };
-
         const address = encodeAddress(publicKey, chain.addressPrefix);
-        setAssets((prevAssets) => [...prevAssets, { ...account, address }]);
+
+        if (!assets.length) {
+          setAssets((prevAssets) => [...prevAssets, { ...account, address }]);
+        }
 
         subscribeBalance(account, (balance: IAssetBalance) => {
           console.info(`${address} ${chain.name} => balance: ${balance.total().toString()}`);
@@ -50,6 +52,8 @@ export const DashboardMain = () => {
           setAssets((prevAssets) => updateAssetsBalance(prevAssets, chain, balance));
         });
       }
+
+      setAssets((prevAssets) => prevAssets.sort((a, b) => a.symbol.localeCompare(b.symbol)));
     })();
   }, [publicKey]);
 
