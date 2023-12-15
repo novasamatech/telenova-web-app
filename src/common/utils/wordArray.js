@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const WordArray = require('crypto-js/lib-typedarrays.js');
 
 export function convertUint8ArrayToWordArray(typedArray) {

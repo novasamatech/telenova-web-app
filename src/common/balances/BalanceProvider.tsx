@@ -27,7 +27,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
   const subscribeBalance = (account: ChainAssetAccount, onUpdate: (balance: IAssetBalance) => void): number => {
     const unsubscribeId = nextId();
     const key = chainAssetAccountIdToString(account);
-    let currentState = accountToState.current[key];
+    const currentState = accountToState.current[key];
 
     if (!currentState) {
       registerNewSubscription(account, onUpdate, unsubscribeId);
@@ -56,7 +56,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     }
 
     const stateKey = chainAssetAccountIdToString(account);
-    let state = accountToState.current[stateKey];
+    const state = accountToState.current[stateKey];
     delete state.updaters[unsubscribeId];
     accountToState.current[stateKey] = state;
   };
@@ -66,7 +66,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     unsubscribeId: number,
     onUpdate: (balance: IAssetBalance) => void,
   ) {
-    let updaters: UpdaterCallbackStore = {};
+    const updaters: UpdaterCallbackStore = {};
     updaters[unsubscribeId] = onUpdate;
 
     const state: SubscriptionState<IAssetBalance> = {
@@ -117,7 +117,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
   function setupUnsubscribeOnState(account: ChainAssetAccount, unsubscribe: () => void): boolean {
     const stateKey = chainAssetAccountIdToString(account);
-    let state = accountToState.current[stateKey];
+    const state = accountToState.current[stateKey];
 
     if (state && !state.unsubscribe) {
       state.unsubscribe = unsubscribe;

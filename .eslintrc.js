@@ -19,7 +19,10 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
+    'plugin:@next/next/recommended',
     'plugin:import/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
@@ -46,7 +49,8 @@ module.exports = {
     'no-unused-vars': 'off',
     'no-irregular-whitespace': 'off',
     'newline-before-return': 'error',
-    '@typescript-eslint/no-empty-interface': 0,
+    '@typescript-eslint/no-empty-interface': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
     'prettier/prettier': ['error', prettierOptions],
     'unused-imports/no-unused-imports': 'error',
     'react/no-array-index-key': 'warn',
@@ -79,10 +83,8 @@ module.exports = {
     'coverage',
     'release',
     'node_modules',
-    'coverage.txt',
-    'junit.xml',
     'jest-unit-results.json',
     'package.json',
-    "next.config.js"
+    'next.config.js',
   ],
 };

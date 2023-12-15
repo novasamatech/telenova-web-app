@@ -9,7 +9,7 @@ type Props = {
 };
 
 const Icon = ({ name, size = 24, className, alt = '' }: Props) => {
-  let iconPath = AllIcons[name];
+  const iconPath = AllIcons[name];
 
   if (!iconPath) {
     console.warn(`Icon "${name}" doesn't exist`);

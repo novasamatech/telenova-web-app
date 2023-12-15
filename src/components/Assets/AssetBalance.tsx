@@ -2,9 +2,11 @@ import { cnTw } from '@/common/utils/twMerge';
 import { formatBalance } from '@/common/utils/balance';
 
 import { Shimmering, CaptionText, Icon } from '@/components';
+import { AssetAccount } from '@/common/types';
+import { IconNames } from '../Icon/types';
 
 type Props = {
-  asset: any;
+  asset: AssetAccount;
   balance?: string;
   name?: string;
   className?: string;
@@ -18,7 +20,7 @@ const AssetBalance = ({ balance, asset, name, className, imgClassName, showArrow
 
   return (
     <span className={cnTw('grid grid-cols-[50px,1fr,auto] items-center gap-x-2', className)}>
-      <Icon name={symbol} size={40} alt={name} className={imgClassName} />
+      <Icon name={symbol as IconNames} size={40} alt={name} className={imgClassName} />
       <CaptionText>{symbol}</CaptionText>
       {balance === undefined ? (
         <Shimmering width={100} height={20} />
