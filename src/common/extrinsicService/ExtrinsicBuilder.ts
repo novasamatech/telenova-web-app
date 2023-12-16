@@ -25,7 +25,7 @@ export function useExtrinsicBuilderFactory(): ExtrinsicBuilderFactory {
 }
 
 function createExtrinsicBuilder(api: ApiPromise): ExtrinsicBuilder {
-  let calls: Array<SubmittableExtrinsic<any>> = [];
+  const calls: Array<SubmittableExtrinsic<any>> = [];
 
   const addCall = (call: SubmittableExtrinsic<'promise'>) => {
     calls.push(call);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { HexString } from '@common/types';
 declare global {
   interface Window {
@@ -73,6 +74,8 @@ export interface WebApp {
    * An object for controlling the main button, which is displayed at the bottom of the Web App in the Telegram interface.
    */
   MainButton: MainButton;
+
+  BackButton: MainButton;
   /**
    * A method that sets the app event handler.
    */

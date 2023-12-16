@@ -4,7 +4,6 @@ import { ExtrinsicBuilding, ExtrinsicBuildingOptions } from '@common/extrinsicSe
 import { Balance } from '@polkadot/types/interfaces';
 import { SubmittableResultResult } from '@polkadot/api-base/types/submittable';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
-import { ApiTypes } from '@polkadot/api-base/types/base';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { PasswordPage } from '@/screens/password/Password';
 
@@ -15,7 +14,7 @@ type ExtrinsicProviderContextProps = {
     options?: Partial<ExtrinsicBuildingOptions>,
   ) => Promise<Balance>;
 
-  submitExtrinsic: <ApiType extends ApiTypes>(
+  submitExtrinsic: (
     chainId: ChainId,
     building: ExtrinsicBuilding,
     options?: Partial<ExtrinsicBuildingOptions>,

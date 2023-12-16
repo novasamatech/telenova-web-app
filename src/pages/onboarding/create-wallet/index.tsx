@@ -52,7 +52,7 @@ export default function CreateWalletPage() {
 
   return isLoading ? (
     <div className="min-h-screen flex flex-col justify-center items-center">
-      <video autoPlay loop muted playsInline preload="auto" width={350}>
+      <video autoPlay muted playsInline width={350} preload="auto">
         <source src={'/videos/create-wallet.webm'} type="video/webm" />
       </video>
       <BodyText className="text-icon-on-neutral">Creating your wallet...</BodyText>
@@ -61,7 +61,7 @@ export default function CreateWalletPage() {
     <div className="min-h-screen flex flex-col justify-center items-center p-5">
       <div className="bg-blue-500 rounded-full p-3 w-[114px] h-[114px]">
         <ConfettiExplosion particleCount={250} />
-        <video autoPlay loop muted playsInline width={90} preload="auto">
+        <video autoPlay muted playsInline width={90} preload="auto">
           <source src={'/videos/firework1.webm'} type="video/webm" />
         </video>
       </div>

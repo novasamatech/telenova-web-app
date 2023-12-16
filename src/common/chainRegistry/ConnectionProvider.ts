@@ -55,7 +55,7 @@ export const useConnections = (): IChainConnectionService => {
 
   const createConnections = (requests: ConnectionRequest[]) => {
     const newConnectionStates = requests.reduce<Record<ChainId, ConnectionState>>((acc, { chain }) => {
-      const { chainId, nodes } = chain;
+      const { chainId } = chain;
 
       const newState: ConnectionState = {
         chainId: chainId,

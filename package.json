@@ -11,6 +11,7 @@
     "test:ci": "jest --ci"
   },
   "dependencies": {
+    "@lottiefiles/react-lottie-player": "^3.5.3",
     "@nextui-org/react": "^2.2.9",
     "@polkadot/api": "^10.7.1",
     "@polkadot/keyring": "^12.2.1",
@@ -34,6 +35,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^14.0.4",
     "@testing-library/jest-dom": "^6.1.3",
     "@testing-library/react": "^14.1.2",
     "@types/crypto-js": "^4.1.3",

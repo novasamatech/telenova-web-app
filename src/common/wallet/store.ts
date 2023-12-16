@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Wallet } from './types';
 import { HexString, unwrapHexString } from '@common/types';
 

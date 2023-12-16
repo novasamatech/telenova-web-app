@@ -6,6 +6,7 @@ export interface ITelegramContext {
   webApp?: WebApp;
   user?: WebAppUser;
   MainButton?: MainButton;
+  BackButton?: MainButton;
 }
 
 export const TelegramContext = createContext<ITelegramContext>({});
@@ -26,6 +27,7 @@ export const TelegramProvider = ({ children }: { children: React.ReactNode }) =>
       ? {
           webApp,
           MainButton: webApp.MainButton,
+          BackButton: webApp.BackButton,
           user: webApp.initDataUnsafe.user,
         }
       : {};
