@@ -42,6 +42,8 @@ export const DashboardMain = () => {
         };
         const address = encodeAddress(publicKey, chain.addressPrefix);
 
+        console.info(`${chain.name} address: ${address}`);
+
         if (!assets.length) {
           setAssets((prevAssets) => [...prevAssets, { ...account, address }]);
         }
