@@ -7,7 +7,7 @@ import { useTelegram } from '@common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
 import { Icon, Plate, TitleText, BodyText, HelpText } from '@/components';
 
-export default function Transfer() {
+export default function TransferPage() {
   const router = useRouter();
   const { BackButton } = useTelegram();
 

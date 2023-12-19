@@ -10,7 +10,7 @@ import { Paths } from '@/common/routing';
 import { HeadlineText, Icon, Identicon, CaptionText, LargeTitleText, TextBase } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 
-export default function SelectToken() {
+export default function AmountPage() {
   const router = useRouter();
   const { BackButton, MainButton } = useTelegram();
   const { selectedAsset } = useGlobalContext();

@@ -8,7 +8,7 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Icon, HelpText, BodyText, Identicon } from '@/components';
 import { Paths } from '@/common/routing';
 
-export default function Address() {
+export default function AddressPage() {
   const router = useRouter();
   const { BackButton, MainButton, webApp } = useTelegram();
   const { setSelectedAsset } = useGlobalContext();

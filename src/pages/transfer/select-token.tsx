@@ -8,7 +8,7 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
 import { TitleText, AssetBalance } from '@/components';
 
-export default function SelectToken() {
+export default function SelectTokenPage() {
   const router = useRouter();
   const { BackButton } = useTelegram();
   const { assets, setSelectedAsset } = useGlobalContext();
