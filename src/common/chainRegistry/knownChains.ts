@@ -35,13 +35,13 @@ export const kusama: Chain = {
   ],
   nodes: [
     {
-      url: 'wss://rpc.ibp.network/kusama',
-      name: 'IBP network node',
-    },
-    {
       url: 'wss://1rpc.io/ksm',
       name: 'Automata 1RPC node',
     },
+    {
+      url: 'wss://kusama-rpc.dwellir.com',
+      name: 'Dwellir node',
+    }
   ],
   addressPrefix: 2,
 };
@@ -58,8 +58,8 @@ export const westend: Chain = {
   ],
   nodes: [
     {
-      url: 'wss://rpc.ibp.network/westend',
-      name: 'IBP network node',
+      url: 'wss://rpc-westend.luckyfriday.io',
+      name: 'lucky friday node',
     },
     {
       url: 'wss://rpc.dotters.network/westend',
