@@ -31,6 +31,10 @@ export type AssetAccount = ChainAssetAccount & {
   transferableBalance?: string;
 };
 
+export type TrasferAsset = AssetAccount & {
+  destination?: string;
+  amount?: string;
+};
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
 
 export function chainAssetIdToString(value: ChainAssetId): string {

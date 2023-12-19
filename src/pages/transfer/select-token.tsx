@@ -17,7 +17,7 @@ export default function SelectToken() {
     BackButton?.onClick(() => {
       router.push(Paths.TRANSFER);
     });
-  }, []);
+  }, [BackButton]);
 
   return (
     <div className="min-h-screen p-4">

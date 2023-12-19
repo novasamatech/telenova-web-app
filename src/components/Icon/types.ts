@@ -9,6 +9,7 @@ const AllIcons = {
   address: 'Address.svg',
   user: 'User.svg',
   chevronForward: 'chevron-forward.svg',
+  scanQr: 'scan.svg',
 } as const;
 
 export type IconNames = keyof typeof AllIcons;
