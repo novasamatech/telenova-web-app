@@ -1,11 +1,10 @@
-import { createContext, PropsWithChildren, useContext, useState } from 'react';
+import { createContext, PropsWithChildren, useContext } from 'react';
 import { ChainId } from '@common/types';
 import { ExtrinsicBuilding, ExtrinsicBuildingOptions } from '@common/extrinsicService/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { SubmittableResultResult } from '@polkadot/api-base/types/submittable';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { PasswordPage } from '@/screens/password/Password';
 
 type ExtrinsicProviderContextProps = {
   estimateFee: (
@@ -21,26 +20,12 @@ type ExtrinsicProviderContextProps = {
   ) => SubmittableResultResult<'promise'>;
 };
 
-type ProviderStateAuth = {
-  kind: 'auth';
-  resolve: (keyringPair: KeyringPair) => void;
-  reject: () => void;
-};
-
-type ProviderStateContent = {
-  kind: 'content';
-};
-
-type ProviderState = ProviderStateAuth | ProviderStateContent;
-
 const ExtrinsicProviderContext = createContext<ExtrinsicProviderContextProps>({} as ExtrinsicProviderContextProps);
 
 export const FAKE_ACCOUNT_ID = '0x' + '1'.repeat(64);
 
 export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   const { prepareExtrinsic } = useExtrinsicService();
-
-  const [extrinsicState, setExtrinsicState] = useState<ProviderState>({ kind: 'content' });
 
   async function estimateFee(
     chainId: ChainId,
@@ -60,36 +45,20 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   ): SubmittableResultResult<`promise`> {
     const extrinsicPromise = prepareExtrinsic<'promise'>(chainId, building, options);
 
-    const keyringPromise = new Promise<KeyringPair>(function (resolve, reject) {
-      const providerState = { kind: 'auth', resolve, reject } as ProviderStateAuth;
-      setExtrinsicState(providerState);
+    const keyringPromise = new Promise<KeyringPair>(function () {});
+
+    return extrinsicPromise.then(async (extrinsic) => {
+      const keyringPair = await keyringPromise;
+      await extrinsic.signAsync(keyringPair);
+      keyringPair.lock();
+
+      return await extrinsic.send();
     });
-
-    return extrinsicPromise
-      .then(async (extrinsic) => {
-        const keyringPair = await keyringPromise;
-        await extrinsic.signAsync(keyringPair);
-        keyringPair.lock();
-
-        return await extrinsic.send();
-      })
-      .finally(() => {
-        setExtrinsicState({ kind: 'content' });
-      });
-  }
-
-  let content;
-  switch (extrinsicState.kind) {
-    case 'content':
-      content = children;
-      break;
-    case 'auth':
-      content = <PasswordPage onResolve={extrinsicState.resolve} onReject={extrinsicState.reject} />;
   }
 
   return (
     <ExtrinsicProviderContext.Provider value={{ estimateFee, submitExtrinsic }}>
-      {content}
+      {children}
     </ExtrinsicProviderContext.Provider>
   );
 };

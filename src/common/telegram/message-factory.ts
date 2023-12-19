@@ -1,5 +1,6 @@
 import { HexString } from '@common/types';
-import { WebApp, ITelegramMessageFactory } from './types';
+import { ITelegramMessageFactory } from './types';
+import { WebApp } from '@twa-dev/types';
 
 export const getMessageFactory = (webApp: WebApp): ITelegramMessageFactory => {
   function prepareWalletCreationData(publicKey: HexString): string | null {

@@ -41,7 +41,7 @@ export const kusama: Chain = {
     {
       url: 'wss://kusama-rpc.dwellir.com',
       name: 'Dwellir node',
-    }
+    },
   ],
   addressPrefix: 2,
 };
