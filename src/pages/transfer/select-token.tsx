@@ -1,3 +1,4 @@
+'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -17,7 +18,7 @@ export default function SelectToken() {
     BackButton?.onClick(() => {
       router.push(Paths.TRANSFER);
     });
-  }, [BackButton]);
+  }, []);
 
   return (
     <div className="min-h-screen p-4">

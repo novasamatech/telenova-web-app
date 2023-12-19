@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Input } from '@nextui-org/react';
@@ -19,7 +20,7 @@ export default function Address() {
     BackButton?.onClick(() => {
       router.push(Paths.TRANSFER_SELECT_TOKEN);
     });
-  }, [BackButton, MainButton]);
+  }, []);
 
   useEffect(() => {
     if (address.length) {
