@@ -11,7 +11,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
-      setMnenonic(value);
+      setMnenonic(value as string | null);
     });
 
     // to avoid blinking

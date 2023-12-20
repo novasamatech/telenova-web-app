@@ -7,6 +7,7 @@ import {
   FootnoteText,
   LabelText,
   HelpText,
+  TextBase,
 } from './Typography';
 import { Icon, IconButton } from './Icon';
 import Price from './Price/Price';
@@ -15,8 +16,10 @@ import AssetsList from './Assets/AssetsList';
 import Plate from './Plate/Plate';
 import PasswordForm from './PasswordForm/PasswordForm';
 import Shimmering from './Shimmering/Shimmering';
+import Identicon from './Identicon/Identicon';
 
 export {
+  TextBase,
   FootnoteText,
   BodyText,
   TitleText,
@@ -33,4 +36,5 @@ export {
   Plate,
   PasswordForm,
   Shimmering,
+  Identicon,
 };

@@ -151,22 +151,15 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, ba
 //     );
 // }
 
-// async function handleFee() {
-//   extrinsicService
-//     .estimateFee(polkadot.chainId, (builder) =>
-//       builder.addCall(
-//         builder.api.tx.balances.transferKeepAlive(
-//           '0xcc23ed33549e874ae7c7653fc5d95b3242dc7df5742664b4809e337a13126433',
-//           '1234',
-//         ),
-//       ),
-//     )
-//     .then(
-//       (fee) => {
-//         alert('Fee: ' + fee);
-//       },
-//       (failure) => {
-//         alert('Failed to calculate fee: ' + failure);
-//       },
-//     );
+// export async function handleFee(estimateFee, chainId: ChainId, address: Address) {
+//   estimateFee(chainId, (builder: ExtrinsicBuilder) =>
+//     builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(address), '0')),
+//   ).then(
+//     (fee) => {
+//       alert('Fee: ' + fee);
+//     },
+//     (failure) => {
+//       alert('Failed to calculate fee: ' + failure);
+//     },
+//   );
 // }

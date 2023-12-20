@@ -7,9 +7,11 @@ export const Paths = {
   ONBOARDING_IMPORT_WALLET: '/onboarding/import-wallet',
 
   DASHBOARD: '/dashboard',
+
   TRANSFER: '/transfer',
   TRANSFER_SELECT_TOKEN: '/transfer/select-token',
   TRANSFER_ADDRESS: '/transfer/address',
+  TRANSFER_AMOUNT: '/transfer/amount',
 } as const;
 
 export type PathValue = (typeof Paths)[keyof typeof Paths];

@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import Script from 'next/script';
-import type { WebAppUser, WebApp, MainButton } from '@common/telegram/types';
+import { WebApp, WebAppUser, MainButton, BackButton } from '@twa-dev/types';
 
 export interface ITelegramContext {
   webApp?: WebApp;
   user?: WebAppUser;
   MainButton?: MainButton;
-  BackButton?: MainButton;
+  BackButton?: BackButton;
 }
 
 export const TelegramContext = createContext<ITelegramContext>({});

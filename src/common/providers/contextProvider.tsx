@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AssetAccount, HexString } from '../types';
+import { AssetAccount, HexString, TrasferAsset } from '../types';
 import { getWallet } from '../wallet';
 
 export interface IContext {
   assets: AssetAccount[] | [];
   publicKey?: HexString;
-  selectedAsset?: AssetAccount;
+  selectedAsset?: TrasferAsset;
   setPublicKey: React.Dispatch<React.SetStateAction<HexString | undefined>>;
   setAssets: React.Dispatch<React.SetStateAction<AssetAccount[]>>;
-  setSelectedAsset: React.Dispatch<React.SetStateAction<AssetAccount | undefined>>;
+  setSelectedAsset: React.Dispatch<React.SetStateAction<TrasferAsset | undefined>>;
 }
 
 export const GlobalContext = createContext<IContext>({

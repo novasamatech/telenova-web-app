@@ -1,6 +1,7 @@
+import { WebApp } from '@twa-dev/types';
 import { HexString } from '../types';
 import { getMessageFactory } from './message-factory';
-import { WebApp, ITelegramBotApi } from './types';
+import { ITelegramBotApi } from './types';
 
 const SUBMIT_WALLET_PATH = '/submit/wallet';
 
