@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 // @ts-expect-error no types
 import MiddleEllipsis from 'react-middle-ellipsis';
-import { Button, Input } from '@nextui-org/react';
+import { Button, CircularProgress, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -39,15 +39,12 @@ export default function AmountPage() {
     if (!selectedAsset) return;
 
     (async () => {
-      const fee =
-        selectedAsset.fee ||
-        (await handleFee(estimateFee, selectedAsset.chainId, selectedAsset.address, selectedAsset.precision));
+      const fee = selectedAsset.fee || (await handleFee(estimateFee, selectedAsset.chainId, selectedAsset.precision));
       const formattedBalance = Number(
         formatBalance(selectedAsset.transferableBalance, selectedAsset.precision).formattedValue,
       );
 
-      // should we round it more?
-      const max = Math.max(formattedBalance - fee, 0);
+      const max = Number(Math.max(formattedBalance - fee, 0).toFixed(5));
       setMaxAmountToSend(max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
     })();
@@ -102,9 +99,9 @@ export default function AmountPage() {
             </MiddleEllipsis>
           </span>
         </HeadlineText>
-        <Button variant="light" size="sm" onClick={handleMaxSend}>
+        <Button variant="light" size="md" onClick={handleMaxSend}>
           <CaptionText className="text-text-link">
-            Max: {maxAmountToSend} {selectedAsset?.symbol}
+            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block" />} {selectedAsset?.symbol}
           </CaptionText>
         </Button>
       </div>

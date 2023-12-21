@@ -3,7 +3,7 @@ import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
 import { AccountId, Address } from '../types';
 
 const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
-const PUBLIC_KEY_LENGTH_BYTES = 32;
+const ACCOUNT_ID_LENGTH = 32;
 
 /**
  * Check is account's address valid
@@ -14,7 +14,7 @@ export const validateAddress = (address?: Address | AccountId): boolean => {
   if (!address) return false;
 
   if (isU8a(address) || isHex(address)) {
-    return u8aToU8a(address).length === PUBLIC_KEY_LENGTH_BYTES;
+    return u8aToU8a(address).length === ACCOUNT_ID_LENGTH;
   }
 
   try {

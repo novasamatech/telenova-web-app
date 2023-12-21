@@ -1,19 +1,18 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { ChainId } from '@common/types';
-import { EstimateFee, ExtrinsicBuilding, ExtrinsicBuildingOptions } from '@common/extrinsicService/types';
-import { Balance } from '@polkadot/types/interfaces';
-import { SubmittableResultResult } from '@polkadot/api-base/types/submittable';
+import {
+  EstimateFee,
+  ExtrinsicBuilding,
+  ExtrinsicBuildingOptions,
+  SubmitExtrinsic,
+} from '@common/extrinsicService/types';
+import { Balance, Hash } from '@polkadot/types/interfaces';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
-import { KeyringPair } from '@polkadot/keyring/types';
+import { getKeyringPair } from '../wallet';
 
 type ExtrinsicProviderContextProps = {
   estimateFee: EstimateFee;
-
-  submitExtrinsic: (
-    chainId: ChainId,
-    building: ExtrinsicBuilding,
-    options?: Partial<ExtrinsicBuildingOptions>,
-  ) => SubmittableResultResult<'promise'>;
+  submitExtrinsic: SubmitExtrinsic;
 };
 
 const ExtrinsicProviderContext = createContext<ExtrinsicProviderContextProps>({} as ExtrinsicProviderContextProps);
@@ -34,17 +33,17 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
     return paymentInfo.partialFee;
   }
 
-  function submitExtrinsic(
+  async function submitExtrinsic(
     chainId: ChainId,
     building: ExtrinsicBuilding,
     options?: Partial<ExtrinsicBuildingOptions>,
-  ): SubmittableResultResult<`promise`> {
+  ): Promise<Hash | undefined> {
     const extrinsicPromise = prepareExtrinsic<'promise'>(chainId, building, options);
 
-    const keyringPromise = new Promise<KeyringPair>(function () {});
-
     return extrinsicPromise.then(async (extrinsic) => {
-      const keyringPair = await keyringPromise;
+      const keyringPair = getKeyringPair();
+
+      if (!keyringPair) return;
       await extrinsic.signAsync(keyringPair);
       keyringPair.lock();
 

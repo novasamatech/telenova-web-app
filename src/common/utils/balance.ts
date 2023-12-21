@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { decodeAddress } from '@polkadot/keyring';
-import { Address, AssetAccount, ChainId } from '../types';
+import { BN, BN_TEN } from '@polkadot/util';
+
+import { AssetAccount, ChainId, TrasferAsset } from '../types';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
-import { EstimateFee, ExtrinsicBuilder } from '../extrinsicService/types';
+import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
 import { Balance } from '@polkadot/types/interfaces';
 
 const ZERO_BALANCE = '0';
@@ -141,28 +143,47 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, ba
   );
 };
 
-// async function handleSign() {
-//   extrinsicService
-//     .submitExtrinsic(polkadot.chainId, (builder) => builder.addCall(builder.api.tx.system.remark('Hello')))
-//     .then(
-//       (hash) => {
-//         alert('Success: ' + hash);
-//       },
-//       (failure) => {
-//         alert('Failed: ' + failure);
-//       },
-//     );
-// }
+export const formatAmount = (amount: string, precision: number): string => {
+  if (!amount) return ZERO_BALANCE;
+
+  const isDecimalValue = amount.match(/^(\d+)\.(\d+)$/);
+  const bnPrecision = new BN(precision);
+  if (isDecimalValue) {
+    const div = new BN(amount.replace(/\.\d*$/, ''));
+    const modString = amount.replace(/^\d+\./, '').slice(0, precision);
+    const mod = new BN(modString);
+
+    return div
+      .mul(BN_TEN.pow(bnPrecision))
+      .add(mod.mul(BN_TEN.pow(new BN(precision - modString.length))))
+      .toString();
+  }
+
+  return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision)).toString();
+};
+
+export async function handleSend(
+  submitExtrinsic: SubmitExtrinsic,
+  { destination, chainId, amount, transferAll, precision }: TrasferAsset,
+) {
+  const decodedAddress = decodeAddress(destination);
+
+  return await submitExtrinsic(chainId, (builder) => {
+    const transferFunction = transferAll
+      ? builder.api.tx.balances.transferAll(decodedAddress, false)
+      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(amount as string, precision));
+
+    builder.addCall(transferFunction);
+  }).then((hash) => {
+    console.log('Success, Hash:', hash?.toString());
+  });
+}
 
 const FAKE_AMMOUNT = '1';
-export async function handleFee(
-  estimateFee: EstimateFee,
-  chainId: ChainId,
-  address: Address,
-  precision: number,
-): Promise<number> {
+const FAKE_ACCOUNT = '5FHhXAVs62Xx18YhnYFzU2pQ2wN2h41UBMZRJ88sSJxkesVb';
+export async function handleFee(estimateFee: EstimateFee, chainId: ChainId, precision: number): Promise<number> {
   return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
-    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(address), FAKE_AMMOUNT)),
+    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(FAKE_ACCOUNT), FAKE_AMMOUNT)),
   ).then((fee: Balance) => {
     const { formattedValue } = formatBalance(fee.toString(), precision);
 

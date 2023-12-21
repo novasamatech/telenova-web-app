@@ -1,7 +1,7 @@
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api-base/types';
 import { ChainId } from '@common/types';
-import { Balance } from '@polkadot/types/interfaces';
+import { Balance, Hash } from '@polkadot/types/interfaces';
 
 export interface ExtrinsicBuilder {
   api: ApiPromise;
@@ -37,3 +37,9 @@ export type EstimateFee = (
   building: ExtrinsicBuilding,
   options?: Partial<ExtrinsicBuildingOptions>,
 ) => Promise<Balance>;
+
+export type SubmitExtrinsic = (
+  chainId: ChainId,
+  building: ExtrinsicBuilding,
+  options?: Partial<ExtrinsicBuildingOptions>,
+) => Promise<Hash | undefined>;
