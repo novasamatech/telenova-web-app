@@ -11,7 +11,7 @@ import { Paths } from '@/common/routing';
 import { HeadlineText, Icon, Identicon, CaptionText, LargeTitleText, TextBase } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { handleFee } from '@/common/utils/balance';
+import { formatBalance, handleFee } from '@/common/utils/balance';
 
 export default function AmountPage() {
   const router = useRouter();
@@ -42,9 +42,12 @@ export default function AmountPage() {
       const fee =
         selectedAsset.fee ||
         (await handleFee(estimateFee, selectedAsset.chainId, selectedAsset.address, selectedAsset.precision));
+      const formattedBalance = Number(
+        formatBalance(selectedAsset.transferableBalance, selectedAsset.precision).formattedValue,
+      );
 
       // should we round it more?
-      const max = Math.max(Number(selectedAsset.transferableBalance) - fee, 0);
+      const max = Math.max(formattedBalance - fee, 0);
       setMaxAmountToSend(max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
     })();
