@@ -1,7 +1,10 @@
 import BigNumber from 'bignumber.js';
-import { AssetAccount } from '../types';
+import { decodeAddress } from '@polkadot/keyring';
+import { Address, AssetAccount, ChainId } from '../types';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
+import { EstimateFee, ExtrinsicBuilder } from '../extrinsicService/types';
+import { Balance } from '@polkadot/types/interfaces';
 
 const ZERO_BALANCE = '0';
 
@@ -151,15 +154,18 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, ba
 //     );
 // }
 
-// export async function handleFee(estimateFee, chainId: ChainId, address: Address) {
-//   estimateFee(chainId, (builder: ExtrinsicBuilder) =>
-//     builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(address), '0')),
-//   ).then(
-//     (fee) => {
-//       alert('Fee: ' + fee);
-//     },
-//     (failure) => {
-//       alert('Failed to calculate fee: ' + failure);
-//     },
-//   );
-// }
+const FAKE_AMMOUNT = '1';
+export async function handleFee(
+  estimateFee: EstimateFee,
+  chainId: ChainId,
+  address: Address,
+  precision: number,
+): Promise<number> {
+  return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
+    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(address), FAKE_AMMOUNT)),
+  ).then((fee: Balance) => {
+    const { formattedValue } = formatBalance(fee.toString(), precision);
+
+    return Number(formattedValue);
+  });
+}

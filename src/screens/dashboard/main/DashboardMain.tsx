@@ -20,10 +20,11 @@ export const DashboardMain = () => {
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
   const { publicKey, setAssets, assets } = useGlobalContext();
-  const { user, MainButton } = useTelegram();
+  const { user, MainButton, BackButton } = useTelegram();
 
   useEffect(() => {
     MainButton?.hide();
+    BackButton?.hide();
     if (!publicKey) {
       return;
     }

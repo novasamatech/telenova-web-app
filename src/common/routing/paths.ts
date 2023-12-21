@@ -12,6 +12,8 @@ export const Paths = {
   TRANSFER_SELECT_TOKEN: '/transfer/select-token',
   TRANSFER_ADDRESS: '/transfer/address',
   TRANSFER_AMOUNT: '/transfer/amount',
+  TRANSFER_CONFIRMATION: '/transfer/confirmation',
+  TRANSFER_RESULT: '/transfer/result',
 } as const;
 
 export type PathValue = (typeof Paths)[keyof typeof Paths];

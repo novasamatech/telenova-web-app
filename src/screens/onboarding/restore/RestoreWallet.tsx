@@ -27,26 +27,30 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
   }, []);
 
   useEffect(() => {
+    const callback = () => {
+      if (password.length < 8) {
+        setIsPasswordValid(false);
+
+        return;
+      }
+      const wallet = initializeWalletFromCloud(password, mnemonic);
+      setIsPasswordValid(Boolean(wallet));
+      if (wallet) {
+        setPublicKey(wallet?.publicKey);
+        router.push(Paths.DASHBOARD);
+      }
+    };
+
     if (password.length) {
       MainButton?.enable();
-
-      MainButton?.onClick(() => {
-        if (password.length < 8) {
-          setIsPasswordValid(false);
-
-          return;
-        }
-        const wallet = initializeWalletFromCloud(password, mnemonic);
-        setIsPasswordValid(Boolean(wallet));
-
-        if (wallet) {
-          setPublicKey(wallet?.publicKey);
-          router.push(Paths.DASHBOARD);
-        }
-      });
+      MainButton?.onClick(callback);
     } else {
       MainButton?.disable();
     }
+
+    return () => {
+      MainButton?.offClick(callback);
+    };
   }, [password]);
 
   return (

@@ -12,13 +12,15 @@ export default function TransferPage() {
   const { BackButton } = useTelegram();
 
   useEffect(() => {
-    BackButton?.show();
-    BackButton?.onClick(() => {
+    const callback = () => {
       router.push(Paths.DASHBOARD);
-    });
+    };
+    BackButton?.show();
+    BackButton?.onClick(callback);
 
     return () => {
       BackButton?.hide();
+      BackButton?.offClick(callback);
     };
   }, []);
 

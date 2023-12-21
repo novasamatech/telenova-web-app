@@ -1,17 +1,13 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { ChainId } from '@common/types';
-import { ExtrinsicBuilding, ExtrinsicBuildingOptions } from '@common/extrinsicService/types';
+import { EstimateFee, ExtrinsicBuilding, ExtrinsicBuildingOptions } from '@common/extrinsicService/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { SubmittableResultResult } from '@polkadot/api-base/types/submittable';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
 import { KeyringPair } from '@polkadot/keyring/types';
 
 type ExtrinsicProviderContextProps = {
-  estimateFee: (
-    chainId: ChainId,
-    building: ExtrinsicBuilding,
-    options?: Partial<ExtrinsicBuildingOptions>,
-  ) => Promise<Balance>;
+  estimateFee: EstimateFee;
 
   submitExtrinsic: (
     chainId: ChainId,

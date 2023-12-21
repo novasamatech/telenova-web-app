@@ -14,10 +14,17 @@ export default function SelectTokenPage() {
   const { assets, setSelectedAsset } = useGlobalContext();
 
   useEffect(() => {
-    BackButton?.show();
-    BackButton?.onClick(() => {
+    router.prefetch(Paths.TRANSFER_ADDRESS);
+
+    const callback = () => {
       router.push(Paths.TRANSFER);
-    });
+    };
+    BackButton?.show();
+    BackButton?.onClick(callback);
+
+    return () => {
+      BackButton?.offClick(callback);
+    };
   }, []);
 
   return (

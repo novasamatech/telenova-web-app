@@ -5,14 +5,15 @@ import { getWallet } from '../wallet';
 export interface IContext {
   assets: AssetAccount[] | [];
   publicKey?: HexString;
-  selectedAsset?: TrasferAsset;
+  selectedAsset?: TrasferAsset | null;
   setPublicKey: React.Dispatch<React.SetStateAction<HexString | undefined>>;
   setAssets: React.Dispatch<React.SetStateAction<AssetAccount[]>>;
-  setSelectedAsset: React.Dispatch<React.SetStateAction<TrasferAsset | undefined>>;
+  setSelectedAsset: React.Dispatch<React.SetStateAction<TrasferAsset | null>>;
 }
 
 export const GlobalContext = createContext<IContext>({
   assets: [],
+  selectedAsset: null,
   setPublicKey: () => {},
   setAssets: () => {},
   setSelectedAsset: () => {},
@@ -22,7 +23,7 @@ export const GlobalContext = createContext<IContext>({
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [publicKey, setPublicKey] = useState<HexString>();
   const [assets, setAssets] = useState<AssetAccount[]>([]);
-  const [selectedAsset, setSelectedAsset] = useState<AssetAccount>();
+  const [selectedAsset, setSelectedAsset] = useState<AssetAccount | null>(null);
 
   useEffect(() => {
     if (!publicKey) {

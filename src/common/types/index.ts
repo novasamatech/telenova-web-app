@@ -9,6 +9,7 @@ export function unwrapHexString(string: string): HexString {
 export type ChainId = HexString;
 export type AssetId = number;
 export type Address = string;
+export type AccountId = HexString;
 export type PublicKey = HexString;
 
 export type ChainAssetId = {
@@ -34,6 +35,8 @@ export type AssetAccount = ChainAssetAccount & {
 export type TrasferAsset = AssetAccount & {
   destination?: string;
   amount?: string;
+  fee?: number;
+  transferAll?: boolean;
 };
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
 
