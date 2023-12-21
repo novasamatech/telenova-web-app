@@ -3,7 +3,7 @@ import { ExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { ChainRegistry } from '@/common/chainRegistry';
 import AmountPage from '@/screens/transfer/amount/amount';
 
-// TODO: swithch to Layout pattern
+// TODO: switch to Layout pattern
 export default function Amount() {
   return (
     <ChainRegistry>
