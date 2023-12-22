@@ -58,13 +58,13 @@ export const DashboardMain = () => {
     })();
   }, [publicKey]);
 
-  function clearWallet() {
-    resetWallet();
+  function clearWallet(clearLocal?: boolean) {
+    resetWallet(clearLocal);
     router.replace(Paths.ONBOARDING);
   }
 
   return (
-    <div className="min-h-screen flex flex-col p-4">
+    <div className="min-h-screen flex flex-col p-4 break-all">
       <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6">
         <Avatar src={user?.photo_url} className="w-10 h-10" name={user?.first_name[0]} />
         <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
@@ -87,6 +87,12 @@ export const DashboardMain = () => {
       <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
         Reset Wallet
       </button>
+      <button className="btn btn-blue mt-4" onClick={() => clearWallet(true)}>
+        Reset Wallet Local
+      </button>
+      <BodyText>
+        Debug info: <br /> secure mnemonic: {localStorage.getItem('@secure.s.mnemonic')}
+      </BodyText>
     </div>
   );
 };
