@@ -166,8 +166,9 @@ export const formatAmount = (amount: string, precision: number): string => {
 export async function handleSend(
   submitExtrinsic: SubmitExtrinsic,
   { destinationAddress, chainId, amount, transferAll, precision }: TrasferAsset,
+  giftTransfer?: string,
 ) {
-  const decodedAddress = decodeAddress(destinationAddress);
+  const decodedAddress = decodeAddress(destinationAddress || giftTransfer);
 
   return await submitExtrinsic(chainId, (builder) => {
     const transferFunction = transferAll
@@ -180,13 +181,17 @@ export async function handleSend(
   });
 }
 
-const FAKE_AMMOUNT = '1';
-
-export async function handleFee(estimateFee: EstimateFee, chainId: ChainId, precision: number): Promise<number> {
+export async function handleFee(
+  estimateFee: EstimateFee,
+  chainId: ChainId,
+  precision: number,
+  isGift?: boolean,
+): Promise<number> {
   return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
-    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(FAKE_ACCOUNT_ID), FAKE_AMMOUNT)),
+    builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(FAKE_ACCOUNT_ID), false)),
   ).then((fee: Balance) => {
-    const { formattedValue } = formatBalance(fee.toString(), precision);
+    const finalFee = isGift ? Number(fee) * 2 : fee;
+    const { formattedValue } = formatBalance(finalFee.toString(), precision);
 
     return Number(formattedValue);
   });

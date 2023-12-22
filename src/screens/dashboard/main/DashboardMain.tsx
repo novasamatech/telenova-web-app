@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { Avatar } from '@nextui-org/react';
 
-import { resetWallet } from '@common/wallet';
+import { getMnemonic, resetWallet } from '@common/wallet';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
 import { ChainAssetAccount } from '@common/types';
@@ -40,6 +40,7 @@ export const DashboardMain = () => {
           assetId: chain.assets[0].assetId,
           symbol: chain.assets[0].symbol,
           precision: chain.assets[0].precision,
+          addressPrefix: chain.addressPrefix,
         };
         const address = encodeAddress(publicKey, chain.addressPrefix);
 
@@ -91,7 +92,9 @@ export const DashboardMain = () => {
         Reset Wallet Local
       </button>
       <BodyText>
-        Debug info: <br /> secure mnemonic: {localStorage.getItem('@secure.s.mnemonic')}
+        Debug info: <br /> mnemonic: {getMnemonic()}
+        <br />
+        public key: {publicKey}
       </BodyText>
     </div>
   );

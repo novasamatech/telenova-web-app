@@ -24,6 +24,7 @@ export type ChainAssetAccount = {
   symbol: string;
   name: string;
   precision: number;
+  addressPrefix: number;
 };
 
 export type AssetAccount = ChainAssetAccount & {
@@ -37,6 +38,7 @@ export type TrasferAsset = AssetAccount & {
   amount?: string;
   fee?: number;
   transferAll?: boolean;
+  isGift?: boolean;
 };
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
 

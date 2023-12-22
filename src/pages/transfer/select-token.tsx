@@ -11,7 +11,7 @@ import { TitleText, AssetBalance } from '@/components';
 export default function SelectTokenPage() {
   const router = useRouter();
   const { BackButton } = useTelegram();
-  const { assets, setSelectedAsset } = useGlobalContext();
+  const { assets, setSelectedAsset, selectedAsset } = useGlobalContext();
 
   useEffect(() => {
     router.prefetch(Paths.TRANSFER_ADDRESS);
@@ -32,7 +32,11 @@ export default function SelectTokenPage() {
       <TitleText className="mt-10 mb-6">Select a token to send</TitleText>
       <div className="flex flex-col gap-2 mt-4">
         {assets.map((asset) => (
-          <Link href={Paths.TRANSFER_ADDRESS} key={asset.chainId} onClick={() => setSelectedAsset(asset)}>
+          <Link
+            href={selectedAsset?.isGift ? Paths.TRANSFER_AMOUNT : Paths.TRANSFER_ADDRESS}
+            key={asset.chainId}
+            onClick={() => setSelectedAsset((prev) => (prev ? { isGift: prev.isGift, ...asset } : asset))}
+          >
             <AssetBalance
               asset={asset}
               balance={asset.totalBalance}

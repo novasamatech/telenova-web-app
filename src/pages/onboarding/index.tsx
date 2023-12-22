@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
+import { CircularProgress } from '@nextui-org/react';
 
 export default function OnboardingPage() {
   const { webApp } = useTelegram();
@@ -21,7 +22,12 @@ export default function OnboardingPage() {
   }, [webApp]);
 
   // TODO: replace with loader
-  if (isLoading) return <div>LOADING</div>;
+  if (isLoading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <CircularProgress size="lg" />
+      </div>
+    );
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center text-center p-4">
