@@ -65,10 +65,12 @@ export const getKeyringPair = (): KeyringPair | undefined => {
   }
 };
 
-export const resetWallet = () => {
+export const resetWallet = (clearLocal: boolean = false) => {
   localStorage.removeItem(PUBLIC_KEY_STORE);
   secureLocalStorage.removeItem(MNEMONIC_STORE);
-  window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
+  if (!clearLocal) {
+    window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
+  }
 };
 
 export const initializeWalletFromCloud = (password: string, encryptedMnemonic: string): Wallet | null => {

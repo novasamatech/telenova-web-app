@@ -80,7 +80,7 @@ export default function AddressPage() {
       />
       {address &&
         (isAddressValid ? (
-          <div className="flex gap-2 items-center mt-4 self-start">
+          <div className="flex gap-2 items-center mt-4 self-start break-all">
             <Identicon address={address} />
             <BodyText> {address}</BodyText>
           </div>
