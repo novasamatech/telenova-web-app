@@ -33,7 +33,7 @@ export type AssetAccount = ChainAssetAccount & {
 };
 
 export type TrasferAsset = AssetAccount & {
-  destination?: string;
+  destinationAddress?: string;
   amount?: string;
   fee?: number;
   transferAll?: boolean;

@@ -32,7 +32,7 @@ export default function AddressPage() {
 
   useEffect(() => {
     const callback = () => {
-      setSelectedAsset((prev) => ({ ...prev!, destination: address }));
+      setSelectedAsset((prev) => ({ ...prev!, destinationAddress: address }));
       router.push(Paths.TRANSFER_AMOUNT);
     };
 

@@ -87,12 +87,6 @@ export const DashboardMain = () => {
       <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
         Reset Wallet
       </button>
-      {/* <button className="btn btn-blue mt-4" onClick={handleSign}>
-        Sign
-      </button>
-      <button className="btn btn-blue mt-4" onClick={handleFee}>
-        Calculate Fee
-      </button> */}
     </div>
   );
 };

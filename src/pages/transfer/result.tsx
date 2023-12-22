@@ -35,7 +35,7 @@ export default function ResultPage() {
         {selectedAsset?.amount} {selectedAsset?.symbol} Sent to
       </TitleText>
       <HeadlineText className="text-text-hint m-3 break-all" align="center">
-        {selectedAsset?.destination}
+        {selectedAsset?.destinationAddress}
       </HeadlineText>
       <HeadlineText className="text-text-hint" align="center">
         Your transaction has been sent to the network and will be processed in a few seconds.

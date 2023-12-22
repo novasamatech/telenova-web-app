@@ -85,13 +85,13 @@ export default function AmountPage() {
   return (
     <>
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
-        <Identicon address={selectedAsset?.destination} />
+        <Identicon address={selectedAsset?.destinationAddress} />
         <HeadlineText className="flex gap-1">
           Send to
           <span className="max-w-[120px]">
             <MiddleEllipsis>
               <TextBase as="span" className="text-body-bold">
-                {selectedAsset?.destination}
+                {selectedAsset?.destinationAddress}
               </TextBase>
             </MiddleEllipsis>
           </span>

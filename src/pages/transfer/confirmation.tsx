@@ -60,7 +60,7 @@ export default function ConfirmationPage() {
   const details = [
     {
       title: 'Recipients address',
-      value: selectedAsset?.destination,
+      value: selectedAsset?.destinationAddress,
     },
     {
       title: 'Fee',
@@ -79,13 +79,13 @@ export default function ConfirmationPage() {
   return (
     <>
       <div className="grid grid-cols-[40px,1fr] items-center">
-        <Identicon address={selectedAsset?.destination} />
+        <Identicon address={selectedAsset?.destinationAddress} />
         <HeadlineText className="flex gap-1">
           Send to
           <span className="w-[130px]">
             <MiddleEllipsis>
               <TextBase as="span" className="text-body-bold">
-                {selectedAsset?.destination}
+                {selectedAsset?.destinationAddress}
               </TextBase>
             </MiddleEllipsis>
           </span>

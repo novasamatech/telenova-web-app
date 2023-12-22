@@ -165,9 +165,9 @@ export const formatAmount = (amount: string, precision: number): string => {
 
 export async function handleSend(
   submitExtrinsic: SubmitExtrinsic,
-  { destination, chainId, amount, transferAll, precision }: TrasferAsset,
+  { destinationAddress, chainId, amount, transferAll, precision }: TrasferAsset,
 ) {
-  const decodedAddress = decodeAddress(destination);
+  const decodedAddress = decodeAddress(destinationAddress);
 
   return await submitExtrinsic(chainId, (builder) => {
     const transferFunction = transferAll
