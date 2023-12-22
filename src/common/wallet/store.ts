@@ -44,16 +44,8 @@ export const backupMnemonic = (mnemonic: string, password: string): void => {
   window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
 };
 
-export const getMnemonic = (password: string): string | null => {
-  const encryptedMnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
-
-  if (encryptedMnemonic) {
-    const mnemonic = AES.decrypt(encryptedMnemonic, password);
-
-    return mnemonic.toString(CryptoJS.enc.Utf8);
-  } else {
-    return null;
-  }
+export const getMnemonic = (): string | null => {
+  return (secureLocalStorage.getItem(MNEMONIC_STORE) as string) || null;
 };
 
 /**
@@ -61,14 +53,15 @@ export const getMnemonic = (password: string): string | null => {
  * Make sure to call lock() after pair was used to clean up secret!
  * @param password
  */
-export const getKeyringPair = (password: string): KeyringPair | undefined => {
+export const getKeyringPair = (): KeyringPair | undefined => {
   try {
-    const mnemonic = getMnemonic(password);
-    if (mnemonic === null) return undefined;
+    const mnemonic = getMnemonic();
+
+    if (mnemonic === null) return;
 
     return keyring.createFromUri(mnemonic);
   } catch (e) {
-    return undefined;
+    console.warn(e);
   }
 };
 

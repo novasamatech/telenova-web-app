@@ -15,6 +15,10 @@ export default function CreateWalletPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const callback = () => {
+      router.push(Paths.DASHBOARD);
+    };
+
     (async () => {
       if (!publicKey) {
         console.error("Can't create wallet when public key is missing");
@@ -31,9 +35,7 @@ export default function CreateWalletPage() {
       // TODO: Handle errors here and display retry page maybe
       await completeOnboarding(publicKey, webApp);
 
-      MainButton?.onClick(() => {
-        router.push(Paths.DASHBOARD);
-      });
+      MainButton?.onClick(callback);
 
       setTimeout(() => {
         setIsLoading(false);
@@ -47,6 +49,7 @@ export default function CreateWalletPage() {
       MainButton?.setText('Continue');
       MainButton?.hide();
       MainButton?.hideProgress();
+      MainButton?.offClick(callback);
     };
   }, []);
 

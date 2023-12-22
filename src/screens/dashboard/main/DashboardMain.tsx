@@ -20,10 +20,11 @@ export const DashboardMain = () => {
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
   const { publicKey, setAssets, assets } = useGlobalContext();
-  const { user, MainButton } = useTelegram();
+  const { user, MainButton, BackButton } = useTelegram();
 
   useEffect(() => {
     MainButton?.hide();
+    BackButton?.hide();
     if (!publicKey) {
       return;
     }
@@ -86,12 +87,6 @@ export const DashboardMain = () => {
       <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
         Reset Wallet
       </button>
-      {/* <button className="btn btn-blue mt-4" onClick={handleSign}>
-        Sign
-      </button>
-      <button className="btn btn-blue mt-4" onClick={handleFee}>
-        Calculate Fee
-      </button> */}
     </div>
   );
 };

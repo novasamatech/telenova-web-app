@@ -1,28 +1,22 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { ChainId } from '@common/types';
-import { ExtrinsicBuilding, ExtrinsicBuildingOptions } from '@common/extrinsicService/types';
-import { Balance } from '@polkadot/types/interfaces';
-import { SubmittableResultResult } from '@polkadot/api-base/types/submittable';
+import {
+  EstimateFee,
+  ExtrinsicBuilding,
+  ExtrinsicBuildingOptions,
+  SubmitExtrinsic,
+} from '@common/extrinsicService/types';
+import { Balance, Hash } from '@polkadot/types/interfaces';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
-import { KeyringPair } from '@polkadot/keyring/types';
+import { getKeyringPair } from '../wallet';
+import { FAKE_ACCOUNT_ID } from '../utils/constants';
 
 type ExtrinsicProviderContextProps = {
-  estimateFee: (
-    chainId: ChainId,
-    building: ExtrinsicBuilding,
-    options?: Partial<ExtrinsicBuildingOptions>,
-  ) => Promise<Balance>;
-
-  submitExtrinsic: (
-    chainId: ChainId,
-    building: ExtrinsicBuilding,
-    options?: Partial<ExtrinsicBuildingOptions>,
-  ) => SubmittableResultResult<'promise'>;
+  estimateFee: EstimateFee;
+  submitExtrinsic: SubmitExtrinsic;
 };
 
 const ExtrinsicProviderContext = createContext<ExtrinsicProviderContextProps>({} as ExtrinsicProviderContextProps);
-
-export const FAKE_ACCOUNT_ID = '0x' + '1'.repeat(64);
 
 export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   const { prepareExtrinsic } = useExtrinsicService();
@@ -38,22 +32,20 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
     return paymentInfo.partialFee;
   }
 
-  function submitExtrinsic(
+  async function submitExtrinsic(
     chainId: ChainId,
     building: ExtrinsicBuilding,
     options?: Partial<ExtrinsicBuildingOptions>,
-  ): SubmittableResultResult<`promise`> {
-    const extrinsicPromise = prepareExtrinsic<'promise'>(chainId, building, options);
+  ): Promise<Hash | undefined> {
+    const extrinsic = await prepareExtrinsic<'promise'>(chainId, building, options);
 
-    const keyringPromise = new Promise<KeyringPair>(function () {});
+    const keyringPair = getKeyringPair();
+    if (!keyringPair) return;
 
-    return extrinsicPromise.then(async (extrinsic) => {
-      const keyringPair = await keyringPromise;
-      await extrinsic.signAsync(keyringPair);
-      keyringPair.lock();
+    await extrinsic.signAsync(keyringPair);
+    keyringPair.lock();
 
-      return await extrinsic.send();
-    });
+    return await extrinsic.send();
   }
 
   return (

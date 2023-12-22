@@ -5,6 +5,7 @@ import { Button, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
+import { validateAddress } from '@/common/utils/address';
 import { Icon, HelpText, BodyText, Identicon } from '@/components';
 import { Paths } from '@/common/routing';
 
@@ -16,38 +17,47 @@ export default function AddressPage() {
   const [isAddressValid, setIsAddressValid] = useState(true);
 
   useEffect(() => {
-    BackButton?.show();
-    BackButton?.onClick(() => {
+    router.prefetch(Paths.TRANSFER_AMOUNT);
+    const callback = () => {
       router.push(Paths.TRANSFER_SELECT_TOKEN);
-    });
+    };
+
+    BackButton?.show();
+    BackButton?.onClick(callback);
+
+    return () => {
+      BackButton?.offClick(callback);
+    };
   }, []);
 
   useEffect(() => {
+    const callback = () => {
+      setSelectedAsset((prev) => ({ ...prev!, destinationAddress: address }));
+      router.push(Paths.TRANSFER_AMOUNT);
+    };
+
     if (address.length) {
       MainButton?.show();
-      MainButton?.onClick(() => {
-        setSelectedAsset((prev) => ({ ...prev!, destination: address }));
-        router.push(Paths.TRANSFER_AMOUNT);
-      });
       isAddressValid ? MainButton?.enable() : MainButton?.disable();
+      MainButton?.onClick(callback);
     } else {
       MainButton?.hide();
     }
+
+    return () => {
+      MainButton?.offClick(callback);
+    };
   }, [address, isAddressValid]);
 
   const handleChange = (value: string) => {
     setAddress(value);
-
-    // TODO: validate address
-    setIsAddressValid(value.length > 10);
+    setIsAddressValid(validateAddress(value));
   };
 
   const handleQrCode = () => {
     webApp?.showScanQrPopup({ text: 'Scan QR code' }, (value) => {
       setAddress(value);
-
-      // TODO: validate address
-      setIsAddressValid(true);
+      setIsAddressValid(validateAddress(value));
       webApp.closeScanQrPopup();
     });
   };
