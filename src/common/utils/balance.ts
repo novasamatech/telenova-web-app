@@ -7,6 +7,7 @@ import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
 import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
 import { Balance } from '@polkadot/types/interfaces';
+import { FAKE_ACCOUNT_ID } from './constants';
 
 const ZERO_BALANCE = '0';
 
@@ -180,10 +181,10 @@ export async function handleSend(
 }
 
 const FAKE_AMMOUNT = '1';
-const FAKE_ACCOUNT = '5FHhXAVs62Xx18YhnYFzU2pQ2wN2h41UBMZRJ88sSJxkesVb';
+
 export async function handleFee(estimateFee: EstimateFee, chainId: ChainId, precision: number): Promise<number> {
   return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
-    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(FAKE_ACCOUNT), FAKE_AMMOUNT)),
+    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(FAKE_ACCOUNT_ID), FAKE_AMMOUNT)),
   ).then((fee: Balance) => {
     const { formattedValue } = formatBalance(fee.toString(), precision);
 
