@@ -3,12 +3,13 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 import { useTelegram } from '@common/providers/telegramProvider';
+import { navigateTranferById } from '@common/telegram';
 import { Paths } from '@/common/routing';
 import { Icon, Plate, TitleText, BodyText, HelpText } from '@/components';
 
 export default function Transfer() {
   const router = useRouter();
-  const { BackButton } = useTelegram();
+  const { webApp, BackButton } = useTelegram();
 
   useEffect(() => {
     BackButton?.show();
@@ -21,11 +22,21 @@ export default function Transfer() {
     };
   }, []);
 
+  function navigateTransferById() {
+    if (webApp) {
+      navigateTranferById(webApp);
+    }
+  }
+
   return (
     <div className="min-h-screen p-4">
       <TitleText className="mt-10 mb-6">How to send tokens</TitleText>
       <Plate className="mb-2 rounded-lg">
-        <Link href={''} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
+        <Link
+          href={''}
+          className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4"
+          onClick={() => navigateTransferById()}
+        >
           <Icon name="user" className="w-10 h-10" />
           <div className="grid">
             <BodyText align="left">Telegram Contact</BodyText>

@@ -10,10 +10,6 @@ export type Telegram = {
   WebApp: WebApp;
 };
 
-export interface ITelegram {
-  completeOnboarding: (publicKey: HexString) => void;
-}
-
 export interface ITelegramMessageFactory {
   prepareWalletCreationData: (publicKey: HexString) => string | null;
 }
@@ -88,6 +84,16 @@ export interface WebApp {
    * A method used to send data to the bot.
    */
   sendData(data: any): void;
+  /**
+   * A method used to allow user to navigate to receiver chat
+   */
+  switchInlineQuery(query: string, choose_chat_types: [String]): void;
+
+  /**
+   * A method used to open native telegram links
+   */
+  openTelegramLink(url: string): void;
+
   /**
    * A method that informs the Telegram app that the Web App is ready to be displayed.
    */
