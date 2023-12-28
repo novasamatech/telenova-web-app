@@ -45,7 +45,11 @@ export default function TransferPage() {
       </Plate>
 
       <Plate className="p-3">
-        <Link href={Paths.TRANSFER_SELECT_TOKEN} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
+        <Link
+          href={Paths.TRANSFER_SELECT_TOKEN}
+          className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4"
+          onClick={() => setSelectedAsset(null)}
+        >
           <Icon name="address" className="w-10 h-10" />
           <div className="grid">
             <BodyText align="left" as="span">

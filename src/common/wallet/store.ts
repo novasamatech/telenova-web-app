@@ -68,6 +68,14 @@ export const getKeyringPair = (): KeyringPair | undefined => {
   }
 };
 
+export const getKeyringPairFromSeed = (seed: string): KeyringPair | undefined => {
+  try {
+    return keyring.createFromUri(seed);
+  } catch (e) {
+    console.warn(e);
+  }
+};
+
 export const resetWallet = (clearLocal: boolean = false) => {
   localStorage.removeItem(PUBLIC_KEY_STORE);
   secureLocalStorage.removeItem(MNEMONIC_STORE);

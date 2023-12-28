@@ -10,6 +10,7 @@ import { Balance, Hash } from '@polkadot/types/interfaces';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
 import { getKeyringPair } from '../wallet';
 import { FAKE_ACCOUNT_ID } from '../utils/constants';
+import { KeyringPair } from '@polkadot/keyring/types';
 
 type ExtrinsicProviderContextProps = {
   estimateFee: EstimateFee;
@@ -35,11 +36,12 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   async function submitExtrinsic(
     chainId: ChainId,
     building: ExtrinsicBuilding,
+    giftKeyringPair?: KeyringPair,
     options?: Partial<ExtrinsicBuildingOptions>,
   ): Promise<Hash | undefined> {
     const extrinsic = await prepareExtrinsic<'promise'>(chainId, building, options);
 
-    const keyringPair = getKeyringPair();
+    const keyringPair = giftKeyringPair || getKeyringPair();
     if (!keyringPair) return;
 
     await extrinsic.signAsync(keyringPair);

@@ -38,7 +38,7 @@ export default function CreateGiftPage() {
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
     (async function () {
       await handleSend(submitExtrinsic, selectedAsset as TrasferAsset, wallet.address).then(() => {
-        setLink(createTgLink(wallet.secret, selectedAsset.name as string));
+        setLink(createTgLink(wallet.secret, selectedAsset.symbol as string));
         setLoading(false);
         MainButton?.show();
       });

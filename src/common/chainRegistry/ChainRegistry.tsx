@@ -8,7 +8,7 @@ import { ChainId, StateResolution } from '@common/types';
 
 type ChainRegistryContextProps = {
   getAllChains: () => Promise<Chain[]>;
-  getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
+  getAssetBySymbol: (symbol: string) => Promise<ChainAsset>;
   getChain: (chainId: ChainId) => Promise<Chain | undefined>;
   getConnection: (chainId: ChainId) => Promise<Connection>;
   connectionStates: Record<ChainId, ConnectionState>;

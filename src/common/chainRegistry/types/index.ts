@@ -57,7 +57,7 @@ export type ConnectionRequest = {
 
 export interface IChainProviderService {
   getAllChains: () => Promise<Chain[]>;
-  getAssetBySymbol: (symbol: string) => Promise<ChainAsset | undefined>;
+  getAssetBySymbol: (symbol: string) => Promise<ChainAsset>;
   getChain: (chainId: ChainId) => Promise<Chain | undefined>;
 }
 

@@ -11,7 +11,7 @@ export const useChains = (): IChainProviderService => {
     });
   };
 
-  const getAssetBySymbol = (symbol: string): Promise<ChainAsset | undefined> => {
+  const getAssetBySymbol = (symbol: string): Promise<ChainAsset> => {
     return new Promise(function (resolve) {
       for (const chain of chains) {
         for (const asset of chain.assets) {
@@ -22,8 +22,6 @@ export const useChains = (): IChainProviderService => {
           }
         }
       }
-
-      resolve(undefined);
     });
   };
 
