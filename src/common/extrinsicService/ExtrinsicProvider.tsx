@@ -41,7 +41,7 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   ): Promise<Hash | undefined> {
     const extrinsic = await prepareExtrinsic<'promise'>(chainId, building, options);
 
-    const keyringPair = giftKeyringPair ? giftKeyringPair : getKeyringPair();
+    const keyringPair = giftKeyringPair || getKeyringPair();
     if (!keyringPair) return;
 
     await extrinsic.signAsync(keyringPair);
