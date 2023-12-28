@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { u8aToHex } from '@polkadot/util';
-import { encodeAddress, mnemonicGenerate, mnemonicToMiniSecret, sr25519PairFromSeed } from '@polkadot/util-crypto';
+import {
+  encodeAddress,
+  mnemonicGenerate,
+  mnemonicToMiniSecret,
+  randomAsHex,
+  sr25519PairFromSeed,
+} from '@polkadot/util-crypto';
 import { Keyring } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import secureLocalStorage from 'react-secure-storage';
@@ -77,12 +83,13 @@ export const initializeWalletFromCloud = (password: string, encryptedMnemonic: s
   return createWallet(mnemonic);
 };
 
-export const createGiftWallet = (addressPrefix: number): GiftWallet => {
-  const mnemonic = mnemonicGenerate();
-  const seed = mnemonicToMiniSecret(mnemonic);
-  const keypair = sr25519PairFromSeed(seed);
-  const publicKey: HexString = u8aToHex(keypair.publicKey);
-  const address = encodeAddress(publicKey, addressPrefix);
+const generateGiftSecret = () => {
+  return randomAsHex(10).slice(2);
+};
 
-  return { address, mnemonic };
+export const createGiftWallet = (addressPrefix: number): GiftWallet => {
+  const seed = generateGiftSecret();
+  const account = keyring.createFromUri(seed);
+
+  return { address: encodeAddress(account.publicKey, addressPrefix), secret: seed };
 };

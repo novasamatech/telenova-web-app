@@ -6,5 +6,5 @@ export type Wallet = {
 
 export type GiftWallet = {
   address: Address;
-  mnemonic: string | null;
+  secret: string;
 };

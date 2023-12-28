@@ -29,22 +29,22 @@ export default function TransferPage() {
   return (
     <div className="min-h-screen p-4">
       <TitleText className="mt-10 mb-6">How to send tokens</TitleText>
-      <Plate className="mb-2 rounded-lg">
+      <Plate className="mb-2 p-3">
         <Link
           href={Paths.TRANSFER_SELECT_TOKEN}
           className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4"
           onClick={() => setSelectedAsset({ isGift: true })}
         >
-          <Icon name="user" className="w-10 h-10" />
+          <Icon name="gift" className="w-10 h-10" />
           <div className="grid">
-            <BodyText align="left">Send Gift</BodyText>
+            <BodyText align="left">Send as Gift</BodyText>
             <HelpText className="text-text-hint">Transfer to one of your contacts</HelpText>
           </div>
           <Icon name="chevronForward" className="w-4 h-4" />
         </Link>
       </Plate>
 
-      <Plate className="rounded-lg">
+      <Plate className="p-3">
         <Link href={Paths.TRANSFER_SELECT_TOKEN} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
           <Icon name="address" className="w-10 h-10" />
           <div className="grid">

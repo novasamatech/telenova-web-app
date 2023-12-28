@@ -1,7 +1,7 @@
-import { useGlobalContext } from '@/common/providers/contextProvider';
-
-import AssetBalance from './AssetBalance';
 import { Button } from '@nextui-org/react';
+
+import { useGlobalContext } from '@/common/providers/contextProvider';
+import AssetBalance from './AssetBalance';
 
 const AssetsList = () => {
   const { assets } = useGlobalContext();

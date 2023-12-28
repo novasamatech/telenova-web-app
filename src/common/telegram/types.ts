@@ -26,3 +26,8 @@ export interface ITelegramBotApi {
  * Available app events.
  */
 export type EventType = 'themeChanged' | 'viewportChanged' | 'mainButtonClicked';
+
+export type TgLink = {
+  url: string;
+  text: string;
+};
