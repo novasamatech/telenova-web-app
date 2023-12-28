@@ -2,12 +2,13 @@ import BigNumber from 'bignumber.js';
 import { decodeAddress } from '@polkadot/keyring';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { AssetAccount, ChainId, TrasferAsset } from '../types';
+import { Address, AssetAccount, ChainId, TrasferAsset } from '../types';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
 import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
 import { Balance } from '@polkadot/types/interfaces';
 import { FAKE_ACCOUNT_ID } from './constants';
+import { getKeyringPairFromSeed } from '../wallet';
 
 const ZERO_BALANCE = '0';
 
@@ -194,5 +195,24 @@ export async function handleFee(
     const { formattedValue } = formatBalance(finalFee.toString(), precision);
 
     return Number(formattedValue);
+  });
+}
+
+export async function claimGift(
+  seed: string,
+  address: Address,
+  chainId: ChainId,
+  submitExtrinsic: SubmitExtrinsic,
+): Promise<void> {
+  const keyring = getKeyringPairFromSeed(seed);
+
+  return await submitExtrinsic(
+    chainId,
+    (builder) => {
+      builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(address), false));
+    },
+    keyring,
+  ).then((hash) => {
+    console.log('Success, Hash:', hash?.toString());
   });
 }

@@ -8,8 +8,8 @@ export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): 
   await botApi.submitWallet(publicKey);
 };
 
-export const createTgLink = (secret: string, networkName: string): TgLink => {
-  const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}_${networkName}`;
+export const createTgLink = (secret: string, symbol: string): TgLink => {
+  const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}_${symbol}`;
   const text = 'Here is your gift';
 
   return { url, text };

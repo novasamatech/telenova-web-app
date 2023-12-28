@@ -96,20 +96,25 @@ export default function AmountPage() {
   return (
     <>
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
-        <Identicon address={selectedAsset?.destinationAddress} />
         {selectedAsset?.isGift ? (
-          <HeadlineText>Preparing your gift</HeadlineText>
+          <>
+            <Icon name="gift" className="w-8 h-8" />
+            <HeadlineText>Preparing Gift</HeadlineText>
+          </>
         ) : (
-          <HeadlineText className="flex gap-1">
-            Send to
-            <span className="max-w-[120px]">
-              <MiddleEllipsis>
-                <TextBase as="span" className="text-body-bold">
-                  {selectedAsset?.destinationAddress}
-                </TextBase>
-              </MiddleEllipsis>
-            </span>
-          </HeadlineText>
+          <>
+            <Identicon address={selectedAsset?.destinationAddress} />
+            <HeadlineText className="flex gap-1">
+              Send to
+              <span className="max-w-[120px]">
+                <MiddleEllipsis>
+                  <TextBase as="span" className="text-body-bold">
+                    {selectedAsset?.destinationAddress}
+                  </TextBase>
+                </MiddleEllipsis>
+              </span>
+            </HeadlineText>
+          </>
         )}
         <Button variant="light" size="md" className="p-0" onClick={handleMaxSend}>
           <CaptionText className="text-text-link">

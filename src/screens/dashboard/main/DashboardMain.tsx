@@ -4,23 +4,46 @@ import { useRouter } from 'next/router';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { Avatar } from '@nextui-org/react';
 
-import { getMnemonic, resetWallet } from '@common/wallet';
+import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
+import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
+import { getMnemonic, resetWallet } from '@common/wallet';
+import { claimGift, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
-import { useGlobalContext } from '@/common/providers/contextProvider';
-import { useTelegram } from '@/common/providers/telegramProvider';
 import { BodyText, CaptionText, Icon, AssetsList, Plate, Price, IconButton } from '@/components';
-import { updateAssetsBalance } from '@/common/utils/balance';
 
 export const DashboardMain = () => {
   const router = useRouter();
-  const { getAllChains } = useChainRegistry();
+  const { getAllChains, getAssetBySymbol } = useChainRegistry();
+  const { submitExtrinsic } = useExtrinsicProvider();
   const { subscribeBalance } = useBalances();
-  const { publicKey, setAssets, assets } = useGlobalContext();
-  const { user, MainButton, BackButton } = useTelegram();
+  const { publicKey, assets, isGiftClaimed, setIsGiftClaimed, setAssets } = useGlobalContext();
+  const { user, MainButton, BackButton, webApp } = useTelegram();
+
+  useEffect(() => {
+    if (isGiftClaimed || !webApp?.initDataUnsafe.start_param || !publicKey) {
+      return;
+    }
+    const [seed, symbol] = webApp.initDataUnsafe.start_param.split('_');
+
+    (async () => {
+      const chain = await getAssetBySymbol(symbol);
+      const address = encodeAddress(publicKey, chain.chain.addressPrefix);
+
+      claimGift(seed, address, chain.chain.chainId, submitExtrinsic)
+        .then(() => {
+          setIsGiftClaimed(true);
+          alert('Gift claimed successfully!');
+        })
+        .catch(() => {
+          alert('Failed to claim gift');
+        });
+    })();
+  }, [webApp, publicKey, isGiftClaimed]);
 
   useEffect(() => {
     MainButton?.hide();
@@ -71,7 +94,7 @@ export const DashboardMain = () => {
         <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
         <Icon name="settings" size={40} />
       </div>
-      <Plate className="p-4 flex flex-col items-center mb-2">
+      <Plate className="flex flex-col items-center mb-2 rounded-3xl">
         <BodyText className="text-text-hint">Total balance</BodyText>
         <Price amount="0" />
         <div className="grid grid-cols-3 w-full justify-items-center mt-4">
@@ -80,7 +103,7 @@ export const DashboardMain = () => {
           <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => router.push(Paths.TRANSFER)} />
         </div>
       </Plate>
-      <Plate className="p-4 flex flex-col mb-2">
+      <Plate className="flex flex-col mb-2 rounded-3xl">
         <CaptionText>Assets</CaptionText>
         <AssetsList />
       </Plate>
