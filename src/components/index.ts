@@ -17,7 +17,7 @@ import Plate from './Plate/Plate';
 import PasswordForm from './PasswordForm/PasswordForm';
 import Shimmering from './Shimmering/Shimmering';
 import Identicon from './Identicon/Identicon';
-import Layout from './Layout/layout';
+import Layout from './Layout/Layout';
 
 export {
   TextBase,

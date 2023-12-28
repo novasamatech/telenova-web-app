@@ -10,6 +10,7 @@ const AllIcons = {
   user: 'User.svg',
   chevronForward: 'chevron-forward.svg',
   scanQr: 'scan.svg',
+  gift: 'gift.svg',
 } as const;
 
 export type IconNames = keyof typeof AllIcons;

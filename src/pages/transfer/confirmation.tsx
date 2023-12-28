@@ -97,7 +97,7 @@ export default function ConfirmationPage() {
         <LargeTitleText>{selectedAsset?.symbol}</LargeTitleText>
         <LargeTitleText>{selectedAsset?.amount}</LargeTitleText>
       </div>
-      <Plate className="rounded-lg p-4 w-full">
+      <Plate className="w-full">
         {details.map(({ title, value }, index) => (
           <div key={title}>
             {index !== 0 && <Divider className="my-4" />}

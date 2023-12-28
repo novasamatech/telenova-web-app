@@ -56,7 +56,7 @@ export default function CreateWalletPage() {
 
   return isLoading ? (
     <div className="min-h-screen flex flex-col justify-center items-center">
-      <Player src="/gifs/create-wallet.json" loop autoplay className="player" />
+      <Player src="/gifs/create-wallet.json" keepLastFrame autoplay className="player" />
       <BodyText className="text-icon-on-neutral">Creating your wallet...</BodyText>
     </div>
   ) : (

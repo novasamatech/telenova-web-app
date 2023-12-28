@@ -70,6 +70,8 @@ jobs:
             docker-compose down
             rm .env
             echo "NEXT_PUBLIC_BOT_API_URL=${{ secrets.NEXT_PUBLIC_BOT_API_URL }}" >> .env
+            echo "NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}" >> .env
+            echo "NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS }}" >> .env
             docker-compose pull
             docker-compose up -d
             docker image prune -f
