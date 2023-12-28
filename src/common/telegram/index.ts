@@ -9,7 +9,7 @@ export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): 
 };
 
 export const createTgLink = (secret: string, networkName: string): TgLink => {
-  const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}&${networkName}`;
+  const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}_${networkName}`;
   const text = 'Here is your gift';
 
   return { url, text };

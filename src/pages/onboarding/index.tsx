@@ -18,7 +18,7 @@ export default function OnboardingPage() {
     // to avoid blinking
     setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 3000);
   }, [webApp]);
 
   // TODO: replace with loader
