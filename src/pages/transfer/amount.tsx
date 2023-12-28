@@ -12,6 +12,7 @@ import { HeadlineText, Icon, Identicon, CaptionText, LargeTitleText, TextBase, L
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { formatBalance, handleFee } from '@/common/utils/balance';
+import { ChainId } from '@/common/types';
 
 export default function AmountPage() {
   const router = useRouter();
@@ -21,31 +22,41 @@ export default function AmountPage() {
 
   const [amount, setAmount] = useState('0');
   const [transferAll, setTransferAll] = useState(false);
-  const [maxAmountToSend, setMaxAmountToSend] = useState<number>();
+  const [maxAmountToSend, setMaxAmountToSend] = useState<string>();
   const [isAmountValid, setIsAmountValid] = useState(true);
 
   useEffect(() => {
     router.prefetch(Paths.TRANSFER_CONFIRMATION);
-    MainButton?.setText('Continue');
+    MainButton?.setText(selectedAsset?.isGift ? 'Create Gift' : 'Continue');
     BackButton?.show();
     MainButton?.show();
     MainButton?.disable();
 
     const callback = () => {
-      router.push(Paths.TRANSFER_ADDRESS);
+      router.push(selectedAsset?.isGift ? Paths.TRANSFER_SELECT_TOKEN : Paths.TRANSFER_ADDRESS);
     };
     BackButton?.onClick(callback);
 
     if (!selectedAsset) return;
 
     (async () => {
-      const fee = selectedAsset.fee || (await handleFee(estimateFee, selectedAsset.chainId, selectedAsset.precision));
+      const fee =
+        selectedAsset.fee ||
+        (await handleFee(
+          estimateFee,
+          selectedAsset.chainId as ChainId,
+          selectedAsset.precision as number,
+          selectedAsset.isGift,
+        ));
       const formattedBalance = Number(
         formatBalance(selectedAsset.transferableBalance, selectedAsset.precision).formattedValue,
       );
 
-      const max = Number(Math.max(formattedBalance - fee, 0).toFixed(5));
+      const max = Math.max(formattedBalance - fee, 0).toFixed(5);
+
       setMaxAmountToSend(max);
+      setIsAmountValid(+amount <= +max);
+
       setSelectedAsset((prev) => ({ ...prev!, fee }));
     })();
 
@@ -57,7 +68,7 @@ export default function AmountPage() {
   useEffect(() => {
     const callback = () => {
       setSelectedAsset((prev) => ({ ...prev!, transferAll, amount }));
-      router.push(Paths.TRANSFER_CONFIRMATION);
+      router.push(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
     };
 
     if (!isAmountValid || !Number(amount)) return;
@@ -78,7 +89,7 @@ export default function AmountPage() {
 
   const handleChange = (value: string) => {
     setTransferAll(false);
-    setIsAmountValid(!!Number(value) && Number(value) <= (maxAmountToSend || 0));
+    setIsAmountValid(!!Number(value) && +value <= +(maxAmountToSend || 0));
     setAmount(value);
   };
 
@@ -86,16 +97,20 @@ export default function AmountPage() {
     <>
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
         <Identicon address={selectedAsset?.destinationAddress} />
-        <HeadlineText className="flex gap-1">
-          Send to
-          <span className="max-w-[120px]">
-            <MiddleEllipsis>
-              <TextBase as="span" className="text-body-bold">
-                {selectedAsset?.destinationAddress}
-              </TextBase>
-            </MiddleEllipsis>
-          </span>
-        </HeadlineText>
+        {selectedAsset?.isGift ? (
+          <HeadlineText>Preparing your gift</HeadlineText>
+        ) : (
+          <HeadlineText className="flex gap-1">
+            Send to
+            <span className="max-w-[120px]">
+              <MiddleEllipsis>
+                <TextBase as="span" className="text-body-bold">
+                  {selectedAsset?.destinationAddress}
+                </TextBase>
+              </MiddleEllipsis>
+            </span>
+          </HeadlineText>
+        )}
         <Button variant="light" size="md" className="p-0" onClick={handleMaxSend}>
           <CaptionText className="text-text-link">
             Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block" />} {selectedAsset?.symbol}

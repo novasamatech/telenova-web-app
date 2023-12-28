@@ -22,6 +22,7 @@ import {
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { handleSend } from '@/common/utils/balance';
+import { TrasferAsset } from '@/common/types';
 
 export default function ConfirmationPage() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function ConfirmationPage() {
 
     const mainCallback = async () => {
       MainButton?.showProgress(false);
-      await handleSend(submitExtrinsic, selectedAsset).then(() => {
+      await handleSend(submitExtrinsic, selectedAsset as TrasferAsset).then(() => {
         router.push(Paths.TRANSFER_RESULT);
       });
     };

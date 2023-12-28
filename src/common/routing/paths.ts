@@ -14,6 +14,7 @@ export const Paths = {
   TRANSFER_AMOUNT: '/transfer/amount',
   TRANSFER_CONFIRMATION: '/transfer/confirmation',
   TRANSFER_RESULT: '/transfer/result',
+  TRANSFER_CREATE_GIFT: '/transfer/create-gift',
 } as const;
 
 export type PathValue = (typeof Paths)[keyof typeof Paths];
