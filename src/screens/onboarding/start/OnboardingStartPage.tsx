@@ -13,12 +13,15 @@ export const OnboardingStartPage = () => {
 
   useEffect(() => {
     MainButton?.show();
-    MainButton?.onClick(() => {
+    MainButton?.enable();
+    const callback = () => {
       router.push(Paths.ONBOARDING_PASSWORD);
       MainButton?.showProgress(false);
-    });
+    };
+    MainButton?.onClick(callback);
 
     return () => {
+      MainButton?.offClick(callback);
       MainButton?.hideProgress();
       MainButton?.disable();
     };
