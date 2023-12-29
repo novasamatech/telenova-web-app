@@ -7,7 +7,7 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Avatar, Input } from '@nextui-org/react';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
-import { initializeWalletFromCloud } from '@/common/wallet';
+import { initializeWalletFromCloud, resetWallet } from '@/common/wallet';
 
 type Props = {
   mnemonic: string;
@@ -53,6 +53,11 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
     };
   }, [password]);
 
+  function clearWallet() {
+    resetWallet();
+    router.replace(Paths.ONBOARDING);
+  }
+
   return (
     <>
       <Avatar src={user?.photo_url} size="lg" className="w-[64px] h-[64px]" name={user?.first_name[0]} />
@@ -78,6 +83,9 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         onValueChange={setPassword}
         onClear={() => setPassword('')}
       />
+      <button className="btn btn-blue m-auto" onClick={() => clearWallet()}>
+        Reset Wallet
+      </button>
     </>
   );
 };
