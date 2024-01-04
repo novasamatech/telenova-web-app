@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { Avatar } from '@nextui-org/react';
+import { Avatar, Button } from '@nextui-org/react';
 
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -29,18 +29,19 @@ export const DashboardMain = () => {
       return;
     }
     const [seed, symbol] = webApp.initDataUnsafe.start_param.split('_');
-
     (async () => {
       const chain = await getAssetBySymbol(symbol);
       const address = encodeAddress(publicKey, chain.chain.addressPrefix);
 
       claimGift(seed, address, chain.chain.chainId, submitExtrinsic)
         .then(() => {
-          setIsGiftClaimed(true);
           alert('Gift claimed successfully!');
         })
         .catch(() => {
           alert('Failed to claim gift');
+        })
+        .finally(() => {
+          setIsGiftClaimed(true);
         });
     })();
   }, [webApp, publicKey, isGiftClaimed]);
@@ -73,7 +74,6 @@ export const DashboardMain = () => {
 
         subscribeBalance(account, (balance: IAssetBalance) => {
           console.info(`${address} ${chain.name} => balance: ${balance.total().toString()}`);
-
           setAssets((prevAssets) => updateAssetsBalance(prevAssets, chain, balance));
         });
       }
@@ -103,7 +103,15 @@ export const DashboardMain = () => {
           <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => router.push(Paths.TRANSFER)} />
         </div>
       </Plate>
-      <Plate className="flex flex-col mb-2 rounded-3xl">
+      <Button
+        variant="light"
+        size="lg"
+        className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px]"
+        onClick={() => router.push(Paths.GIFTS)}
+      >
+        Gifts
+      </Button>
+      <Plate className="flex flex-col my-2 rounded-3xl">
         <CaptionText>Assets</CaptionText>
         <AssetsList />
       </Plate>

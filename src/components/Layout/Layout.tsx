@@ -1,12 +1,15 @@
 import { PropsWithChildren } from 'react';
-import { ExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { ChainRegistry } from '@/common/chainRegistry';
+import { ExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
+import { BalanceProvider } from '@/common/balances/BalanceProvider';
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <ChainRegistry>
       <ExtrinsicProvider>
-        <div className="min-h-screen p-4 w-full">{children}</div>
+        <BalanceProvider>
+          <div className="min-h-screen p-4 w-full">{children}</div>
+        </BalanceProvider>
       </ExtrinsicProvider>
     </ChainRegistry>
   );

@@ -1,7 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useRef } from 'react';
 import { useChainRegistry } from '@common/chainRegistry';
 import { IAssetBalance } from '@common/balances/types';
-import { chainAssetAccountIdToString, ChainAssetAccount } from '@common/types';
+import { chainAssetAccountIdToString, ChainAssetAccount, ChainId, Gift } from '@common/types';
 import { useNumId } from '@common/utils/NumId';
 import { SubscriptionState } from '@common/subscription/types';
 import { createBalanceService } from '@common/balances/BalanceService';
@@ -14,6 +14,7 @@ type UpdaterCallbackStore = Record<number, UpdateCallback>;
 type BalanceProviderContextProps = {
   subscribeBalance: (account: ChainAssetAccount, onUpdate: UpdateCallback) => number;
   unsubscribeBalance: (unsubscribeId: number) => void;
+  getGiftsBalance: (accounts: Gift[], chainId: ChainId) => Promise<[Gift[], Gift[]]>;
 };
 
 const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as BalanceProviderContextProps);
@@ -152,8 +153,29 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     }
   }
 
+  async function getGiftsBalance(accounts: Gift[], chainId: ChainId): Promise<[Gift[], Gift[]]> {
+    const connection = await getConnection(chainId);
+    const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
+    const chain = await getChain(chainId);
+
+    const unclaimed = [] as Gift[];
+    const claimed = [] as Gift[];
+
+    balances.forEach((d, idx) =>
+      d.data.free.isEmpty
+        ? claimed.push({
+            ...accounts[idx],
+            chainAsset: chain?.assets[0],
+            status: 'Claimed',
+          })
+        : unclaimed.push({ ...accounts[idx], chainAsset: chain?.assets[0], status: 'Unclaimed' }),
+    );
+
+    return [unclaimed, claimed];
+  }
+
   return (
-    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance }}>
+    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance, getGiftsBalance }}>
       {children}
     </BalanceProviderContext.Provider>
   );

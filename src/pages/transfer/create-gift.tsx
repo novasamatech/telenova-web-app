@@ -11,10 +11,11 @@ import { Paths } from '@/common/routing';
 import { BodyText, HeadlineText, Layout } from '@/components';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { handleSend } from '@/common/utils/balance';
-import { TrasferAsset } from '@/common/types';
+import { ChainId, TrasferAsset } from '@/common/types';
 import { createGiftWallet } from '@/common/wallet';
 import { createTgLink, navigateTranferById } from '@/common/telegram';
 import { TgLink } from '@/common/telegram/types';
+import { backupGifts } from '@/common/utils/gift';
 
 export default function CreateGiftPage() {
   const router = useRouter();
@@ -38,6 +39,7 @@ export default function CreateGiftPage() {
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
     (async function () {
       await handleSend(submitExtrinsic, selectedAsset as TrasferAsset, wallet.address).then(() => {
+        backupGifts(wallet.address, wallet.secret, selectedAsset.chainId as ChainId, selectedAsset.amount as string);
         setLink(createTgLink(wallet.secret, selectedAsset.symbol as string));
         setLoading(false);
         MainButton?.show();

@@ -1,3 +1,4 @@
+import { Asset } from './../chainRegistry/types/index';
 export type HexString = `0x${string}`;
 
 import { u8aToHex, hexToU8a } from '@polkadot/util';
@@ -41,6 +42,16 @@ export type TrasferAsset = AssetAccount & {
   isGift?: boolean;
 };
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
+
+export type Gift = {
+  timestamp: number;
+  address: string;
+  secret: string;
+  balance: string;
+  chainId: ChainId;
+  status: 'Unclaimed' | 'Claimed';
+  chainAsset?: Asset;
+};
 
 export function chainAssetIdToString(value: ChainAssetId): string {
   return `${value.chainId} - ${value.assetId}`;

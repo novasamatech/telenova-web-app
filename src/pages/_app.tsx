@@ -1,10 +1,10 @@
 import { AppProps } from 'next/app';
+import { NextPage } from 'next';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { NextUIProvider } from '@nextui-org/react';
 import { TelegramProvider } from '@common/providers/telegramProvider';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import './globals.css';
-import { NextPage } from 'next';
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;

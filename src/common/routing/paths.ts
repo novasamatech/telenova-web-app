@@ -7,6 +7,7 @@ export const Paths = {
   ONBOARDING_IMPORT_WALLET: '/onboarding/import-wallet',
 
   DASHBOARD: '/dashboard',
+  GIFTS: '/gifts',
 
   TRANSFER: '/transfer',
   TRANSFER_SELECT_TOKEN: '/transfer/select-token',
