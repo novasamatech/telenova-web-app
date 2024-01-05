@@ -2,19 +2,20 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Player } from '@lottiefiles/react-lottie-player';
-import { Button } from '@nextui-org/react';
 import { WebApp } from '@twa-dev/types';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { BodyText, HeadlineText, Layout } from '@/components';
+import { HeadlineText, Layout } from '@/components';
+import GiftDetails from '@/screens/gifts/GiftDetails';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { handleSend } from '@/common/utils/balance';
-import { TrasferAsset } from '@/common/types';
+import { ChainId, TrasferAsset } from '@/common/types';
 import { createGiftWallet } from '@/common/wallet';
-import { createTgLink, navigateTranferById } from '@/common/telegram';
+import { createTgLink } from '@/common/telegram';
 import { TgLink } from '@/common/telegram/types';
+import { backupGifts } from '@/common/utils/gift';
 
 export default function CreateGiftPage() {
   const router = useRouter();
@@ -38,6 +39,7 @@ export default function CreateGiftPage() {
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
     (async function () {
       await handleSend(submitExtrinsic, selectedAsset as TrasferAsset, wallet.address).then(() => {
+        backupGifts(wallet.address, wallet.secret, selectedAsset.chainId as ChainId, selectedAsset.amount as string);
         setLink(createTgLink(wallet.secret, selectedAsset.symbol as string));
         setLoading(false);
         MainButton?.show();
@@ -59,18 +61,7 @@ export default function CreateGiftPage() {
           Creating your gift..
         </HeadlineText>
       ) : (
-        <>
-          <Button fullWidth={false} color="primary" onClick={() => navigator.clipboard.writeText(link.url)}>
-            Copy link
-          </Button>
-          <BodyText className="text-text-hint" align="center">
-            Now you can send this link anyone who you needed to claim funds. When they will open it, the gift will
-            marked as claimed
-          </BodyText>
-          <Button color="primary" onClick={() => navigateTranferById(webApp as WebApp, link)}>
-            Share with your contact
-          </Button>
-        </>
+        <GiftDetails link={link} webApp={webApp as WebApp} />
       )}
     </div>
   );

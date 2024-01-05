@@ -8,6 +8,9 @@ export const Paths = {
 
   DASHBOARD: '/dashboard',
 
+  GIFTS: '/gifts',
+  GIFT_DETAILS: '/gifts/gift-details',
+
   TRANSFER: '/transfer',
   TRANSFER_SELECT_TOKEN: '/transfer/select-token',
   TRANSFER_ADDRESS: '/transfer/address',

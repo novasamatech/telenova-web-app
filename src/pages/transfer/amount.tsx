@@ -66,12 +66,12 @@ export default function AmountPage() {
   }, [BackButton, MainButton]);
 
   useEffect(() => {
+    if (!isAmountValid || !Number(amount)) return;
+
     const callback = () => {
       setSelectedAsset((prev) => ({ ...prev!, transferAll, amount }));
       router.push(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
     };
-
-    if (!isAmountValid || !Number(amount)) return;
     MainButton?.enable();
     MainButton?.onClick(callback);
 

@@ -18,6 +18,7 @@ import PasswordForm from './PasswordForm/PasswordForm';
 import Shimmering from './Shimmering/Shimmering';
 import Identicon from './Identicon/Identicon';
 import Layout from './Layout/Layout';
+import GiftPlate from './GiftPlate/GiftPlate';
 
 export {
   TextBase,
@@ -39,4 +40,5 @@ export {
   Shimmering,
   Identicon,
   Layout,
+  GiftPlate,
 };
