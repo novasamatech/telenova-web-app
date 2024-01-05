@@ -14,7 +14,7 @@ import { Gift } from '@/common/types';
 export default function GiftPage() {
   const router = useRouter();
   const { BackButton, MainButton } = useTelegram();
-  const { getGiftsBalance } = useBalances();
+  const { getGiftsState } = useBalances();
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
   const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ export default function GiftPage() {
 
     mapGifts.forEach((value, key) => {
       (async function () {
-        const [unclaimed, claimed] = await getGiftsBalance(value, key);
+        const [unclaimed, claimed] = await getGiftsState(value, key);
         setUnclaimedGifts((prev) => [...prev, ...unclaimed]);
         setClaimedGifts((prev) => [...prev, ...claimed]);
         setLoading(false);

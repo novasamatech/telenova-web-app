@@ -1,5 +1,5 @@
 import { CaptionText, HelpText, Icon, Plate } from '@/components';
-import { Gift } from '@/common/types';
+import { Gift, GiftStatus } from '@/common/types';
 
 const GiftPlate = ({ gift }: { gift: Gift }) => {
   const date = new Date(gift.timestamp).toLocaleString();
@@ -14,11 +14,11 @@ const GiftPlate = ({ gift }: { gift: Gift }) => {
         <HelpText as="p" className="text-text-hint">
           Created: {date}
         </HelpText>
-        <HelpText as="p" className={gift.status === 'Unclaimed' ? 'text-text-hint' : 'text-text-positive'}>
+        <HelpText as="p" className={gift.status === GiftStatus.UNCLAIMED ? 'text-text-hint' : 'text-text-positive'}>
           {gift.status}
         </HelpText>
       </div>
-      {gift.status === 'Unclaimed' && <Icon name="chevronForward" className="w-4 h-4 ml-2" />}
+      {gift.status === GiftStatus.UNCLAIMED && <Icon name="chevronForward" className="w-4 h-4 ml-2" />}
     </Plate>
   );
 };

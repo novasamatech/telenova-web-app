@@ -43,13 +43,21 @@ export type TrasferAsset = AssetAccount & {
 };
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
 
-export type Gift = {
+export const enum GiftStatus {
+  CLAIMED = 'Claimed',
+  UNCLAIMED = 'Unclaimed',
+}
+
+export type PersistentGift = {
   timestamp: number;
   address: string;
   secret: string;
   balance: string;
   chainId: ChainId;
-  status: 'Unclaimed' | 'Claimed';
+  status: GiftStatus;
+};
+
+export type Gift = PersistentGift & {
   chainAsset?: Asset;
 };
 
