@@ -99,7 +99,7 @@ export const DashboardMain = () => {
         <Price amount="0" />
         <div className="grid grid-cols-3 w-full justify-items-center mt-4">
           <IconButton text="Send" iconName="send" color="primary" onClick={() => router.push(Paths.TRANSFER)} />
-          <IconButton text="Receive" iconName="receive" color="success" onClick={() => router.push(Paths.TRANSFER)} />
+          <IconButton text="Receive" iconName="receive" color="success" onClick={() => router.push(Paths.RECEIVE)} />
           <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => router.push(Paths.TRANSFER)} />
         </div>
       </Plate>
