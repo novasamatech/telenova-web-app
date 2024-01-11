@@ -8,6 +8,7 @@ export const polkadot: Chain = {
       assetId: 0,
       symbol: 'DOT',
       precision: 10,
+      priceId: 'polkadot',
     },
   ],
   nodes: [
@@ -31,6 +32,7 @@ export const kusama: Chain = {
       assetId: 0,
       symbol: 'KSM',
       precision: 12,
+      priceId: 'kusama',
     },
   ],
   nodes: [

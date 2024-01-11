@@ -1,30 +1,30 @@
 import { Asset } from './../chainRegistry/types/index';
 export type HexString = `0x${string}`;
 
-import { u8aToHex, hexToU8a } from '@polkadot/util';
-
-export function unwrapHexString(string: string): HexString {
-  return u8aToHex(hexToU8a(string));
-}
-
 export type ChainId = HexString;
 export type AssetId = number;
 export type Address = string;
 export type AccountId = HexString;
 export type PublicKey = HexString;
+export type Currency = string;
 
 export type ChainAssetId = {
   chainId: ChainId;
   assetId: AssetId;
 };
 
+export type PriceItem = {
+  price: number;
+  change?: number;
+};
+export type AssetPrice = Record<Currency, PriceItem>;
+export type PriceObject = Record<string, AssetPrice>;
+
 export type ChainAssetAccount = {
   chainId: ChainId;
-  assetId: AssetId;
   publicKey: PublicKey;
-  symbol: string;
   name: string;
-  precision: number;
+  asset: Asset;
   addressPrefix: number;
 };
 
@@ -60,13 +60,3 @@ export type PersistentGift = {
 export type Gift = PersistentGift & {
   chainAsset?: Asset;
 };
-
-export function chainAssetIdToString(value: ChainAssetId): string {
-  return `${value.chainId} - ${value.assetId}`;
-}
-
-export function chainAssetAccountIdToString(value: ChainAssetAccount): string {
-  const partial = chainAssetIdToString({ chainId: value.chainId, assetId: value.assetId });
-
-  return `${partial} - ${value.publicKey}`;
-}

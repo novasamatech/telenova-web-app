@@ -1,8 +1,7 @@
 import { formatFiatBalance } from '@/common/utils/balance';
-import { LargeTitleText } from '../Typography';
 
 type Props = {
-  amount: string;
+  amount: string | number;
   symbol?: string;
 };
 
@@ -11,10 +10,8 @@ const Price = ({ amount, symbol = '$' }: Props) => {
 
   return (
     <>
-      <LargeTitleText>
-        {symbol}
-        {formattedValue} {suffix}
-      </LargeTitleText>
+      {symbol}
+      {formattedValue} {suffix}
     </>
   );
 };

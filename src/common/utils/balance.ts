@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { decodeAddress } from '@polkadot/keyring';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { Address, AssetAccount, ChainId, TrasferAsset } from '../types';
+import { Address, AssetAccount, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../types';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
 import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
@@ -29,8 +29,17 @@ export const enum Decimal {
   BIG_NUMBER = 2,
 }
 
-// format balance from spektr
+export function chainAssetIdToString(value: ChainAssetId): string {
+  return `${value.chainId} - ${value.assetId}`;
+}
 
+export function chainAssetAccountIdToString(value: ChainAssetAccount): string {
+  const partial = chainAssetIdToString({ chainId: value.chainId, assetId: value.asset.assetId });
+
+  return `${partial} - ${value.publicKey}`;
+}
+
+// format balance from spektr
 export const formatBalance = (balance = '0', precision = 0): FormattedBalance => {
   const BNWithConfig = BigNumber.clone();
   BNWithConfig.config({
@@ -82,7 +91,7 @@ const getDecimalPlaceForFirstNonZeroChar = (value: string, nonZeroDigits = 3) =>
   return Math.max((decimalPart || '').search(/[1-9]/) + nonZeroDigits, 5);
 };
 
-export const formatFiatBalance = (balance = '0', precision = 0): FormattedBalance => {
+export const formatFiatBalance = (balance: string | number = '0', precision = 0): FormattedBalance => {
   if (Number(balance) === 0 || isNaN(Number(balance))) {
     return { formattedValue: ZERO_BALANCE, suffix: '', decimalPlaces: 0 };
   }
@@ -166,7 +175,7 @@ export const formatAmount = (amount: string, precision: number): string => {
 
 export async function handleSend(
   submitExtrinsic: SubmitExtrinsic,
-  { destinationAddress, chainId, amount, transferAll, precision }: TrasferAsset,
+  { destinationAddress, chainId, amount, transferAll, asset }: TrasferAsset,
   giftTransfer?: string,
 ) {
   const decodedAddress = decodeAddress(destinationAddress || giftTransfer);
@@ -174,7 +183,7 @@ export async function handleSend(
   return await submitExtrinsic(chainId, (builder) => {
     const transferFunction = transferAll
       ? builder.api.tx.balances.transferAll(decodedAddress, false)
-      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(amount as string, precision));
+      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(amount as string, asset.precision));
 
     builder.addCall(transferFunction);
   }).then((hash) => {

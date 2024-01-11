@@ -7,6 +7,7 @@ export type Asset = {
   assetId: number;
   symbol: string;
   precision: number;
+  priceId?: string;
 };
 
 export type Chain = {

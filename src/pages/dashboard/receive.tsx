@@ -77,17 +77,17 @@ export default function ReceivePage() {
       >
         {assets.map((asset) => (
           <div className="flex flex-col items-center gap-3 border-x-[12px] border-transparent" key={asset.address}>
-            <TitleText>Receive {asset.symbol}</TitleText>
+            <TitleText>Receive {asset.asset.symbol}</TitleText>
             <Plate className="flex flex-col items-center gap-3 w-[232px] h-[312px] break-all">
               <QRCode
                 value={asset.address}
-                logoImage={`/images/${asset.symbol}.svg`}
+                logoImage={`/images/${asset.asset.symbol}.svg`}
                 quietZone={0}
                 logoPadding={7}
                 eyeRadius={30}
-                id={`qrcode_${asset.symbol}`}
+                id={`qrcode_${asset.asset.symbol}`}
               />
-              <BodyText className="text-text-hint">{asset.symbol} address</BodyText>
+              <BodyText className="text-text-hint">{asset.asset.symbol} address</BodyText>
               <HeadlineText className="text-text-hint" align="center">
                 {asset.address}
               </HeadlineText>
@@ -110,7 +110,7 @@ export default function ReceivePage() {
                 color="primary"
                 variant="flat"
                 className="w-[200px]"
-                onClick={() => shareQrAddress(asset.symbol, asset.address)}
+                onClick={() => shareQrAddress(asset.asset.symbol, asset.address)}
               >
                 Share
               </Button>

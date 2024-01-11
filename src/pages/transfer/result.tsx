@@ -32,7 +32,7 @@ export default function ResultPage() {
   return (
     <div className="min-h-screen p-4 flex flex-col justify-center ">
       <TitleText>
-        {selectedAsset?.amount} {selectedAsset?.symbol} Sent to
+        {selectedAsset?.amount} {selectedAsset?.asset?.symbol} Sent to
       </TitleText>
       <HeadlineText className="text-text-hint m-3 break-all" align="center">
         {selectedAsset?.destinationAddress}

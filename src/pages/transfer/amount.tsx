@@ -8,11 +8,12 @@ import { Button, CircularProgress, Input } from '@nextui-org/react';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { HeadlineText, Icon, Identicon, CaptionText, LargeTitleText, TextBase, Layout } from '@/components';
+import { HeadlineText, Icon, Identicon, CaptionText, LargeTitleText, TextBase, Layout, BodyText } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { formatBalance, handleFee } from '@/common/utils/balance';
 import { ChainId } from '@/common/types';
+import TokenPrice from '@/components/Price/TokenPrice';
 
 export default function AmountPage() {
   const router = useRouter();
@@ -45,23 +46,23 @@ export default function AmountPage() {
         (await handleFee(
           estimateFee,
           selectedAsset.chainId as ChainId,
-          selectedAsset.precision as number,
+          selectedAsset.asset?.precision as number,
           selectedAsset.isGift,
         ));
       const formattedBalance = Number(
-        formatBalance(selectedAsset.transferableBalance, selectedAsset.precision).formattedValue,
+        formatBalance(selectedAsset.transferableBalance, selectedAsset.asset?.precision).formattedValue,
       );
 
       const max = Math.max(formattedBalance - fee, 0).toFixed(5);
 
       setMaxAmountToSend(max);
       setIsAmountValid(+amount <= +max);
-
       setSelectedAsset((prev) => ({ ...prev!, fee }));
     })();
 
     return () => {
       BackButton?.offClick(callback);
+      MainButton?.hide();
     };
   }, [BackButton, MainButton]);
 
@@ -118,23 +119,27 @@ export default function AmountPage() {
         )}
         <Button variant="light" size="md" className="p-0" onClick={handleMaxSend}>
           <CaptionText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block" />} {selectedAsset?.symbol}
+            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block" />}{' '}
+            {selectedAsset?.asset?.symbol}
           </CaptionText>
         </Button>
       </div>
-      <div className="my-6 grid grid-cols-[40px,1fr,auto] gap-2">
-        <Icon name={selectedAsset?.symbol as IconNames} className="w-10 h-10" />
-        <LargeTitleText>{selectedAsset?.symbol}</LargeTitleText>
+      <div className="my-6 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px]">
+        <Icon name={selectedAsset?.asset?.symbol as IconNames} className="w-10 h-10" />
+        <LargeTitleText>{selectedAsset?.asset?.symbol}</LargeTitleText>
         <Input
           fullWidth={false}
           variant="underlined"
-          className="h-[80px] mt-[-10px]"
+          className="mt-[-10px]"
           classNames={{ input: ['text-right !text-large-title max-w-[160px]'] }}
           value={amount}
           isInvalid={!isAmountValid}
-          errorMessage={!isAmountValid && 'Invalid amount'}
           onValueChange={handleChange}
         />
+      </div>
+      <div className="grid grid-cols-[1fr,auto]">
+        <TokenPrice priceId={selectedAsset?.asset?.priceId} balance={amount} showBalance={isAmountValid} />
+        {!isAmountValid && <BodyText className="text-text-danger">Invalid amount</BodyText>}
       </div>
     </>
   );
