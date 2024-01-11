@@ -8,6 +8,7 @@ import { Divider } from '@nextui-org/react';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
+import { handleSend } from '@/common/utils/extrinsics';
 import {
   HeadlineText,
   Icon,
@@ -21,7 +22,6 @@ import {
 } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { handleSend } from '@/common/utils/balance';
 import { TrasferAsset } from '@/common/types';
 
 export default function ConfirmationPage() {

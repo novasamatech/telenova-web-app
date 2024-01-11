@@ -8,12 +8,22 @@ import { Button, CircularProgress, Input } from '@nextui-org/react';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { HeadlineText, Icon, Identicon, CaptionText, LargeTitleText, TextBase, Layout, BodyText } from '@/components';
+import {
+  HeadlineText,
+  Icon,
+  Identicon,
+  CaptionText,
+  LargeTitleText,
+  TextBase,
+  Layout,
+  BodyText,
+  TokenPrice,
+} from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { formatBalance, handleFee } from '@/common/utils/balance';
+import { formatBalance } from '@/common/utils/balance';
+import { handleFee } from '@/common/utils/extrinsics';
 import { ChainId } from '@/common/types';
-import TokenPrice from '@/components/Price/TokenPrice';
 
 export default function AmountPage() {
   const router = useRouter();

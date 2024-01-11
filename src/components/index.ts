@@ -11,6 +11,7 @@ import {
 } from './Typography';
 import { Icon, IconButton } from './Icon';
 import Price from './Price/Price';
+import TokenPrice from '@/components/Price/TokenPrice';
 import AssetBalance from './Assets/AssetBalance';
 import AssetsList from './Assets/AssetsList';
 import Plate from './Plate/Plate';
@@ -41,4 +42,5 @@ export {
   Identicon,
   Layout,
   GiftPlate,
+  TokenPrice,
 };
