@@ -14,8 +14,19 @@ const AssetsList = () => {
   return (
     <div className="flex flex-col gap-6 mt-4">
       {assets.map((asset) => (
-        <Button key={asset.chainId} variant="light" className="w-full block" onClick={() => copyAddress(asset.address)}>
-          <AssetBalance asset={asset} balance={asset.totalBalance} name={asset.name} key={asset.chainId} />
+        <Button
+          key={asset.chainId}
+          variant="light"
+          className="w-full block h-full"
+          onClick={() => copyAddress(asset.address)}
+        >
+          <AssetBalance
+            asset={asset.asset}
+            balance={asset.totalBalance}
+            name={asset.name}
+            key={asset.chainId}
+            showPrice
+          />
         </Button>
       ))}
     </div>

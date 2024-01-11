@@ -14,14 +14,16 @@ import { claimGift, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
-import { BodyText, CaptionText, Icon, AssetsList, Plate, Price, IconButton } from '@/components';
+import { getPrice } from '@/common/utils/coingecko';
+import { BodyText, CaptionText, Icon, AssetsList, Plate, Price, IconButton, LargeTitleText } from '@/components';
 
 export const DashboardMain = () => {
   const router = useRouter();
   const { getAllChains, getAssetBySymbol } = useChainRegistry();
   const { submitExtrinsic } = useExtrinsicProvider();
   const { subscribeBalance } = useBalances();
-  const { publicKey, assets, isGiftClaimed, setIsGiftClaimed, setAssets } = useGlobalContext();
+  const { publicKey, assets, isGiftClaimed, assetsPrices, setIsGiftClaimed, setAssets, setAssetsPrices } =
+    useGlobalContext();
   const { user, MainButton, BackButton, webApp } = useTelegram();
 
   useEffect(() => {
@@ -61,9 +63,7 @@ export const DashboardMain = () => {
           chainId: chain.chainId,
           publicKey: publicKey,
           name: chain.name,
-          assetId: chain.assets[0].assetId,
-          symbol: chain.assets[0].symbol,
-          precision: chain.assets[0].precision,
+          asset: chain.assets[0],
           addressPrefix: chain.addressPrefix,
         };
         const address = encodeAddress(publicKey, chain.addressPrefix);
@@ -78,7 +78,13 @@ export const DashboardMain = () => {
         });
       }
 
-      setAssets((prevAssets) => prevAssets.sort((a, b) => a.symbol.localeCompare(b.symbol)));
+      if (!assetsPrices) {
+        const ids = chains.map((i) => i.assets[0].priceId);
+        const prices = await getPrice(ids);
+        setAssetsPrices(prices);
+      }
+
+      setAssets((prevAssets) => prevAssets.sort((a, b) => a.asset.symbol.localeCompare(b.asset.symbol)));
     })();
   }, [publicKey]);
 
@@ -96,11 +102,13 @@ export const DashboardMain = () => {
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
         <BodyText className="text-text-hint">Total balance</BodyText>
-        <Price amount="0" />
+        <LargeTitleText>
+          <Price amount="0" />
+        </LargeTitleText>
         <div className="grid grid-cols-3 w-full justify-items-center mt-4">
           <IconButton text="Send" iconName="send" color="primary" onClick={() => router.push(Paths.TRANSFER)} />
-          <IconButton text="Receive" iconName="receive" color="success" onClick={() => router.push(Paths.TRANSFER)} />
-          <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => router.push(Paths.TRANSFER)} />
+          <IconButton text="Receive" iconName="receive" color="success" onClick={() => router.push(Paths.RECEIVE)} />
+          <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => {}} />
         </div>
       </Plate>
       <Button
