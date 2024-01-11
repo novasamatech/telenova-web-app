@@ -40,7 +40,7 @@ export default function CreateGiftPage() {
     (async function () {
       await handleSend(submitExtrinsic, selectedAsset as TrasferAsset, wallet.address).then(() => {
         backupGifts(wallet.address, wallet.secret, selectedAsset.chainId as ChainId, selectedAsset.amount as string);
-        setLink(createTgLink(wallet.secret, selectedAsset.symbol as string));
+        setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string));
         setLoading(false);
         MainButton?.show();
       });

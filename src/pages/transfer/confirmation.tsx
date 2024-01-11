@@ -58,6 +58,7 @@ export default function ConfirmationPage() {
     };
   }, [selectedAsset]);
 
+  const symbol = selectedAsset?.asset?.symbol;
   const details = [
     {
       title: 'Recipients address',
@@ -65,11 +66,11 @@ export default function ConfirmationPage() {
     },
     {
       title: 'Fee',
-      value: `${selectedAsset?.fee} ${selectedAsset?.symbol}`,
+      value: `${selectedAsset?.fee} ${symbol}`,
     },
     {
       title: 'Total amount',
-      value: `${(Number(selectedAsset?.amount) + (selectedAsset?.fee as number)).toFixed(5)} ${selectedAsset?.symbol}`,
+      value: `${(Number(selectedAsset?.amount) + (selectedAsset?.fee as number)).toFixed(5)} ${symbol}`,
     },
     {
       title: 'Network',
@@ -93,8 +94,8 @@ export default function ConfirmationPage() {
         </HeadlineText>
       </div>
       <div className="my-6 grid grid-cols-[40px,1fr,auto] items-center gap-2">
-        <Icon name={selectedAsset?.symbol as IconNames} className="w-10 h-10" />
-        <LargeTitleText>{selectedAsset?.symbol}</LargeTitleText>
+        <Icon name={symbol as IconNames} className="w-10 h-10" />
+        <LargeTitleText>{symbol}</LargeTitleText>
         <LargeTitleText>{selectedAsset?.amount}</LargeTitleText>
       </div>
       <Plate className="w-full">

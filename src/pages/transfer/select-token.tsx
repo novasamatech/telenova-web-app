@@ -38,7 +38,7 @@ export default function SelectTokenPage() {
             onClick={() => setSelectedAsset((prev) => (prev ? { isGift: prev.isGift, ...asset } : asset))}
           >
             <AssetBalance
-              asset={asset}
+              asset={asset.asset}
               balance={asset.totalBalance}
               className="bg-white rounded-lg px-4 py-2 w-full"
               name={asset.name}

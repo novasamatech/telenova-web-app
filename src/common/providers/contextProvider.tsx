@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AssetAccount, HexString, TrasferAsset } from '../types';
+import { AssetAccount, AssetPrice, HexString, TrasferAsset } from '../types';
 import { getWallet } from '../wallet';
 
 export interface IContext {
@@ -7,10 +7,12 @@ export interface IContext {
   isGiftClaimed: boolean;
   publicKey?: HexString;
   selectedAsset?: Partial<TrasferAsset | null>;
+  assetsPrices?: AssetPrice;
   setPublicKey: React.Dispatch<React.SetStateAction<HexString | undefined>>;
   setAssets: React.Dispatch<React.SetStateAction<AssetAccount[]>>;
   setSelectedAsset: React.Dispatch<React.SetStateAction<Partial<TrasferAsset | null>>>;
   setIsGiftClaimed: React.Dispatch<React.SetStateAction<boolean>>;
+  setAssetsPrices: React.Dispatch<React.SetStateAction<AssetPrice | undefined>>;
 }
 
 export const GlobalContext = createContext<IContext>({
@@ -21,6 +23,7 @@ export const GlobalContext = createContext<IContext>({
   setAssets: () => {},
   setSelectedAsset: () => {},
   setIsGiftClaimed: () => {},
+  setAssetsPrices: () => {},
 });
 
 // TODO refactor this
@@ -28,6 +31,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [publicKey, setPublicKey] = useState<HexString>();
   const [assets, setAssets] = useState<AssetAccount[]>([]);
   const [selectedAsset, setSelectedAsset] = useState<Partial<TrasferAsset | null>>(null);
+  const [assetsPrices, setAssetsPrices] = useState<AssetPrice>();
   const [isGiftClaimed, setIsGiftClaimed] = useState(false);
 
   useEffect(() => {
@@ -42,10 +46,12 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
     assets,
     selectedAsset,
     isGiftClaimed,
+    assetsPrices,
     setPublicKey,
     setAssets,
     setSelectedAsset,
     setIsGiftClaimed,
+    setAssetsPrices,
   };
 
   return <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>;

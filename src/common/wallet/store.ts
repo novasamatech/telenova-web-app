@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { u8aToHex } from '@polkadot/util';
+import { hexToU8a, u8aToHex } from '@polkadot/util';
 import {
   encodeAddress,
   mnemonicGenerate,
@@ -15,10 +15,14 @@ const AES = require('crypto-js/aes');
 const CryptoJS = require('crypto-js');
 
 import { MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
-import { HexString, unwrapHexString } from '@common/types';
+import { HexString } from '@common/types';
 import { GiftWallet, Wallet } from './types';
 
 const keyring = new Keyring({ type: 'sr25519' });
+
+function unwrapHexString(string: string): HexString {
+  return u8aToHex(hexToU8a(string));
+}
 
 export const getWallet = (): Wallet | null => {
   const publicKey = localStorage.getItem(PUBLIC_KEY_STORE);

@@ -1,18 +1,12 @@
 import { createContext, PropsWithChildren, useContext, useRef } from 'react';
+import { encodeAddress } from '@polkadot/util-crypto';
 import { useChainRegistry } from '@common/chainRegistry';
 import { IAssetBalance } from '@common/balances/types';
-import {
-  chainAssetAccountIdToString,
-  ChainAssetAccount,
-  ChainId,
-  Gift,
-  PersistentGift,
-  GiftStatus,
-} from '@common/types';
+import { ChainAssetAccount, ChainId, Gift, PersistentGift, GiftStatus } from '@common/types';
 import { useNumId } from '@common/utils/NumId';
 import { SubscriptionState } from '@common/subscription/types';
 import { createBalanceService } from '@common/balances/BalanceService';
-import { encodeAddress } from '@polkadot/util-crypto';
+import { chainAssetAccountIdToString } from '../utils/balance';
 
 type StateStore = Record<string, SubscriptionState<IAssetBalance>>;
 type UpdateCallback = (balance: IAssetBalance) => void;
