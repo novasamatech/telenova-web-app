@@ -10,12 +10,12 @@ import { Paths } from '@/common/routing';
 import { HeadlineText, Layout } from '@/components';
 import GiftDetails from '@/screens/gifts/GiftDetails';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { handleSend } from '@/common/utils/balance';
 import { ChainId, TrasferAsset } from '@/common/types';
 import { createGiftWallet } from '@/common/wallet';
 import { createTgLink } from '@/common/telegram';
 import { TgLink } from '@/common/telegram/types';
 import { backupGifts } from '@/common/utils/gift';
+import { handleSend } from '@/common/utils/extrinsics';
 
 export default function CreateGiftPage() {
   const router = useRouter();

@@ -1,14 +1,9 @@
 import BigNumber from 'bignumber.js';
-import { decodeAddress } from '@polkadot/keyring';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { Address, AssetAccount, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../types';
+import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId } from '../types';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
-import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
-import { Balance } from '@polkadot/types/interfaces';
-import { FAKE_ACCOUNT_ID } from './constants';
-import { getKeyringPairFromSeed } from '../wallet';
 
 const ZERO_BALANCE = '0';
 
@@ -173,55 +168,16 @@ export const formatAmount = (amount: string, precision: number): string => {
   return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision)).toString();
 };
 
-export async function handleSend(
-  submitExtrinsic: SubmitExtrinsic,
-  { destinationAddress, chainId, amount, transferAll, asset }: TrasferAsset,
-  giftTransfer?: string,
-) {
-  const decodedAddress = decodeAddress(destinationAddress || giftTransfer);
+export const getTotalBalance = (assets: AssetAccount[], assetsPrices?: AssetPrice) => {
+  if (!assets.length || !assetsPrices) return;
 
-  return await submitExtrinsic(chainId, (builder) => {
-    const transferFunction = transferAll
-      ? builder.api.tx.balances.transferAll(decodedAddress, false)
-      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(amount as string, asset.precision));
+  return assets.reduce((acc, asset) => {
+    if (!asset.asset.priceId) return acc;
 
-    builder.addCall(transferFunction);
-  }).then((hash) => {
-    console.log('Success, Hash:', hash?.toString());
-  });
-}
+    const price = assetsPrices[asset.asset.priceId].price || 0;
+    const formatedBalance = Number(formatBalance(asset.totalBalance, asset.asset.precision).formattedValue);
+    acc += price * formatedBalance;
 
-export async function handleFee(
-  estimateFee: EstimateFee,
-  chainId: ChainId,
-  precision: number,
-  isGift?: boolean,
-): Promise<number> {
-  return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
-    builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(FAKE_ACCOUNT_ID), false)),
-  ).then((fee: Balance) => {
-    const finalFee = isGift ? Number(fee) * 2 : fee;
-    const { formattedValue } = formatBalance(finalFee.toString(), precision);
-
-    return Number(formattedValue);
-  });
-}
-
-export async function claimGift(
-  seed: string,
-  address: Address,
-  chainId: ChainId,
-  submitExtrinsic: SubmitExtrinsic,
-): Promise<void> {
-  const keyring = getKeyringPairFromSeed(seed);
-
-  return await submitExtrinsic(
-    chainId,
-    (builder) => {
-      builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(address), false));
-    },
-    keyring,
-  ).then((hash) => {
-    console.log('Success, Hash:', hash?.toString());
-  });
-}
+    return acc;
+  }, 0);
+};

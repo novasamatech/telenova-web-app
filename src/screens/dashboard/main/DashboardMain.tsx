@@ -10,11 +10,12 @@ import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
 import { getMnemonic, resetWallet } from '@common/wallet';
-import { claimGift, updateAssetsBalance } from '@/common/utils/balance';
+import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
+import { claimGift } from '@/common/utils/extrinsics';
 import { BodyText, CaptionText, Icon, AssetsList, Plate, Price, IconButton, LargeTitleText } from '@/components';
 
 export const DashboardMain = () => {
@@ -73,7 +74,7 @@ export const DashboardMain = () => {
         }
 
         subscribeBalance(account, (balance: IAssetBalance) => {
-          console.info(`${address} ${chain.name} => balance: ${balance.total().toString()}`);
+          console.info(`${address} ${chain.name} => balance: ${balance.total()}`);
           setAssets((prevAssets) => updateAssetsBalance(prevAssets, chain, balance));
         });
       }
@@ -103,7 +104,7 @@ export const DashboardMain = () => {
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
         <BodyText className="text-text-hint">Total balance</BodyText>
         <LargeTitleText>
-          <Price amount="0" />
+          <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
         <div className="grid grid-cols-3 w-full justify-items-center mt-4">
           <IconButton text="Send" iconName="send" color="primary" onClick={() => router.push(Paths.TRANSFER)} />
