@@ -174,7 +174,7 @@ export const getTotalBalance = (assets: AssetAccount[], assetsPrices?: AssetPric
   return assets.reduce((acc, asset) => {
     if (!asset.asset.priceId) return acc;
 
-    const price = assetsPrices[asset.asset.priceId].price;
+    const price = assetsPrices[asset.asset.priceId].price || 0;
     const formatedBalance = Number(formatBalance(asset.totalBalance, asset.asset.precision).formattedValue);
     acc += price * formatedBalance;
 
