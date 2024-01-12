@@ -55,12 +55,7 @@ export async function claimGift(
       builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(address), false));
     },
     keyring,
-  )
-    .then((hash) => {
-      console.log('Success, Hash:', hash?.toString());
-      alert('Gift claimed successfully!');
-    })
-    .catch(() => {
-      alert('Failed to claim gift');
-    });
+  ).then((hash) => {
+    console.log('Success, Hash:', hash?.toString());
+  });
 }

@@ -36,9 +36,16 @@ export const DashboardMain = () => {
       const chain = await getAssetBySymbol(symbol);
       const address = encodeAddress(publicKey, chain.chain.addressPrefix);
 
-      claimGift(seed, address, chain.chain.chainId, submitExtrinsic).finally(() => {
-        setIsGiftClaimed(true);
-      });
+      claimGift(seed, address, chain.chain.chainId, submitExtrinsic)
+        .then(() => {
+          alert('Gift claimed successfully!');
+        })
+        .catch(() => {
+          alert('Failed to claim gift');
+        })
+        .finally(() => {
+          setIsGiftClaimed(true);
+        });
     })();
   }, [webApp, publicKey, isGiftClaimed]);
 
