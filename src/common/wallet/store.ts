@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import secureLocalStorage from 'react-secure-storage';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
+import { Keyring } from '@polkadot/api';
 import {
   encodeAddress,
   mnemonicGenerate,
@@ -7,12 +8,8 @@ import {
   randomAsHex,
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
-import { Keyring } from '@polkadot/api';
+import CryptoJS, { AES } from 'crypto-js';
 import { KeyringPair } from '@polkadot/keyring/types';
-import secureLocalStorage from 'react-secure-storage';
-
-const AES = require('crypto-js/aes');
-const CryptoJS = require('crypto-js');
 
 import { MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
 import { HexString } from '@common/types';
@@ -31,13 +28,23 @@ export const getWallet = (): Wallet | null => {
 };
 
 export const generateWalletMnemonic = (): string => {
+  console.log(1, mnemonicGenerate());
+
   return mnemonicGenerate();
 };
 
 export const createWallet = (mnemonic: string): Wallet => {
+  console.log(3, mnemonic, sr25519PairFromSeed);
+
   const seed = mnemonicToMiniSecret(mnemonic);
+  console.log(5, seed);
+  console.log(6, seed, sr25519PairFromSeed(seed));
+
   const keypair = sr25519PairFromSeed(seed);
+  console.log(7, keypair);
+
   const publicKey: HexString = u8aToHex(keypair.publicKey);
+  console.log('publicKey', seed, keypair, publicKey, localStorage, secureLocalStorage);
 
   localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
   secureLocalStorage.setItem(MNEMONIC_STORE, mnemonic);

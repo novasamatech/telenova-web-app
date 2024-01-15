@@ -52,7 +52,8 @@ export default function CreateWalletPage() {
       MainButton?.hideProgress();
       MainButton?.offClick(callback);
     };
-  }, []);
+  }, [publicKey]);
+  console.log('publicKey', publicKey, isLoading);
 
   return isLoading ? (
     <div className="min-h-screen flex flex-col justify-center items-center">

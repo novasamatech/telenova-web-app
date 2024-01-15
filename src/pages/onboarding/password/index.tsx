@@ -1,11 +1,10 @@
-'use client';
 import { useRouter } from 'next/router';
 import { Avatar } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
-import { Paths } from '@/common/routing';
 import { createWallet, generateWalletMnemonic, backupMnemonic } from '@common/wallet';
+import { Paths } from '@/common/routing';
 import { BodyText, TitleText } from '@/components/Typography';
 import PasswordForm from '@/components/PasswordForm/PasswordForm';
 
@@ -20,13 +19,17 @@ export default function PasswordPage() {
   const handleSubmit = (password: string) => {
     MainButton?.enable();
     MainButton?.onClick(() => {
-      router.push(Paths.ONBOARDING_CREATE_WALLET);
+      console.log(1, password);
 
       const mnemonic = generateWalletMnemonic();
+      console.log('mnemonic', mnemonic, createWallet);
+
       const { publicKey } = createWallet(mnemonic);
+      console.log('key', mnemonic, publicKey);
 
       setPublicKey(publicKey);
       backupMnemonic(mnemonic, password);
+      router.push(Paths.ONBOARDING_CREATE_WALLET);
     });
   };
 
