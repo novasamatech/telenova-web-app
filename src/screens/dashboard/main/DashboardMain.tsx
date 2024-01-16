@@ -102,7 +102,7 @@ export const DashboardMain = () => {
         <Icon name="settings" size={40} />
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
-        <BodyText className="text-text-hint">Total balance</BodyText>
+        <BodyText className="text-text-hint">Total Balance</BodyText>
         <LargeTitleText>
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
