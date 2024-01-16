@@ -20,6 +20,7 @@ import Shimmering from './Shimmering/Shimmering';
 import Identicon from './Identicon/Identicon';
 import Layout from './Layout/Layout';
 import GiftPlate from './GiftPlate/GiftPlate';
+import TruncateAddress from './Address/TruncateAddress';
 
 export {
   TextBase,
@@ -43,4 +44,5 @@ export {
   Layout,
   GiftPlate,
   TokenPrice,
+  TruncateAddress,
 };

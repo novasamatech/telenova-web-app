@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId } from '../types';
+import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../types';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
+import { EstimateFee, GetExistentialDeposit } from '../extrinsicService/types';
+import { handleFee } from './extrinsics';
 
 const ZERO_BALANCE = '0';
 
@@ -181,3 +183,28 @@ export const getTotalBalance = (assets: AssetAccount[], assetsPrices?: AssetPric
     return acc;
   }, 0);
 };
+
+export async function getTransferDetails(
+  selectedAsset: TrasferAsset,
+  estimateFee: EstimateFee,
+  getExistentialDeposit: GetExistentialDeposit,
+) {
+  const fee =
+    selectedAsset?.fee ||
+    (await handleFee(
+      estimateFee,
+      selectedAsset.chainId as ChainId,
+      selectedAsset.asset?.precision as number,
+      selectedAsset?.isGift,
+    ));
+
+  const formattedBalance = Number(
+    formatBalance(selectedAsset.transferableBalance, selectedAsset.asset?.precision).formattedValue,
+  );
+  const max = Math.max(formattedBalance - fee, 0).toFixed(5);
+
+  const deposit = await getExistentialDeposit(selectedAsset.chainId as ChainId);
+  const formattedDeposit = Number(formatBalance(deposit, selectedAsset.asset?.precision).formattedValue);
+
+  return { fee, max, formattedDeposit };
+}

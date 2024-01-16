@@ -1,12 +1,12 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { validateAddress } from '@/common/utils/address';
-import { Icon, HelpText, BodyText, Identicon } from '@/components';
+import { Icon, HelpText, BodyText, Identicon, Layout } from '@/components';
 import { Paths } from '@/common/routing';
 
 export default function AddressPage() {
@@ -63,7 +63,7 @@ export default function AddressPage() {
   };
 
   return (
-    <div className="min-h-screen p-4 flex flex-col items-center w-full">
+    <div className="flex flex-col items-center">
       <Input
         isClearable
         variant="flat"
@@ -96,3 +96,7 @@ export default function AddressPage() {
     </div>
   );
 }
+
+AddressPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
