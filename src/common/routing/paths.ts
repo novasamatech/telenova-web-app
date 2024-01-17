@@ -9,6 +9,8 @@ export const Paths = {
   DASHBOARD: '/dashboard',
   RECEIVE: '/dashboard/receive',
 
+  SETTINGS: '/settings',
+
   GIFTS: '/gifts',
   GIFT_DETAILS: '/gifts/gift-details',
 
