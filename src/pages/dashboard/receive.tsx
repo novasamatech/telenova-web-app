@@ -72,19 +72,21 @@ export default function ReceivePage() {
         updateOnItemClick
         centerMode
         infinite
+        disableNavIfEdgeActive
         preventScrollOnSwipe
         onRequestChange={setActiveSlideIndex}
       >
         {assets.map((asset) => (
           <div className="flex flex-col items-center gap-3 border-x-[12px] border-transparent" key={asset.address}>
             <TitleText>Receive {asset.asset.symbol}</TitleText>
-            <Plate className="flex flex-col items-center gap-3 w-[232px] h-[312px] break-all">
+            <Plate className="flex flex-col items-center gap-3 w-[232px] h-[344px] break-all">
               <QRCode
                 value={asset.address}
                 logoImage={`/images/${asset.asset.symbol}.svg`}
                 quietZone={0}
-                logoPadding={7}
+                logoPadding={6}
                 eyeRadius={30}
+                size={200}
                 id={`qrcode_${asset.asset.symbol}`}
               />
               <BodyText className="text-text-hint">{asset.asset.symbol} address</BodyText>
