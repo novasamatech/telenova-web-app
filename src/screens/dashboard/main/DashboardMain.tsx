@@ -16,7 +16,7 @@ import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
 import { claimGift } from '@/common/utils/extrinsics';
-import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText } from '@/components';
+import { BodyText, CaptionText, Icon, AssetsList, Plate, Price, IconButton, LargeTitleText } from '@/components';
 
 export const DashboardMain = () => {
   const router = useRouter();
@@ -99,7 +99,7 @@ export const DashboardMain = () => {
       <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6">
         <Avatar src={user?.photo_url} className="w-10 h-10" name={user?.first_name[0]} />
         <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
-        <IconButton iconName="settings" onClick={() => router.push(Paths.SETTINGS)} />
+        <Icon name="settings" size={40} />
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
         <BodyText className="text-text-hint">Total balance</BodyText>

@@ -17,7 +17,7 @@ const AssetsList = () => {
         <Button
           key={asset.chainId}
           variant="light"
-          className="w-full block h-full p-[2px]"
+          className="w-full block h-full"
           onClick={() => copyAddress(asset.address)}
         >
           <AssetBalance

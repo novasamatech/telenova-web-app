@@ -1,11 +1,12 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import { useTelegram } from '@common/providers/telegramProvider';
-import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { Plate, TitleText, LinkCard } from '@/components';
+import { Icon, Plate, TitleText, BodyText, HelpText } from '@/components';
+import { useGlobalContext } from '@/common/providers/contextProvider';
 
 export default function TransferPage() {
   const router = useRouter();
@@ -28,27 +29,36 @@ export default function TransferPage() {
   return (
     <div className="min-h-screen p-4">
       <TitleText className="mt-10 mb-6">How to send tokens</TitleText>
-      <Plate className="mb-2 p-2">
-        <LinkCard
+      <Plate className="mb-2 p-3">
+        <Link
           href={Paths.TRANSFER_SELECT_TOKEN}
-          text="Send as Gift"
-          helpText="Transfer to one of your contacts"
-          iconName="gift"
-          className="p-0"
-          showArrow
+          className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4"
           onClick={() => setSelectedAsset({ isGift: true })}
-        />
+        >
+          <Icon name="gift" className="w-10 h-10" />
+          <div className="grid">
+            <BodyText align="left">Send as Gift</BodyText>
+            <HelpText className="text-text-hint">Transfer to one of your contacts</HelpText>
+          </div>
+          <Icon name="chevronForward" className="w-4 h-4" />
+        </Link>
       </Plate>
-      <Plate className="p-2">
-        <LinkCard
+
+      <Plate className="p-3">
+        <Link
           href={Paths.TRANSFER_SELECT_TOKEN}
-          text="External Address"
-          helpText="Transfer to address within the network"
-          iconName="address"
-          className="p-0"
-          showArrow
+          className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4"
           onClick={() => setSelectedAsset(null)}
-        />
+        >
+          <Icon name="address" className="w-10 h-10" />
+          <div className="grid">
+            <BodyText align="left" as="span">
+              External Address
+            </BodyText>
+            <HelpText className="text-text-hint">Transfer to address within the network</HelpText>
+          </div>
+          <Icon name="chevronForward" className="w-4 h-4" />
+        </Link>
       </Plate>
     </div>
   );

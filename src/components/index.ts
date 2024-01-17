@@ -20,7 +20,6 @@ import Shimmering from './Shimmering/Shimmering';
 import Identicon from './Identicon/Identicon';
 import Layout from './Layout/Layout';
 import GiftPlate from './GiftPlate/GiftPlate';
-import LinkCard from './LinkCard/LinkCard';
 
 export {
   TextBase,
@@ -44,5 +43,4 @@ export {
   Layout,
   GiftPlate,
   TokenPrice,
-  LinkCard,
 };
