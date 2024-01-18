@@ -20,6 +20,30 @@ export const polkadot: Chain = {
       url: 'wss://rpc.polkadot.io',
       name: 'Parity node',
     },
+    {
+      url: 'wss://polkadot.public.curie.radiumblock.co/ws',
+      name: 'Radium node',
+    },
+    {
+      url: 'wss://dot-rpc.stakeworld.io',
+      name: 'Stakeworld node',
+    },
+    {
+      url: 'wss://1rpc.io/dot',
+      name: 'Automata 1RPC node',
+    },
+    {
+      url: 'wss://rpc-polkadot.luckyfriday.io',
+      name: 'LuckyFriday node',
+    },
+    {
+      url: 'wss://rpc.ibp.network/polkadot',
+      name: 'IBP network node',
+    },
+    {
+      url: 'wss://rpc.dotters.network/polkadot',
+      name: 'Dotters Net node',
+    }
   ],
   addressPrefix: 0,
 };
@@ -37,12 +61,32 @@ export const kusama: Chain = {
   ],
   nodes: [
     {
+      url: 'wss://kusama-rpc.dwellir.com',
+      name: 'Dwellir node',
+    },
+    {
+      url: 'wss://rpc-kusama.luckyfriday.io',
+      name: 'LuckyFriday node',
+    },
+    {
       url: 'wss://1rpc.io/ksm',
       name: 'Automata 1RPC node',
     },
     {
-      url: 'wss://kusama-rpc.dwellir.com',
-      name: 'Dwellir node',
+      url: 'wss://rpc.ibp.network/kusama',
+      name: 'IBP network node',
+    },
+    {
+      url: 'wss://rpc.dotters.network/kusama',
+      name: 'Dotters Net node',
+    },
+    {
+      url: 'wss://kusama.public.curie.radiumblock.co/ws',
+      name: 'Radium node',
+    },
+    {
+      url: 'wss://kusama.api.onfinality.io/public-ws',
+      name: 'OnFinality node',
     },
   ],
   addressPrefix: 2,
@@ -60,12 +104,20 @@ export const westend: Chain = {
   ],
   nodes: [
     {
-      url: 'wss://rpc-westend.luckyfriday.io',
-      name: 'lucky friday node',
+      url: 'wss://westend-rpc.dwellir.com',
+      name: 'Dwellir node',
+    },
+    {
+      url: 'wss://rpc.ibp.network/westend',
+      name: 'IBP network node',
     },
     {
       url: 'wss://rpc.dotters.network/westend',
       name: 'Dotters Net node',
+    },
+    {
+      url: 'wss://westend.api.onfinality.io/public-ws',
+      name: 'OnFinality node',
     },
   ],
   addressPrefix: 42,
