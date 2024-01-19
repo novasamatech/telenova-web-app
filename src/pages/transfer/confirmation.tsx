@@ -1,8 +1,6 @@
 'use client';
 import { ReactElement, useEffect } from 'react';
 import { useRouter } from 'next/router';
-// @ts-expect-error no types
-import MiddleEllipsis from 'react-middle-ellipsis';
 import { Divider } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
@@ -14,11 +12,11 @@ import {
   Icon,
   Identicon,
   LargeTitleText,
-  TextBase,
   Plate,
   BodyText,
   CaptionText,
   Layout,
+  TruncateAddress,
 } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
@@ -84,13 +82,7 @@ export default function ConfirmationPage() {
         <Identicon address={selectedAsset?.destinationAddress} />
         <HeadlineText className="flex gap-1">
           Send to
-          <span className="w-[130px]">
-            <MiddleEllipsis>
-              <TextBase as="span" className="text-body-bold">
-                {selectedAsset?.destinationAddress}
-              </TextBase>
-            </MiddleEllipsis>
-          </span>
+          <TruncateAddress address={selectedAsset?.destinationAddress} className="max-w-[130px]" />
         </HeadlineText>
       </div>
       <div className="my-6 grid grid-cols-[40px,1fr,auto] items-center gap-2">

@@ -7,12 +7,10 @@ import {
   randomAsHex,
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
-import { Keyring } from '@polkadot/api';
+import CryptoJS, { AES } from 'crypto-js';
+import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import secureLocalStorage from 'react-secure-storage';
-
-const AES = require('crypto-js/aes');
-const CryptoJS = require('crypto-js');
 
 import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
 import { HexString } from '@common/types';

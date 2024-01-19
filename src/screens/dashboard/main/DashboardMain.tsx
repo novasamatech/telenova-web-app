@@ -102,7 +102,7 @@ export const DashboardMain = () => {
         <IconButton iconName="settings" onClick={() => router.push(Paths.SETTINGS)} />
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
-        <BodyText className="text-text-hint">Total balance</BodyText>
+        <BodyText className="text-text-hint">Total Balance</BodyText>
         <LargeTitleText>
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>

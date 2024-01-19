@@ -1,8 +1,6 @@
 'use client';
 import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-// @ts-expect-error no types
-import MiddleEllipsis from 'react-middle-ellipsis';
 import { Button, CircularProgress, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
@@ -14,20 +12,19 @@ import {
   Identicon,
   CaptionText,
   LargeTitleText,
-  TextBase,
   Layout,
   BodyText,
   TokenPrice,
+  TruncateAddress,
 } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { formatBalance } from '@/common/utils/balance';
-import { handleFee } from '@/common/utils/extrinsics';
-import { ChainId } from '@/common/types';
+import { getTransferDetails } from '@/common/utils/balance';
+import { TrasferAsset } from '@/common/types';
 
 export default function AmountPage() {
   const router = useRouter();
-  const { estimateFee } = useExtrinsicProvider();
+  const { estimateFee, getExistentialDeposit } = useExtrinsicProvider();
   const { BackButton, MainButton } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
@@ -35,6 +32,7 @@ export default function AmountPage() {
   const [transferAll, setTransferAll] = useState(false);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>();
   const [isAmountValid, setIsAmountValid] = useState(true);
+  const [deposit, setDeposit] = useState(0);
 
   useEffect(() => {
     router.prefetch(Paths.TRANSFER_CONFIRMATION);
@@ -51,20 +49,13 @@ export default function AmountPage() {
     if (!selectedAsset) return;
 
     (async () => {
-      const fee =
-        selectedAsset.fee ||
-        (await handleFee(
-          estimateFee,
-          selectedAsset.chainId as ChainId,
-          selectedAsset.asset?.precision as number,
-          selectedAsset.isGift,
-        ));
-      const formattedBalance = Number(
-        formatBalance(selectedAsset.transferableBalance, selectedAsset.asset?.precision).formattedValue,
+      const { max, fee, formattedDeposit } = await getTransferDetails(
+        selectedAsset as TrasferAsset,
+        estimateFee,
+        getExistentialDeposit,
       );
 
-      const max = Math.max(formattedBalance - fee, 0).toFixed(5);
-
+      setDeposit(formattedDeposit);
       setMaxAmountToSend(max);
       setIsAmountValid(+amount <= +max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
@@ -77,7 +68,11 @@ export default function AmountPage() {
   }, [BackButton, MainButton]);
 
   useEffect(() => {
-    if (!isAmountValid || !Number(amount)) return;
+    if (!isAmountValid || !Number(amount)) {
+      MainButton?.disable();
+
+      return;
+    }
 
     const callback = () => {
       setSelectedAsset((prev) => ({ ...prev!, transferAll, amount }));
@@ -93,14 +88,16 @@ export default function AmountPage() {
 
   const handleMaxSend = () => {
     if (maxAmountToSend === undefined) return;
+    const validateGift = selectedAsset?.isGift ? +maxAmountToSend >= deposit : true;
     setTransferAll(true);
     setAmount(String(maxAmountToSend));
-    setIsAmountValid(Boolean(maxAmountToSend));
+    setIsAmountValid(Boolean(maxAmountToSend) && validateGift);
   };
 
   const handleChange = (value: string) => {
     setTransferAll(false);
-    setIsAmountValid(!!Number(value) && +value <= +(maxAmountToSend || 0));
+    const validateGift = selectedAsset?.isGift ? !!deposit && +value >= deposit : true;
+    setIsAmountValid(!!Number(value) && +value <= +(maxAmountToSend || 0) && validateGift);
     setAmount(value);
   };
 
@@ -117,13 +114,7 @@ export default function AmountPage() {
             <Identicon address={selectedAsset?.destinationAddress} />
             <HeadlineText className="flex gap-1">
               Send to
-              <span className="max-w-[120px]">
-                <MiddleEllipsis>
-                  <TextBase as="span" className="text-body-bold">
-                    {selectedAsset?.destinationAddress}
-                  </TextBase>
-                </MiddleEllipsis>
-              </span>
+              <TruncateAddress address={selectedAsset?.destinationAddress} className="max-w-[120px]" />
             </HeadlineText>
           </>
         )}
@@ -147,9 +138,21 @@ export default function AmountPage() {
           onValueChange={handleChange}
         />
       </div>
-      <div className="grid grid-cols-[1fr,auto]">
+      <div className="grid grid-cols-[auto,1fr]">
         <TokenPrice priceId={selectedAsset?.asset?.priceId} balance={amount} showBalance={isAmountValid} />
-        {!isAmountValid && <BodyText className="text-text-danger">Invalid amount</BodyText>}
+        {!isAmountValid && (
+          <>
+            <BodyText align="right" className="text-text-danger">
+              Invalid amount
+              <br />
+              {selectedAsset?.isGift && !!deposit && +amount < deposit && (
+                <BodyText as="span" className="text-text-danger">
+                  Your gift should remain above minimal network deposit {deposit} {selectedAsset?.asset?.symbol}.
+                </BodyText>
+              )}
+            </BodyText>
+          </>
+        )}
       </div>
     </>
   );
