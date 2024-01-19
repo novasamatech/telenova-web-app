@@ -24,7 +24,13 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen flex flex-col items-center p-4 gap-4 w-full">
       <Plate className="w-full p-0">
-        <LinkCard text="Manage Backup" iconName="backup" iconClassName="w-6 h-6" showArrow />
+        <LinkCard
+          text="Manage Backup"
+          iconName="backup"
+          iconClassName="w-6 h-6"
+          showArrow
+          href={Paths.SETTINGS_BACKUP}
+        />
       </Plate>
       <Plate className="w-full p-0 bg-bg-button-disabled">
         <LinkCard
