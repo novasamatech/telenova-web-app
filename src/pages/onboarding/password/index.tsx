@@ -23,9 +23,9 @@ export default function PasswordPage() {
       router.push(Paths.ONBOARDING_CREATE_WALLET);
 
       const mnemonic = generateWalletMnemonic();
-      const { publicKey } = createWallet(mnemonic);
+      const wallet = createWallet(mnemonic as string);
 
-      setPublicKey(publicKey);
+      setPublicKey(wallet?.publicKey);
       backupMnemonic(mnemonic, password);
     });
   };
