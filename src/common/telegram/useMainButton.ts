@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { MainButton } from '@twa-dev/types';
 
 export const useMainButton = () => {
-  const mainButtonEvent = useRef(null);
+  const mainButtonEvent = useRef<VoidFunction | null>(null);
 
   const ref = useRef<MainButton>(window?.Telegram?.WebApp?.MainButton);
 
@@ -26,8 +26,6 @@ export const useMainButton = () => {
       mainButton.setText(text);
       mainButton.show();
       mainButton.onClick(event);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       mainButtonEvent.current = event;
     },
     [mainButtonEvent],
