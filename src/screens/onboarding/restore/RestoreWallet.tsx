@@ -7,7 +7,7 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Avatar, Input } from '@nextui-org/react';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
-import { initializeWalletFromCloud, resetWallet } from '@/common/wallet';
+import { createWallet, initializeWalletFromCloud, resetWallet } from '@/common/wallet';
 
 type Props = {
   mnemonic: string;
@@ -33,7 +33,8 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
 
         return;
       }
-      const wallet = initializeWalletFromCloud(password, mnemonic);
+      const decryptedMnemonic = initializeWalletFromCloud(password, mnemonic);
+      const wallet = createWallet(decryptedMnemonic);
       setIsPasswordValid(Boolean(wallet));
       if (wallet) {
         setPublicKey(wallet?.publicKey);

@@ -38,5 +38,5 @@ export const useMainButton = () => {
     reset();
   }, []);
 
-  return { addMainButton, hideMainButton, mainButton, ...ref.current };
+  return { addMainButton, hideMainButton, reset, mainButton, ...ref.current };
 };
