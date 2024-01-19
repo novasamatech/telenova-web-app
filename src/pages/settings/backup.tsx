@@ -18,7 +18,7 @@ export default function SettingsBackupPage() {
     BackButton?.onClick(callback);
 
     webApp?.CloudStorage.getItem(BACKUP_DATE, (_err, value) => {
-      const date = value ? new Date(+value).toDateString() : 'no date found';
+      const date = value ? new Date(+value).toDateString() : '';
       setBackupDate(date);
     });
 
@@ -42,7 +42,7 @@ export default function SettingsBackupPage() {
           showArrow
         />
       </Plate>
-      <BodyText className="text-text-hint self-start">Last Changed: {backupDate}</BodyText>
+      {backupDate && <BodyText className="text-text-hint self-start">Last Changed: {backupDate}</BodyText>}
     </div>
   );
 }
