@@ -9,6 +9,12 @@ export const Paths = {
   DASHBOARD: '/dashboard',
   RECEIVE: '/dashboard/receive',
 
+  SETTINGS: '/settings',
+  SETTINGS_BACKUP: '/settings/backup',
+  SETTINGS_CHANGE_PASSWORD: '/settings/change-password',
+  SETTINGS_NEW_PASSWORD: '/settings/new-password',
+  SETTINGS_PASSWORD_CONFIRMATION: '/settings/password-confirmation',
+
   GIFTS: '/gifts',
   GIFT_DETAILS: '/gifts/gift-details',
 

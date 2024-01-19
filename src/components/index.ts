@@ -21,6 +21,7 @@ import Identicon from './Identicon/Identicon';
 import Layout from './Layout/Layout';
 import GiftPlate from './GiftPlate/GiftPlate';
 import TruncateAddress from './Address/TruncateAddress';
+import LinkCard from './LinkCard/LinkCard';
 
 export {
   TextBase,
@@ -45,4 +46,5 @@ export {
   GiftPlate,
   TokenPrice,
   TruncateAddress,
+  LinkCard,
 };
