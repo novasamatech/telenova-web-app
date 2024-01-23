@@ -82,9 +82,9 @@ export default function ReceivePage() {
             <Plate className="flex flex-col items-center gap-3 w-[232px] h-[344px] break-all">
               <QRCode
                 value={asset.address}
-                logoImage={`/images/${asset.asset.symbol}.svg`}
+                logoImage={`/images/assets/${asset.asset.symbol}.svg`}
                 quietZone={0}
-                logoPadding={6}
+                logoPadding={5}
                 eyeRadius={30}
                 size={200}
                 id={`qrcode_${asset.asset.symbol}`}

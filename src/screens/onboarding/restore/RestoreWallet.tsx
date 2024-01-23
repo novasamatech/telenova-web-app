@@ -84,7 +84,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         onValueChange={setPassword}
         onClear={() => setPassword('')}
       />
-      <button className="btn btn-blue m-auto" onClick={() => clearWallet()}>
+      <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
         Reset Wallet
       </button>
     </>
