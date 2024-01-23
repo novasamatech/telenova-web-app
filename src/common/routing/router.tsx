@@ -21,16 +21,6 @@ import {
   CreateGiftPage,
 } from '@/screens/transfer/';
 
-// export const router = createBrowserRouter(
-//   createRoutesFromElements(
-//     <Routes>
-//       <Route path={Paths.ONBOARDING} element={<OnboardingPage />} />
-//       <Route path={Paths.ONBOARDING_PASSWORD} element={<PasswordPage />} />
-//       <Route path={Paths.ONBOARDING_CREATE_WALLET} element={<CreateWalletPage />} />
-//     </Routes>,
-//   ),
-// );
-
 export const routesConfig: RouteObject[] = [
   {
     path: Paths.ONBOARDING,
