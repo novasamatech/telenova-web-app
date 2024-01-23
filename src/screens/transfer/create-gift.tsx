@@ -1,6 +1,6 @@
 'use client';
 import { ReactElement, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { WebApp } from '@twa-dev/types';
 
@@ -18,7 +18,7 @@ import { backupGifts } from '@/common/utils/gift';
 import { handleSend } from '@/common/utils/extrinsics';
 
 export default function CreateGiftPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { submitExtrinsic } = useExtrinsicProvider();
   const { BackButton, MainButton, webApp } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
@@ -32,7 +32,7 @@ export default function CreateGiftPage() {
     MainButton?.hide();
     MainButton?.setText('Gift created');
     const mainCallback = async () => {
-      router.push(Paths.DASHBOARD);
+      navigate(Paths.DASHBOARD);
     };
     MainButton?.onClick(mainCallback);
 

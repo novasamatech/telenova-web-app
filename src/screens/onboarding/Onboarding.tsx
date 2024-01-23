@@ -24,13 +24,13 @@ export default function OnboardingPage() {
   // TODO: replace with loader
   if (isLoading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <Player src="/gifs/Welcome.json" loop autoplay className="player" />
       </div>
     );
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center text-center p-4">
+    <div className="flex flex-col items-center text-center">
       {mnemonic ? <RestoreWalletPage mnemonic={mnemonic} /> : <OnboardingStartPage />}
     </div>
   );

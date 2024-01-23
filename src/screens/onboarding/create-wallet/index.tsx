@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { Player } from '@lottiefiles/react-lottie-player';
 
@@ -10,14 +10,14 @@ import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
 
 export default function CreateWalletPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { MainButton, webApp } = useTelegram();
   const { publicKey } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const callback = () => {
-      router.push(Paths.DASHBOARD);
+      navigate(Paths.DASHBOARD);
     };
 
     (async () => {
@@ -55,12 +55,12 @@ export default function CreateWalletPage() {
   }, []);
 
   return isLoading ? (
-    <div className="min-h-screen flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center">
       <Player src="/gifs/create-wallet.json" keepLastFrame autoplay className="player" />
       <BodyText className="text-icon-on-neutral">Creating your wallet...</BodyText>
     </div>
   ) : (
-    <div className="min-h-screen flex flex-col justify-center items-center p-5">
+    <div className="flex flex-col justify-center items-center p-1">
       <div className="bg-blue-500 rounded-full p-3 w-[114px] h-[114px]">
         <ConfettiExplosion particleCount={250} />
         {/* <Player src="firework" className="player" /> */}

@@ -1,7 +1,6 @@
 'use client';
 import { ReactElement, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -9,15 +8,13 @@ import { Paths } from '@/common/routing';
 import { TitleText, AssetBalance, Layout } from '@/components';
 
 export default function SelectTokenPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { BackButton } = useTelegram();
   const { assets, setSelectedAsset, selectedAsset } = useGlobalContext();
 
   useEffect(() => {
-    router.prefetch(Paths.TRANSFER_ADDRESS);
-
     const callback = () => {
-      router.push(Paths.TRANSFER);
+      navigate(Paths.TRANSFER);
     };
     BackButton?.show();
     BackButton?.onClick(callback);
@@ -33,7 +30,7 @@ export default function SelectTokenPage() {
       <div className="flex flex-col gap-2 mt-4">
         {assets.map((asset) => (
           <Link
-            href={selectedAsset?.isGift ? Paths.TRANSFER_AMOUNT : Paths.TRANSFER_ADDRESS}
+            to={selectedAsset?.isGift ? Paths.TRANSFER_AMOUNT : Paths.TRANSFER_ADDRESS}
             key={asset.chainId}
             onClick={() => setSelectedAsset((prev) => (prev ? { isGift: prev.isGift, ...asset } : asset))}
           >

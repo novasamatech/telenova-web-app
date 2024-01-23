@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -8,13 +8,13 @@ import { Paths } from '@/common/routing';
 import { Plate, TitleText, LinkCard } from '@/components';
 
 export default function TransferPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { BackButton } = useTelegram();
   const { setSelectedAsset } = useGlobalContext();
 
   useEffect(() => {
     const callback = () => {
-      router.push(Paths.DASHBOARD);
+      navigate(Paths.DASHBOARD);
     };
     BackButton?.show();
     BackButton?.onClick(callback);
@@ -26,7 +26,7 @@ export default function TransferPage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4">
+    <>
       <TitleText className="mt-10 mb-6">How to send tokens</TitleText>
       <Plate className="mb-2 p-2">
         <LinkCard
@@ -50,6 +50,6 @@ export default function TransferPage() {
           onClick={() => setSelectedAsset(null)}
         />
       </Plate>
-    </div>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { cnTw } from '@/common/utils/twMerge';
 import { BodyText, HelpText, Icon } from '@/components';
 import { IconNames } from '../Icon/types';
@@ -29,7 +29,7 @@ const LinkCard = ({
   showArrow,
 }: Props) => (
   <Link
-    href={href}
+    to={href}
     className={cnTw(`w-full grid grid-cols-[auto,1fr,auto] items-center gap-4 p-3 ${className}`)}
     onClick={onClick}
   >

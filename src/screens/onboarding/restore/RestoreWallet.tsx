@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const RestoreWalletPage = ({ mnemonic }: Props) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { MainButton, user } = useTelegram();
   const { setPublicKey } = useGlobalContext();
 
@@ -38,7 +38,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
       setIsPasswordValid(Boolean(wallet));
       if (wallet) {
         setPublicKey(wallet?.publicKey);
-        router.push(Paths.DASHBOARD);
+        navigate(Paths.DASHBOARD);
       }
     };
 
@@ -56,7 +56,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
 
   function clearWallet() {
     resetWallet();
-    router.replace(Paths.ONBOARDING);
+    navigate(Paths.ONBOARDING);
   }
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 import { ReactElement, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { Button, CircularProgress, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
@@ -23,7 +23,7 @@ import { getTransferDetails } from '@/common/utils/balance';
 import { TrasferAsset } from '@/common/types';
 
 export default function AmountPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { estimateFee, getExistentialDeposit } = useExtrinsicProvider();
   const { BackButton, MainButton } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
@@ -35,14 +35,13 @@ export default function AmountPage() {
   const [deposit, setDeposit] = useState(0);
 
   useEffect(() => {
-    router.prefetch(Paths.TRANSFER_CONFIRMATION);
     MainButton?.setText(selectedAsset?.isGift ? 'Create Gift' : 'Continue');
     BackButton?.show();
     MainButton?.show();
     MainButton?.disable();
 
     const callback = () => {
-      router.push(selectedAsset?.isGift ? Paths.TRANSFER_SELECT_TOKEN : Paths.TRANSFER_ADDRESS);
+      navigate(selectedAsset?.isGift ? Paths.TRANSFER_SELECT_TOKEN : Paths.TRANSFER_ADDRESS);
     };
     BackButton?.onClick(callback);
 
@@ -76,7 +75,7 @@ export default function AmountPage() {
 
     const callback = () => {
       setSelectedAsset((prev) => ({ ...prev!, transferAll, amount }));
-      router.push(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
+      navigate(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
     };
     MainButton?.enable();
     MainButton?.onClick(callback);

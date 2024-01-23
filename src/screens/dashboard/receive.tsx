@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import { QRCode } from 'react-qrcode-logo';
 import Carousel from 'react-simply-carousel';
@@ -20,7 +20,7 @@ const dotStyle = {
 };
 
 export default function ReceivePage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { BackButton, MainButton } = useTelegram();
   const { assets } = useGlobalContext();
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -30,7 +30,7 @@ export default function ReceivePage() {
     MainButton?.hide();
 
     const callback = async () => {
-      router.push(Paths.DASHBOARD);
+      navigate(Paths.DASHBOARD);
     };
     BackButton?.onClick(callback);
 
@@ -41,7 +41,7 @@ export default function ReceivePage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 flex items-center">
+    <div className="flex items-center">
       <Carousel
         activeSlideIndex={activeSlideIndex}
         containerProps={{
