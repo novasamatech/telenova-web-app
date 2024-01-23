@@ -13,7 +13,7 @@ export const polkadot: Chain = {
   ],
   nodes: [
     {
-      url: 'wss://polkadot-rpc.dwellir.com',
+      url: 'wss://polkadot-rpc.dwellir.com1',
       name: 'Dwellir node',
     },
     {
