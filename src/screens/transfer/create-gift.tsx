@@ -1,5 +1,5 @@
 'use client';
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { WebApp } from '@twa-dev/types';
@@ -7,7 +7,7 @@ import { WebApp } from '@twa-dev/types';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { HeadlineText, Layout } from '@/components';
+import { HeadlineText } from '@/components';
 import GiftDetails from '@/screens/gifts/GiftDetails';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { ChainId, TrasferAsset } from '@/common/types';
@@ -66,7 +66,3 @@ export default function CreateGiftPage() {
     </div>
   );
 }
-
-CreateGiftPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

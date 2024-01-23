@@ -1,10 +1,10 @@
 'use client';
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
-import { BodyText, GiftPlate, Layout, Shimmering, TitleText } from '@/components';
+import { BodyText, GiftPlate, Shimmering, TitleText } from '@/components';
 import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGifts } from '@/common/utils/gift';
 import { Gift } from '@/common/types';
@@ -72,7 +72,3 @@ export default function GiftPage() {
     </>
   );
 }
-
-GiftPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

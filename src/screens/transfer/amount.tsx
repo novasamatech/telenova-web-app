@@ -1,5 +1,5 @@
 'use client';
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, CircularProgress, Input } from '@nextui-org/react';
 
@@ -12,7 +12,6 @@ import {
   Identicon,
   CaptionText,
   LargeTitleText,
-  Layout,
   BodyText,
   TokenPrice,
   TruncateAddress,
@@ -156,7 +155,3 @@ export default function AmountPage() {
     </>
   );
 }
-
-AmountPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

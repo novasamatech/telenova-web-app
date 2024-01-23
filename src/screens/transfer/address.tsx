@@ -1,12 +1,12 @@
 'use client';
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { validateAddress } from '@/common/utils/address';
-import { Icon, HelpText, BodyText, Identicon, Layout } from '@/components';
+import { Icon, HelpText, BodyText, Identicon } from '@/components';
 import { Paths } from '@/common/routing';
 
 export default function AddressPage() {
@@ -95,7 +95,3 @@ export default function AddressPage() {
     </div>
   );
 }
-
-AddressPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

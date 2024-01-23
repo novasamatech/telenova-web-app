@@ -1,11 +1,11 @@
 'use client';
-import { ReactElement, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { TitleText, AssetBalance, Layout } from '@/components';
+import { TitleText, AssetBalance } from '@/components';
 
 export default function SelectTokenPage() {
   const navigate = useNavigate();
@@ -47,7 +47,3 @@ export default function SelectTokenPage() {
     </>
   );
 }
-
-SelectTokenPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

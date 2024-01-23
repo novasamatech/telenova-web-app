@@ -1,5 +1,5 @@
 'use client';
-import { ReactElement, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Divider } from '@nextui-org/react';
 
@@ -15,7 +15,6 @@ import {
   Plate,
   BodyText,
   CaptionText,
-  Layout,
   TruncateAddress,
 } from '@/components';
 import { IconNames } from '@/components/Icon/types';
@@ -106,7 +105,3 @@ export default function ConfirmationPage() {
     </>
   );
 }
-
-ConfirmationPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
