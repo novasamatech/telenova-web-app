@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { Avatar, Button } from '@nextui-org/react';
+import secureLocalStorage from 'react-secure-storage';
 
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -17,6 +18,8 @@ import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
 import { claimGift } from '@/common/utils/extrinsics';
 import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText } from '@/components';
+
+const isGiftsInfo = secureLocalStorage.getItem('GIFT_STORE');
 
 export const DashboardMain = () => {
   const navigate = useNavigate();
@@ -112,14 +115,16 @@ export const DashboardMain = () => {
           <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => {}} />
         </div>
       </Plate>
-      <Button
-        variant="light"
-        size="lg"
-        className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px]"
-        onClick={() => navigate(Paths.GIFTS)}
-      >
-        Gifts
-      </Button>
+      {isGiftsInfo && (
+        <Button
+          variant="light"
+          size="lg"
+          className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px]"
+          onClick={() => navigate(Paths.GIFTS)}
+        >
+          Gifts
+        </Button>
+      )}
       <Plate className="flex flex-col my-2 rounded-3xl">
         <CaptionText>Assets</CaptionText>
         <AssetsList />

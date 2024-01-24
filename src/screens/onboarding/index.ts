@@ -1,6 +1,6 @@
-import CreateWalletPage from './create-wallet';
-import PasswordPage from './password';
-import OnboardingPage from './Onboarding';
+import CreateWalletPage from './create-wallet/CreateWallet';
+import PasswordPage from './password/Password';
+import OnboardingPage from './main/Onboarding';
 export { OnboardingStartPage } from './start/OnboardingStartPage';
 export { RestoreWalletPage } from './restore/RestoreWallet';
 

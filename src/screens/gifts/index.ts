@@ -1,4 +1,4 @@
-import GiftDetailsPage from './gift-details';
-import GiftPage from './gift-page';
+import GiftDetailsPage from './GiftDetailsPage';
+import GiftPage from './GiftPage';
 
 export { GiftDetailsPage, GiftPage };

@@ -1,9 +1,9 @@
-import TransferPage from './trasfer-page';
-import SelectTokenPage from './select-token';
-import AddressPage from './address';
-import AmountPage from './amount';
-import ConfirmationPage from './confirmation';
-import ResultPage from './result';
-import CreateGiftPage from './create-gift';
+import TransferPage from './TrasferPage';
+import SelectTokenPage from './SelectTokenPage';
+import AddressPage from './AddressPage';
+import AmountPage from './AmountPage';
+import ConfirmationPage from './ConfirmationPage';
+import ResultPage from './ResultPage';
+import CreateGiftPage from './CreateGiftPage';
 
 export { TransferPage, SelectTokenPage, AddressPage, AmountPage, ConfirmationPage, ResultPage, CreateGiftPage };

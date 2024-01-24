@@ -12,7 +12,6 @@ import { Gift } from '@/common/types';
 // TODO improve loading state for unclaimed and claimed
 export default function GiftPage() {
   const navigate = useNavigate();
-
   const { BackButton, MainButton } = useTelegram();
   const { getGiftsState } = useBalances();
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);

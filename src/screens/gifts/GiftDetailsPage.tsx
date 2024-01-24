@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
 import { createTgLink } from '@/common/telegram';
-import GiftDetails from '@/screens/gifts/GiftDetails';
+import GiftDetails from '@/components/GiftDetails/GiftDetails';
 import { TgLink } from '@/common/telegram/types';
 
 export default function GiftDetailsPage() {

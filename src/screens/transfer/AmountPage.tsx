@@ -60,6 +60,7 @@ export default function AmountPage() {
     })();
 
     return () => {
+      MainButton?.setText('Continue');
       BackButton?.offClick(callback);
       MainButton?.hide();
     };

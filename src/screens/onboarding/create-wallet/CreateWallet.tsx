@@ -53,6 +53,7 @@ export default function CreateWalletPage() {
       MainButton?.offClick(callback);
     };
   }, []);
+  console.log(isLoading);
 
   return isLoading ? (
     <div className="flex flex-col justify-center items-center">
