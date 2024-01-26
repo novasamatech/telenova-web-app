@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
@@ -14,13 +14,13 @@ export default function ChangePasswordPage() {
   const { BackButton, webApp } = useTelegram();
   const { mainButton, addMainButton, reset } = useMainButton();
 
-  const router = useRouter();
+  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
 
   useEffect(() => {
     BackButton?.show();
-    const callback = () => router.push(Paths.SETTINGS_BACKUP);
+    const callback = () => navigate(Paths.SETTINGS_BACKUP);
     BackButton?.onClick(callback);
     mainButton.show();
     mainButton.disable();
@@ -41,7 +41,7 @@ export default function ChangePasswordPage() {
         mainButton.hideProgress();
 
         if (decryptedMnemonic) {
-          router.push(Paths.SETTINGS_NEW_PASSWORD);
+          navigate(Paths.SETTINGS_NEW_PASSWORD);
         }
       });
     };
@@ -59,7 +59,7 @@ export default function ChangePasswordPage() {
   }, [password]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 pt-14 w-full">
+    <div className="flex flex-col items-center pt-14">
       <TitleText>Enter your current password</TitleText>
       <Input
         isClearable

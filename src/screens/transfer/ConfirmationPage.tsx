@@ -1,6 +1,6 @@
 'use client';
-import { ReactElement, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Divider } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
@@ -15,7 +15,6 @@ import {
   Plate,
   BodyText,
   CaptionText,
-  Layout,
   TruncateAddress,
 } from '@/components';
 import { IconNames } from '@/components/Icon/types';
@@ -23,7 +22,7 @@ import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvide
 import { TrasferAsset } from '@/common/types';
 
 export default function ConfirmationPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { submitExtrinsic } = useExtrinsicProvider();
 
   const { BackButton, MainButton } = useTelegram();
@@ -35,11 +34,11 @@ export default function ConfirmationPage() {
     const mainCallback = async () => {
       MainButton?.showProgress(false);
       await handleSend(submitExtrinsic, selectedAsset as TrasferAsset).then(() => {
-        router.push(Paths.TRANSFER_RESULT);
+        navigate(Paths.TRANSFER_RESULT);
       });
     };
     const backCallback = () => {
-      router.push(Paths.TRANSFER_AMOUNT);
+      navigate(Paths.TRANSFER_AMOUNT);
     };
 
     BackButton?.show();
@@ -106,7 +105,3 @@ export default function ConfirmationPage() {
     </>
   );
 }
-
-ConfirmationPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

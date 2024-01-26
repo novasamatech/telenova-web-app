@@ -1,14 +1,13 @@
 'use client';
-import { ReactElement, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { WebApp } from '@twa-dev/types';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { HeadlineText, Layout } from '@/components';
-import GiftDetails from '@/screens/gifts/GiftDetails';
+import { HeadlineText, GiftDetails } from '@/components';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { ChainId, TrasferAsset } from '@/common/types';
 import { createGiftWallet } from '@/common/wallet';
@@ -18,7 +17,7 @@ import { backupGifts } from '@/common/utils/gift';
 import { handleSend } from '@/common/utils/extrinsics';
 
 export default function CreateGiftPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { submitExtrinsic } = useExtrinsicProvider();
   const { BackButton, MainButton, webApp } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
@@ -32,7 +31,7 @@ export default function CreateGiftPage() {
     MainButton?.hide();
     MainButton?.setText('Gift created');
     const mainCallback = async () => {
-      router.push(Paths.DASHBOARD);
+      navigate(Paths.DASHBOARD);
     };
     MainButton?.onClick(mainCallback);
 
@@ -66,7 +65,3 @@ export default function CreateGiftPage() {
     </div>
   );
 }
-
-CreateGiftPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

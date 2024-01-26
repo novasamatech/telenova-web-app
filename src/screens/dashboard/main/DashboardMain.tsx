@@ -1,8 +1,9 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { Avatar, Button } from '@nextui-org/react';
+import secureLocalStorage from 'react-secure-storage';
 
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -18,8 +19,10 @@ import { getPrice } from '@/common/utils/coingecko';
 import { claimGift } from '@/common/utils/extrinsics';
 import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText } from '@/components';
 
+const isGiftsInfo = secureLocalStorage.getItem('GIFT_STORE');
+
 export const DashboardMain = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { getAllChains, getAssetBySymbol } = useChainRegistry();
   const { submitExtrinsic } = useExtrinsicProvider();
   const { subscribeBalance } = useBalances();
@@ -91,7 +94,7 @@ export const DashboardMain = () => {
 
   function clearWallet(clearLocal?: boolean) {
     resetWallet(clearLocal);
-    router.replace(Paths.ONBOARDING);
+    navigate(Paths.ONBOARDING);
   }
 
   return (
@@ -99,7 +102,7 @@ export const DashboardMain = () => {
       <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6">
         <Avatar src={user?.photo_url} className="w-10 h-10" name={user?.first_name[0]} />
         <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
-        <IconButton iconName="settings" onClick={() => router.push(Paths.SETTINGS)} />
+        <IconButton iconName="settings" onClick={() => navigate(Paths.SETTINGS)} />
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
         <BodyText className="text-text-hint">Total Balance</BodyText>
@@ -107,19 +110,21 @@ export const DashboardMain = () => {
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
         <div className="grid grid-cols-3 w-full justify-items-center mt-4">
-          <IconButton text="Send" iconName="send" color="primary" onClick={() => router.push(Paths.TRANSFER)} />
-          <IconButton text="Receive" iconName="receive" color="success" onClick={() => router.push(Paths.RECEIVE)} />
+          <IconButton text="Send" iconName="send" color="primary" onClick={() => navigate(Paths.TRANSFER)} />
+          <IconButton text="Receive" iconName="receive" color="success" onClick={() => navigate(Paths.RECEIVE)} />
           <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => {}} />
         </div>
       </Plate>
-      <Button
-        variant="light"
-        size="lg"
-        className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px]"
-        onClick={() => router.push(Paths.GIFTS)}
-      >
-        Gifts
-      </Button>
+      {isGiftsInfo && (
+        <Button
+          variant="light"
+          size="lg"
+          className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px]"
+          onClick={() => navigate(Paths.GIFTS)}
+        >
+          Gifts
+        </Button>
+      )}
       <Plate className="flex flex-col my-2 rounded-3xl">
         <CaptionText>Assets</CaptionText>
         <AssetsList />

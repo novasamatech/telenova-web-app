@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
@@ -8,7 +8,7 @@ import { Paths } from '@/common/routing';
 import { HeadlineText, TitleText } from '@/components';
 
 export default function ResultPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { BackButton, MainButton } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
@@ -17,7 +17,7 @@ export default function ResultPage() {
     BackButton?.hide();
     MainButton?.show();
     const callback = () => {
-      router.replace(Paths.DASHBOARD);
+      navigate(Paths.DASHBOARD, { replace: true });
     };
     MainButton?.onClick(callback);
 
@@ -30,7 +30,7 @@ export default function ResultPage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 flex flex-col justify-center ">
+    <div className="flex flex-col justify-center ">
       <TitleText>
         {selectedAsset?.amount} {selectedAsset?.asset?.symbol} Sent to
       </TitleText>

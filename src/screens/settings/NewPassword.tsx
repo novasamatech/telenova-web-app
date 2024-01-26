@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import secureLocalStorage from 'react-secure-storage';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
@@ -13,10 +13,10 @@ import { MNEMONIC_STORE } from '@/common/utils/constants';
 export default function NewPasswordPage() {
   const { BackButton } = useTelegram();
   const { mainButton, addMainButton, reset } = useMainButton();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const callback = () => router.push(Paths.SETTINGS_CHANGE_PASSWORD);
+    const callback = () => navigate(Paths.SETTINGS_CHANGE_PASSWORD);
     BackButton?.show();
     BackButton?.onClick(callback);
     mainButton?.show();
@@ -31,7 +31,7 @@ export default function NewPasswordPage() {
   const handleSubmit = (password: string) => {
     mainButton?.enable();
     const mainCallback = () => {
-      router.push(Paths.SETTINGS_PASSWORD_CONFIRMATION);
+      navigate(Paths.SETTINGS_PASSWORD_CONFIRMATION);
       const mnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
       backupMnemonic(mnemonic as string, password);
     };
@@ -40,7 +40,7 @@ export default function NewPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 pt-14 w-full">
+    <div className="flex flex-col items-center pt-14">
       <TitleText>Enter your new password</TitleText>
       <PasswordForm onSubmit={handleSubmit} />
     </div>

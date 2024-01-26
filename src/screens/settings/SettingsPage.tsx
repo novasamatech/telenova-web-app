@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { Divider } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
@@ -9,11 +9,11 @@ import { LinkCard, Plate } from '@/components';
 
 export default function SettingsPage() {
   const { BackButton } = useTelegram();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     BackButton?.show();
-    const callback = () => router.push(Paths.DASHBOARD);
+    const callback = () => navigate(Paths.DASHBOARD);
     BackButton?.onClick(callback);
 
     return () => {
@@ -22,7 +22,7 @@ export default function SettingsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 gap-4 w-full">
+    <div className="flex flex-col items-center gap-4">
       <Plate className="w-full p-0">
         <LinkCard
           text="Manage Backup"

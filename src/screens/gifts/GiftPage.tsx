@@ -1,18 +1,17 @@
 'use client';
-import { ReactElement, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
-import { BodyText, GiftPlate, Layout, Shimmering, TitleText } from '@/components';
+import { BodyText, GiftPlate, Shimmering, TitleText } from '@/components';
 import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGifts } from '@/common/utils/gift';
 import { Gift } from '@/common/types';
 
 // TODO improve loading state for unclaimed and claimed
 export default function GiftPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { BackButton, MainButton } = useTelegram();
   const { getGiftsState } = useBalances();
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
@@ -24,7 +23,7 @@ export default function GiftPage() {
     MainButton?.hide();
 
     const callback = async () => {
-      router.push(Paths.DASHBOARD);
+      navigate(Paths.DASHBOARD);
     };
     BackButton?.onClick(callback);
 
@@ -58,7 +57,7 @@ export default function GiftPage() {
       {!!unclaimedGifts.length &&
         unclaimedGifts.map((gift) => (
           <Link
-            href={{ pathname: Paths.GIFT_DETAILS, query: { seed: gift.secret, symbol: gift.chainAsset?.symbol } }}
+            to={{ pathname: `${Paths.GIFT_DETAILS}`, search: `?seed=${gift.secret}&symbol=${gift.chainAsset?.symbol}` }}
             key={gift.timestamp}
           >
             <GiftPlate gift={gift} />
@@ -72,7 +71,3 @@ export default function GiftPage() {
     </>
   );
 }
-
-GiftPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

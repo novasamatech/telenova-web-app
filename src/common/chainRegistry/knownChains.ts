@@ -43,7 +43,7 @@ export const polkadot: Chain = {
     {
       url: 'wss://rpc.dotters.network/polkadot',
       name: 'Dotters Net node',
-    }
+    },
   ],
   addressPrefix: 0,
 };
