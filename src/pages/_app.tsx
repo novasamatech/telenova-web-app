@@ -1,7 +1,9 @@
 import { AppProps } from 'next/app';
 import { NextPage } from 'next';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { NextUIProvider } from '@nextui-org/react';
+
 import { TelegramProvider } from '@common/providers/telegramProvider';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import './globals.css';
@@ -22,7 +24,11 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   return (
     <NextUIProvider>
       <GlobalStateProvider>
-        {render && <TelegramProvider>{getLayout(<Component {...pageProps} />)} </TelegramProvider>}
+        {render && (
+          <TelegramProvider>
+            <Router>{getLayout(<Component {...pageProps} />)} </Router>
+          </TelegramProvider>
+        )}
       </GlobalStateProvider>
     </NextUIProvider>
   );

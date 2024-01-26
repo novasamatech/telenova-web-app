@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@nextui-org/react';
-import { useRouter } from 'next/router';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
@@ -8,14 +8,14 @@ import { TitleText, BodyText, CaptionText } from '@/components/Typography';
 import Icon from '@/components/Icon/Icon';
 
 export const OnboardingStartPage = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { MainButton } = useTelegram();
 
   useEffect(() => {
     MainButton?.show();
     MainButton?.enable();
     const callback = () => {
-      router.push(Paths.ONBOARDING_PASSWORD);
+      navigate(Paths.ONBOARDING_PASSWORD);
       MainButton?.showProgress(false);
     };
     MainButton?.onClick(callback);

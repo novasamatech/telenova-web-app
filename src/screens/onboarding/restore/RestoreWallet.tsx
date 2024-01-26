@@ -1,20 +1,20 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Avatar, Input } from '@nextui-org/react';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
-import { initializeWalletFromCloud, resetWallet } from '@/common/wallet';
+import { createWallet, initializeWalletFromCloud, resetWallet } from '@/common/wallet';
 
 type Props = {
   mnemonic: string;
 };
 
 export const RestoreWalletPage = ({ mnemonic }: Props) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { MainButton, user } = useTelegram();
   const { setPublicKey } = useGlobalContext();
 
@@ -33,11 +33,12 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
 
         return;
       }
-      const wallet = initializeWalletFromCloud(password, mnemonic);
+      const decryptedMnemonic = initializeWalletFromCloud(password, mnemonic);
+      const wallet = createWallet(decryptedMnemonic);
       setIsPasswordValid(Boolean(wallet));
       if (wallet) {
         setPublicKey(wallet?.publicKey);
-        router.push(Paths.DASHBOARD);
+        navigate(Paths.DASHBOARD);
       }
     };
 
@@ -55,7 +56,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
 
   function clearWallet() {
     resetWallet();
-    router.replace(Paths.ONBOARDING);
+    navigate(Paths.ONBOARDING);
   }
 
   return (
@@ -83,7 +84,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         onValueChange={setPassword}
         onClear={() => setPassword('')}
       />
-      <button className="btn btn-blue m-auto" onClick={() => clearWallet()}>
+      <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
         Reset Wallet
       </button>
     </>

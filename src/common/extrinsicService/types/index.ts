@@ -45,3 +45,5 @@ export type SubmitExtrinsic = (
   giftKeyringPair?: KeyringPair,
   options?: Partial<ExtrinsicBuildingOptions>,
 ) => Promise<Hash | undefined>;
+
+export type GetExistentialDeposit = (chainId: ChainId) => Promise<string | undefined>;

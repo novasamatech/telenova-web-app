@@ -1,23 +1,29 @@
 'use client';
-import { ReactElement, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-// @ts-expect-error no types
-import MiddleEllipsis from 'react-middle-ellipsis';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, CircularProgress, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { HeadlineText, Icon, Identicon, CaptionText, LargeTitleText, TextBase, Layout, BodyText } from '@/components';
+import {
+  HeadlineText,
+  Icon,
+  Identicon,
+  CaptionText,
+  LargeTitleText,
+  BodyText,
+  TokenPrice,
+  TruncateAddress,
+} from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { formatBalance, handleFee } from '@/common/utils/balance';
-import { ChainId } from '@/common/types';
-import TokenPrice from '@/components/Price/TokenPrice';
+import { getTransferDetails } from '@/common/utils/balance';
+import { TrasferAsset } from '@/common/types';
 
 export default function AmountPage() {
-  const router = useRouter();
-  const { estimateFee } = useExtrinsicProvider();
+  const navigate = useNavigate();
+  const { estimateFee, getExistentialDeposit } = useExtrinsicProvider();
   const { BackButton, MainButton } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
@@ -25,53 +31,51 @@ export default function AmountPage() {
   const [transferAll, setTransferAll] = useState(false);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>();
   const [isAmountValid, setIsAmountValid] = useState(true);
+  const [deposit, setDeposit] = useState(0);
 
   useEffect(() => {
-    router.prefetch(Paths.TRANSFER_CONFIRMATION);
     MainButton?.setText(selectedAsset?.isGift ? 'Create Gift' : 'Continue');
     BackButton?.show();
     MainButton?.show();
     MainButton?.disable();
 
     const callback = () => {
-      router.push(selectedAsset?.isGift ? Paths.TRANSFER_SELECT_TOKEN : Paths.TRANSFER_ADDRESS);
+      navigate(selectedAsset?.isGift ? Paths.TRANSFER_SELECT_TOKEN : Paths.TRANSFER_ADDRESS);
     };
     BackButton?.onClick(callback);
 
     if (!selectedAsset) return;
 
     (async () => {
-      const fee =
-        selectedAsset.fee ||
-        (await handleFee(
-          estimateFee,
-          selectedAsset.chainId as ChainId,
-          selectedAsset.asset?.precision as number,
-          selectedAsset.isGift,
-        ));
-      const formattedBalance = Number(
-        formatBalance(selectedAsset.transferableBalance, selectedAsset.asset?.precision).formattedValue,
+      const { max, fee, formattedDeposit } = await getTransferDetails(
+        selectedAsset as TrasferAsset,
+        estimateFee,
+        getExistentialDeposit,
       );
 
-      const max = Math.max(formattedBalance - fee, 0).toFixed(5);
-
+      setDeposit(formattedDeposit);
       setMaxAmountToSend(max);
       setIsAmountValid(+amount <= +max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
     })();
 
     return () => {
+      MainButton?.setText('Continue');
       BackButton?.offClick(callback);
       MainButton?.hide();
     };
   }, [BackButton, MainButton]);
 
   useEffect(() => {
-    if (!isAmountValid || !Number(amount)) return;
+    if (!isAmountValid || !Number(amount)) {
+      MainButton?.disable();
+
+      return;
+    }
 
     const callback = () => {
       setSelectedAsset((prev) => ({ ...prev!, transferAll, amount }));
-      router.push(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
+      navigate(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
     };
     MainButton?.enable();
     MainButton?.onClick(callback);
@@ -83,14 +87,16 @@ export default function AmountPage() {
 
   const handleMaxSend = () => {
     if (maxAmountToSend === undefined) return;
+    const validateGift = selectedAsset?.isGift ? +maxAmountToSend >= deposit : true;
     setTransferAll(true);
     setAmount(String(maxAmountToSend));
-    setIsAmountValid(Boolean(maxAmountToSend));
+    setIsAmountValid(Boolean(maxAmountToSend) && validateGift);
   };
 
   const handleChange = (value: string) => {
     setTransferAll(false);
-    setIsAmountValid(!!Number(value) && +value <= +(maxAmountToSend || 0));
+    const validateGift = selectedAsset?.isGift ? !!deposit && +value >= deposit : true;
+    setIsAmountValid(!!Number(value) && +value <= +(maxAmountToSend || 0) && validateGift);
     setAmount(value);
   };
 
@@ -107,13 +113,7 @@ export default function AmountPage() {
             <Identicon address={selectedAsset?.destinationAddress} />
             <HeadlineText className="flex gap-1">
               Send to
-              <span className="max-w-[120px]">
-                <MiddleEllipsis>
-                  <TextBase as="span" className="text-body-bold">
-                    {selectedAsset?.destinationAddress}
-                  </TextBase>
-                </MiddleEllipsis>
-              </span>
+              <TruncateAddress address={selectedAsset?.destinationAddress} className="max-w-[120px]" />
             </HeadlineText>
           </>
         )}
@@ -137,14 +137,22 @@ export default function AmountPage() {
           onValueChange={handleChange}
         />
       </div>
-      <div className="grid grid-cols-[1fr,auto]">
+      <div className="grid grid-cols-[auto,1fr]">
         <TokenPrice priceId={selectedAsset?.asset?.priceId} balance={amount} showBalance={isAmountValid} />
-        {!isAmountValid && <BodyText className="text-text-danger">Invalid amount</BodyText>}
+        {!isAmountValid && (
+          <>
+            <BodyText align="right" className="text-text-danger">
+              Invalid amount
+              <br />
+              {selectedAsset?.isGift && !!deposit && +amount < deposit && (
+                <BodyText as="span" className="text-text-danger">
+                  Your gift should remain above minimal network deposit {deposit} {selectedAsset?.asset?.symbol}.
+                </BodyText>
+              )}
+            </BodyText>
+          </>
+        )}
       </div>
     </>
   );
 }
-
-AmountPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

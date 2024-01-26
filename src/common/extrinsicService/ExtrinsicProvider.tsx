@@ -4,6 +4,7 @@ import {
   EstimateFee,
   ExtrinsicBuilding,
   ExtrinsicBuildingOptions,
+  GetExistentialDeposit,
   SubmitExtrinsic,
 } from '@common/extrinsicService/types';
 import { Balance, Hash } from '@polkadot/types/interfaces';
@@ -15,12 +16,13 @@ import { KeyringPair } from '@polkadot/keyring/types';
 type ExtrinsicProviderContextProps = {
   estimateFee: EstimateFee;
   submitExtrinsic: SubmitExtrinsic;
+  getExistentialDeposit: GetExistentialDeposit;
 };
 
 const ExtrinsicProviderContext = createContext<ExtrinsicProviderContextProps>({} as ExtrinsicProviderContextProps);
 
 export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
-  const { prepareExtrinsic } = useExtrinsicService();
+  const { prepareExtrinsic, prepareApi } = useExtrinsicService();
 
   async function estimateFee(
     chainId: ChainId,
@@ -50,8 +52,14 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
     return await extrinsic.send();
   }
 
+  async function getExistentialDeposit(chainId: ChainId): Promise<string | undefined> {
+    const api = await prepareApi(chainId);
+
+    return api.consts.balances.existentialDeposit.toString();
+  }
+
   return (
-    <ExtrinsicProviderContext.Provider value={{ estimateFee, submitExtrinsic }}>
+    <ExtrinsicProviderContext.Provider value={{ estimateFee, submitExtrinsic, getExistentialDeposit }}>
       {children}
     </ExtrinsicProviderContext.Provider>
   );

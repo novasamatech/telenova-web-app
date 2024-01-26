@@ -7,14 +7,12 @@ import {
   randomAsHex,
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
-import { Keyring } from '@polkadot/api';
+import CryptoJS, { AES } from 'crypto-js';
+import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import secureLocalStorage from 'react-secure-storage';
 
-const AES = require('crypto-js/aes');
-const CryptoJS = require('crypto-js');
-
-import { MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
+import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
 import { HexString } from '@common/types';
 import { GiftWallet, Wallet } from './types';
 
@@ -34,7 +32,8 @@ export const generateWalletMnemonic = (): string => {
   return mnemonicGenerate();
 };
 
-export const createWallet = (mnemonic: string): Wallet => {
+export const createWallet = (mnemonic: string | null): Wallet | null => {
+  if (!mnemonic) return null;
   const seed = mnemonicToMiniSecret(mnemonic);
   const keypair = sr25519PairFromSeed(seed);
   const publicKey: HexString = u8aToHex(keypair.publicKey);
@@ -49,6 +48,7 @@ export const backupMnemonic = (mnemonic: string, password: string): void => {
   const encryptedMnemonic = AES.encrypt(mnemonic, password).toString();
 
   window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
+  window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, Date.now().toString());
 };
 
 export const getMnemonic = (): string | null => {
@@ -88,11 +88,11 @@ export const resetWallet = (clearLocal: boolean = false) => {
   }
 };
 
-export const initializeWalletFromCloud = (password: string, encryptedMnemonic: string): Wallet | null => {
+export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: string): string | null => {
+  if (!encryptedMnemonic) return null;
   const mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
-  if (!mnemonic) return null;
 
-  return createWallet(mnemonic);
+  return mnemonic || null;
 };
 
 const generateGiftSecret = () => {

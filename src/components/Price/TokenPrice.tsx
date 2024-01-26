@@ -1,5 +1,5 @@
 import { useGlobalContext } from '@/common/providers/contextProvider';
-import { BodyText, Price, Shimmering } from '..';
+import { BodyText, Price, Shimmering } from '@/components';
 import { formatBalance } from '@/common/utils/balance';
 
 type Props = {
