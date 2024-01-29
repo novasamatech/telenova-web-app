@@ -87,7 +87,7 @@ export default function GiftModal() {
 
   return (
     <>
-      <Modal isOpen={isOpen} size="xs" placement="center" onClose={handleClose}>
+      <Modal isOpen={isOpen} size="xs" placement="center" isDismissable={false} onClose={handleClose}>
         <ModalContent>
           <ModalHeader>You have a gift</ModalHeader>
           {giftStatus !== null ? (
