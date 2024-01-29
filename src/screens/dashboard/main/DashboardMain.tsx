@@ -5,7 +5,6 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { Avatar, Button } from '@nextui-org/react';
 import secureLocalStorage from 'react-secure-storage';
 
-import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
@@ -16,41 +15,15 @@ import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
-import { claimGift } from '@/common/utils/extrinsics';
-import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText } from '@/components';
-
-const isGiftsInfo = secureLocalStorage.getItem('GIFT_STORE');
+import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText, GiftModal } from '@/components';
 
 export const DashboardMain = () => {
   const navigate = useNavigate();
-  const { getAllChains, getAssetBySymbol } = useChainRegistry();
-  const { submitExtrinsic } = useExtrinsicProvider();
+  const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
-  const { publicKey, assets, isGiftClaimed, assetsPrices, setIsGiftClaimed, setAssets, setAssetsPrices } =
-    useGlobalContext();
-  const { user, MainButton, BackButton, webApp } = useTelegram();
-
-  useEffect(() => {
-    if (isGiftClaimed || !webApp?.initDataUnsafe.start_param || !publicKey) {
-      return;
-    }
-    const [seed, symbol] = webApp.initDataUnsafe.start_param.split('_');
-    (async () => {
-      const chain = await getAssetBySymbol(symbol);
-      const address = encodeAddress(publicKey, chain.chain.addressPrefix);
-
-      claimGift(seed, address, chain.chain.chainId, submitExtrinsic)
-        .then(() => {
-          alert('Gift claimed successfully!');
-        })
-        .catch(() => {
-          alert('Failed to claim gift');
-        })
-        .finally(() => {
-          setIsGiftClaimed(true);
-        });
-    })();
-  }, [webApp, publicKey, isGiftClaimed]);
+  const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
+  const { user, MainButton, BackButton } = useTelegram();
+  const isGiftsInfo = secureLocalStorage.getItem('GIFT_STORE');
 
   useEffect(() => {
     MainButton?.hide();
@@ -129,6 +102,7 @@ export const DashboardMain = () => {
         <CaptionText>Assets</CaptionText>
         <AssetsList />
       </Plate>
+      <GiftModal />
 
       <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
         Reset Wallet

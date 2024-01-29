@@ -2,7 +2,7 @@ import { createContext, PropsWithChildren, useContext, useRef } from 'react';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { useChainRegistry } from '@common/chainRegistry';
 import { IAssetBalance } from '@common/balances/types';
-import { ChainAssetAccount, ChainId, Gift, PersistentGift, GiftStatus } from '@common/types';
+import { ChainAssetAccount, ChainId, Gift, PersistentGift, GiftStatus, Address } from '@common/types';
 import { useNumId } from '@common/utils/NumId';
 import { SubscriptionState } from '@common/subscription/types';
 import { createBalanceService } from '@common/balances/BalanceService';
@@ -16,6 +16,7 @@ type BalanceProviderContextProps = {
   subscribeBalance: (account: ChainAssetAccount, onUpdate: UpdateCallback) => number;
   unsubscribeBalance: (unsubscribeId: number) => void;
   getGiftsState: (accounts: Gift[], chainId: ChainId) => Promise<[Gift[], Gift[]]>;
+  getBalance: (address: Address, chainId: ChainId) => Promise<string>;
 };
 
 const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as BalanceProviderContextProps);
@@ -174,9 +175,15 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
     return [unclaimed, claimed];
   }
+  async function getBalance(address: Address, chainId: ChainId): Promise<string> {
+    const connection = await getConnection(chainId);
+    const balance = await connection.api.query.system.account(address);
+
+    return balance.data.free.toString();
+  }
 
   return (
-    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance, getGiftsState }}>
+    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance, getGiftsState, getBalance }}>
       {children}
     </BalanceProviderContext.Provider>
   );

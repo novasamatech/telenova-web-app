@@ -16,6 +16,7 @@ export default function CreateWalletPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    MainButton?.hide();
     const callback = () => {
       navigate(Paths.DASHBOARD);
     };
@@ -53,7 +54,6 @@ export default function CreateWalletPage() {
       MainButton?.offClick(callback);
     };
   }, []);
-  console.log(isLoading);
 
   return isLoading ? (
     <div className="flex flex-col justify-center items-center">

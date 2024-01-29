@@ -1,11 +1,11 @@
 import { decodeAddress } from '@polkadot/util-crypto';
+import { KeyringPair } from '@polkadot/keyring/types';
 
 import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
 import { Address, ChainId, TrasferAsset } from '../types';
 import { FAKE_ACCOUNT_ID } from './constants';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatAmount, formatBalance } from './balance';
-import { getKeyringPairFromSeed } from '../wallet';
 
 export async function handleSend(
   submitExtrinsic: SubmitExtrinsic,
@@ -42,13 +42,11 @@ export async function handleFee(
 }
 
 export async function claimGift(
-  seed: string,
+  keyring: KeyringPair,
   address: Address,
   chainId: ChainId,
   submitExtrinsic: SubmitExtrinsic,
 ): Promise<void> {
-  const keyring = getKeyringPairFromSeed(seed);
-
   return await submitExtrinsic(
     chainId,
     (builder) => {
