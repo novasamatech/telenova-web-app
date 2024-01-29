@@ -7,18 +7,19 @@ export interface IContext {
   isGiftClaimed: boolean;
   publicKey?: HexString;
   selectedAsset?: Partial<TrasferAsset | null>;
-  assetsPrices?: AssetPrice;
+  assetsPrices: AssetPrice | null;
   setPublicKey: React.Dispatch<React.SetStateAction<HexString | undefined>>;
   setAssets: React.Dispatch<React.SetStateAction<AssetAccount[]>>;
   setSelectedAsset: React.Dispatch<React.SetStateAction<Partial<TrasferAsset | null>>>;
   setIsGiftClaimed: React.Dispatch<React.SetStateAction<boolean>>;
-  setAssetsPrices: React.Dispatch<React.SetStateAction<AssetPrice | undefined>>;
+  setAssetsPrices: React.Dispatch<React.SetStateAction<AssetPrice | null>>;
 }
 
 export const GlobalContext = createContext<IContext>({
   assets: [],
   selectedAsset: null,
   isGiftClaimed: false,
+  assetsPrices: null,
   setPublicKey: () => {},
   setAssets: () => {},
   setSelectedAsset: () => {},
@@ -31,7 +32,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [publicKey, setPublicKey] = useState<HexString>();
   const [assets, setAssets] = useState<AssetAccount[]>([]);
   const [selectedAsset, setSelectedAsset] = useState<Partial<TrasferAsset | null>>(null);
-  const [assetsPrices, setAssetsPrices] = useState<AssetPrice>();
+  const [assetsPrices, setAssetsPrices] = useState<AssetPrice | null>(null);
   const [isGiftClaimed, setIsGiftClaimed] = useState(false);
 
   useEffect(() => {
