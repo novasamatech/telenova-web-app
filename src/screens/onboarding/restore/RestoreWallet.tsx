@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Avatar, Input } from '@nextui-org/react';
 import { BodyText, TitleText } from '@/components/Typography';
@@ -15,15 +16,16 @@ type Props = {
 
 export const RestoreWalletPage = ({ mnemonic }: Props) => {
   const navigate = useNavigate();
-  const { MainButton, user } = useTelegram();
+  const { user } = useTelegram();
+  const { mainButton, addMainButton, reset } = useMainButton();
   const { setPublicKey } = useGlobalContext();
 
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
 
   useEffect(() => {
-    MainButton?.show();
-    MainButton?.disable();
+    mainButton.show();
+    mainButton.disable();
   }, []);
 
   useEffect(() => {
@@ -43,19 +45,20 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
     };
 
     if (password.length) {
-      MainButton?.enable();
-      MainButton?.onClick(callback);
+      mainButton.enable();
+      addMainButton(callback);
     } else {
-      MainButton?.disable();
+      mainButton.disable();
     }
 
     return () => {
-      MainButton?.offClick(callback);
+      reset();
     };
   }, [password]);
 
   function clearWallet() {
     resetWallet();
+    reset();
     navigate(Paths.ONBOARDING);
   }
 

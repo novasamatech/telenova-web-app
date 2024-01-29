@@ -13,6 +13,9 @@ export const useMainButton = () => {
   const mainButton = ref.current;
 
   const reset = () => {
+    mainButton.setText('Continue');
+    mainButton.hideProgress();
+
     if (mainButtonEvent.current) {
       mainButton.offClick(mainButtonEvent.current);
       mainButtonEvent.current = null;
