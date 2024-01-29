@@ -17,16 +17,16 @@ export default function PasswordPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    mainButton?.disable();
-    mainButton?.show();
+    mainButton.disable();
+    mainButton.show();
 
     return () => {
       reset();
     };
-  });
+  }, []);
 
   const handleSubmit = (password: string) => {
-    mainButton?.enable();
+    mainButton.enable();
     addMainButton(() => {
       navigate(Paths.ONBOARDING_CREATE_WALLET);
 

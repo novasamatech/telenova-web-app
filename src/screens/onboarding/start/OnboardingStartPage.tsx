@@ -12,7 +12,7 @@ export const OnboardingStartPage = () => {
   const { mainButton, addMainButton, reset } = useMainButton();
 
   useEffect(() => {
-    mainButton?.enable();
+    mainButton.enable();
     const callback = () => {
       navigate(Paths.ONBOARDING_PASSWORD);
       mainButton.showProgress(false);
