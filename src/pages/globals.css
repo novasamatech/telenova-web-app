@@ -5,6 +5,17 @@
 @tailwind components;
 @tailwind utilities;
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,10 +53,6 @@ body {
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: padding-box;
-}
-
-*:focus-visible {
-  outline: 2px solid var(--focus-container-border);
 }
 
 :root {
