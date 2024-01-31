@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
 import Rive from '@rive-app/react-canvas-lite';
-import { WebApp } from '@twa-dev/types';
 
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useChainRegistry } from '@/common/chainRegistry';
@@ -30,28 +29,28 @@ const GIFTS: GiftStatusType = {
 
 export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
-  const { webApp } = useTelegram();
+  const { startParam } = useTelegram();
   const { submitExtrinsic } = useExtrinsicProvider();
   const { getAssetBySymbol } = useChainRegistry();
-  const { getBalance } = useBalances();
+  const { getFreeBalance } = useBalances();
 
   const [isOpen, setIsOpen] = useState(false);
   const [giftBalance, setGiftBalance] = useState('');
   const [giftStatus, setGiftStatus] = useState<GIFT_STATUS | null>(null);
 
   useEffect(() => {
-    if (isGiftClaimed || !webApp?.initDataUnsafe.start_param || !publicKey) {
+    if (isGiftClaimed || !startParam || !publicKey) {
       return;
     }
     setIsOpen(true);
 
     (async () => {
-      const { giftAddress, chain } = await getGiftInfo(publicKey, webApp, getAssetBySymbol);
-      const balance = await getBalance(giftAddress, chain.chain.chainId);
+      const { giftAddress, chain } = await getGiftInfo(publicKey, startParam, getAssetBySymbol);
+      const balance = await getFreeBalance(giftAddress, chain.chain.chainId);
       setGiftBalance(balance);
       setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
     })();
-  }, [webApp, publicKey, isGiftClaimed]);
+  }, [startParam, publicKey, isGiftClaimed]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -69,7 +68,7 @@ export default function GiftModal() {
 
     const { chainAddress, chain, keyring } = await getGiftInfo(
       publicKey as PublicKey,
-      webApp as WebApp,
+      startParam as string,
       getAssetBySymbol,
     );
     claimGift(keyring, chainAddress, chain.chain.chainId, submitExtrinsic)

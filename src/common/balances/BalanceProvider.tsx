@@ -16,7 +16,7 @@ type BalanceProviderContextProps = {
   subscribeBalance: (account: ChainAssetAccount, onUpdate: UpdateCallback) => number;
   unsubscribeBalance: (unsubscribeId: number) => void;
   getGiftsState: (accounts: Gift[], chainId: ChainId) => Promise<[Gift[], Gift[]]>;
-  getBalance: (address: Address, chainId: ChainId) => Promise<string>;
+  getFreeBalance: (address: Address, chainId: ChainId) => Promise<string>;
 };
 
 const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as BalanceProviderContextProps);
@@ -175,7 +175,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
     return [unclaimed, claimed];
   }
-  async function getBalance(address: Address, chainId: ChainId): Promise<string> {
+  async function getFreeBalance(address: Address, chainId: ChainId): Promise<string> {
     const connection = await getConnection(chainId);
     const balance = await connection.api.query.system.account(address);
 
@@ -183,7 +183,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance, getGiftsState, getBalance }}>
+    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance, getGiftsState, getFreeBalance }}>
       {children}
     </BalanceProviderContext.Provider>
   );
