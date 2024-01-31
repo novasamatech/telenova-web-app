@@ -1,7 +1,8 @@
-'use client';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@nextui-org/react';
 
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
@@ -10,16 +11,23 @@ import { BodyText, TitleText } from '@/components/Typography';
 import PasswordForm from '@/components/PasswordForm/PasswordForm';
 
 export default function PasswordPage() {
-  const { user, MainButton } = useTelegram();
+  const { user } = useTelegram();
+  const { mainButton, addMainButton, reset } = useMainButton();
   const { setPublicKey } = useGlobalContext();
   const navigate = useNavigate();
 
-  MainButton?.disable();
-  MainButton?.show();
+  useEffect(() => {
+    mainButton.disable();
+    mainButton.show();
+
+    return () => {
+      reset();
+    };
+  }, []);
 
   const handleSubmit = (password: string) => {
-    MainButton?.enable();
-    MainButton?.onClick(() => {
+    mainButton.enable();
+    addMainButton(() => {
       navigate(Paths.ONBOARDING_CREATE_WALLET);
 
       const mnemonic = generateWalletMnemonic();

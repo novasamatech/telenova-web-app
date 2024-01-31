@@ -27,7 +27,7 @@ export default function AmountPage() {
   const { BackButton, MainButton } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
-  const [amount, setAmount] = useState('0');
+  const [amount, setAmount] = useState<string>();
   const [transferAll, setTransferAll] = useState(false);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>();
   const [isAmountValid, setIsAmountValid] = useState(true);
@@ -55,7 +55,7 @@ export default function AmountPage() {
 
       setDeposit(formattedDeposit);
       setMaxAmountToSend(max);
-      setIsAmountValid(+amount <= +max);
+      setIsAmountValid(+(amount || 0) <= +max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
     })();
 
@@ -134,6 +134,8 @@ export default function AmountPage() {
           classNames={{ input: ['text-right !text-large-title max-w-[160px]'] }}
           value={amount}
           isInvalid={!isAmountValid}
+          type="number"
+          placeholder="0"
           onValueChange={handleChange}
         />
       </div>
@@ -144,7 +146,7 @@ export default function AmountPage() {
             <BodyText align="right" className="text-text-danger">
               Invalid amount
               <br />
-              {selectedAsset?.isGift && !!deposit && +amount < deposit && (
+              {selectedAsset?.isGift && !!deposit && +(amount || 0) < deposit && (
                 <BodyText as="span" className="text-text-danger">
                   Your gift should remain above minimal network deposit {deposit} {selectedAsset?.asset?.symbol}.
                 </BodyText>

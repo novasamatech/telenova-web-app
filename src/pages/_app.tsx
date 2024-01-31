@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import { NextPage } from 'next';
+import Head from 'next/head';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { NextUIProvider } from '@nextui-org/react';
@@ -22,15 +23,20 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   const getLayout = Component.getLayout || ((page) => page);
 
   return (
-    <NextUIProvider>
-      <GlobalStateProvider>
-        {render && (
-          <TelegramProvider>
-            <Router>{getLayout(<Component {...pageProps} />)} </Router>
-          </TelegramProvider>
-        )}
-      </GlobalStateProvider>
-    </NextUIProvider>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"></meta>
+      </Head>
+      <NextUIProvider>
+        <GlobalStateProvider>
+          {render && (
+            <TelegramProvider>
+              <Router>{getLayout(<Component {...pageProps} />)} </Router>
+            </TelegramProvider>
+          )}
+        </GlobalStateProvider>
+      </NextUIProvider>
+    </>
   );
 };
 export default App;

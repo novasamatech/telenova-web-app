@@ -9,15 +9,16 @@ import { formatAmount, formatBalance } from './balance';
 
 export async function handleSend(
   submitExtrinsic: SubmitExtrinsic,
-  { destinationAddress, chainId, amount, transferAll, asset }: TrasferAsset,
+  { destinationAddress, chainId, amount, transferAll, asset, fee }: TrasferAsset,
   giftTransfer?: string,
 ) {
   const decodedAddress = decodeAddress(destinationAddress || giftTransfer);
+  const transferAmount = giftTransfer ? (+amount! + fee!).toString() : amount!;
 
   return await submitExtrinsic(chainId, (builder) => {
     const transferFunction = transferAll
       ? builder.api.tx.balances.transferAll(decodedAddress, false)
-      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(amount as string, asset.precision));
+      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(transferAmount, asset.precision));
 
     builder.addCall(transferFunction);
   }).then((hash) => {

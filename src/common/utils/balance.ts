@@ -170,7 +170,7 @@ export const formatAmount = (amount: string, precision: number): string => {
   return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision)).toString();
 };
 
-export const getTotalBalance = (assets: AssetAccount[], assetsPrices?: AssetPrice) => {
+export const getTotalBalance = (assets: AssetAccount[], assetsPrices: AssetPrice | null) => {
   if (!assets.length || !assetsPrices) return;
 
   return assets.reduce((acc, asset) => {
