@@ -1,5 +1,10 @@
 import secureLocalStorage from 'react-secure-storage';
-import { ChainId, PersistentGift } from '../types';
+import { encodeAddress } from '@polkadot/util-crypto';
+import { KeyringPair } from '@polkadot/keyring/types';
+
+import { getKeyringPairFromSeed } from '../wallet';
+import { ChainId, PersistentGift, PublicKey } from '../types';
+import { ChainAsset } from '../chainRegistry/types';
 
 export const backupGifts = (address: string, secret: string, chainId: ChainId, balance: string): void => {
   const gift = { timestamp: Date.now(), address, secret, chainId, balance };
@@ -19,4 +24,18 @@ export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
   });
 
   return map;
+};
+
+export const getGiftInfo = async (
+  publicKey: PublicKey,
+  startParam: string,
+  getAssetBySymbol: (symbol: string) => Promise<ChainAsset>,
+): Promise<{ chainAddress: string; chain: ChainAsset; giftAddress: string; keyring: KeyringPair }> => {
+  const [seed, symbol] = (startParam as string).split('_');
+  const chain = await getAssetBySymbol(symbol);
+  const chainAddress = encodeAddress(publicKey as string, chain.chain.addressPrefix);
+  const keyring = getKeyringPairFromSeed(seed);
+  const giftAddress = encodeAddress(keyring.publicKey, chain.chain.addressPrefix);
+
+  return { chainAddress, chain, giftAddress, keyring };
 };

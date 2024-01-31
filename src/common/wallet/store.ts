@@ -72,12 +72,8 @@ export const getKeyringPair = (): KeyringPair | undefined => {
   }
 };
 
-export const getKeyringPairFromSeed = (seed: string): KeyringPair | undefined => {
-  try {
-    return keyring.createFromUri(seed);
-  } catch (e) {
-    console.warn(e);
-  }
+export const getKeyringPairFromSeed = (seed: string): KeyringPair => {
+  return keyring.createFromUri(seed);
 };
 
 export const resetWallet = (clearLocal: boolean = false) => {
@@ -101,7 +97,7 @@ const generateGiftSecret = () => {
 
 export const createGiftWallet = (addressPrefix: number): GiftWallet => {
   const seed = generateGiftSecret();
-  const account = keyring.createFromUri(seed);
+  const account = getKeyringPairFromSeed(seed);
 
   return { address: encodeAddress(account.publicKey, addressPrefix), secret: seed };
 };

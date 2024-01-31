@@ -48,7 +48,6 @@ export default function CreateWalletPage() {
       hideMainButton();
     };
   }, []);
-  console.log(isLoading);
 
   return isLoading ? (
     <div className="flex flex-col justify-center items-center">
