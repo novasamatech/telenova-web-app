@@ -53,6 +53,10 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.config }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./docker/Dockerfile.${{ matrix.config }}
+          secret-envs: |
+            NEXT_PUBLIC_BOT_API_URL=${{ secrets.NEXT_PUBLIC_BOT_API_URL }}
+            NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}
+            NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS }}
               
   deploy-image:
     runs-on: ubuntu-latest
