@@ -4,8 +4,12 @@ import { getTelegramBotApi } from './bot-api';
 import { TgLink } from './types';
 
 export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): Promise<void> => {
-  const botApi = getTelegramBotApi(webApp);
-  await botApi.submitWallet(publicKey);
+  try {
+    const botApi = getTelegramBotApi(webApp);
+    await botApi.submitWallet(publicKey);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const createTgLink = (secret: string, symbol: string): TgLink => {

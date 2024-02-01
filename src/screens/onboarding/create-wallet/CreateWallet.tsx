@@ -4,6 +4,7 @@ import ConfettiExplosion from 'react-confetti-explosion';
 import { Player } from '@lottiefiles/react-lottie-player';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { completeOnboarding } from '@common/telegram';
 import { BodyText, TitleText } from '@/components/Typography';
@@ -11,15 +12,13 @@ import { Paths } from '@/common/routing';
 
 export default function CreateWalletPage() {
   const navigate = useNavigate();
-  const { MainButton, webApp } = useTelegram();
+  const { webApp } = useTelegram();
+  const { mainButton, addMainButton, hideMainButton } = useMainButton();
   const { publicKey } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const callback = () => {
-      navigate(Paths.DASHBOARD);
-    };
-
+    hideMainButton();
     (async () => {
       if (!publicKey) {
         console.error("Can't create wallet when public key is missing");
@@ -36,24 +35,19 @@ export default function CreateWalletPage() {
       // TODO: Handle errors here and display retry page maybe
       await completeOnboarding(publicKey, webApp);
 
-      MainButton?.onClick(callback);
-
       setTimeout(() => {
         setIsLoading(false);
-        MainButton?.show();
-        MainButton?.setText('Get started');
-        MainButton?.hideProgress();
+        addMainButton(() => {
+          navigate(Paths.DASHBOARD);
+        }, 'Get started');
+        mainButton.hideProgress();
       }, 2000);
     })();
 
     return () => {
-      MainButton?.setText('Continue');
-      MainButton?.hide();
-      MainButton?.hideProgress();
-      MainButton?.offClick(callback);
+      hideMainButton();
     };
   }, []);
-  console.log(isLoading);
 
   return isLoading ? (
     <div className="flex flex-col justify-center items-center">

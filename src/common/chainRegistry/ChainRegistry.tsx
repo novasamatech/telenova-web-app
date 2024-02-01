@@ -42,7 +42,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
     for (const waiter of waiters) {
       waiter.resolve();
     }
-  }, [isRegistryReady]);
+  }, [isRegistryReady, setupWaiters.current]);
 
   async function isReady(): Promise<void> {
     return new Promise((resolve, reject) => {

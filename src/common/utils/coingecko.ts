@@ -10,7 +10,7 @@ export async function getPrice(
   ids: (string | undefined)[],
   currency: string = 'usd',
   includeRateChange: boolean = true,
-): Promise<AssetPrice> {
+): Promise<AssetPrice | null> {
   const url = new URL(`${COINGECKO_URL}/simple/price`);
   url.search = new URLSearchParams({
     ids: ids.join(','),
@@ -32,6 +32,6 @@ export async function getPrice(
       return acc;
     }, {});
   } catch (e) {
-    return {};
+    return null;
   }
 }

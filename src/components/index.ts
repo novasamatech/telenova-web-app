@@ -23,6 +23,7 @@ import GiftPlate from './Plate/GiftPlate';
 import TruncateAddress from './Address/TruncateAddress';
 import LinkCard from './LinkCard/LinkCard';
 import GiftDetails from './GiftDetails/GiftDetails';
+import GiftModal from './Modal/GiftModal';
 
 export {
   TextBase,
@@ -49,4 +50,5 @@ export {
   TruncateAddress,
   LinkCard,
   GiftDetails,
+  GiftModal,
 };
