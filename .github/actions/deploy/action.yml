@@ -57,4 +57,5 @@ runs:
           🖥️ New version for bot web app was deployed!
           version: ${{ inputs.IMAGE_TO_DEPLOY }}
           commit: ${{ github.sha }}
+          
           updated_bot: @${{ inputs.DEPLOYED_BOT }}
