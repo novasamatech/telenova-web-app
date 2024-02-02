@@ -76,4 +76,4 @@ jobs:
           TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           DEPLOYED_BOT: ${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}
-          IMAGE_TO_DEPLOY: ${{ env.IMAGE_NAME }}:${{ needs.build-docker.outputs.docker_tags }}
+          IMAGE_TO_DEPLOY: ${{ needs.build-docker.outputs.docker_tags }}
