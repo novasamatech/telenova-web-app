@@ -16,8 +16,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', ...defaultTheme.fontFamily.sans],
-        manrope: ['Manrope', ...defaultTheme.fontFamily.sans],
+        manrope: ['var(--font-manrope)'],
       },
       fontSize: fontSizes,
       backgroundImage: {
