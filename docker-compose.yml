@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    build: ./docker/Dockerfile.prod
+    build: ./docker/Dockerfile
     ports:
       - 3000:3000
     volumes:
