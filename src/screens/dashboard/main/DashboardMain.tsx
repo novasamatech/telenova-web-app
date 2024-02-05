@@ -1,4 +1,3 @@
-'use client';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { encodeAddress } from '@polkadot/util-crypto';

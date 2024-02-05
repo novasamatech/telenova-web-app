@@ -1,4 +1,3 @@
-'use client';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@nextui-org/react';
@@ -33,6 +32,11 @@ export default function ChangePasswordPage() {
 
   useEffect(() => {
     const callback = () => {
+      if (password.length < 8) {
+        setIsPasswordValid(false);
+
+        return;
+      }
       mainButton.showProgress();
 
       webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
@@ -46,7 +50,7 @@ export default function ChangePasswordPage() {
       });
     };
 
-    if (password.length >= 8) {
+    if (password.length >= 1) {
       mainButton.enable();
       addMainButton(callback);
     } else {
