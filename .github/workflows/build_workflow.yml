@@ -58,10 +58,10 @@ jobs:
             NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}
             NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS }}
 
-  deploy:
+  deploy-dev:
     runs-on: ubuntu-latest
     needs: build-docker
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
