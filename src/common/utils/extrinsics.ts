@@ -7,23 +7,57 @@ import { FAKE_ACCOUNT_ID } from './constants';
 import { Balance } from '@polkadot/types/interfaces';
 import { formatAmount, formatBalance } from './balance';
 
-export async function handleSend(
+const transferExtrinsic = async (
   submitExtrinsic: SubmitExtrinsic,
-  { destinationAddress, chainId, amount, transferAll, asset, fee }: TrasferAsset,
-  giftTransfer?: string,
-) {
-  const decodedAddress = decodeAddress(destinationAddress || giftTransfer);
-  const transferAmount = giftTransfer ? (+amount! + fee!).toString() : amount!;
+  destinationAddress: string,
+  chainId: ChainId,
+  amount: string,
+  transferAll: boolean,
+  precision: number,
+) => {
+  const address = decodeAddress(destinationAddress);
+  const transferAmmount = formatAmount(amount as string, precision);
 
   return await submitExtrinsic(chainId, (builder) => {
     const transferFunction = transferAll
-      ? builder.api.tx.balances.transferAll(decodedAddress, false)
-      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(transferAmount, asset.precision));
+      ? builder.api.tx.balances.transferAll(address, false)
+      : builder.api.tx.balances.transferKeepAlive(destinationAddress, transferAmmount);
 
     builder.addCall(transferFunction);
   }).then((hash) => {
     console.log('Success, Hash:', hash?.toString());
   });
+};
+
+export async function handleSend(
+  submitExtrinsic: SubmitExtrinsic,
+  { destinationAddress, chainId, amount, transferAll, asset }: TrasferAsset,
+) {
+  return await transferExtrinsic(
+    submitExtrinsic,
+    destinationAddress as string,
+    chainId,
+    amount as string,
+    transferAll as boolean,
+    asset?.precision as number,
+  );
+}
+
+export async function handleSendGift(
+  submitExtrinsic: SubmitExtrinsic,
+  { chainId, amount, transferAll, asset, fee }: TrasferAsset,
+  giftTransferAddress: string,
+) {
+  const giftAmount = (+(amount as string) + (fee as number) / 2).toString();
+
+  return await transferExtrinsic(
+    submitExtrinsic,
+    giftTransferAddress as string,
+    chainId,
+    giftAmount,
+    transferAll as boolean,
+    asset?.precision as number,
+  );
 }
 
 export async function handleFee(
