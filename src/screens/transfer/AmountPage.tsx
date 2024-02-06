@@ -147,13 +147,19 @@ export default function AmountPage() {
               <br />
               {selectedAsset?.isGift && !!deposit && +(amount || 0) < deposit && (
                 <BodyText as="span" className="text-text-danger">
-                  Your gift should remain above minimal network deposit {deposit} {selectedAsset?.asset?.symbol}.
+                  Your gift should remain above the minimal network deposit {deposit} {selectedAsset?.asset?.symbol}
                 </BodyText>
               )}
             </BodyText>
           </>
         )}
       </div>
+      {!transferAll && isAmountValid && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit && (
+        <BodyText align="left" className="text-text-hint mt-4">
+          The balance that remains after sending this amount is less than the minimal network deposit ({deposit}), you
+          may want to send Max instead or choose a different amount.
+        </BodyText>
+      )}
     </>
   );
 }
