@@ -190,18 +190,13 @@ export async function getTransferDetails(
   getExistentialDeposit: GetExistentialDeposit,
 ) {
   const fee =
-    selectedAsset?.fee ||
-    (await handleFee(
-      estimateFee,
-      selectedAsset.chainId as ChainId,
-      selectedAsset.asset?.precision as number,
-      selectedAsset?.isGift,
-    ));
+    selectedAsset?.fee || (await handleFee(estimateFee, selectedAsset.chainId as ChainId, selectedAsset?.isGift));
+  const formattedFee = Number(formatBalance(fee.toString(), selectedAsset.asset?.precision).formattedValue);
 
   const formattedBalance = Number(
     formatBalance(selectedAsset.transferableBalance, selectedAsset.asset?.precision).formattedValue,
   );
-  const max = Math.max(formattedBalance - fee, 0).toFixed(5);
+  const max = Math.max(formattedBalance - formattedFee, 0).toFixed(5);
 
   const deposit = await getExistentialDeposit(selectedAsset.chainId as ChainId);
   const formattedDeposit = Number(formatBalance(deposit, selectedAsset.asset?.precision).formattedValue);
