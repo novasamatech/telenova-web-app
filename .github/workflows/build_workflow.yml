@@ -11,6 +11,12 @@ on:
     tags:
       - 'v*'
   pull_request:
+    types: [opened]
+    branches:
+      - 'main'
+      - 'dev'
+  pull_request_target:
+    types: [labeled]
     branches:
       - 'main'
       - 'dev'
@@ -21,6 +27,10 @@ env:
 
 jobs:
   build-docker:
+    if: >-
+      github.event.label.name != 'run_build' ||
+      (github.event.label.name == 'run_build' && github.event_name == 'pull_request_target') ||
+      github.event_name != 'pull_request_target'
     runs-on: ubuntu-latest
     outputs:
       docker_tags: ${{ steps.meta.outputs.tags }}
