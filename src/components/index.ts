@@ -24,6 +24,7 @@ import TruncateAddress from './Address/TruncateAddress';
 import LinkCard from './LinkCard/LinkCard';
 import GiftDetails from './GiftDetails/GiftDetails';
 import GiftModal from './Modal/GiftModal';
+import RecoveryPhrase from './RecoveryPhrase/RecoveryPhrase';
 
 export {
   TextBase,
@@ -51,4 +52,5 @@ export {
   LinkCard,
   GiftDetails,
   GiftModal,
+  RecoveryPhrase,
 };

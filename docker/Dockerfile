@@ -1,0 +1,28 @@
+# Dockerfile.build
+FROM node:18-alpine AS build
+
+WORKDIR /app
+COPY . .
+
+ARG NEXT_PUBLIC_BOT_API_URL
+ARG NEXT_PUBLIC_BOT_ADDRESS
+ARG NEXT_PUBLIC_WEB_APP_ADDRESS
+ENV NEXT_PUBLIC_BOT_API_URL=$NEXT_PUBLIC_BOT_API_URL
+ENV NEXT_PUBLIC_BOT_ADDRESS=$NEXT_PUBLIC_BOT_ADDRESS
+ENV NEXT_PUBLIC_WEB_APP_ADDRESS=$NEXT_PUBLIC_WEB_APP_ADDRESS
+
+RUN yarn install
+RUN yarn build
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY package.json ./
+COPY yarn.lock ./
+
+RUN yarn install
+
+CMD ["yarn", "start"]

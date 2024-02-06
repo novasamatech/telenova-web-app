@@ -30,11 +30,11 @@ export default function SettingsBackupPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <TitleText>The wallet is backed up successfully</TitleText>
-      <BodyText className="text-text-hint mb-2">
-        Your earlier set password acts as the shield for your wallet. It transforms the encrypted seed phrase into a
-        secure password.
+    <div className="flex flex-col items-start gap-2">
+      <TitleText>Cloud Backup</TitleText>
+      <BodyText className="text-text-hint mb-2" align="left">
+        Your password protects your wallet and your assets. Make sure to keep your password safe (don&apos;t forget it!)
+        and never share it with anyone!
       </BodyText>
       <Plate className="w-full p-0">
         <LinkCard
@@ -45,6 +45,18 @@ export default function SettingsBackupPage() {
         />
       </Plate>
       {backupDate && <BodyText className="text-text-hint self-start">Last Changed: {backupDate}</BodyText>}
+      <TitleText className="mt-4">Manual Backup</TitleText>
+      <BodyText className="text-text-hint mb-2" align="left">
+        You can manually write down your recovery phrase to be sure that everything is safe
+      </BodyText>
+      <Plate className="w-full p-0">
+        <LinkCard
+          href={Paths.SETTINGS_RECOVERY}
+          className="grid-cols-[1fr,auto]"
+          text="Reveal Recovery Phrase"
+          showArrow
+        />
+      </Plate>
     </div>
   );
 }

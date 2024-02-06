@@ -30,7 +30,7 @@ const LinkCard = ({
 }: Props) => (
   <Link
     to={href}
-    className={cnTw(`w-full grid grid-cols-[auto,1fr,auto] items-center gap-4 p-3 ${className}`)}
+    className={cnTw(`w-full grid grid-cols-[auto,1fr,auto] items-center gap-4 h-[48px] pl-4 pr-2 ${className}`)}
     onClick={onClick}
   >
     {iconName && <Icon name={iconName} className={cnTw(`w-10 h-10 ${iconClassName}`)} />}
@@ -41,7 +41,7 @@ const LinkCard = ({
       {helpText && <HelpText className="text-text-hint">{helpText}</HelpText>}
     </div>
     {valueText && <HelpText className="text-text-hint">{valueText}</HelpText>}
-    {showArrow && <Icon name="chevronForward" className="w-4 h-4" />}
+    {showArrow && <Icon name="chevronForward" className="w-4 h-4 self-center" />}
   </Link>
 );
 

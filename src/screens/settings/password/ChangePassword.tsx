@@ -11,7 +11,7 @@ import { MNEMONIC_STORE } from '@/common/utils/constants';
 
 export default function ChangePasswordPage() {
   const { BackButton, webApp } = useTelegram();
-  const { mainButton, addMainButton, reset } = useMainButton();
+  const { mainButton, addMainButton, reset, hideMainButton } = useMainButton();
 
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -26,7 +26,7 @@ export default function ChangePasswordPage() {
 
     return () => {
       BackButton?.offClick(callback);
-      reset();
+      hideMainButton();
     };
   }, []);
 
