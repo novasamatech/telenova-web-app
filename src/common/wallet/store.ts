@@ -86,7 +86,12 @@ export const resetWallet = (clearLocal: boolean = false) => {
 
 export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: string): string | null => {
   if (!encryptedMnemonic) return null;
-  const mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
+  let mnemonic;
+  try {
+    mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
+  } catch {
+    return null;
+  }
 
   return mnemonic || null;
 };

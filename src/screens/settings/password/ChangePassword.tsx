@@ -32,12 +32,14 @@ export default function ChangePasswordPage() {
 
   useEffect(() => {
     const callback = () => {
-      mainButton.showProgress();
+      if (password.length < 8) {
+        setIsPasswordValid(false);
 
+        return;
+      }
       webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
         const decryptedMnemonic = initializeWalletFromCloud(password, value);
         setIsPasswordValid(Boolean(decryptedMnemonic));
-        mainButton.hideProgress();
 
         if (decryptedMnemonic) {
           navigate(Paths.SETTINGS_NEW_PASSWORD);
@@ -45,7 +47,7 @@ export default function ChangePasswordPage() {
       });
     };
 
-    if (password.length >= 8) {
+    if (password.length >= 1) {
       mainButton.enable();
       addMainButton(callback);
     } else {

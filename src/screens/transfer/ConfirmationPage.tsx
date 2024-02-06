@@ -1,4 +1,3 @@
-'use client';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Divider } from '@nextui-org/react';
@@ -52,6 +51,7 @@ export default function ConfirmationPage() {
       MainButton?.hideProgress();
       MainButton?.offClick(mainCallback);
       BackButton?.offClick(backCallback);
+      MainButton?.setText('Continue');
     };
   }, [selectedAsset]);
 

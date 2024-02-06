@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { Paths } from '@/common/routing';
 import { BodyText, LinkCard, Plate, TitleText } from '@/components';
 import { BACKUP_DATE } from '@/common/utils/constants';
 
 export default function SettingsBackupPage() {
   const { BackButton, webApp } = useTelegram();
+  const { hideMainButton } = useMainButton();
   const navigate = useNavigate();
   const [backupDate, setBackupDate] = useState('');
 
   useEffect(() => {
+    hideMainButton();
     BackButton?.show();
     const callback = () => navigate(Paths.SETTINGS);
     BackButton?.onClick(callback);
