@@ -37,12 +37,9 @@ export default function ChangePasswordPage() {
 
         return;
       }
-      mainButton.showProgress();
-
       webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
         const decryptedMnemonic = initializeWalletFromCloud(password, value);
         setIsPasswordValid(Boolean(decryptedMnemonic));
-        mainButton.hideProgress();
 
         if (decryptedMnemonic) {
           navigate(Paths.SETTINGS_NEW_PASSWORD);
