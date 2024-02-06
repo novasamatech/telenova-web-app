@@ -19,7 +19,7 @@ const transferExtrinsic = async (
   return await submitExtrinsic(chainId, (builder) => {
     const transferFunction = transferAll
       ? builder.api.tx.balances.transferAll(address, false)
-      : builder.api.tx.balances.transferKeepAlive(destinationAddress, transferAmmount);
+      : builder.api.tx.balances.transferKeepAlive(address, transferAmmount);
 
     builder.addCall(transferFunction);
   }).then((hash) => {
