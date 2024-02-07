@@ -70,7 +70,7 @@ export default function ChangePasswordPage() {
         className="max-w-sm text-left mt-8"
         classNames={{
           inputWrapper: [
-            'bg-bg-input border-1',
+            'bg-bg-input border-1 shadow-none',
             'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
           ],
         }}

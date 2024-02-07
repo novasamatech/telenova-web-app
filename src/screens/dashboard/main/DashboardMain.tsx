@@ -71,13 +71,22 @@ export const DashboardMain = () => {
 
   return (
     <div className="flex flex-col break-all">
-      <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6">
-        <Avatar src={user?.photo_url} className="w-10 h-10" name={user?.first_name[0]} />
+      <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6 items-center">
+        <Avatar
+          src={user?.photo_url}
+          className="w-10 h-10"
+          name={user?.first_name[0]}
+          classNames={{
+            base: 'bg-gradient-to-br from-[#FFB457] to-[#FF705B]',
+            icon: 'text-black/80',
+            name: 'font-manrope font-black text-base text-white',
+          }}
+        />
         <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
         <IconButton iconName="settings" onClick={() => navigate(Paths.SETTINGS)} />
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
-        <BodyText className="text-text-hint">Total Balance</BodyText>
+        <BodyText className="text-text-hint mb-1">Total Balance</BodyText>
         <LargeTitleText>
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
@@ -91,13 +100,13 @@ export const DashboardMain = () => {
         <Button
           variant="light"
           size="lg"
-          className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px]"
+          className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px] mb-2"
           onClick={() => navigate(Paths.GIFTS)}
         >
           Gifts
         </Button>
       )}
-      <Plate className="flex flex-col my-2 rounded-3xl">
+      <Plate className="flex flex-col mb-2 rounded-3xl">
         <CaptionText>Assets</CaptionText>
         <AssetsList />
       </Plate>

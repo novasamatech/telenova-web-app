@@ -68,7 +68,7 @@ export default function AddressPage() {
         placeholder="Enter address"
         classNames={{
           inputWrapper: [
-            'bg-bg-input border-1 text-left',
+            'bg-bg-input border-1 text-left shadow-none',
             'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
           ],
         }}

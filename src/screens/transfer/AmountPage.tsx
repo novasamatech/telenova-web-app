@@ -116,14 +116,14 @@ export default function AmountPage() {
             </HeadlineText>
           </>
         )}
-        <Button variant="light" size="md" className="p-0" onClick={handleMaxSend}>
+        <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
           <CaptionText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block" />}{' '}
+            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
             {selectedAsset?.asset?.symbol}
           </CaptionText>
         </Button>
       </div>
-      <div className="my-6 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px]">
+      <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">
         <Icon name={selectedAsset?.asset?.symbol as IconNames} className="w-10 h-10" />
         <LargeTitleText>{selectedAsset?.asset?.symbol}</LargeTitleText>
         <Input

@@ -36,7 +36,7 @@ export default function SelectTokenPage() {
             <AssetBalance
               asset={asset.asset}
               balance={asset.totalBalance}
-              className="bg-white rounded-lg px-4 py-2 w-full"
+              className="bg-white rounded-lg px-4 py-2 w-full hover:bg-bg-item-pressed"
               name={asset.name}
               showArrow
             />

@@ -40,12 +40,13 @@ export default function ReceivePage() {
   }, []);
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center flex-col">
       <Carousel
         activeSlideIndex={activeSlideIndex}
         containerProps={{
           style: {
             gap: 10,
+            width: 'auto',
           },
         }}
         dotsNav={{
@@ -93,32 +94,32 @@ export default function ReceivePage() {
                 {asset.address}
               </HeadlineText>
             </Plate>
-            <Popover showArrow placement="top" color="foreground" radius="sm" size="md">
-              <PopoverTrigger>
-                <Button
-                  color="primary"
-                  className="w-[200px]"
-                  onClick={() => navigator.clipboard.writeText(asset.address)}
-                >
-                  Copy address
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>Address coppied</PopoverContent>
-            </Popover>
-            {/* @ts-expect-error share functionality doesn't exist in Mozilla */}
-            {navigator.canShare && (
-              <Button
-                color="primary"
-                variant="flat"
-                className="w-[200px]"
-                onClick={() => shareQrAddress(asset.asset.symbol, asset.address)}
-              >
-                Share
-              </Button>
-            )}
           </div>
         ))}
       </Carousel>
+      <Popover showArrow placement="top" color="foreground" radius="sm" size="md">
+        <PopoverTrigger>
+          <Button
+            color="primary"
+            className="w-[200px] mt-6"
+            onClick={() => navigator.clipboard.writeText(assets[activeSlideIndex].address)}
+          >
+            Copy address
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>Address coppied</PopoverContent>
+      </Popover>
+      {/* @ts-expect-error share functionality doesn't exist in Mozilla */}
+      {navigator.canShare && (
+        <Button
+          color="primary"
+          variant="flat"
+          className="w-[200px]"
+          onClick={() => shareQrAddress(assets[activeSlideIndex].asset.symbol, assets[activeSlideIndex].address)}
+        >
+          Share
+        </Button>
+      )}
     </div>
   );
 }
