@@ -1,5 +1,5 @@
 export const PUBLIC_KEY_STORE = 'publicKey';
 export const MNEMONIC_STORE = 'mnemonic';
 export const BACKUP_DATE = 'backupDate';
-export const GIFT_STORE = 'giftStore';
+export const GIFT_STORE = 'gifts';
 export const FAKE_ACCOUNT_ID = '0x' + '1'.repeat(64);
