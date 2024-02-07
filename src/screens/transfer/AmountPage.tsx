@@ -26,9 +26,9 @@ export default function AmountPage() {
   const { BackButton, MainButton } = useTelegram();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
-  const [amount, setAmount] = useState<string>();
+  const [amount, setAmount] = useState<string>('');
   const [transferAll, setTransferAll] = useState(false);
-  const [maxAmountToSend, setMaxAmountToSend] = useState<string>();
+  const [maxAmountToSend, setMaxAmountToSend] = useState<string>('');
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [deposit, setDeposit] = useState(0);
 
@@ -54,7 +54,7 @@ export default function AmountPage() {
 
       setDeposit(formattedDeposit);
       setMaxAmountToSend(max);
-      setIsAmountValid(+(amount || 0) <= +max);
+      setIsAmountValid(+amount <= +max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
     })();
 
@@ -85,7 +85,7 @@ export default function AmountPage() {
   }, [amount, isAmountValid, maxAmountToSend]);
 
   const handleMaxSend = () => {
-    if (maxAmountToSend === undefined) return;
+    if (maxAmountToSend === '') return;
     const validateGift = selectedAsset?.isGift ? +maxAmountToSend >= deposit : true;
     setTransferAll(true);
     setAmount(String(maxAmountToSend));
@@ -93,10 +93,12 @@ export default function AmountPage() {
   };
 
   const handleChange = (value: string) => {
+    const formattedValue = value.trim().replace(/,/g, '.');
     setTransferAll(false);
-    const validateGift = selectedAsset?.isGift ? !!deposit && +value >= deposit : true;
-    setIsAmountValid(!!Number(value) && +value <= +(maxAmountToSend || 0) && validateGift);
-    setAmount(value);
+    const validateGift = selectedAsset?.isGift ? !!deposit && +formattedValue >= deposit : true;
+
+    setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +maxAmountToSend && validateGift);
+    setAmount(formattedValue);
   };
 
   return (
@@ -133,19 +135,19 @@ export default function AmountPage() {
           classNames={{ input: ['text-right !text-large-title max-w-[160px]'] }}
           value={amount}
           isInvalid={!isAmountValid}
-          type="number"
-          placeholder="0"
+          type="text"
+          inputMode="decimal"
+          placeholder="0.00"
           onValueChange={handleChange}
         />
       </div>
       <div className="grid grid-cols-[auto,1fr]">
-        <TokenPrice priceId={selectedAsset?.asset?.priceId} balance={amount} showBalance={isAmountValid} />
+        <TokenPrice priceId={selectedAsset?.asset?.priceId} balance={amount || '0'} showBalance={isAmountValid} />
         {!isAmountValid && (
           <>
             <BodyText align="right" className="text-text-danger">
-              Invalid amount
-              <br />
-              {selectedAsset?.isGift && !!deposit && +(amount || 0) < deposit && (
+              {+amount > +maxAmountToSend ? 'Insufficient balance' : 'Invalid amount'} <br />
+              {selectedAsset?.isGift && !!deposit && +amount < deposit && (
                 <BodyText as="span" className="text-text-danger">
                   Your gift should remain above minimal network deposit {deposit} {selectedAsset?.asset?.symbol}.
                 </BodyText>
