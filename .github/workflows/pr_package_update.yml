@@ -16,7 +16,7 @@ jobs:
 
       - name: Get version from base branch
         id: base_version
-        run: echo "MAIN_VERSION=$(jq -c . < package.json)" >> $GITHUB_ENV
+        run: echo "MAIN_VERSION=$(jq -r '.version' < package.json)" >> $GITHUB_ENV
 
       - name: Checkout PR branch
         uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
 
       - name: Get version from PR branch
         id: pr_version
-        run: echo "PR_VERSION=$(jq -c . < package.json)" >> $GITHUB_ENV
+        run: echo "PR_VERSION=$(jq -r '.version' < package.json)" >> $GITHUB_ENV
 
       - name: Compare versions
         run: |
