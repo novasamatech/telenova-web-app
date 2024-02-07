@@ -2,20 +2,21 @@ import secureLocalStorage from 'react-secure-storage';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
 
-import { getKeyringPairFromSeed } from '../wallet';
+import { getKeyringPairFromSeed, getStoreName } from '../wallet';
 import { ChainId, PersistentGift, PublicKey } from '../types';
 import { ChainAsset } from '../chainRegistry/types';
+import { GIFT_STORE } from './constants';
 
 export const backupGifts = (address: string, secret: string, chainId: ChainId, balance: string): void => {
   const gift = { timestamp: Date.now(), address, secret, chainId, balance };
-  const storedGifts = secureLocalStorage.getItem('GIFT_STORE') as string;
+  const storedGifts = secureLocalStorage.getItem(getStoreName(GIFT_STORE)) as string;
   const backup = storedGifts ? [...JSON.parse(storedGifts), gift] : [gift];
 
-  secureLocalStorage.setItem('GIFT_STORE', JSON.stringify(backup));
+  secureLocalStorage.setItem(getStoreName(GIFT_STORE), JSON.stringify(backup));
 };
 
 export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
-  const gifts = JSON.parse(secureLocalStorage.getItem('GIFT_STORE') as string);
+  const gifts = JSON.parse(secureLocalStorage.getItem(getStoreName(GIFT_STORE)) as string);
   if (!gifts) return null;
 
   const map = new Map();
