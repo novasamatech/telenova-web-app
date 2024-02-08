@@ -6,7 +6,7 @@ import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { Paths } from '@/common/routing';
 import { PasswordForm, TitleText } from '@/components';
-import { backupMnemonic } from '@/common/wallet';
+import { backupMnemonic, getStoreName } from '@/common/wallet';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
 
 export default function NewPasswordPage() {
@@ -31,7 +31,7 @@ export default function NewPasswordPage() {
     mainButton?.enable();
     const mainCallback = () => {
       navigate(Paths.SETTINGS_PASSWORD_CONFIRMATION);
-      const mnemonic = secureLocalStorage.getItem(MNEMONIC_STORE);
+      const mnemonic = secureLocalStorage.getItem(getStoreName(MNEMONIC_STORE));
       backupMnemonic(mnemonic as string, password);
     };
 

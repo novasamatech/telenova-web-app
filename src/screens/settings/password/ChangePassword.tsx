@@ -6,7 +6,7 @@ import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { Paths } from '@/common/routing';
 import { TitleText } from '@/components';
-import { initializeWalletFromCloud } from '@/common/wallet';
+import { getStoreName, initializeWalletFromCloud } from '@/common/wallet';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
 
 export default function ChangePasswordPage() {
@@ -37,7 +37,7 @@ export default function ChangePasswordPage() {
 
         return;
       }
-      webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
+      webApp?.CloudStorage.getItem(getStoreName(MNEMONIC_STORE), (_err, value) => {
         const decryptedMnemonic = initializeWalletFromCloud(password, value);
         setIsPasswordValid(Boolean(decryptedMnemonic));
 
