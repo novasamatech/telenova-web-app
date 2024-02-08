@@ -9,6 +9,7 @@ const AllIcons = {
   address: 'Address.svg',
   user: 'User.svg',
   chevronForward: 'chevron-forward.svg',
+  arrowBold: 'arrow-bold.svg',
   scanQr: 'scan.svg',
   gift: 'gift.svg',
   backup: 'backup.svg',
@@ -18,6 +19,8 @@ const AllIcons = {
   telegram: 'Telegram.svg',
   twitter: 'X-twitter.svg',
   youtube: 'Youtube.svg',
+  welcome: 'welcome.svg',
+  present: 'present.svg',
 } as const;
 
 export type IconNames = keyof typeof AllIcons;

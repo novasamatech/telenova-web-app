@@ -55,7 +55,7 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
 export const backupMnemonic = (mnemonic: string, password: string): void => {
   const encryptedMnemonic = AES.encrypt(mnemonic, password).toString();
 
-  window.Telegram.WebApp.CloudStorage.setItem(getStoreName(MNEMONIC_STORE), encryptedMnemonic);
+  window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
   window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, Date.now().toString());
 };
 
@@ -88,7 +88,7 @@ export const resetWallet = (clearLocal: boolean = false) => {
   localStorage.removeItem(getStoreName(PUBLIC_KEY_STORE));
   secureLocalStorage.removeItem(getStoreName(MNEMONIC_STORE));
   if (!clearLocal) {
-    window.Telegram.WebApp.CloudStorage.removeItem(getStoreName(MNEMONIC_STORE));
+    window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
   }
 };
 

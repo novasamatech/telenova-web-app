@@ -9,7 +9,7 @@ import {
   HeadlineText,
   Icon,
   Identicon,
-  CaptionText,
+  MediumTitle,
   LargeTitleText,
   BodyText,
   TokenPrice,
@@ -119,10 +119,10 @@ export default function AmountPage() {
           </>
         )}
         <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
-          <CaptionText className="text-text-link">
+          <MediumTitle className="text-text-link">
             Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
             {selectedAsset?.asset?.symbol}
-          </CaptionText>
+          </MediumTitle>
         </Button>
       </div>
       <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">

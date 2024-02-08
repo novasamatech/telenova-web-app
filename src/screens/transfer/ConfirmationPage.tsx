@@ -13,7 +13,7 @@ import {
   LargeTitleText,
   Plate,
   BodyText,
-  CaptionText,
+  MediumTitle,
   TruncateAddress,
 } from '@/components';
 import { IconNames } from '@/components/Icon/types';
@@ -89,15 +89,15 @@ export default function ConfirmationPage() {
         <LargeTitleText>{symbol}</LargeTitleText>
         <LargeTitleText>{selectedAsset?.amount}</LargeTitleText>
       </div>
-      <Plate className="w-full">
+      <Plate className="w-full pr-0">
         {details.map(({ title, value }, index) => (
           <div key={title}>
-            {index !== 0 && <Divider className="my-4" />}
-            <div className="grid gap-2 break-all">
+            {index !== 0 && <Divider className="my-4 h-[0.5px] w-auto" />}
+            <div className="grid gap-2 break-all pr-4">
               <BodyText align="left" className="text-text-hint">
                 {title}
               </BodyText>
-              <CaptionText>{value}</CaptionText>
+              <MediumTitle>{value}</MediumTitle>
             </div>
           </div>
         ))}

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConfettiExplosion from 'react-confetti-explosion';
 import { Player } from '@lottiefiles/react-lottie-player';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
@@ -41,7 +40,7 @@ export default function CreateWalletPage() {
           navigate(Paths.DASHBOARD);
         }, 'Get started');
         mainButton.hideProgress();
-      }, 2000);
+      }, 4500);
     })();
 
     return () => {
@@ -49,24 +48,21 @@ export default function CreateWalletPage() {
     };
   }, []);
 
-  return isLoading ? (
-    <div className="flex flex-col justify-center items-center">
-      <Player src="/gifs/create-wallet.json" keepLastFrame autoplay className="player" />
-      <BodyText className="text-icon-on-neutral">Creating your wallet...</BodyText>
-    </div>
-  ) : (
-    <div className="flex flex-col justify-center items-center p-1">
-      <div className="bg-blue-500 rounded-full p-3 w-[114px] h-[114px]">
-        <ConfettiExplosion particleCount={250} />
-        {/* <Player src="firework" className="player" /> */}
-      </div>
-      <TitleText className="m-3">Your wallet has been created!</TitleText>
-      <BodyText className="text-text-hint">
-        Your gateway to the world of digital assets is now open, and your financial future is in your hands. Safely
-        store, send, and receive funds with confidence.
-        <br />
-        Happy exploring!
-      </BodyText>
+  return (
+    <div className="flex flex-col justify-center items-center h-screen">
+      <Player src="/gifs/create-wallet.json" keepLastFrame autoplay className="player w-[256px] h-[256px] mb-4" />
+      {isLoading ? (
+        <BodyText className="text-icon-on-neutral">Creating your wallet...</BodyText>
+      ) : (
+        <>
+          <TitleText>Your wallet has been created!</TitleText>
+          <BodyText className="text-text-hint m-3">
+            Your Telenova wallet is now ready to use! You can now begin exploring Polkadot ecosystem assets with ease!
+            Remember, do NOT share your passwords with anyone!
+          </BodyText>
+          <BodyText className="text-text-hint">Remember, do NOT share your passwords with anyone!</BodyText>
+        </>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { getMnemonic } from '@/common/wallet';
 import { cnTw } from '@/common/utils/twMerge';
-import { BodyText, CaptionText, Plate } from '@/components';
+import { BodyText, MediumTitle, Plate } from '@/components';
 import RecoveryModal from './RecoveryModal';
 
 const RecoveryPhrase = () => {
@@ -37,7 +37,7 @@ const RecoveryPhrase = () => {
             ))}
             <BodyText className="text-text-hint mt-3 mb-2">Do not share this with anyone!</BodyText>
           </div>
-          {isBlur && <CaptionText className="absolute left-1/3 bottom-1/2">Tap to reveal secret</CaptionText>}
+          {isBlur && <MediumTitle className="absolute left-1/3 bottom-1/2">Tap to reveal secret</MediumTitle>}
         </button>
       </Plate>
       <RecoveryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleModalSubmit} />

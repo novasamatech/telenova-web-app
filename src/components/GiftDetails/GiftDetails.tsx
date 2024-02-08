@@ -15,7 +15,12 @@ export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
 
   return (
     <>
-      <Snippet color="primary" hideSymbol size="sm" classNames={{ pre: ['text-wrap w-[300px] overflow-auto'] }}>
+      <Snippet
+        color="primary"
+        hideSymbol
+        size="sm"
+        classNames={{ pre: ['text-wrap w-[300px] overflow-auto p-[14px] pl-4'] }}
+      >
         {link.url}
       </Snippet>
       <BodyText className="text-text-hint" align="center">

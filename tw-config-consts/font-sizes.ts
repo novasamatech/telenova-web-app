@@ -7,7 +7,7 @@ const fontSizes: Required<Config>['theme']['fontSize'] = {
   'body-bold': ['1rem', { lineHeight: '1.25rem', letterSpacing: '-0.013em', fontWeight: 800 }],
 
   // SEMI BOLD
-  caption: ['1rem', { lineHeight: '1.5rem', letterSpacing: '-0.2px', fontWeight: 600 }],
+  'medium-title': ['1rem', { lineHeight: '1.5rem', letterSpacing: '-0.2px', fontWeight: 600 }],
   footnote: ['0.8125rem', { lineHeight: '1.25rem', letterSpacing: '-0.01em', fontWeight: 600 }],
 
   // MEDIUM

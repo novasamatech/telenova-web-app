@@ -7,7 +7,7 @@ import Carousel from 'react-simply-carousel';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { shareQrAddress } from '@/common/utils/address';
-import { BodyText, HeadlineText, Plate, TitleText } from '@/components';
+import { BodyText, HeadlineText, MediumTitle, Plate, TitleText } from '@/components';
 import { Paths } from '@/common/routing';
 
 const dotStyle = {
@@ -40,17 +40,25 @@ export default function ReceivePage() {
   }, []);
 
   return (
-    <div className="flex items-center flex-col">
+    <div className="flex items-center flex-col h-screen justify-center mx-[-16px]">
+      <TitleText className="mb-7">Receive {assets[activeSlideIndex].asset.symbol}</TitleText>
       <Carousel
         activeSlideIndex={activeSlideIndex}
         containerProps={{
           style: {
             gap: 10,
-            width: 'auto',
+            width: '100%',
+            position: 'relative',
           },
         }}
         dotsNav={{
           show: true,
+          containerProps: {
+            style: {
+              position: 'absolute',
+              top: '-20px',
+            },
+          },
           itemBtnProps: {
             style: {
               ...dotStyle,
@@ -65,26 +73,24 @@ export default function ReceivePage() {
           },
         }}
         swipeTreshold={30}
-        itemsToShow={2}
+        itemsToShow={3}
         itemsToScroll={1}
         speed={400}
         easing="ease"
         updateOnItemClick
         centerMode
         infinite
-        disableNavIfEdgeActive
         preventScrollOnSwipe
         onRequestChange={setActiveSlideIndex}
       >
         {assets.map((asset) => (
           <div className="flex flex-col items-center gap-3 border-x-[12px] border-transparent" key={asset.address}>
-            <TitleText>Receive {asset.asset.symbol}</TitleText>
             <Plate className="flex flex-col items-center gap-3 w-[232px] h-[344px] break-all">
               <QRCode
                 value={asset.address}
                 logoImage={`/images/assets/${asset.asset.symbol}.svg`}
                 quietZone={0}
-                logoPadding={5}
+                logoPadding={2}
                 eyeRadius={30}
                 size={200}
                 id={`qrcode_${asset.asset.symbol}`}
@@ -101,10 +107,12 @@ export default function ReceivePage() {
         <PopoverTrigger>
           <Button
             color="primary"
-            className="w-[200px] mt-6"
+            className="w-[200px] h-[50px] rounded-full mt-6"
             onClick={() => navigator.clipboard.writeText(assets[activeSlideIndex].address)}
           >
-            Copy address
+            <MediumTitle as="span" className="text-white">
+              Copy address
+            </MediumTitle>
           </Button>
         </PopoverTrigger>
         <PopoverContent>Address coppied</PopoverContent>
@@ -114,10 +122,12 @@ export default function ReceivePage() {
         <Button
           color="primary"
           variant="flat"
-          className="w-[200px]"
+          className="w-[200px] h-[50px] mt-4 rounded-full"
           onClick={() => shareQrAddress(assets[activeSlideIndex].asset.symbol, assets[activeSlideIndex].address)}
         >
-          Share
+          <MediumTitle as="span" className="text-text-on-button-bold">
+            Share
+          </MediumTitle>
         </Button>
       )}
     </div>

@@ -1,21 +1,29 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { Avatar, Button } from '@nextui-org/react';
-import secureLocalStorage from 'react-secure-storage';
+import { Avatar } from '@nextui-org/react';
 
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
-import { getMnemonic, getStoreName, resetWallet } from '@common/wallet';
+import { getMnemonic, resetWallet } from '@common/wallet';
 import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
-import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText, GiftModal } from '@/components';
-import { GIFT_STORE } from '@/common/utils/constants';
+import {
+  BodyText,
+  MediumTitle,
+  AssetsList,
+  Plate,
+  Price,
+  IconButton,
+  LargeTitleText,
+  GiftModal,
+  CreatedGiftPlate,
+} from '@/components';
 
 export const DashboardMain = () => {
   const navigate = useNavigate();
@@ -23,7 +31,6 @@ export const DashboardMain = () => {
   const { subscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
   const { user, MainButton, BackButton } = useTelegram();
-  const isGiftsInfo = secureLocalStorage.getItem(getStoreName(GIFT_STORE));
 
   useEffect(() => {
     MainButton?.hide();
@@ -83,7 +90,7 @@ export const DashboardMain = () => {
             name: 'font-manrope font-black text-base text-white',
           }}
         />
-        <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
+        <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
         <IconButton iconName="settings" onClick={() => navigate(Paths.SETTINGS)} />
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
@@ -97,18 +104,9 @@ export const DashboardMain = () => {
           <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => {}} />
         </div>
       </Plate>
-      {isGiftsInfo && (
-        <Button
-          variant="light"
-          size="lg"
-          className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px] mb-2"
-          onClick={() => navigate(Paths.GIFTS)}
-        >
-          Gifts
-        </Button>
-      )}
+      <CreatedGiftPlate />
       <Plate className="flex flex-col mb-2 rounded-3xl">
-        <CaptionText>Assets</CaptionText>
+        <MediumTitle>Assets</MediumTitle>
         <AssetsList />
       </Plate>
       <GiftModal />

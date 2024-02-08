@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { HeadlineText, TitleText } from '@/components';
+import { MediumTitle, TitleText } from '@/components';
 
 export default function ResultPage() {
   const navigate = useNavigate();
@@ -29,16 +29,16 @@ export default function ResultPage() {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center ">
+    <div className="flex flex-col items-center justify-center h-screen gap-3 overflow-x-auto">
       <TitleText>
         {selectedAsset?.amount} {selectedAsset?.asset?.symbol} Sent to
       </TitleText>
-      <HeadlineText className="text-text-hint m-3 break-all" align="center">
+      <MediumTitle className="text-text-hint break-all" align="center">
         {selectedAsset?.destinationAddress}
-      </HeadlineText>
-      <HeadlineText className="text-text-hint" align="center">
+      </MediumTitle>
+      <MediumTitle className="text-text-hint" align="center">
         Your transaction has been sent to the network and will be processed in a few seconds.
-      </HeadlineText>
+      </MediumTitle>
     </div>
   );
 }
