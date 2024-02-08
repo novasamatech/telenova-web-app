@@ -8,13 +8,14 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
-import { getMnemonic, resetWallet } from '@common/wallet';
+import { getMnemonic, getStoreName, resetWallet } from '@common/wallet';
 import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
 import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText, GiftModal } from '@/components';
+import { GIFT_STORE } from '@/common/utils/constants';
 
 export const DashboardMain = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export const DashboardMain = () => {
   const { subscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
   const { user, MainButton, BackButton } = useTelegram();
-  const isGiftsInfo = secureLocalStorage.getItem('GIFT_STORE');
+  const isGiftsInfo = secureLocalStorage.getItem(getStoreName(GIFT_STORE));
 
   useEffect(() => {
     MainButton?.hide();
