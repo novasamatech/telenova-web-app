@@ -4,7 +4,6 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
-import { getStoreName } from '@/common/wallet';
 
 export default function OnboardingPage() {
   const { webApp } = useTelegram();
@@ -12,7 +11,7 @@ export default function OnboardingPage() {
   const [mnemonic, setMnenonic] = useState<string | null>(null);
 
   useEffect(() => {
-    webApp?.CloudStorage.getItem(getStoreName(MNEMONIC_STORE), (_err, value) => {
+    webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
       setMnenonic(value as string | null);
     });
 
