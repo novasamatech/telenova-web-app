@@ -14,6 +14,7 @@ export const Paths = {
   SETTINGS_CHANGE_PASSWORD: '/settings/change-password',
   SETTINGS_NEW_PASSWORD: '/settings/new-password',
   SETTINGS_PASSWORD_CONFIRMATION: '/settings/password-confirmation',
+  SETTINGS_RECOVERY: '/settings/recovery',
 
   GIFTS: '/gifts',
   GIFT_DETAILS: '/gifts/gift-details',

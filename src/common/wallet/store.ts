@@ -18,12 +18,20 @@ import { GiftWallet, Wallet } from './types';
 
 const keyring = new Keyring({ type: 'sr25519' });
 
+export const getStoreName = (key: string) => {
+  if (!window) return '';
+  const userId = window.Telegram?.WebApp.initDataUnsafe?.user?.id;
+  if (!userId) return '';
+
+  return `${userId}_${key}`;
+};
+
 function unwrapHexString(string: string): HexString {
   return u8aToHex(hexToU8a(string));
 }
 
 export const getWallet = (): Wallet | null => {
-  const publicKey = localStorage.getItem(PUBLIC_KEY_STORE);
+  const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
 
   return publicKey ? { publicKey: unwrapHexString(publicKey) } : null;
 };
@@ -38,8 +46,8 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
   const keypair = sr25519PairFromSeed(seed);
   const publicKey: HexString = u8aToHex(keypair.publicKey);
 
-  localStorage.setItem(PUBLIC_KEY_STORE, publicKey);
-  secureLocalStorage.setItem(MNEMONIC_STORE, mnemonic);
+  localStorage.setItem(getStoreName(PUBLIC_KEY_STORE), publicKey);
+  secureLocalStorage.setItem(getStoreName(MNEMONIC_STORE), mnemonic);
 
   return { publicKey };
 };
@@ -52,7 +60,7 @@ export const backupMnemonic = (mnemonic: string, password: string): void => {
 };
 
 export const getMnemonic = (): string | null => {
-  return (secureLocalStorage.getItem(MNEMONIC_STORE) as string) || null;
+  return (secureLocalStorage.getItem(getStoreName(MNEMONIC_STORE)) as string) || null;
 };
 
 /**
@@ -77,8 +85,8 @@ export const getKeyringPairFromSeed = (seed: string): KeyringPair => {
 };
 
 export const resetWallet = (clearLocal: boolean = false) => {
-  localStorage.removeItem(PUBLIC_KEY_STORE);
-  secureLocalStorage.removeItem(MNEMONIC_STORE);
+  localStorage.removeItem(getStoreName(PUBLIC_KEY_STORE));
+  secureLocalStorage.removeItem(getStoreName(MNEMONIC_STORE));
   if (!clearLocal) {
     window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
   }
@@ -86,7 +94,12 @@ export const resetWallet = (clearLocal: boolean = false) => {
 
 export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: string): string | null => {
   if (!encryptedMnemonic) return null;
-  const mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
+  let mnemonic;
+  try {
+    mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
+  } catch {
+    return null;
+  }
 
   return mnemonic || null;
 };

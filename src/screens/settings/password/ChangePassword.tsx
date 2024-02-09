@@ -1,4 +1,3 @@
-'use client';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@nextui-org/react';
@@ -12,7 +11,7 @@ import { MNEMONIC_STORE } from '@/common/utils/constants';
 
 export default function ChangePasswordPage() {
   const { BackButton, webApp } = useTelegram();
-  const { mainButton, addMainButton, reset } = useMainButton();
+  const { mainButton, addMainButton, reset, hideMainButton } = useMainButton();
 
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -27,18 +26,20 @@ export default function ChangePasswordPage() {
 
     return () => {
       BackButton?.offClick(callback);
-      reset();
+      hideMainButton();
     };
   }, []);
 
   useEffect(() => {
     const callback = () => {
-      mainButton.showProgress();
+      if (password.length < 8) {
+        setIsPasswordValid(false);
 
+        return;
+      }
       webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
         const decryptedMnemonic = initializeWalletFromCloud(password, value);
         setIsPasswordValid(Boolean(decryptedMnemonic));
-        mainButton.hideProgress();
 
         if (decryptedMnemonic) {
           navigate(Paths.SETTINGS_NEW_PASSWORD);
@@ -46,7 +47,7 @@ export default function ChangePasswordPage() {
       });
     };
 
-    if (password.length >= 8) {
+    if (password.length >= 1) {
       mainButton.enable();
       addMainButton(callback);
     } else {

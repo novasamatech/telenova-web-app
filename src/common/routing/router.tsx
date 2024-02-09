@@ -9,6 +9,7 @@ import {
   ChangePasswordPage,
   NewPasswordPage,
   PasswordConfirmationPage,
+  RecoveryPage,
 } from '@/screens/settings';
 import { GiftPage, GiftDetailsPage } from '@/screens/gifts/';
 import {
@@ -61,6 +62,10 @@ export const routesConfig: RouteObject[] = [
   {
     path: Paths.SETTINGS_PASSWORD_CONFIRMATION,
     element: <PasswordConfirmationPage />,
+  },
+  {
+    path: Paths.SETTINGS_RECOVERY,
+    element: <RecoveryPage />,
   },
   {
     path: Paths.GIFTS,

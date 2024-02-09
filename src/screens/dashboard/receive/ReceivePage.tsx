@@ -1,4 +1,3 @@
-'use client';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
