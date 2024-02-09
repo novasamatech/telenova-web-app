@@ -16,6 +16,7 @@ import {
   CaptionText,
   TruncateAddress,
 } from '@/components';
+import { formatBalance } from '@/common/utils/balance';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { TrasferAsset } from '@/common/types';
@@ -56,6 +57,7 @@ export default function ConfirmationPage() {
   }, [selectedAsset]);
 
   const symbol = selectedAsset?.asset?.symbol;
+  const fee = formatBalance((selectedAsset?.fee as number).toString(), selectedAsset?.asset?.precision).formattedValue;
   const details = [
     {
       title: 'Recipients address',
@@ -63,11 +65,11 @@ export default function ConfirmationPage() {
     },
     {
       title: 'Fee',
-      value: `${selectedAsset?.fee} ${symbol}`,
+      value: `${fee} ${symbol}`,
     },
     {
       title: 'Total amount',
-      value: `${(Number(selectedAsset?.amount) + (selectedAsset?.fee as number)).toFixed(5)} ${symbol}`,
+      value: `${(Number(selectedAsset?.amount) + +fee).toFixed(5)} ${symbol}`,
     },
     {
       title: 'Network',

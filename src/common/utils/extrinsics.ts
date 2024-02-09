@@ -1,44 +1,76 @@
 import { decodeAddress } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { Balance } from '@polkadot/types/interfaces';
 
 import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
+import { formatAmount } from './balance';
 import { Address, ChainId, TrasferAsset } from '../types';
 import { FAKE_ACCOUNT_ID } from './constants';
-import { Balance } from '@polkadot/types/interfaces';
-import { formatAmount, formatBalance } from './balance';
 
-export async function handleSend(
+const transferExtrinsic = async (
   submitExtrinsic: SubmitExtrinsic,
-  { destinationAddress, chainId, amount, transferAll, asset, fee }: TrasferAsset,
-  giftTransfer?: string,
-) {
-  const decodedAddress = decodeAddress(destinationAddress || giftTransfer);
-  const transferAmount = giftTransfer ? (+amount! + fee!).toString() : amount!;
+  destinationAddress: string,
+  chainId: ChainId,
+  transferAmmount: string,
+  transferAll: boolean,
+) => {
+  const address = decodeAddress(destinationAddress);
 
   return await submitExtrinsic(chainId, (builder) => {
     const transferFunction = transferAll
-      ? builder.api.tx.balances.transferAll(decodedAddress, false)
-      : builder.api.tx.balances.transferKeepAlive(decodedAddress, formatAmount(transferAmount, asset.precision));
+      ? builder.api.tx.balances.transferAll(address, false)
+      : builder.api.tx.balances.transferKeepAlive(address, transferAmmount);
 
     builder.addCall(transferFunction);
   }).then((hash) => {
     console.log('Success, Hash:', hash?.toString());
   });
+};
+
+export async function handleSend(
+  submitExtrinsic: SubmitExtrinsic,
+  { destinationAddress, chainId, amount, transferAll, asset }: TrasferAsset,
+) {
+  const transferAmmount = formatAmount(amount as string, asset?.precision as number);
+
+  return await transferExtrinsic(
+    submitExtrinsic,
+    destinationAddress as string,
+    chainId,
+    transferAmmount,
+    transferAll as boolean,
+  );
+}
+
+export async function handleSendGift(
+  submitExtrinsic: SubmitExtrinsic,
+  { chainId, amount, transferAll, asset, fee }: TrasferAsset,
+  giftTransferAddress: string,
+) {
+  const transferAmmount = formatAmount(amount as string, asset?.precision as number);
+  const giftAmount = (+transferAmmount + (fee as number) / 2).toString();
+
+  return await transferExtrinsic(
+    submitExtrinsic,
+    giftTransferAddress as string,
+    chainId,
+    giftAmount,
+    transferAll as boolean,
+  );
 }
 
 export async function handleFee(
   estimateFee: EstimateFee,
   chainId: ChainId,
-  precision: number,
+  amount: string,
   isGift?: boolean,
 ): Promise<number> {
   return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
-    builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(FAKE_ACCOUNT_ID), false)),
+    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(FAKE_ACCOUNT_ID), amount)),
   ).then((fee: Balance) => {
     const finalFee = isGift ? Number(fee) * 2 : fee;
-    const { formattedValue } = formatBalance(finalFee.toString(), precision);
 
-    return Number(formattedValue);
+    return Number(finalFee);
   });
 }
 
