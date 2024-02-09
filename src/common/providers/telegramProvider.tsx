@@ -19,6 +19,9 @@ export const TelegramProvider = ({ children }: PropsWithChildren) => {
     if (app) {
       app.ready();
       setWebApp(app);
+      app.setHeaderColor('#f2f2f7');
+      app.enableClosingConfirmation();
+      app.expand();
     }
   }, []);
 

@@ -72,6 +72,7 @@ export default function AddressPage() {
             'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
           ],
         }}
+        className="font-manrope"
         value={address}
         onValueChange={handleChange}
         onClear={() => setAddress('')}

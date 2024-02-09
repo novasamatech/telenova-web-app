@@ -27,7 +27,7 @@ export const OnboardingStartPage = () => {
   }, []);
 
   const headerText = startParam
-    ? `Hey ${user?.first_name || 'friend'} <br /> You have received a gift`
+    ? `Hey ${user?.first_name || 'friend'}!\nYou have received a gift!`
     : 'Welcome to Telenova!';
 
   const welcomeText = startParam
@@ -37,7 +37,9 @@ export const OnboardingStartPage = () => {
   return (
     <>
       <Icon name="welcome" size={128} />
-      <TitleText className="mt-6 mb-3">{headerText}</TitleText>
+      <pre>
+        <TitleText className="mt-6 mb-3">{headerText}</TitleText>
+      </pre>
       <BodyText className="text-text-hint mb-8">{welcomeText}</BodyText>
       <div className="flex gap-4 mb-6">
         <Icon name="DOT" size={48} />

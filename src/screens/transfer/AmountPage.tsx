@@ -5,16 +5,7 @@ import { Button, CircularProgress, Input } from '@nextui-org/react';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import {
-  HeadlineText,
-  Icon,
-  Identicon,
-  MediumTitle,
-  LargeTitleText,
-  BodyText,
-  TokenPrice,
-  TruncateAddress,
-} from '@/components';
+import { HeadlineText, Icon, Identicon, LargeTitleText, BodyText, TokenPrice, TruncateAddress } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { getTransferDetails } from '@/common/utils/balance';
@@ -69,7 +60,9 @@ export default function AmountPage() {
     if (!isAmountValid || !Number(amount)) {
       MainButton?.disable();
 
-      return;
+      return () => {
+        MainButton?.setText('Continue');
+      };
     }
 
     const callback = () => {
@@ -119,10 +112,10 @@ export default function AmountPage() {
           </>
         )}
         <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
-          <MediumTitle className="text-text-link">
+          <HeadlineText className="text-text-link">
             Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
             {selectedAsset?.asset?.symbol}
-          </MediumTitle>
+          </HeadlineText>
         </Button>
       </div>
       <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">
@@ -131,7 +124,7 @@ export default function AmountPage() {
         <Input
           fullWidth={false}
           variant="underlined"
-          className="mt-[-10px]"
+          className="mt-[-10px] font-manrope"
           classNames={{ input: ['text-right !text-large-title max-w-[160px]'] }}
           value={amount}
           isInvalid={!isAmountValid}

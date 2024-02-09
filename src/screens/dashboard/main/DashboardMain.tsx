@@ -98,10 +98,9 @@ export const DashboardMain = () => {
         <LargeTitleText>
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
-        <div className="grid grid-cols-3 w-full justify-items-center mt-4">
+        <div className="grid grid-cols-2 w-full justify-items-center mt-4">
           <IconButton text="Send" iconName="send" color="primary" onClick={() => navigate(Paths.TRANSFER)} />
           <IconButton text="Receive" iconName="receive" color="success" onClick={() => navigate(Paths.RECEIVE)} />
-          <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => {}} />
         </div>
       </Plate>
       <CreatedGiftPlate />

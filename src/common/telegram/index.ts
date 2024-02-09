@@ -23,4 +23,5 @@ export const navigateTranferById = (webApp: WebApp, link: TgLink): void => {
   webApp.openTelegramLink(
     `http://t.me/share/url?url=${encodeURIComponent(link.url)}&text=${encodeURIComponent(link.text)}`,
   );
+  webApp.close();
 };
