@@ -42,6 +42,7 @@ export default function AmountPage() {
     (async () => {
       const { max, fee, formattedDeposit } = await getTransferDetails(
         selectedAsset as TrasferAsset,
+        amount,
         estimateFee,
         getExistentialDeposit,
       );
@@ -85,12 +86,22 @@ export default function AmountPage() {
     setIsAmountValid(Boolean(maxAmountToSend) && validateGift);
   };
 
-  const handleChange = (value: string) => {
+  const handleChange = async (value: string) => {
     const formattedValue = value.trim().replace(/,/g, '.');
     setTransferAll(false);
     const validateGift = selectedAsset?.isGift ? !!deposit && +formattedValue >= deposit : true;
 
-    setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +maxAmountToSend && validateGift);
+    const { max, fee, formattedDeposit } = await getTransferDetails(
+      selectedAsset as TrasferAsset,
+      formattedValue,
+      estimateFee,
+      getExistentialDeposit,
+    );
+
+    setDeposit(formattedDeposit);
+    setMaxAmountToSend(max);
+    setSelectedAsset((prev) => ({ ...prev!, fee }));
+    setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +max && validateGift);
     setAmount(formattedValue);
   };
 
