@@ -2,28 +2,28 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useTelegram } from '@common/providers/telegramProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
 import { MediumTitle, TitleText } from '@/components';
 
 export default function ResultPage() {
   const navigate = useNavigate();
-  const { BackButton, MainButton } = useTelegram();
+  const { BackButton } = useTelegram();
+  const { hideMainButton, addMainButton, mainButton } = useMainButton();
+
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
   useEffect(() => {
-    MainButton?.setText('Done');
     BackButton?.hide();
-    MainButton?.show();
+    mainButton.show();
     const callback = () => {
       navigate(Paths.DASHBOARD, { replace: true });
     };
-    MainButton?.onClick(callback);
+    addMainButton(callback, 'Done');
 
     return () => {
-      MainButton?.hide();
-      MainButton?.setText('Continue');
-      MainButton?.offClick(callback);
+      hideMainButton();
       setSelectedAsset(null);
     };
   }, []);

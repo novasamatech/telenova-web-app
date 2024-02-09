@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { validateAddress } from '@/common/utils/address';
 import { Icon, HelpText, BodyText, Identicon } from '@/components';
@@ -10,7 +11,9 @@ import { Paths } from '@/common/routing';
 
 export default function AddressPage() {
   const navigate = useNavigate();
-  const { BackButton, MainButton, webApp } = useTelegram();
+  const { BackButton, webApp } = useTelegram();
+  const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
+
   const { setSelectedAsset } = useGlobalContext();
   const [address, setAddress] = useState('');
   const [isAddressValid, setIsAddressValid] = useState(true);
@@ -35,15 +38,14 @@ export default function AddressPage() {
     };
 
     if (address.length) {
-      MainButton?.show();
-      isAddressValid ? MainButton?.enable() : MainButton?.disable();
-      MainButton?.onClick(callback);
+      isAddressValid ? mainButton.enable() : mainButton.disable();
+      addMainButton(callback);
     } else {
-      MainButton?.hide();
+      hideMainButton();
     }
 
     return () => {
-      MainButton?.offClick(callback);
+      reset();
     };
   }, [address, isAddressValid]);
 

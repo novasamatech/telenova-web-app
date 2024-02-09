@@ -4,6 +4,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { Avatar } from '@nextui-org/react';
 
 import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
@@ -30,10 +31,11 @@ export const DashboardMain = () => {
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
-  const { user, MainButton, BackButton } = useTelegram();
+  const { user, BackButton } = useTelegram();
+  const { hideMainButton } = useMainButton();
 
   useEffect(() => {
-    MainButton?.hide();
+    hideMainButton();
     BackButton?.hide();
     if (!publicKey) {
       return;

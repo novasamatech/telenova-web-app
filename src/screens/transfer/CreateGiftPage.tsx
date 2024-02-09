@@ -4,6 +4,7 @@ import { WebApp } from '@twa-dev/types';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { HeadlineText, GiftDetails } from '@/components';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { ChainId, TrasferAsset } from '@/common/types';
@@ -15,7 +16,9 @@ import { handleSend } from '@/common/utils/extrinsics';
 
 export default function CreateGiftPage() {
   const { submitExtrinsic } = useExtrinsicProvider();
-  const { BackButton, MainButton, webApp } = useTelegram();
+  const { BackButton, webApp } = useTelegram();
+  const { hideMainButton } = useMainButton();
+
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
@@ -24,7 +27,7 @@ export default function CreateGiftPage() {
     if (!selectedAsset) return;
 
     BackButton?.hide();
-    MainButton?.hide();
+    hideMainButton();
 
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
     (async function () {

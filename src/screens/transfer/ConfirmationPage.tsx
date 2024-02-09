@@ -6,6 +6,7 @@ import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
 import { handleSend } from '@/common/utils/extrinsics';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import {
   HeadlineText,
   Icon,
@@ -23,15 +24,15 @@ import { TrasferAsset } from '@/common/types';
 export default function ConfirmationPage() {
   const navigate = useNavigate();
   const { submitExtrinsic } = useExtrinsicProvider();
-
-  const { BackButton, MainButton } = useTelegram();
+  const { reset, addMainButton, mainButton } = useMainButton();
+  const { BackButton } = useTelegram();
   const { selectedAsset } = useGlobalContext();
 
   useEffect(() => {
     if (!selectedAsset) return;
 
     const mainCallback = async () => {
-      MainButton?.showProgress(false);
+      mainButton.showProgress(false);
       await handleSend(submitExtrinsic, selectedAsset as TrasferAsset).then(() => {
         navigate(Paths.TRANSFER_RESULT);
       });
@@ -43,15 +44,13 @@ export default function ConfirmationPage() {
     BackButton?.show();
     BackButton?.onClick(backCallback);
 
-    MainButton?.show();
-    MainButton?.setText('Confirm');
-    MainButton?.onClick(mainCallback);
+    mainButton.show();
+    addMainButton(mainCallback, 'Confirm');
 
     return () => {
-      MainButton?.hideProgress();
-      MainButton?.offClick(mainCallback);
+      mainButton.hideProgress();
+      reset();
       BackButton?.offClick(backCallback);
-      MainButton?.setText('Continue');
     };
   }, [selectedAsset]);
 

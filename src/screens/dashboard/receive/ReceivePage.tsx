@@ -6,6 +6,7 @@ import Carousel from 'react-simply-carousel';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { shareQrAddress } from '@/common/utils/address';
 import { BodyText, HeadlineText, MediumTitle, Plate, TitleText } from '@/components';
 import { Paths } from '@/common/routing';
@@ -20,13 +21,14 @@ const dotStyle = {
 
 export default function ReceivePage() {
   const navigate = useNavigate();
-  const { BackButton, MainButton } = useTelegram();
+  const { BackButton } = useTelegram();
   const { assets } = useGlobalContext();
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const { hideMainButton } = useMainButton();
 
   useEffect(() => {
     BackButton?.show();
-    MainButton?.hide();
+    hideMainButton();
 
     const callback = async () => {
       navigate(Paths.DASHBOARD);

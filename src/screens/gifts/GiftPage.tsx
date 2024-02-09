@@ -7,11 +7,14 @@ import { BodyText, GiftPlate, Shimmering, TitleText } from '@/components';
 import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGifts } from '@/common/utils/gift';
 import { Gift } from '@/common/types';
+import { useMainButton } from '@/common/telegram/useMainButton';
 
 // TODO improve loading state for unclaimed and claimed
 export default function GiftPage() {
   const navigate = useNavigate();
-  const { BackButton, MainButton } = useTelegram();
+  const { BackButton } = useTelegram();
+  const { hideMainButton } = useMainButton();
+
   const { getGiftsState } = useBalances();
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
   const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
@@ -19,7 +22,7 @@ export default function GiftPage() {
 
   useEffect(() => {
     BackButton?.show();
-    MainButton?.hide();
+    hideMainButton();
 
     const callback = async () => {
       navigate(Paths.DASHBOARD);

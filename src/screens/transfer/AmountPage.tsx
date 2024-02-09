@@ -4,6 +4,7 @@ import { Button, CircularProgress, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { Paths } from '@/common/routing';
 import { HeadlineText, Icon, Identicon, LargeTitleText, BodyText, TokenPrice, TruncateAddress } from '@/components';
 import { IconNames } from '@/components/Icon/types';
@@ -14,7 +15,9 @@ import { TrasferAsset } from '@/common/types';
 export default function AmountPage() {
   const navigate = useNavigate();
   const { estimateFee, getExistentialDeposit } = useExtrinsicProvider();
-  const { BackButton, MainButton } = useTelegram();
+  const { BackButton } = useTelegram();
+  const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
+
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
   const [amount, setAmount] = useState<string>('');
@@ -24,10 +27,10 @@ export default function AmountPage() {
   const [deposit, setDeposit] = useState(0);
 
   useEffect(() => {
-    MainButton?.setText(selectedAsset?.isGift ? 'Create Gift' : 'Continue');
+    mainButton.setText(selectedAsset?.isGift ? 'Create Gift' : 'Continue');
     BackButton?.show();
-    MainButton?.show();
-    MainButton?.disable();
+    mainButton.show();
+    mainButton.disable();
 
     const callback = () => {
       navigate(selectedAsset?.isGift ? Paths.TRANSFER_SELECT_TOKEN : Paths.TRANSFER_ADDRESS);
@@ -50,30 +53,27 @@ export default function AmountPage() {
     })();
 
     return () => {
-      MainButton?.setText('Continue');
       BackButton?.offClick(callback);
-      MainButton?.hide();
+      hideMainButton();
     };
-  }, [BackButton, MainButton]);
+  }, [BackButton]);
 
   useEffect(() => {
     if (!isAmountValid || !Number(amount)) {
-      MainButton?.disable();
+      mainButton.disable();
 
-      return () => {
-        MainButton?.setText('Continue');
-      };
+      return;
     }
 
     const callback = () => {
       setSelectedAsset((prev) => ({ ...prev!, transferAll, amount }));
       navigate(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
     };
-    MainButton?.enable();
-    MainButton?.onClick(callback);
+    mainButton.enable();
+    addMainButton(callback);
 
     return () => {
-      MainButton?.offClick(callback);
+      reset();
     };
   }, [amount, isAmountValid, maxAmountToSend]);
 
