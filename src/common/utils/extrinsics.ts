@@ -59,9 +59,14 @@ export async function handleSendGift(
   );
 }
 
-export async function handleFee(estimateFee: EstimateFee, chainId: ChainId, isGift?: boolean): Promise<number> {
+export async function handleFee(
+  estimateFee: EstimateFee,
+  chainId: ChainId,
+  amount: string,
+  isGift?: boolean,
+): Promise<number> {
   return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
-    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(FAKE_ACCOUNT_ID), '100000000000')),
+    builder.addCall(builder.api.tx.balances.transferKeepAlive(decodeAddress(FAKE_ACCOUNT_ID), amount)),
   ).then((fee: Balance) => {
     const finalFee = isGift ? Number(fee) * 2 : fee;
 

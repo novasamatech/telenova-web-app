@@ -186,11 +186,12 @@ export const getTotalBalance = (assets: AssetAccount[], assetsPrices: AssetPrice
 
 export async function getTransferDetails(
   selectedAsset: TrasferAsset,
+  amount: string,
   estimateFee: EstimateFee,
   getExistentialDeposit: GetExistentialDeposit,
 ) {
-  const fee =
-    selectedAsset?.fee || (await handleFee(estimateFee, selectedAsset.chainId as ChainId, selectedAsset?.isGift));
+  const transferAmmount = formatAmount(amount || '0', selectedAsset.asset?.precision as number);
+  const fee = await handleFee(estimateFee, selectedAsset.chainId as ChainId, transferAmmount, selectedAsset?.isGift);
   const formattedFee = Number(formatBalance(fee.toString(), selectedAsset.asset?.precision).formattedValue);
 
   const formattedBalance = Number(
