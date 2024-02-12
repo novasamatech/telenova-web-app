@@ -21,6 +21,7 @@ export default {
   'border-icon-accent-tertiary': 'var(--violet-violet400)',
   'border-icon-accent-secondary': 'var(--green-green400)',
   'border-icon-accent-primary': 'var(--blue-blue400)',
+  'border-neutral': '#E0E4F5',
 
   'bg-primary': 'var(--gray-gray50)',
   'bg-input': 'var(--gray-gray100)',

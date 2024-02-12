@@ -36,7 +36,7 @@ export default function GiftDetailsPage() {
 
   // TODO change image
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center justify-center gap-3 h-[95vh]">
       <Image src="/images/gift.svg" alt="gift" width={300} height={300} className="mb-3" />
       <GiftDetails link={link} webApp={webApp as WebApp} />
     </div>

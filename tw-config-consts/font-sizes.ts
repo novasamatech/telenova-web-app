@@ -8,7 +8,7 @@ const fontSizes: Required<Config>['theme']['fontSize'] = {
 
   // SEMI BOLD
   'medium-title': ['1rem', { lineHeight: '1.5rem', letterSpacing: '-0.2px', fontWeight: 600 }],
-  footnote: ['0.8125rem', { lineHeight: '1.25rem', letterSpacing: '-0.01em', fontWeight: 600 }],
+  label: ['1.0625rem', { lineHeight: 'normal', letterSpacing: '0.37px', fontWeight: 600 }],
 
   // MEDIUM
   headline: ['1rem', { lineHeight: '1.5rem', letterSpacing: '-0.027em', fontWeight: 500 }],

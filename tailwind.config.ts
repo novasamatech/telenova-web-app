@@ -21,6 +21,9 @@ export default {
       fontFamily: {
         manrope: ['var(--font-manrope)'],
       },
+      boxShadow: {
+        button: '0px 2px 3.7px 0px #E2E4F1',
+      },
       fontSize: fontSizes,
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

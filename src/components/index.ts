@@ -4,7 +4,6 @@ import {
   MediumTitle,
   HeadlineText,
   BodyText,
-  FootnoteText,
   LabelText,
   HelpText,
   TextBase,
@@ -27,7 +26,6 @@ import RecoveryPhrase from './RecoveryPhrase/RecoveryPhrase';
 
 export {
   TextBase,
-  FootnoteText,
   BodyText,
   TitleText,
   MediumTitle,

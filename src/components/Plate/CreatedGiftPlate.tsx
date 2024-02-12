@@ -10,8 +10,8 @@ const CreatedGiftPlate = () => {
   if (!isGiftsInfo) return;
 
   return (
-    <Plate className="w-full rounded-xl mb-2 active:bg-bg-item-pressed">
-      <Link to={Paths.GIFTS} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4 min-h-[48px]">
+    <Plate className="w-full h-[90px] rounded-3xl mt-4 active:bg-bg-item-pressed">
+      <Link to={Paths.GIFTS} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
         <Icon name="present" className="w-[60px] h-[60px]" />
         <div className="grid">
           <TitleText align="left">Created Gifts</TitleText>

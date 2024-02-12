@@ -51,7 +51,7 @@ export default function CreateWalletPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-[95vh]">
       <Player
         src="/gifs/create-wallet.json"
         keepLastFrame

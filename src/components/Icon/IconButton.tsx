@@ -1,5 +1,5 @@
 import { Button } from '@nextui-org/react';
-import { FootnoteText, Icon } from '@/components';
+import { Icon, LabelText } from '@/components';
 import { IconNames } from './types';
 
 type Props = {
@@ -8,17 +8,21 @@ type Props = {
   className?: string;
   alt?: string;
   text?: string;
-  color?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
   onClick: () => void;
 };
 
-const IconButton = ({ iconName, onClick, size = 40, className, text = '', color }: Props) => {
+const IconButton = ({ iconName, onClick, size = 40, className, text = '' }: Props) => {
   return (
-    <div className="text-center grid gap-2 justify-items-center">
-      <Button radius="full" isIconOnly color={color} variant="shadow" className="bg-none" onClick={onClick}>
+    <div className="grid">
+      <Button
+        radius="full"
+        variant="shadow"
+        className="bg-white h-full w-full p-1 gap-4 justify-start border border-border-neutral shadow-button"
+        onClick={onClick}
+      >
         <Icon name={iconName} size={size} className={className} alt={text} />
+        <LabelText as="span">{text}</LabelText>
       </Button>
-      <FootnoteText as="span">{text}</FootnoteText>
     </div>
   );
 };
