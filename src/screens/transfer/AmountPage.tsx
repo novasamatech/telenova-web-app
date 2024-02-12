@@ -4,17 +4,9 @@ import { Button, CircularProgress, Input } from '@nextui-org/react';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { Paths } from '@/common/routing';
-import {
-  HeadlineText,
-  Icon,
-  Identicon,
-  CaptionText,
-  LargeTitleText,
-  BodyText,
-  TokenPrice,
-  TruncateAddress,
-} from '@/components';
+import { HeadlineText, Icon, Identicon, LargeTitleText, BodyText, TokenPrice, TruncateAddress } from '@/components';
 import { IconNames } from '@/components/Icon/types';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { getTransferDetails } from '@/common/utils/balance';
@@ -23,7 +15,9 @@ import { TrasferAsset } from '@/common/types';
 export default function AmountPage() {
   const navigate = useNavigate();
   const { estimateFee, getExistentialDeposit } = useExtrinsicProvider();
-  const { BackButton, MainButton } = useTelegram();
+  const { BackButton } = useTelegram();
+  const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
+
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
   const [amount, setAmount] = useState<string>('');
@@ -33,10 +27,10 @@ export default function AmountPage() {
   const [deposit, setDeposit] = useState(0);
 
   useEffect(() => {
-    MainButton?.setText(selectedAsset?.isGift ? 'Create Gift' : 'Continue');
+    mainButton.setText(selectedAsset?.isGift ? 'Create Gift' : 'Continue');
     BackButton?.show();
-    MainButton?.show();
-    MainButton?.disable();
+    mainButton.show();
+    mainButton.disable();
 
     const callback = () => {
       navigate(selectedAsset?.isGift ? Paths.TRANSFER_SELECT_TOKEN : Paths.TRANSFER_ADDRESS);
@@ -60,15 +54,14 @@ export default function AmountPage() {
     })();
 
     return () => {
-      MainButton?.setText('Continue');
       BackButton?.offClick(callback);
-      MainButton?.hide();
+      hideMainButton();
     };
-  }, [BackButton, MainButton]);
+  }, [BackButton]);
 
   useEffect(() => {
     if (!isAmountValid || !Number(amount)) {
-      MainButton?.disable();
+      mainButton.disable();
 
       return;
     }
@@ -77,11 +70,11 @@ export default function AmountPage() {
       setSelectedAsset((prev) => ({ ...prev!, transferAll, amount }));
       navigate(selectedAsset?.isGift ? Paths.TRANSFER_CREATE_GIFT : Paths.TRANSFER_CONFIRMATION);
     };
-    MainButton?.enable();
-    MainButton?.onClick(callback);
+    mainButton.enable();
+    addMainButton(callback);
 
     return () => {
-      MainButton?.offClick(callback);
+      reset();
     };
   }, [amount, isAmountValid, maxAmountToSend]);
 
@@ -129,20 +122,20 @@ export default function AmountPage() {
             </HeadlineText>
           </>
         )}
-        <Button variant="light" size="md" className="p-0" onClick={handleMaxSend}>
-          <CaptionText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block" />}{' '}
+        <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
+          <HeadlineText className="text-text-link">
+            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
             {selectedAsset?.asset?.symbol}
-          </CaptionText>
+          </HeadlineText>
         </Button>
       </div>
-      <div className="my-6 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px]">
+      <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">
         <Icon name={selectedAsset?.asset?.symbol as IconNames} className="w-10 h-10" />
         <LargeTitleText>{selectedAsset?.asset?.symbol}</LargeTitleText>
         <Input
           fullWidth={false}
           variant="underlined"
-          className="mt-[-10px]"
+          className="mt-[-10px] font-manrope"
           classNames={{ input: ['text-right !text-large-title max-w-[160px]'] }}
           value={amount}
           isInvalid={!isAmountValid}

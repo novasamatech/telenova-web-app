@@ -4,6 +4,7 @@ import { WebApp } from '@twa-dev/types';
 import Image from 'next/image';
 
 import { useTelegram } from '@common/providers/telegramProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { Paths } from '@/common/routing';
 import { createTgLink } from '@/common/telegram';
 import GiftDetails from '@/components/GiftDetails/GiftDetails';
@@ -12,12 +13,14 @@ import { TgLink } from '@/common/telegram/types';
 export default function GiftDetailsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { BackButton, MainButton, webApp } = useTelegram();
+  const { BackButton, webApp } = useTelegram();
+  const { hideMainButton } = useMainButton();
+
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
     BackButton?.show();
-    MainButton?.hide();
+    hideMainButton();
 
     const callback = async () => {
       navigate(Paths.GIFTS);

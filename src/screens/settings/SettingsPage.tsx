@@ -22,48 +22,70 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Plate className="w-full p-0">
-        <LinkCard
-          text="Manage Backup"
-          iconName="backup"
-          iconClassName="w-6 h-6"
-          showArrow
-          href={Paths.SETTINGS_BACKUP}
-        />
-      </Plate>
-      <Plate className="w-full p-0 bg-bg-button-disabled">
+      <LinkCard text="Manage Backup" iconName="backup" iconClassName="w-6 h-6" showArrow href={Paths.SETTINGS_BACKUP} />
+      <Plate className="w-full p-0 opacity-50">
         <LinkCard
           text="Wallet Language"
           iconName="language"
           iconClassName="w-6 h-6"
           valueText="English"
           className="grid-flow-col cursor-default"
+          wrapperClassName="hover:bg-unset active:bg-unset"
           showArrow
         />
-        <Divider className="m-auto w-[85%]" />
+        <Divider className="h-[0.5px] ml-14 w-auto" />
         <LinkCard
           text="Default Currency"
           iconName="currency"
           iconClassName="w-6 h-6"
           className="grid-flow-col cursor-default"
+          wrapperClassName="hover:bg-unset active:bg-unset"
           valueText="USD"
           showArrow
         />
       </Plate>
+      <LinkCard text="Migrate to Nova Wallet" iconName="novaWallet" iconClassName="w-6 h-6" />
       <Plate className="w-full p-0">
-        <LinkCard text="Migrate to Nova Wallet" iconName="novaWallet" iconClassName="w-6 h-6" />
+        <LinkCard
+          text="Telegram Community"
+          iconName="telegram"
+          iconClassName="w-6 h-6"
+          wrapperClassName="rounded-b-none"
+          showArrow
+        />
+        <Divider className="h-[0.5px] ml-14 w-auto" />
+        <LinkCard
+          text="X (Twitter)"
+          iconName="twitter"
+          iconClassName="w-6 h-6"
+          wrapperClassName="rounded-none"
+          showArrow
+        />
+        <Divider className="h-[0.5px] ml-14 w-auto" />
+        <LinkCard
+          text="YouTube"
+          iconName="youtube"
+          iconClassName="w-6 h-6"
+          wrapperClassName="rounded-t-none"
+          showArrow
+        />
       </Plate>
       <Plate className="w-full p-0">
-        <LinkCard text="Telegram Community" iconName="telegram" iconClassName="w-6 h-6" showArrow />
-        <Divider className="m-auto w-[85%]" />
-        <LinkCard text="X (Twitter)" iconName="twitter" iconClassName="w-6 h-6" showArrow />
-        <Divider className="m-auto w-[85%]" />
-        <LinkCard text="YouTube" iconName="youtube" iconClassName="w-6 h-6" showArrow />
-      </Plate>
-      <Plate className="w-full p-0">
-        <LinkCard text="Legal Information" className="grid-cols-[1fr,auto]" textClassName="text-text-link" showArrow />
-        <Divider className="m-auto w-[85%]" />
-        <LinkCard text="User Agreement" className="grid-cols-[1fr,auto]" textClassName="text-text-link" showArrow />
+        <LinkCard
+          text="Legal Information"
+          className="grid-cols-[1fr,auto]"
+          textClassName="text-text-link"
+          wrapperClassName="rounded-b-none"
+          showArrow
+        />
+        <Divider className="h-[0.5px] ml-4 w-auto" />
+        <LinkCard
+          text="User Agreement"
+          className="grid-cols-[1fr,auto]"
+          textClassName="text-text-link"
+          wrapperClassName="rounded-t-none"
+          showArrow
+        />
       </Plate>
     </div>
   );

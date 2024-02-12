@@ -10,7 +10,7 @@ import { claimGift } from '@/common/utils/extrinsics';
 import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGiftInfo } from '@/common/utils/gift';
 import { PublicKey } from '@/common/types';
-import { CaptionText } from '@/components/Typography';
+import { MediumTitle } from '@/components/Typography';
 import Shimmering from '@/components/Shimmering/Shimmering';
 
 enum GIFT_STATUS {
@@ -93,7 +93,7 @@ export default function GiftModal() {
             <>
               <ModalBody>
                 <Rive src="/gifs/new_file.riv" className="w-[210px] h-[170px] m-auto" />
-                <CaptionText align="center">{GIFTS[giftStatus].text} </CaptionText>
+                <MediumTitle align="center">{GIFTS[giftStatus].text} </MediumTitle>
               </ModalBody>
               <ModalFooter className="justify-center">
                 <Button color="primary" className="w-[250px]" onPress={handleGiftClaim}>

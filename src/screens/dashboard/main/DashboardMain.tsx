@@ -1,32 +1,41 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { Avatar, Button } from '@nextui-org/react';
-import secureLocalStorage from 'react-secure-storage';
+import { Avatar } from '@nextui-org/react';
 
 import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
-import { getMnemonic, getStoreName, resetWallet } from '@common/wallet';
+import { getMnemonic, resetWallet } from '@common/wallet';
 import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
-import { BodyText, CaptionText, AssetsList, Plate, Price, IconButton, LargeTitleText, GiftModal } from '@/components';
-import { GIFT_STORE } from '@/common/utils/constants';
+import {
+  BodyText,
+  MediumTitle,
+  AssetsList,
+  Plate,
+  Price,
+  IconButton,
+  LargeTitleText,
+  GiftModal,
+  CreatedGiftPlate,
+} from '@/components';
 
 export const DashboardMain = () => {
   const navigate = useNavigate();
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
-  const { user, MainButton, BackButton } = useTelegram();
-  const isGiftsInfo = secureLocalStorage.getItem(getStoreName(GIFT_STORE));
+  const { user, BackButton } = useTelegram();
+  const { hideMainButton } = useMainButton();
 
   useEffect(() => {
-    MainButton?.hide();
+    hideMainButton();
     BackButton?.hide();
     if (!publicKey) {
       return;
@@ -72,34 +81,33 @@ export const DashboardMain = () => {
 
   return (
     <div className="flex flex-col break-all">
-      <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6">
-        <Avatar src={user?.photo_url} className="w-10 h-10" name={user?.first_name[0]} />
-        <CaptionText className="self-center">Hello, {user?.first_name || 'friend'}</CaptionText>
+      <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6 items-center">
+        <Avatar
+          src={user?.photo_url}
+          className="w-10 h-10"
+          name={user?.first_name[0]}
+          classNames={{
+            base: 'bg-gradient-to-br from-[#FFB457] to-[#FF705B]',
+            icon: 'text-black/80',
+            name: 'font-manrope font-black text-base text-white',
+          }}
+        />
+        <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
         <IconButton iconName="settings" onClick={() => navigate(Paths.SETTINGS)} />
       </div>
       <Plate className="flex flex-col items-center mb-2 rounded-3xl">
-        <BodyText className="text-text-hint">Total Balance</BodyText>
+        <BodyText className="text-text-hint mb-1">Total Balance</BodyText>
         <LargeTitleText>
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
-        <div className="grid grid-cols-3 w-full justify-items-center mt-4">
+        <div className="grid grid-cols-2 w-full justify-items-center mt-4">
           <IconButton text="Send" iconName="send" color="primary" onClick={() => navigate(Paths.TRANSFER)} />
           <IconButton text="Receive" iconName="receive" color="success" onClick={() => navigate(Paths.RECEIVE)} />
-          <IconButton text="Buy" iconName="buy" color="secondary" onClick={() => {}} />
         </div>
       </Plate>
-      {isGiftsInfo && (
-        <Button
-          variant="light"
-          size="lg"
-          className="w-full bg-gradient-to-tr from-yellow-500 to-pink-500 text-white shadow-lg h-[50px]"
-          onClick={() => navigate(Paths.GIFTS)}
-        >
-          Gifts
-        </Button>
-      )}
-      <Plate className="flex flex-col my-2 rounded-3xl">
-        <CaptionText>Assets</CaptionText>
+      <CreatedGiftPlate />
+      <Plate className="flex flex-col mb-2 rounded-3xl">
+        <MediumTitle>Assets</MediumTitle>
         <AssetsList />
       </Plate>
       <GiftModal />

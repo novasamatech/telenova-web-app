@@ -64,19 +64,19 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
   return (
     <>
       <Avatar src={user?.photo_url} size="lg" className="w-[64px] h-[64px]" name={user?.first_name[0]} />
-      <TitleText className="m-4 px-6">Welcome back {user?.first_name || 'friend'}!</TitleText>
+      <TitleText className="m-4 px-6">Welcome back, {user?.first_name || 'friend'}!</TitleText>
       <BodyText as="span" className="text-text-hint px-6 mb-8">
-        We&apos;ve discovered a backup of your existing wallet in the cloud. To restore it just enter your password.
+        We&apos;ve found a backup of your existing Telenova wallet in the cloud. To get access to it just enter the
+        password you used when creating the wallet
       </BodyText>
       <Input
         isClearable
-        variant="flat"
-        placeholder="Enter 8-character password here"
+        placeholder="Enter Password Here"
         type="password"
         className="max-w-sm text-left"
         classNames={{
           inputWrapper: [
-            'bg-bg-input border-1',
+            'bg-bg-input border-1 shadow-none',
             'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
           ],
         }}

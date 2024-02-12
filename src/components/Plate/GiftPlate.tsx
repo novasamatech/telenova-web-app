@@ -1,4 +1,4 @@
-import { CaptionText, HelpText, Icon, Plate } from '@/components';
+import { MediumTitle, HelpText, Icon, Plate } from '@/components';
 import { Gift, GiftStatus } from '@/common/types';
 
 const GiftPlate = ({ gift }: { gift: Gift }) => {
@@ -8,9 +8,9 @@ const GiftPlate = ({ gift }: { gift: Gift }) => {
     <Plate className="mb-2 grid grid-cols-[40px,1fr,auto] items-center gap-x-4">
       <Icon name="gift" className="w-10 h-10" />
       <div>
-        <CaptionText>
+        <MediumTitle>
           {gift.balance} {gift.chainAsset?.symbol}
-        </CaptionText>
+        </MediumTitle>
         <HelpText as="p" className="text-text-hint">
           Created: {date}
         </HelpText>

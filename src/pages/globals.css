@@ -106,3 +106,36 @@ body {
 
   --pink-pink600: #ff007a;
 }
+
+@keyframes textAnimation {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-50%);
+    opacity: 0.5;
+  }
+  90% {
+    transform: translateY(-90%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.animate-text {
+  animation: textAnimation 3s linear forwards;
+}
+
+.delay-1 {
+  animation-delay: 1s;
+  animation: textAnimation 4s linear forwards;
+}
+
+.delay-2 {
+  animation: textAnimation 6s linear forwards;
+  animation-delay: 1s;
+}

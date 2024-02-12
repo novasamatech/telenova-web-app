@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConfettiExplosion from 'react-confetti-explosion';
-import { Player } from '@lottiefiles/react-lottie-player';
+import { Player, PlayerEvent } from '@lottiefiles/react-lottie-player';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { completeOnboarding } from '@common/telegram';
-import { BodyText, TitleText } from '@/components/Typography';
+import { BodyText, HeadlineText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
 
 export default function CreateWalletPage() {
@@ -34,14 +33,6 @@ export default function CreateWalletPage() {
 
       // TODO: Handle errors here and display retry page maybe
       await completeOnboarding(publicKey, webApp);
-
-      setTimeout(() => {
-        setIsLoading(false);
-        addMainButton(() => {
-          navigate(Paths.DASHBOARD);
-        }, 'Get started');
-        mainButton.hideProgress();
-      }, 2000);
     })();
 
     return () => {
@@ -49,24 +40,54 @@ export default function CreateWalletPage() {
     };
   }, []);
 
-  return isLoading ? (
-    <div className="flex flex-col justify-center items-center">
-      <Player src="/gifs/create-wallet.json" keepLastFrame autoplay className="player" />
-      <BodyText className="text-icon-on-neutral">Creating your wallet...</BodyText>
-    </div>
-  ) : (
-    <div className="flex flex-col justify-center items-center p-1">
-      <div className="bg-blue-500 rounded-full p-3 w-[114px] h-[114px]">
-        <ConfettiExplosion particleCount={250} />
-        {/* <Player src="firework" className="player" /> */}
+  const handleOnEvent = (event: PlayerEvent) => {
+    if (event === 'complete') {
+      setIsLoading(false);
+      addMainButton(() => {
+        navigate(Paths.DASHBOARD);
+      }, 'Get started');
+      mainButton.hideProgress();
+    }
+  };
+
+  return (
+    <div className="flex flex-col justify-center items-center h-screen">
+      <Player
+        src="/gifs/create-wallet.json"
+        keepLastFrame
+        autoplay
+        className="player w-[256px] h-[256px] mb-4"
+        onEvent={(event) => handleOnEvent(event)}
+      />
+      <div className="h-[150px]">
+        {isLoading ? (
+          <>
+            <div className="opacity-0 animate-text mt-5">
+              <HeadlineText className="text-text-hint" align="center">
+                Creating your wallet...
+              </HeadlineText>
+            </div>
+            <div className="mt-3 opacity-0 delay-1">
+              <HeadlineText className="text-text-hint" align="center">
+                Encrypting your wallets keys
+              </HeadlineText>
+            </div>
+            <div className="opacity-0 delay-2">
+              <HeadlineText className="text-text-hint" align="center">
+                Backing up keys in your Telegram cloud
+              </HeadlineText>
+            </div>
+          </>
+        ) : (
+          <>
+            <TitleText>Your wallet has been created!</TitleText>
+            <BodyText className="text-text-hint m-3">
+              Your Telenova wallet is now ready to use! You can now begin exploring Polkadot ecosystem assets with ease!
+            </BodyText>
+            <BodyText className="text-text-hint">Remember, do NOT share your passwords with anyone!</BodyText>
+          </>
+        )}
       </div>
-      <TitleText className="m-3">Your wallet has been created!</TitleText>
-      <BodyText className="text-text-hint">
-        Your gateway to the world of digital assets is now open, and your financial future is in your hands. Safely
-        store, send, and receive funds with confidence.
-        <br />
-        Happy exploring!
-      </BodyText>
     </div>
   );
 }

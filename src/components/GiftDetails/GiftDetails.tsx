@@ -1,4 +1,4 @@
-import { Button, Snippet } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 import { WebApp } from '@twa-dev/types';
 
 import { BodyText } from '@/components';
@@ -15,10 +15,7 @@ export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
 
   return (
     <>
-      <Snippet color="primary" hideSymbol size="sm" classNames={{ pre: ['text-wrap w-[300px] overflow-auto'] }}>
-        {link.url}
-      </Snippet>
-      <BodyText className="text-text-hint" align="center">
+      <BodyText className="text-text-hint mb-3" align="center">
         Now you can send this link anyone who you needed to claim funds. When they will open it, the gift will marked as
         claimed
       </BodyText>

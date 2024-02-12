@@ -6,6 +6,7 @@ import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
 import { handleSend } from '@/common/utils/extrinsics';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import {
   HeadlineText,
   Icon,
@@ -13,7 +14,7 @@ import {
   LargeTitleText,
   Plate,
   BodyText,
-  CaptionText,
+  MediumTitle,
   TruncateAddress,
 } from '@/components';
 import { formatBalance } from '@/common/utils/balance';
@@ -24,15 +25,15 @@ import { TrasferAsset } from '@/common/types';
 export default function ConfirmationPage() {
   const navigate = useNavigate();
   const { submitExtrinsic } = useExtrinsicProvider();
-
-  const { BackButton, MainButton } = useTelegram();
+  const { reset, addMainButton, mainButton } = useMainButton();
+  const { BackButton } = useTelegram();
   const { selectedAsset } = useGlobalContext();
 
   useEffect(() => {
     if (!selectedAsset) return;
 
     const mainCallback = async () => {
-      MainButton?.showProgress(false);
+      mainButton.showProgress(false);
       await handleSend(submitExtrinsic, selectedAsset as TrasferAsset).then(() => {
         navigate(Paths.TRANSFER_RESULT);
       });
@@ -44,15 +45,13 @@ export default function ConfirmationPage() {
     BackButton?.show();
     BackButton?.onClick(backCallback);
 
-    MainButton?.show();
-    MainButton?.setText('Confirm');
-    MainButton?.onClick(mainCallback);
+    mainButton.show();
+    addMainButton(mainCallback, 'Confirm');
 
     return () => {
-      MainButton?.hideProgress();
-      MainButton?.offClick(mainCallback);
+      mainButton.hideProgress();
+      reset();
       BackButton?.offClick(backCallback);
-      MainButton?.setText('Continue');
     };
   }, [selectedAsset]);
 
@@ -91,15 +90,15 @@ export default function ConfirmationPage() {
         <LargeTitleText>{symbol}</LargeTitleText>
         <LargeTitleText>{selectedAsset?.amount}</LargeTitleText>
       </div>
-      <Plate className="w-full">
+      <Plate className="w-full pr-0">
         {details.map(({ title, value }, index) => (
           <div key={title}>
-            {index !== 0 && <Divider className="my-4" />}
-            <div className="grid gap-2 break-all">
+            {index !== 0 && <Divider className="my-4 h-[0.5px] w-auto" />}
+            <div className="grid gap-2 break-all pr-4">
               <BodyText align="left" className="text-text-hint">
                 {title}
               </BodyText>
-              <CaptionText>{value}</CaptionText>
+              <MediumTitle>{value}</MediumTitle>
             </div>
           </div>
         ))}
