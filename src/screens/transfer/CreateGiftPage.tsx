@@ -31,10 +31,12 @@ export default function CreateGiftPage() {
 
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
     (async function () {
-      await handleSendGift(submitExtrinsic, selectedAsset as TrasferAsset, wallet.address).then(() => {
-        backupGifts(wallet.address, wallet.secret, selectedAsset.chainId as ChainId, selectedAsset.amount as string);
-        setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string));
-      });
+      await handleSendGift(submitExtrinsic, selectedAsset as TrasferAsset, wallet.address)
+        .then(() => {
+          backupGifts(wallet.address, wallet.secret, selectedAsset.chainId as ChainId, selectedAsset.amount as string);
+          setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string));
+        })
+        .catch((error) => alert(`Error: ${error.message}\nTry to relaod`));
     })();
 
     return () => {

@@ -34,9 +34,11 @@ export default function ConfirmationPage() {
 
     const mainCallback = async () => {
       mainButton.showProgress(false);
-      await handleSend(submitExtrinsic, selectedAsset as TrasferAsset).then(() => {
-        navigate(Paths.TRANSFER_RESULT);
-      });
+      await handleSend(submitExtrinsic, selectedAsset as TrasferAsset)
+        .then(() => {
+          navigate(Paths.TRANSFER_RESULT);
+        })
+        .catch((error) => alert(`Error: ${error.message}\nTry to relaod`));
     };
     const backCallback = () => {
       navigate(Paths.TRANSFER_AMOUNT);
