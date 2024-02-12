@@ -25,7 +25,7 @@ export default function PasswordConfirmationPage() {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-[95vh]">
       <div className="bg-white rounded-full p-3 w-[114px] h-[114px]" />
       <TitleText className="m-3">Password changed sussessfully!</TitleText>
     </div>

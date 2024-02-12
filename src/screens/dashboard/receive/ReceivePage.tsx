@@ -42,7 +42,7 @@ export default function ReceivePage() {
   }, []);
 
   return (
-    <div className="flex items-center flex-col h-screen justify-center mx-[-16px]">
+    <div className="flex items-center flex-col h-[95vh] justify-center mx-[-16px]">
       <TitleText className="mb-7">Receive {assets[activeSlideIndex].asset.symbol}</TitleText>
       <Carousel
         activeSlideIndex={activeSlideIndex}

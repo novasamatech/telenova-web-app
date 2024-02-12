@@ -29,7 +29,7 @@ export default function ResultPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-3">
+    <div className="flex flex-col items-center justify-center h-[95vh] gap-3">
       <TitleText>
         {selectedAsset?.amount} {selectedAsset?.asset?.symbol} Sent to
       </TitleText>

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { Avatar } from '@nextui-org/react';
+import { Avatar, Button } from '@nextui-org/react';
 
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
@@ -24,6 +24,9 @@ import {
   LargeTitleText,
   GiftModal,
   CreatedGiftPlate,
+  HeadlineText,
+  TitleText,
+  Icon,
 } from '@/components';
 
 export const DashboardMain = () => {
@@ -93,21 +96,23 @@ export const DashboardMain = () => {
           }}
         />
         <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
-        <IconButton iconName="settings" onClick={() => navigate(Paths.SETTINGS)} />
+        <Button isIconOnly className="bg-transparent" onClick={() => navigate(Paths.SETTINGS)}>
+          <Icon name="settings" size={40} />
+        </Button>
       </div>
-      <Plate className="flex flex-col items-center mb-2 rounded-3xl">
-        <BodyText className="text-text-hint mb-1">Total Balance</BodyText>
+      <div className="flex flex-col m-4">
+        <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
         <LargeTitleText>
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
-        <div className="grid grid-cols-2 w-full justify-items-center mt-4">
-          <IconButton text="Send" iconName="send" color="primary" onClick={() => navigate(Paths.TRANSFER)} />
-          <IconButton text="Receive" iconName="receive" color="success" onClick={() => navigate(Paths.RECEIVE)} />
+        <div className="grid grid-cols-2 w-full mt-7 gap-2">
+          <IconButton text="Send" iconName="send" onClick={() => navigate(Paths.TRANSFER)} />
+          <IconButton text="Receive" iconName="receive" onClick={() => navigate(Paths.RECEIVE)} />
         </div>
-      </Plate>
+      </div>
       <CreatedGiftPlate />
-      <Plate className="flex flex-col mb-2 rounded-3xl">
-        <MediumTitle>Assets</MediumTitle>
+      <Plate className="flex flex-col my-2 rounded-3xl">
+        <TitleText align="left">Assets</TitleText>
         <AssetsList />
       </Plate>
       <GiftModal />
