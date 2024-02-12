@@ -1,5 +1,5 @@
 import secureLocalStorage from 'react-secure-storage';
-import { encodeAddress } from '@polkadot/util-crypto';
+import { cryptoWaitReady, encodeAddress } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
 
 import { getKeyringPairFromSeed, getStoreName } from '../wallet';
@@ -33,6 +33,8 @@ export const getGiftInfo = async (
   getAssetBySymbol: (symbol: string) => Promise<ChainAsset>,
 ): Promise<{ chainAddress: string; chain: ChainAsset; giftAddress: string; keyring: KeyringPair }> => {
   const [seed, symbol] = (startParam as string).split('_');
+  await cryptoWaitReady();
+
   const chain = await getAssetBySymbol(symbol);
   const chainAddress = encodeAddress(publicKey as string, chain.chain.addressPrefix);
   const keyring = getKeyringPairFromSeed(seed);
