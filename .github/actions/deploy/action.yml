@@ -28,6 +28,9 @@ inputs:
   IMAGE_TO_DEPLOY:
     description: 'Which bot was updated'
     required: true
+  APP_LINK:
+    description: 'Link to the web application'
+    required: true
 
 runs:
   using: "composite"
@@ -59,3 +62,4 @@ runs:
           commit: ${{ github.sha }}
           
           updated_bot: @${{ inputs.DEPLOYED_BOT }}
+          Lunch app: [Open Telenova](${{ inputs.APP_LINK }})
