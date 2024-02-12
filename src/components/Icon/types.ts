@@ -21,6 +21,9 @@ const AllIcons = {
   youtube: 'Youtube.svg',
   welcome: 'welcome.svg',
   present: 'present.svg',
+  userBlock: 'user-block.svg',
+  pen: 'pen.svg',
+  blind: 'blind.svg',
 } as const;
 
 export type IconNames = keyof typeof AllIcons;
