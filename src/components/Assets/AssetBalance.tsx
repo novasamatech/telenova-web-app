@@ -25,7 +25,7 @@ const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow }:
       <MediumTitle>{symbol}</MediumTitle>
       <MediumTitle className="flex items-center justify-self-end">
         <Balance balance={balance} precision={precision} />
-        {showArrow && <Icon name="chevronForward" className="w-4 h-4 ml-2" />}
+        {showArrow && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
       </MediumTitle>
       {showPrice && <TokenPrice priceId={priceId} balance={balance} precision={precision} />}
     </div>

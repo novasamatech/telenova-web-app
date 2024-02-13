@@ -22,11 +22,11 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <LinkCard text="Manage Backup" iconName="backup" iconClassName="w-6 h-6" showArrow href={Paths.SETTINGS_BACKUP} />
+      <LinkCard text="Manage Backup" iconName="Backup" iconClassName="w-6 h-6" showArrow href={Paths.SETTINGS_BACKUP} />
       <Plate className="w-full p-0 opacity-50">
         <LinkCard
           text="Wallet Language"
-          iconName="language"
+          iconName="Language"
           iconClassName="w-6 h-6"
           valueText="English"
           className="grid-flow-col cursor-default"
@@ -36,7 +36,7 @@ export default function SettingsPage() {
         <Divider className="h-[0.5px] ml-14 w-auto" />
         <LinkCard
           text="Default Currency"
-          iconName="currency"
+          iconName="Currency"
           iconClassName="w-6 h-6"
           className="grid-flow-col cursor-default"
           wrapperClassName="hover:bg-unset active:bg-unset"
@@ -44,11 +44,11 @@ export default function SettingsPage() {
           showArrow
         />
       </Plate>
-      <LinkCard text="Migrate to Nova Wallet" iconName="novaWallet" iconClassName="w-6 h-6" />
+      <LinkCard text="Migrate to Nova Wallet" iconName="NovaWallet" iconClassName="w-6 h-6" />
       <Plate className="w-full p-0">
         <LinkCard
           text="Telegram Community"
-          iconName="telegram"
+          iconName="Telegram"
           iconClassName="w-6 h-6"
           wrapperClassName="rounded-b-none"
           showArrow
@@ -56,7 +56,7 @@ export default function SettingsPage() {
         <Divider className="h-[0.5px] ml-14 w-auto" />
         <LinkCard
           text="X (Twitter)"
-          iconName="twitter"
+          iconName="Twitter"
           iconClassName="w-6 h-6"
           wrapperClassName="rounded-none"
           showArrow
@@ -64,7 +64,7 @@ export default function SettingsPage() {
         <Divider className="h-[0.5px] ml-14 w-auto" />
         <LinkCard
           text="YouTube"
-          iconName="youtube"
+          iconName="Youtube"
           iconClassName="w-6 h-6"
           wrapperClassName="rounded-t-none"
           showArrow

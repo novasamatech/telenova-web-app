@@ -22,7 +22,7 @@ type Props = {
 const checkboxes = [
   {
     id: 'checkbox-1',
-    iconName: 'blind',
+    iconName: 'Blind',
     label: (
       <>
         Having the recovery phrase means having <strong>total and permanent access to all connected wallets</strong> and
@@ -32,7 +32,7 @@ const checkboxes = [
   },
   {
     id: 'checkbox-2',
-    iconName: 'pen',
+    iconName: 'Pen',
     label: (
       <>
         Do not enter your recovery phrase or private key into any form or app. They are
@@ -42,7 +42,7 @@ const checkboxes = [
   },
   {
     id: 'checkbox-3',
-    iconName: 'userBlock',
+    iconName: 'UserBlock',
     label: (
       <>
         Nova Wallet <strong>admins will never request your recovery phrase</strong> or private key under any

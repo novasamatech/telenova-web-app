@@ -36,7 +36,7 @@ export const OnboardingStartPage = () => {
 
   return (
     <>
-      <Icon name="welcome" size={128} />
+      <Icon name="Welcome" size={128} />
       <pre>
         <TitleText className="mt-6 mb-3">{headerText}</TitleText>
       </pre>

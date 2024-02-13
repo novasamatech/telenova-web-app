@@ -116,7 +116,7 @@ export default function AmountPage() {
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
         {selectedAsset?.isGift ? (
           <>
-            <Icon name="gift" className="w-8 h-8" />
+            <Icon name="Gift" className="w-8 h-8" />
             <HeadlineText>Preparing Gift</HeadlineText>
           </>
         ) : (
