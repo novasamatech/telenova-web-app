@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
@@ -90,7 +89,6 @@ export const useConnections = (): IChainConnectionService => {
 
   const connectToChain = async (chainId: ChainId, nodes: RpcNode[]): Promise<void> => {
     console.info(`🔶 Connecting ==> ${chainId}`);
-    await cryptoWaitReady();
 
     const provider = createWebsocketProvider(
       nodes.map((node) => node.url),
