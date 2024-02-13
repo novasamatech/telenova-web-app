@@ -3,6 +3,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { NextUIProvider } from '@nextui-org/react';
 import { Manrope } from 'next/font/google';
 
@@ -25,7 +26,9 @@ type AppPropsWithLayout = AppProps & {
 
 const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   const [render, setRender] = useState(false);
-  useEffect(() => setRender(true), []);
+  useEffect(() => {
+    cryptoWaitReady().then(() => setRender(true));
+  }, []);
   const getLayout = Component.getLayout || ((page) => page);
 
   return (

@@ -24,7 +24,7 @@ export default function GiftPage() {
     BackButton?.show();
     hideMainButton();
 
-    const callback = async () => {
+    const callback = () => {
       navigate(Paths.DASHBOARD);
     };
     BackButton?.onClick(callback);

@@ -1,6 +1,6 @@
+import { useRef, useState } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
-import { useRef, useState } from 'react';
 
 import {
   ConnectionRequest,

@@ -33,6 +33,7 @@ export const getGiftInfo = async (
   getAssetBySymbol: (symbol: string) => Promise<ChainAsset>,
 ): Promise<{ chainAddress: string; chain: ChainAsset; giftAddress: string; keyring: KeyringPair }> => {
   const [seed, symbol] = (startParam as string).split('_');
+
   const chain = await getAssetBySymbol(symbol);
   const chainAddress = encodeAddress(publicKey as string, chain.chain.addressPrefix);
   const keyring = getKeyringPairFromSeed(seed);
