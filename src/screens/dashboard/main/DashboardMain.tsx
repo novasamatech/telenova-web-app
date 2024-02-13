@@ -91,7 +91,6 @@ export const DashboardMain = () => {
           name={user?.first_name[0]}
           classNames={{
             base: 'bg-[--tg-theme-button-color]',
-            icon: 'text-black/80',
             name: 'font-manrope font-black text-base text-white',
           }}
         />
