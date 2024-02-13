@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, CircularProgress, Input } from '@nextui-org/react';
 
@@ -17,6 +17,7 @@ export default function AmountPage() {
   const { estimateFee, getExistentialDeposit } = useExtrinsicProvider();
   const { BackButton } = useTelegram();
   const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
+  const [isPending, startTransition] = useTransition();
 
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
@@ -86,22 +87,23 @@ export default function AmountPage() {
     setIsAmountValid(Boolean(maxAmountToSend) && validateGift);
   };
 
-  const handleChange = async (value: string) => {
+  const handleChange = (value: string) => {
     const formattedValue = value.trim().replace(/,/g, '.');
     setTransferAll(false);
     const validateGift = selectedAsset?.isGift ? !!deposit && +formattedValue >= deposit : true;
+    startTransition(async () => {
+      const { max, fee, formattedDeposit } = await getTransferDetails(
+        selectedAsset as TrasferAsset,
+        formattedValue,
+        estimateFee,
+        getExistentialDeposit,
+      );
 
-    const { max, fee, formattedDeposit } = await getTransferDetails(
-      selectedAsset as TrasferAsset,
-      formattedValue,
-      estimateFee,
-      getExistentialDeposit,
-    );
-
-    setDeposit(formattedDeposit);
-    setMaxAmountToSend(max);
-    setSelectedAsset((prev) => ({ ...prev!, fee }));
-    setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +max && validateGift);
+      setDeposit(formattedDeposit);
+      setMaxAmountToSend(max);
+      setSelectedAsset((prev) => ({ ...prev!, fee }));
+      setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +max && validateGift);
+    });
     setAmount(formattedValue);
   };
 
@@ -124,7 +126,7 @@ export default function AmountPage() {
         )}
         <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
           <HeadlineText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
+            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}
             {selectedAsset?.asset?.symbol}
           </HeadlineText>
         </Button>
@@ -135,7 +137,7 @@ export default function AmountPage() {
         <Input
           fullWidth={false}
           variant="underlined"
-          className="mt-[-10px] font-manrope"
+          className="mt-[-10px] font-manrope h-full"
           classNames={{ input: ['text-right !text-large-title max-w-[160px]'] }}
           value={amount}
           isInvalid={!isAmountValid}
@@ -146,7 +148,11 @@ export default function AmountPage() {
         />
       </div>
       <div className="grid grid-cols-[auto,1fr]">
-        <TokenPrice priceId={selectedAsset?.asset?.priceId} balance={amount || '0'} showBalance={isAmountValid} />
+        <TokenPrice
+          priceId={selectedAsset?.asset?.priceId}
+          balance={amount || '0'}
+          showBalance={isAmountValid && !isPending}
+        />
         {!isAmountValid && (
           <>
             <BodyText align="right" className="text-text-danger">
