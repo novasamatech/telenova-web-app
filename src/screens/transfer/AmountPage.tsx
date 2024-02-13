@@ -102,10 +102,14 @@ export default function AmountPage() {
       setDeposit(formattedDeposit);
       setMaxAmountToSend(max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
-      setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +max && validateGift);
+      const checkBalanceDeposit = !transferAll && +max - +formattedValue < formattedDeposit;
+
+      setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +max && validateGift && !checkBalanceDeposit);
     });
     setAmount(formattedValue);
   };
+
+  const checkBalanceDeposit = !transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit;
 
   return (
     <>
@@ -166,10 +170,10 @@ export default function AmountPage() {
           </>
         )}
       </div>
-      {!transferAll && isAmountValid && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit && (
+      {checkBalanceDeposit && (
         <BodyText align="left" className="text-text-hint mt-4">
           The balance that remains after sending this amount is less than the minimal network deposit ({deposit}), you
-          may want to send Max instead or choose a different amount.
+          may choose a different amount or use Max instead.
         </BodyText>
       )}
     </>
