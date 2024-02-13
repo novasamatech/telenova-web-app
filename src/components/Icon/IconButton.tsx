@@ -12,17 +12,17 @@ type Props = {
 
 const IconButton = ({ iconName, onClick, size = 40, text = '' }: Props) => {
   return (
-    <div className="grid">
-      <Button
-        radius="full"
-        variant="shadow"
-        className="bg-white h-full w-full p-1 gap-4 justify-start border border-border-neutral shadow-button"
-        onClick={onClick}
-      >
+    <Button
+      radius="full"
+      variant="shadow"
+      className="bg-white h-full w-full p-1 gap-4 justify-start border border-border-neutral shadow-button"
+      onClick={onClick}
+    >
+      <span className="w-[40px]">
         <Icon name={iconName} size={size} className="text-[--tg-theme-button-color]" />
-        <LabelText as="span">{text}</LabelText>
-      </Button>
-    </div>
+      </span>
+      <LabelText as="span">{text}</LabelText>
+    </Button>
   );
 };
 
