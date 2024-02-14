@@ -66,9 +66,10 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         classNames={{
           inputWrapper: [
             'bg-bg-input border-1 shadow-none',
-            'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
             !isPasswordValid && 'border-border-danger',
           ],
+          clearButton: ['text-text-hint'],
         }}
         className="max-w-sm text-left"
         value={password}
@@ -86,9 +87,10 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         classNames={{
           inputWrapper: [
             'bg-bg-input border-1 shadow-none',
-            'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
             !isConfirmPasswordValid && 'border-border-danger',
           ],
+          clearButton: ['text-text-hint'],
         }}
         className="max-w-sm text-left"
         value={confirmPassword}
