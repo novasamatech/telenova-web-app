@@ -40,7 +40,16 @@ export default function PasswordPage() {
 
   return (
     <div className="flex flex-col items-center text-center">
-      <Avatar src={user?.photo_url} size="lg" className="w-[64px] h-[64px]" name={user?.first_name[0]} />
+      <Avatar
+        src={user?.photo_url}
+        size="lg"
+        className="w-[64px] h-[64px]"
+        classNames={{
+          base: 'bg-[--tg-theme-button-color]',
+          name: 'font-manrope font-black text-base text-white',
+        }}
+        name={user?.first_name[0]}
+      />
       <TitleText className="m-4 px-6">
         {!startParam && `Hey ${user?.first_name || 'friend'}! `}Let’s set a password to secure your new wallet
       </TitleText>

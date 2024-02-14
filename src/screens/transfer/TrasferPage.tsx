@@ -31,7 +31,7 @@ export default function TransferPage() {
         href={Paths.TRANSFER_SELECT_TOKEN}
         text="Send as Gift"
         helpText="Transfer to one of your contacts"
-        iconName="gift"
+        iconName="Gift"
         wrapperClassName="mb-2 py-1"
         showArrow
         onClick={() => setSelectedAsset({ isGift: true })}
@@ -40,7 +40,7 @@ export default function TransferPage() {
         href={Paths.TRANSFER_SELECT_TOKEN}
         text="External Address"
         helpText="Transfer to address within the network"
-        iconName="address"
+        iconName="Address"
         wrapperClassName="py-1"
         showArrow
         onClick={() => setSelectedAsset(null)}

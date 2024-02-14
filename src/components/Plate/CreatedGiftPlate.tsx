@@ -12,12 +12,12 @@ const CreatedGiftPlate = () => {
   return (
     <Plate className="w-full h-[90px] rounded-3xl mt-4 active:bg-bg-item-pressed">
       <Link to={Paths.GIFTS} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
-        <Icon name="present" className="w-[60px] h-[60px]" />
+        <Icon name="Present" className="w-[60px] h-[60px]" />
         <div className="grid">
           <TitleText align="left">Created Gifts</TitleText>
           {/* {helpText && <HelpText className="text-text-hint">{helpText}</HelpText>} */}
         </div>
-        <Icon name="arrowBold" className="w-10 h-10 self-center" />
+        <Icon name="ArrowBold" className="w-10 h-10 self-center" />
       </Link>
     </Plate>
   );

@@ -23,6 +23,7 @@ const transferExtrinsic = async (
 
     builder.addCall(transferFunction);
   }).then((hash) => {
+    if (!hash) throw Error('Something went wrong');
     console.log('Success, Hash:', hash?.toString());
   });
 };
@@ -87,6 +88,7 @@ export async function claimGift(
     },
     keyring,
   ).then((hash) => {
+    if (!hash) throw Error('Something went wrong');
     console.log('Success, Hash:', hash?.toString());
   });
 }

@@ -90,14 +90,13 @@ export const DashboardMain = () => {
           className="w-10 h-10"
           name={user?.first_name[0]}
           classNames={{
-            base: 'bg-gradient-to-br from-[#FFB457] to-[#FF705B]',
-            icon: 'text-black/80',
+            base: 'bg-[--tg-theme-button-color]',
             name: 'font-manrope font-black text-base text-white',
           }}
         />
         <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
         <Button isIconOnly className="bg-transparent" onClick={() => navigate(Paths.SETTINGS)}>
-          <Icon name="settings" size={40} />
+          <Icon name="Settings" size={40} />
         </Button>
       </div>
       <div className="flex flex-col m-4">
@@ -106,8 +105,8 @@ export const DashboardMain = () => {
           <Price amount={getTotalBalance(assets, assetsPrices)} />
         </LargeTitleText>
         <div className="grid grid-cols-2 w-full mt-7 gap-2">
-          <IconButton text="Send" iconName="send" onClick={() => navigate(Paths.TRANSFER)} />
-          <IconButton text="Receive" iconName="receive" onClick={() => navigate(Paths.RECEIVE)} />
+          <IconButton text="Send" iconName="Send" onClick={() => navigate(Paths.TRANSFER)} />
+          <IconButton text="Receive" iconName="Receive" onClick={() => navigate(Paths.RECEIVE)} />
         </div>
       </div>
       <CreatedGiftPlate />

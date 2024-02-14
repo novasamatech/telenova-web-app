@@ -63,7 +63,16 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
 
   return (
     <>
-      <Avatar src={user?.photo_url} size="lg" className="w-[64px] h-[64px]" name={user?.first_name[0]} />
+      <Avatar
+        src={user?.photo_url}
+        size="lg"
+        classNames={{
+          base: 'bg-[--tg-theme-button-color]',
+          name: 'font-manrope font-black text-base text-white',
+        }}
+        className="w-[64px] h-[64px]"
+        name={user?.first_name[0]}
+      />
       <TitleText className="m-4 px-6">Welcome back, {user?.first_name || 'friend'}!</TitleText>
       <BodyText as="span" className="text-text-hint px-6 mb-8">
         We&apos;ve found a backup of your existing Telenova wallet in the cloud. To get access to it just enter the

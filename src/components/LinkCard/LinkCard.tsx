@@ -45,7 +45,7 @@ const LinkCard = ({
         {helpText && <HelpText className="text-text-hint">{helpText}</HelpText>}
       </div>
       {valueText && <BodyText className="text-text-hint">{valueText}</BodyText>}
-      {showArrow && <Icon name="chevronForward" className="w-4 h-4 self-center" />}
+      {showArrow && <Icon name="ChevronForward" className="w-4 h-4 self-center" />}
     </Link>
   </Plate>
 );

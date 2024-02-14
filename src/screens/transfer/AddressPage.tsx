@@ -90,7 +90,7 @@ export default function AddressPage() {
         ))}
       {!address && (
         <Button variant="light" className="text-text-link mt-4 gap-0 self-start" onClick={handleQrCode}>
-          <Icon name="scanQr" className="w-5 h-5 mr-2" />
+          <Icon name="ScanQr" className="w-5 h-5 mr-2" />
           Scan QR code
         </Button>
       )}

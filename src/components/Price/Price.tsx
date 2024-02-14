@@ -7,7 +7,7 @@ type Props = {
 
 const Price = ({ amount, symbol = '$' }: Props) => {
   if (amount === undefined) return <Shimmering width={50} height={30} />;
-  const value = parseFloat(amount.toFixed(3));
+  const value = amount === 0 ? '0.00' : parseFloat(amount.toFixed(3));
   const [integerPart, decimalPart] = value.toString().split('.');
 
   return (

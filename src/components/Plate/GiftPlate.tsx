@@ -6,7 +6,7 @@ const GiftPlate = ({ gift }: { gift: Gift }) => {
 
   return (
     <Plate className="mb-2 grid grid-cols-[40px,1fr,auto] items-center gap-x-4">
-      <Icon name="gift" className="w-10 h-10" />
+      <Icon name="Gift" className="w-10 h-10" />
       <div>
         <MediumTitle>
           {gift.balance} {gift.chainAsset?.symbol}
@@ -18,7 +18,7 @@ const GiftPlate = ({ gift }: { gift: Gift }) => {
           {gift.status}
         </HelpText>
       </div>
-      {gift.status === GiftStatus.UNCLAIMED && <Icon name="chevronForward" className="w-4 h-4 ml-2" />}
+      {gift.status === GiftStatus.UNCLAIMED && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
     </Plate>
   );
 };
