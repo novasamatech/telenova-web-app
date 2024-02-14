@@ -130,7 +130,7 @@ export default function AmountPage() {
         )}
         <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
           <HeadlineText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}
+            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
             {selectedAsset?.asset?.symbol}
           </HeadlineText>
         </Button>
