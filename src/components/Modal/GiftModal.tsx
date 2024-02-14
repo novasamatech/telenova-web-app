@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
-import { Player } from '@lottiefiles/react-lottie-player';
+import Lottie from 'react-lottie-player';
 
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useChainRegistry } from '@/common/chainRegistry';
@@ -10,8 +10,7 @@ import { claimGift } from '@/common/utils/extrinsics';
 import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGiftInfo } from '@/common/utils/gift';
 import { PublicKey } from '@/common/types';
-import { MediumTitle } from '@/components/Typography';
-import Shimmering from '@/components/Shimmering/Shimmering';
+import { Icon, Shimmering, MediumTitle, TitleText } from '@/components';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -35,8 +34,11 @@ export default function GiftModal() {
   const { getFreeBalance } = useBalances();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [giftSymbol, setGiftSymbol] = useState('');
   const [giftBalance, setGiftBalance] = useState('');
   const [giftStatus, setGiftStatus] = useState<GIFT_STATUS | null>(null);
+
+  const lottieRef = useRef();
 
   useEffect(() => {
     if (isGiftClaimed || !startParam || !publicKey) {
@@ -45,10 +47,11 @@ export default function GiftModal() {
     setIsOpen(true);
 
     (async () => {
-      const { giftAddress, chain } = await getGiftInfo(publicKey, startParam, getAssetBySymbol);
+      const { giftAddress, chain, symbol } = await getGiftInfo(publicKey, startParam, getAssetBySymbol);
       const balance = await getFreeBalance(giftAddress, chain.chain.chainId);
       setGiftBalance(balance);
       setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
+      setGiftSymbol(balance === '0' ? '' : symbol);
     })();
   }, [startParam, publicKey, isGiftClaimed]);
 
@@ -79,9 +82,16 @@ export default function GiftModal() {
         alert('Something went wrong. Failed to claim gift');
       })
       .finally(() => {
-        setIsOpen(false);
-        setIsGiftClaimed(true);
+        if (lottieRef.current) {
+          // @ts-expect-error no types
+          lottieRef.current.play();
+        }
       });
+  };
+
+  const handleOnEvent = () => {
+    setIsOpen(false);
+    setIsGiftClaimed(true);
   };
 
   return (
@@ -92,13 +102,19 @@ export default function GiftModal() {
           {giftStatus !== null ? (
             <>
               <ModalBody>
-                <Player
-                  src="/gifs/Gift_Pending.json"
-                  keepLastFrame
-                  autoplay
-                  className="player w-[210px] h-[170px] m-auto"
-                />
-                <MediumTitle align="center">{GIFTS[giftStatus].text} </MediumTitle>
+                {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
+                  <Lottie
+                    keepLastFrame
+                    path={`/gifs/Gift_claim_${giftSymbol}.json`}
+                    className="player w-[210px] h-[170px] m-auto"
+                    ref={lottieRef}
+                    loop={false}
+                    onComplete={handleOnEvent}
+                  />
+                ) : (
+                  <Icon name="GiftClaimed" className="w-[210px] h-[220px] m-auto" />
+                )}
+                <TitleText align="center">{GIFTS[giftStatus].text} </TitleText>
               </ModalBody>
               <ModalFooter className="justify-center">
                 <Button color="primary" className="w-[250px]" onPress={handleGiftClaim}>
