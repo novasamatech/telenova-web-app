@@ -8,14 +8,13 @@ import { useMainButton } from '@/common/telegram/useMainButton';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
-import { getMnemonic, resetWallet } from '@common/wallet';
+import { resetWallet } from '@common/wallet';
 import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
 import {
-  BodyText,
   MediumTitle,
   AssetsList,
   Plate,
@@ -95,8 +94,12 @@ export const DashboardMain = () => {
           }}
         />
         <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
-        <Button isIconOnly className="bg-transparent" onClick={() => navigate(Paths.SETTINGS)}>
-          <Icon name="Settings" size={40} />
+        <Button
+          isIconOnly
+          className="bg-transparent drop-shadow-button drop-shadow-button"
+          onClick={() => navigate(Paths.SETTINGS)}
+        >
+          <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
         </Button>
       </div>
       <div className="flex flex-col m-4">
@@ -116,17 +119,16 @@ export const DashboardMain = () => {
       </Plate>
       <GiftModal />
 
-      <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
-        Reset Wallet
-      </button>
-      <button className="btn btn-blue mt-4" onClick={() => clearWallet(true)}>
-        Reset Wallet Local
-      </button>
-      <BodyText>
-        Debug info: <br /> mnemonic: {getMnemonic()}
-        <br />
-        public key: {publicKey}
-      </BodyText>
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
+            Reset Wallet
+          </button>
+          <button className="btn btn-blue mt-4" onClick={() => clearWallet(true)}>
+            Reset Wallet Local
+          </button>
+        </>
+      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { Divider } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
-import { LinkCard, Plate } from '@/components';
+import { HelpText, Icon, LinkCard, Plate, TextBase } from '@/components';
 
 export default function SettingsPage() {
   const { BackButton } = useTelegram();
@@ -44,32 +44,25 @@ export default function SettingsPage() {
           showArrow
         />
       </Plate>
-      <LinkCard text="Migrate to Nova Wallet" iconName="NovaWallet" iconClassName="w-6 h-6" />
-      <Plate className="w-full p-0">
-        <LinkCard
-          text="Telegram Community"
-          iconName="Telegram"
-          iconClassName="w-6 h-6"
-          wrapperClassName="rounded-b-none"
-          showArrow
-        />
-        <Divider className="h-[0.5px] ml-14 w-auto" />
-        <LinkCard
-          text="X (Twitter)"
-          iconName="Twitter"
-          iconClassName="w-6 h-6"
-          wrapperClassName="rounded-none"
-          showArrow
-        />
-        <Divider className="h-[0.5px] ml-14 w-auto" />
-        <LinkCard
-          text="YouTube"
-          iconName="Youtube"
-          iconClassName="w-6 h-6"
-          wrapperClassName="rounded-t-none"
-          showArrow
-        />
-      </Plate>
+      <span className="w-full h-[150px] bg-[url('/images/nova.png')] bg-cover rounded-2xl relative">
+        <div className="absolute right-[5%] top-[10%]">
+          <TextBase as="p" align="right" className="text-body-bold text-white mb-4">
+            Migrate to Nova Wallet!
+          </TextBase>
+          <div className="flex items-center gap-2">
+            <Icon name="Star" className="w-[10px] h-[10px]" />
+            <HelpText className="text-white font-semibold">350+ Tokens to choose</HelpText>
+          </div>
+          <div className="flex items-center gap-2 my-3">
+            <Icon name="Star" className="w-[10px] h-[10px]" />
+            <HelpText className="text-white font-semibold">90+ Networks</HelpText>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icon name="Star" className="w-[10px] h-[10px]" />
+            <HelpText className="text-white font-semibold">Super Simple Staking</HelpText>
+          </div>
+        </div>
+      </span>
       <Plate className="w-full p-0">
         <LinkCard
           text="Legal Information"
@@ -78,7 +71,7 @@ export default function SettingsPage() {
           wrapperClassName="rounded-b-none"
           showArrow
         />
-        <Divider className="h-[0.5px] ml-4 w-auto" />
+        <Divider className="h-[0.5px] ml-4 w-auto border-solid" />
         <LinkCard
           text="User Agreement"
           className="grid-cols-[1fr,auto]"

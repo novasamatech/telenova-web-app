@@ -7,7 +7,7 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Avatar, Input } from '@nextui-org/react';
 import { BodyText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
-import { createWallet, initializeWalletFromCloud, resetWallet } from '@/common/wallet';
+import { createWallet, initializeWalletFromCloud } from '@/common/wallet';
 
 type Props = {
   mnemonic: string;
@@ -55,12 +55,6 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
     };
   }, [password]);
 
-  function clearWallet() {
-    resetWallet();
-    reset();
-    navigate(Paths.ONBOARDING);
-  }
-
   return (
     <>
       <Avatar
@@ -86,8 +80,9 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         classNames={{
           inputWrapper: [
             'bg-bg-input border-1 shadow-none',
-            'group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
           ],
+          clearButton: ['text-text-hint'],
         }}
         value={password}
         isInvalid={!isPasswordValid}
@@ -95,9 +90,6 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         onValueChange={setPassword}
         onClear={() => setPassword('')}
       />
-      <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
-        Reset Wallet
-      </button>
     </>
   );
 };

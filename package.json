@@ -19,7 +19,6 @@
     "@polkadot/types": "^10.11.1",
     "@polkadot/util": "^12.6.1",
     "@polkadot/util-crypto": "^12.6.1",
-    "@rive-app/react-canvas-lite": "^4.7.1",
     "autoprefixer": "10.4.15",
     "bignumber.js": "^9.1.2",
     "classnames": "^2.3.2",

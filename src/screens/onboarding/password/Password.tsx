@@ -50,10 +50,10 @@ export default function PasswordPage() {
         }}
         name={user?.first_name[0]}
       />
-      <TitleText className="m-4 px-6">
+      <TitleText className="my-4">
         {!startParam && `Hey ${user?.first_name || 'friend'}! `}Let’s set a password to secure your new wallet
       </TitleText>
-      <BodyText className="text-text-hint px-6">
+      <BodyText className="text-text-hint px-4">
         You should set a strong password to secure your wallet. The password you choose will keep your assets safe and
         sound
       </BodyText>

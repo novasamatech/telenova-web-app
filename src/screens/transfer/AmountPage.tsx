@@ -116,7 +116,7 @@ export default function AmountPage() {
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
         {selectedAsset?.isGift ? (
           <>
-            <Icon name="Gift" className="w-8 h-8" />
+            <Icon name="Gift" className="w-8 h-8 text-bg-icon-accent-primary" />
             <HeadlineText>Preparing Gift</HeadlineText>
           </>
         ) : (
@@ -130,7 +130,7 @@ export default function AmountPage() {
         )}
         <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
           <HeadlineText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}
+            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
             {selectedAsset?.asset?.symbol}
           </HeadlineText>
         </Button>
