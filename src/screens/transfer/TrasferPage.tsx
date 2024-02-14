@@ -30,6 +30,7 @@ export default function TransferPage() {
       <LinkCard
         href={Paths.TRANSFER_SELECT_TOKEN}
         text="Send as Gift"
+        iconClassName="text-bg-icon-accent-primary"
         helpText="Transfer to one of your contacts"
         iconName="Gift"
         wrapperClassName="mb-2 py-1"

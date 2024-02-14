@@ -61,7 +61,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
       <Input
         isClearable
         variant="flat"
-        placeholder="Enter 8-character password here"
+        placeholder="Enter Password Here"
         type="password"
         classNames={{
           inputWrapper: [
@@ -81,7 +81,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
       <Input
         isClearable
         variant="flat"
-        placeholder="Confirm password"
+        placeholder="Confirm Password"
         type="password"
         classNames={{
           inputWrapper: [

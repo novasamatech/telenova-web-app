@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Player } from '@lottiefiles/react-lottie-player';
 
 import { useTelegram } from '@common/providers/telegramProvider';
 import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
+import { BodyText, Icon } from '@/components';
 
 export default function OnboardingPage() {
   const { webApp } = useTelegram();
@@ -18,14 +18,15 @@ export default function OnboardingPage() {
     // to avoid blinking
     setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 2000);
   }, []);
 
-  // TODO: replace with loader
   if (isLoading)
     return (
-      <div className="flex items-center justify-center">
-        <Player src="/gifs/Welcome.json" loop autoplay className="player" />
+      <div className="flex flex-col items-center justify-center h-[93svh]">
+        <Icon name="Loader" size={130} className="animate-pulse m-auto pl-5" />
+        <BodyText className="text-text-on-button-disabled mb-2">by</BodyText>
+        <Icon name="Novasama" size={110} className="ml-[10px]" />
       </div>
     );
 

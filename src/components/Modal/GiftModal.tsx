@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
-import Rive from '@rive-app/react-canvas-lite';
+import { Player } from '@lottiefiles/react-lottie-player';
 
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useChainRegistry } from '@/common/chainRegistry';
@@ -92,7 +92,12 @@ export default function GiftModal() {
           {giftStatus !== null ? (
             <>
               <ModalBody>
-                <Rive src="/gifs/new_file.riv" className="w-[210px] h-[170px] m-auto" />
+                <Player
+                  src="/gifs/Gift_Pending.json"
+                  keepLastFrame
+                  autoplay
+                  className="player w-[210px] h-[170px] m-auto"
+                />
                 <MediumTitle align="center">{GIFTS[giftStatus].text} </MediumTitle>
               </ModalBody>
               <ModalFooter className="justify-center">

@@ -22,8 +22,8 @@ export default {
       fontFamily: {
         manrope: ['var(--font-manrope)'],
       },
-      boxShadow: {
-        button: '0px 2px 3.7px 0px #E2E4F1',
+      dropShadow: {
+        button: '0px 2px 2px var(--Color-Shadow-color-shadow-second-layer, #B2B5C8)',
       },
       fontSize: fontSizes,
       backgroundImage: {

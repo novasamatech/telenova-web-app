@@ -36,7 +36,7 @@ export default function GiftDetailsPage() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-3 h-[95vh]">
-      <Icon name="Present" size={250} className="mb-3" />
+      <Icon name="Present" size={250} />
       <GiftDetails link={link} webApp={webApp as WebApp} />
     </div>
   );

@@ -5,6 +5,7 @@ import { useTelegram } from '@/common/providers/telegramProvider';
 import { TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';
 import { useMainButton } from '@/common/telegram/useMainButton';
+import { Icon } from '@/components';
 
 export default function PasswordConfirmationPage() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function PasswordConfirmationPage() {
 
   return (
     <div className="flex flex-col justify-center items-center h-[95vh]">
-      <div className="bg-white rounded-full p-3 w-[114px] h-[114px]" />
+      <Icon name="Success" size={250} />
       <TitleText className="m-3">Password changed sussessfully!</TitleText>
     </div>
   );

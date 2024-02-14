@@ -5,7 +5,7 @@ import { useTelegram } from '@common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { MediumTitle, TitleText } from '@/components';
+import { Icon, MediumTitle, TitleText } from '@/components';
 
 export default function ResultPage() {
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ export default function ResultPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-[95vh] gap-3">
+      <Icon name="Success" size={250} />
       <TitleText>
         {selectedAsset?.amount} {selectedAsset?.asset?.symbol} Sent to
       </TitleText>
