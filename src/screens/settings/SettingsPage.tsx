@@ -44,7 +44,7 @@ export default function SettingsPage() {
           showArrow
         />
       </Plate>
-      <span className="w-full bg-bg-input h-[150px] bg-[url('/images/nova.png')] bg-cover rounded-2xl relative">
+      <span className="w-full h-[150px] bg-[url('/images/nova.png')] bg-cover rounded-2xl relative">
         <div className="absolute right-[5%] top-[10%]">
           <TextBase as="p" align="right" className="text-body-bold text-white mb-4">
             Migrate to Nova Wallet!
