@@ -14,9 +14,6 @@ import Backup from '@common/assets/svg/backup.svg';
 import Currency from '@common/assets/svg/currency.svg';
 import Language from '@common/assets/svg/language.svg';
 import NovaWallet from '@common/assets/svg/nova-wallet.svg';
-import Telegram from '@common/assets/svg/Telegram.svg';
-import Twitter from '@common/assets/svg/X-twitter.svg';
-import Youtube from '@common/assets/svg/Youtube.svg';
 import Present from '@common/assets/svg/present.svg';
 import UserBlock from '@common/assets/svg/user-block.svg';
 import Pen from '@common/assets/svg/pen.svg';
@@ -47,9 +44,6 @@ const AllIcons = {
   Currency,
   Language,
   NovaWallet,
-  Telegram,
-  Twitter,
-  Youtube,
   Welcome,
   Present,
   UserBlock,
