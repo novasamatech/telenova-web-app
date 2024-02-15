@@ -10,7 +10,7 @@ import { claimGift } from '@/common/utils/extrinsics';
 import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGiftInfo } from '@/common/utils/gift';
 import { PublicKey } from '@/common/types';
-import { Icon, Shimmering, MediumTitle, TitleText } from '@/components';
+import { Icon, Shimmering, TitleText } from '@/components';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,
