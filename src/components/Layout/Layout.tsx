@@ -8,7 +8,7 @@ export default function Layout({ children }: PropsWithChildren) {
     <ChainRegistry>
       <ExtrinsicProvider>
         <BalanceProvider>
-          <div className="min-h-screen p-4 w-full overflow-x-auto">{children}</div>
+          <div className="min-h-screen p-4 w-full overflow-x-auto break-all">{children}</div>
         </BalanceProvider>
       </ExtrinsicProvider>
     </ChainRegistry>
