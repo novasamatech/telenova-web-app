@@ -15,7 +15,7 @@ type UpdaterCallbackStore = Record<number, UpdateCallback>;
 type BalanceProviderContextProps = {
   subscribeBalance: (account: ChainAssetAccount, onUpdate: UpdateCallback) => number;
   unsubscribeBalance: (unsubscribeId: number) => void;
-  getGiftsState: (accounts: Gift[], chainId: ChainId) => Promise<[Gift[], Gift[]]>;
+  getGiftsState: (mapGifts: Map<ChainId, PersistentGift[]>) => Promise<[Gift[], Gift[]]>;
   getFreeBalance: (address: Address, chainId: ChainId) => Promise<string>;
 };
 
@@ -155,22 +155,26 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     }
   }
 
-  async function getGiftsState(accounts: PersistentGift[], chainId: ChainId): Promise<[Gift[], Gift[]]> {
-    const connection = await getConnection(chainId);
-    const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
-    const chain = await getChain(chainId);
-
+  async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
     const unclaimed = [] as Gift[];
     const claimed = [] as Gift[];
 
-    balances.forEach((d, idx) =>
-      d.data.free.isEmpty
-        ? claimed.push({
-            ...accounts[idx],
-            chainAsset: chain?.assets[0],
-            status: GiftStatus.CLAIMED,
-          })
-        : unclaimed.push({ ...accounts[idx], chainAsset: chain?.assets[0], status: GiftStatus.UNCLAIMED }),
+    await Promise.all(
+      Array.from(mapGifts).map(async ([chainId, accounts]) => {
+        const connection = await getConnection(chainId);
+        const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
+        const chain = await getChain(chainId);
+
+        balances.forEach((d, idx) =>
+          d.data.free.isEmpty
+            ? claimed.push({
+                ...accounts[idx],
+                chainAsset: chain?.assets[0],
+                status: GiftStatus.CLAIMED,
+              })
+            : unclaimed.push({ ...accounts[idx], chainAsset: chain?.assets[0], status: GiftStatus.UNCLAIMED }),
+        );
+      }),
     );
 
     return [unclaimed, claimed];

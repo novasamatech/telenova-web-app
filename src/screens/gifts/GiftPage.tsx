@@ -31,14 +31,13 @@ export default function GiftPage() {
     const mapGifts = getGifts();
     if (!mapGifts) return;
 
-    mapGifts.forEach((value, key) => {
-      (async function () {
-        const [unclaimed, claimed] = await getGiftsState(value, key);
-        setUnclaimedGifts((prev) => [...prev, ...unclaimed]);
-        setClaimedGifts((prev) => [...prev, ...claimed]);
+    (async function () {
+      await getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
+        setUnclaimedGifts(unclaimed);
+        setClaimedGifts(claimed);
         setLoading(false);
-      })();
-    });
+      });
+    })();
 
     return () => {
       BackButton?.hide();
@@ -54,8 +53,9 @@ export default function GiftPage() {
       <BodyText className="text-text-hint mb-2" align="left">
         Unclaimed <span className="text-text-on-button-disabled">{unclaimedGifts.length || 0}</span>
       </BodyText>
-      {loading && <Shimmering width={200} height={20} />}
-      {!!unclaimedGifts.length && !loading ? (
+      {loading ? (
+        <Shimmering width={250} height={92} />
+      ) : unclaimedGifts.length ? (
         unclaimedGifts.map((gift) => (
           <Link
             to={{ pathname: `${Paths.GIFT_DETAILS}`, search: `?seed=${gift.secret}&symbol=${gift.chainAsset?.symbol}` }}
@@ -69,11 +69,13 @@ export default function GiftPage() {
           <HelpText className="text-text-hint">All Gifts are claimed</HelpText>
         </div>
       )}
+
       <BodyText className="text-text-hint mb-2" align="left">
         Claimed <span className="text-text-on-button-disabled">{claimedGifts.length || 0}</span>
       </BodyText>
-      {loading && <Shimmering width={200} height={20} />}
-      {!!claimedGifts.length && !loading ? (
+      {loading ? (
+        <Shimmering width={250} height={92} />
+      ) : claimedGifts.length ? (
         claimedGifts.map((gift) => <GiftPlate gift={gift} key={gift.timestamp} isClaimed={true} />)
       ) : (
         <div className="w-full bg-bg-input h-[92px] rounded-2xl flex justify-center items-center">
