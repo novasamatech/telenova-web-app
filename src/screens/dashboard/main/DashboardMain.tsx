@@ -105,7 +105,7 @@ export const DashboardMain = () => {
       <div className="flex flex-col m-4">
         <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
         <LargeTitleText>
-          <Price amount={getTotalBalance(assets, assetsPrices)} />
+          <Price amount={getTotalBalance(assets, assetsPrices)} decimalSize={32} />
         </LargeTitleText>
         <div className="grid grid-cols-2 w-full mt-7 gap-2">
           <IconButton text="Send" iconName="Send" onClick={() => navigate(Paths.TRANSFER)} />

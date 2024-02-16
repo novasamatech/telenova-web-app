@@ -7,7 +7,7 @@ import { Paths } from '@/common/routing';
 import { HelpText, Icon, LinkCard, Plate, TextBase } from '@/components';
 
 export default function SettingsPage() {
-  const { BackButton } = useTelegram();
+  const { BackButton, webApp } = useTelegram();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +19,10 @@ export default function SettingsPage() {
       BackButton?.offClick(callback);
     };
   }, []);
+  const handleClick = () => {
+    webApp?.openLink('https://novawallet.io');
+    webApp?.close();
+  };
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -44,7 +48,10 @@ export default function SettingsPage() {
           showArrow
         />
       </Plate>
-      <span className="w-full h-[150px] bg-[url('/images/nova.png')] bg-cover rounded-2xl relative">
+      <button
+        className="w-full h-[150px] bg-[url('/images/nova.png')] bg-cover rounded-2xl relative"
+        onClick={handleClick}
+      >
         <div className="absolute right-[5%] top-[10%]">
           <TextBase as="p" align="right" className="text-body-bold text-white mb-4">
             Migrate to Nova Wallet!
@@ -62,7 +69,7 @@ export default function SettingsPage() {
             <HelpText className="text-white font-semibold">Super Simple Staking</HelpText>
           </div>
         </div>
-      </span>
+      </button>
       <Plate className="w-full p-0">
         <LinkCard
           text="Legal Information"

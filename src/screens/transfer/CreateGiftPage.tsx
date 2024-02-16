@@ -53,7 +53,7 @@ export default function CreateGiftPage() {
   return (
     <div className="flex flex-col items-center gap-3">
       <Player
-        src="/gifs/present.json"
+        src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
         keepLastFrame
         autoplay
         className="player mb-3 w-[256px] h-[256px]"
