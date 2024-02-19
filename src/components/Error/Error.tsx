@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { MediumTitle, TitleText } from '@/components';
+import { MediumTitle, TitleText } from '@/components/Typography';
 
 const Error = () => {
   return (
