@@ -82,7 +82,7 @@ export const DashboardMain = () => {
   }
 
   return (
-    <div className="flex flex-col break-all">
+    <div className="flex flex-col break-words">
       <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6 items-center">
         <Avatar
           src={user?.photo_url}

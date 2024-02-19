@@ -58,7 +58,7 @@ export default function ConfirmationPage() {
   }, [selectedAsset]);
 
   const symbol = selectedAsset?.asset?.symbol;
-  const fee = formatBalance((selectedAsset?.fee as number).toString(), selectedAsset?.asset?.precision).formattedValue;
+  const fee = formatBalance((selectedAsset?.fee || 0).toString(), selectedAsset?.asset?.precision)?.formattedValue;
   const details = [
     {
       title: 'Recipients address',
