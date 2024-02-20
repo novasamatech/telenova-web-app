@@ -90,6 +90,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     setAmount(String(maxAmountToSend));
     setIsAmountValid(Boolean(maxAmountToSend));
   };
+
   const handleChange = (value: string) => {
     const formattedValue = value.trim().replace(/,/g, '.');
     setTransferAll(false);

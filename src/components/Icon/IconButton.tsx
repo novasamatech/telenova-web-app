@@ -15,7 +15,7 @@ const IconButton = ({ iconName, onClick, size = 40, text = '' }: Props) => {
     <Button
       radius="full"
       variant="shadow"
-      className="bg-white h-[48px] w-full p-1 gap-4 justify-start border border-border-neutral shadow-button"
+      className="bg-white h-[48px] w-full p-1 gap-4 justify-start border border-border-neutral shadow-button drop-shadow-button"
       onClick={onClick}
     >
       <span className="w-[40px]">

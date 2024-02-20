@@ -13,6 +13,7 @@ type AmountDetailsProps = {
   deposit: number;
   checkBalanceDeposit: boolean;
   handleChange: (value: string) => void;
+  children?: React.ReactNode;
 };
 
 export default function AmountDetails({
@@ -24,6 +25,7 @@ export default function AmountDetails({
   deposit,
   checkBalanceDeposit,
   handleChange,
+  children,
 }: AmountDetailsProps) {
   return (
     <>
@@ -53,11 +55,7 @@ export default function AmountDetails({
           <>
             <BodyText align="right" className="text-text-danger">
               {+amount > +maxAmountToSend ? 'Insufficient balance' : 'Invalid amount'} <br />
-              {selectedAsset?.isGift && !!deposit && +amount < deposit && (
-                <BodyText as="span" className="text-text-danger">
-                  Your gift should remain above the minimal network deposit {deposit} {selectedAsset?.asset?.symbol}
-                </BodyText>
-              )}
+              {children}
             </BodyText>
           </>
         )}
