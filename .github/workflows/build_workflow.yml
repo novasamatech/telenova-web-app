@@ -57,6 +57,7 @@ jobs:
             NEXT_PUBLIC_BOT_API_URL=${{ secrets.NEXT_PUBLIC_BOT_API_URL }}
             NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}
             NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS }}
+            NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS=${{ secrets.NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS }}
 
   deploy-dev:
     runs-on: ubuntu-latest
