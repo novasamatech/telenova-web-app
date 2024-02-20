@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import secureLocalStorage from 'react-secure-storage';
 import { Link } from 'react-router-dom';
 
 import { Paths } from '@/common/routing';
@@ -12,7 +11,7 @@ import { Gift } from '@/common/types';
 
 const CreatedGiftPlate = () => {
   const { getGiftsState } = useBalances();
-  const gifts = JSON.parse(secureLocalStorage.getItem(getStoreName(GIFT_STORE)) as string);
+  const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
   const [unclaimed, setUnclaimed] = useState<Gift[]>([]);
 
   useEffect(() => {

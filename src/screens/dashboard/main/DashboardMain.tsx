@@ -8,7 +8,7 @@ import { useMainButton } from '@/common/telegram/useMainButton';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useBalances } from '@common/balances/BalanceProvider';
 import { useChainRegistry } from '@common/chainRegistry';
-import { resetWallet } from '@common/wallet';
+import { getMnemonic, resetWallet } from '@common/wallet';
 import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
@@ -36,12 +36,21 @@ export const DashboardMain = () => {
   const { user, BackButton } = useTelegram();
   const { hideMainButton } = useMainButton();
 
+  function clearWallet(clearLocal?: boolean) {
+    resetWallet(clearLocal);
+    navigate(Paths.ONBOARDING);
+  }
+
   useEffect(() => {
     hideMainButton();
     BackButton?.hide();
-    if (!publicKey) {
+    if (!getMnemonic()) {
+      clearWallet(true);
+
       return;
     }
+    if (!publicKey) return;
+
     (async () => {
       const chains = await getAllChains();
       console.info(`Found all ${chains.length} chains`);
@@ -75,11 +84,6 @@ export const DashboardMain = () => {
       setAssets((prevAssets) => prevAssets.sort((a, b) => a.asset.symbol.localeCompare(b.asset.symbol)));
     })();
   }, [publicKey]);
-
-  function clearWallet(clearLocal?: boolean) {
-    resetWallet(clearLocal);
-    navigate(Paths.ONBOARDING);
-  }
 
   return (
     <div className="flex flex-col break-words">
