@@ -65,7 +65,7 @@ export default function ChangePasswordPage() {
       <Input
         isClearable
         variant="flat"
-        placeholder="Enter 8-character password here"
+        placeholder="Enter Password Here"
         type="password"
         className="max-w-sm text-left mt-8"
         classNames={{
