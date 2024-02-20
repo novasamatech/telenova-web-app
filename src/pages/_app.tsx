@@ -3,12 +3,14 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { NextUIProvider } from '@nextui-org/react';
 import { Manrope } from 'next/font/google';
 
 import { TelegramProvider } from '@common/providers/telegramProvider';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
+import Error from '@/components/Error/Error';
 import './globals.css';
 
 const manrope = Manrope({
@@ -37,13 +39,15 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"></meta>
       </Head>
       <NextUIProvider>
-        <GlobalStateProvider>
-          {render && (
-            <TelegramProvider>
-              <Router>{getLayout(<Component {...pageProps} />)} </Router>
-            </TelegramProvider>
-          )}
-        </GlobalStateProvider>
+        <ErrorBoundary fallback={<Error />}>
+          <GlobalStateProvider>
+            {render && (
+              <TelegramProvider>
+                <Router>{getLayout(<Component {...pageProps} />)} </Router>
+              </TelegramProvider>
+            )}
+          </GlobalStateProvider>
+        </ErrorBoundary>
       </NextUIProvider>
     </main>
   );

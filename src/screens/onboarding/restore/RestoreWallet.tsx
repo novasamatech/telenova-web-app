@@ -16,7 +16,7 @@ type Props = {
 export const RestoreWalletPage = ({ mnemonic }: Props) => {
   const navigate = useNavigate();
   const { user } = useTelegram();
-  const { mainButton, addMainButton, reset } = useMainButton();
+  const { mainButton, addMainButton, reset, hideMainButton } = useMainButton();
   const { setPublicKey } = useGlobalContext();
 
   const [password, setPassword] = useState('');
@@ -40,6 +40,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
       if (wallet) {
         setPublicKey(wallet?.publicKey);
         navigate(Paths.DASHBOARD);
+        hideMainButton();
       }
     };
 
