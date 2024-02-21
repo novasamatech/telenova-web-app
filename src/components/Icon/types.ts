@@ -27,6 +27,7 @@ import UserWelcome from '@common/assets/svg/welcome/User.svg';
 import SuccessWelcome from '@common/assets/svg/welcome/success-welcome.svg';
 import DotWelcome from '@common/assets/svg/welcome/Polkadot.svg';
 import GiftClaimed from '@common/assets/svg/GiftClaimed.svg';
+import PendingGift from '@common/assets/svg/pendingGift.svg';
 
 const AllIcons = {
   DOT,
@@ -58,6 +59,7 @@ const AllIcons = {
   DotWelcome,
   Star,
   GiftClaimed,
+  PendingGift,
 };
 
 export type IconNames = keyof typeof AllIcons;
