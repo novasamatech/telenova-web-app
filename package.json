@@ -11,9 +11,9 @@
     "test:ci": "jest --ci"
   },
   "dependencies": {
+    "@polkadot/api": "^10.11.2",
     "@lottiefiles/react-lottie-player": "^3.5.3",
     "@nextui-org/react": "^2.2.9",
-    "@polkadot/api": "^10.11.2",
     "@polkadot/keyring": "^12.6.1",
     "@polkadot/react-identicon": "^3.6.4",
     "@polkadot/types": "^10.11.2",
