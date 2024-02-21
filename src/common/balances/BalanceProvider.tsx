@@ -177,7 +177,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
       }),
     );
 
-    return [unclaimed, claimed];
+    return [unclaimed.sort((a, b) => b.timestamp - a.timestamp), claimed.sort((a, b) => b.timestamp - a.timestamp)];
   }
   async function getFreeBalance(address: Address, chainId: ChainId): Promise<string> {
     const connection = await getConnection(chainId);

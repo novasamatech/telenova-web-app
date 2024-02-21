@@ -21,7 +21,7 @@ const CreatedGiftPlate = () => {
       const [unclaimed] = await getGiftsState(mapGifts!);
       setUnclaimed(unclaimed);
     })();
-  }, [gifts]);
+  }, []);
 
   if (!gifts) return;
 

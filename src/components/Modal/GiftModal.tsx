@@ -28,12 +28,13 @@ const GIFTS: GiftStatusType = {
 
 export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
-  const { startParam } = useTelegram();
+  const { startParam, webApp } = useTelegram();
   const { submitExtrinsic } = useExtrinsicProvider();
   const { getAssetBySymbol } = useChainRegistry();
   const { getFreeBalance } = useBalances();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [giftSymbol, setGiftSymbol] = useState('');
   const [giftBalance, setGiftBalance] = useState('');
   const [giftStatus, setGiftStatus] = useState<GIFT_STATUS | null>(null);
@@ -63,6 +64,8 @@ export default function GiftModal() {
   };
 
   const handleGiftClaim = async () => {
+    setIsDisabled(true);
+
     if (giftBalance === '0') {
       handleClose();
 
@@ -79,7 +82,7 @@ export default function GiftModal() {
         // TODO optimistic update balance
       })
       .catch(() => {
-        alert('Something went wrong. Failed to claim gift');
+        webApp?.showAlert('Something went wrong. Failed to claim gift');
       })
       .finally(() => {
         if (lottieRef.current) {
@@ -90,8 +93,7 @@ export default function GiftModal() {
   };
 
   const handleOnEvent = () => {
-    setIsOpen(false);
-    setIsGiftClaimed(true);
+    handleClose();
   };
 
   return (
@@ -104,7 +106,6 @@ export default function GiftModal() {
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
                   <Lottie
-                    keepLastFrame
                     path={`/gifs/Gift_claim_${giftSymbol}.json`}
                     className="player w-[210px] h-[170px] m-auto"
                     ref={lottieRef}
@@ -117,7 +118,7 @@ export default function GiftModal() {
                 <TitleText align="center">{GIFTS[giftStatus].text} </TitleText>
               </ModalBody>
               <ModalFooter className="justify-center">
-                <Button color="primary" className="w-[250px]" onPress={handleGiftClaim}>
+                <Button color="primary" className="w-[250px]" isDisabled={isDisabled} onPress={handleGiftClaim}>
                   {GIFTS[giftStatus].btnText}
                 </Button>
               </ModalFooter>
