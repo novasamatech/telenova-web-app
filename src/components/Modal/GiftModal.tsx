@@ -124,10 +124,12 @@ export default function GiftModal() {
               </ModalFooter>
             </>
           ) : (
-            <>
-              <Shimmering width={250} height={20} className="mx-auto my-2" />
-              <Shimmering width={150} height={20} className="mx-auto my-2" />
-            </>
+            <div className="w-full grid gap-4 justify-center mb-4">
+              <Icon name="PendingGift" className="w-[210px] h-[190px] m-auto" />
+              <Shimmering width={220} height={15} />
+              <Shimmering width={150} height={15} className="mx-auto" />
+              <Shimmering width={220} height={15} />
+            </div>
           )}
         </ModalContent>
       </Modal>
