@@ -20,6 +20,7 @@ import {
   ConfirmationPage,
   ResultPage,
   CreateGiftPage,
+  AmountGiftPage,
 } from '@/screens/transfer/';
 
 export const routesConfig: RouteObject[] = [
@@ -90,6 +91,10 @@ export const routesConfig: RouteObject[] = [
   {
     path: Paths.TRANSFER_AMOUNT,
     element: <AmountPage />,
+  },
+  {
+    path: Paths.TRANSFER_AMOUNT_GIFT,
+    element: <AmountGiftPage />,
   },
   {
     path: Paths.TRANSFER_CONFIRMATION,

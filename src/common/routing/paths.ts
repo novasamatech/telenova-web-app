@@ -23,6 +23,7 @@ export const Paths = {
   TRANSFER_SELECT_TOKEN: '/transfer/select-token',
   TRANSFER_ADDRESS: '/transfer/address',
   TRANSFER_AMOUNT: '/transfer/amount',
+  TRANSFER_AMOUNT_GIFT: '/transfer/amount-gift',
   TRANSFER_CONFIRMATION: '/transfer/confirmation',
   TRANSFER_RESULT: '/transfer/result',
   TRANSFER_CREATE_GIFT: '/transfer/create-gift',

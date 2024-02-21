@@ -23,7 +23,7 @@ export default {
         manrope: ['var(--font-manrope)'],
       },
       dropShadow: {
-        button: '0px 2px 2px var(--Color-Shadow-color-shadow-second-layer, #B2B5C8)',
+        button: '0px 4px 3px var(--Color-Shadow-color-shadow-second-layer, #b2b5c87d)',
       },
       fontSize: fontSizes,
       backgroundImage: {
