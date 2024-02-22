@@ -33,7 +33,7 @@ export default function SettingsPage() {
           iconName="Language"
           iconClassName="w-6 h-6"
           valueText="English"
-          className="grid-flow-col cursor-default"
+          className="grid-flow-col cursor-default pointer-events-none"
           wrapperClassName="hover:bg-unset active:bg-unset"
           showArrow
         />
@@ -42,7 +42,7 @@ export default function SettingsPage() {
           text="Default Currency"
           iconName="Currency"
           iconClassName="w-6 h-6"
-          className="grid-flow-col cursor-default"
+          className="grid-flow-col cursor-default pointer-events-none"
           wrapperClassName="hover:bg-unset active:bg-unset"
           valueText="USD"
           showArrow

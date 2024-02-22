@@ -21,6 +21,17 @@ body {
   background-color: var(--gray-gray50);
 }
 
+/* Hovered links */
+a:hover {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+
 /* Scrollbar for Firefox */
 * {
   scrollbar-width: thin;
