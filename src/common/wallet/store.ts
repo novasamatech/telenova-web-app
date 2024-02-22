@@ -33,7 +33,11 @@ function unwrapHexString(string: string): HexString {
 export const getWallet = (): Wallet | null => {
   const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
 
-  return publicKey ? { publicKey: unwrapHexString(publicKey) } : null;
+  if (publicKey) {
+    return { publicKey: unwrapHexString(publicKey) };
+  } else {
+    return null;
+  }
 };
 
 export const generateWalletMnemonic = (): string => {

@@ -22,6 +22,7 @@ import {
   CreateGiftPage,
   AmountGiftPage,
 } from '@/screens/transfer/';
+import Error from '@/components/Error/Error';
 
 export const routesConfig: RouteObject[] = [
   {
@@ -108,4 +109,6 @@ export const routesConfig: RouteObject[] = [
     path: Paths.TRANSFER_CREATE_GIFT,
     element: <CreateGiftPage />,
   },
+
+  { path: '*', element: <Error /> },
 ];
