@@ -1,30 +1,23 @@
-# Dockerfile.build
-FROM node:18-alpine AS build
+FROM node:18-alpine
 
 WORKDIR /app
 COPY . .
+COPY docker/entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ARG NEXT_PUBLIC_BOT_API_URL
 ARG NEXT_PUBLIC_BOT_ADDRESS
 ARG NEXT_PUBLIC_WEB_APP_ADDRESS
 ARG NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS
+ARG DOCKER_TAGS
+
 ENV NEXT_PUBLIC_BOT_API_URL=$NEXT_PUBLIC_BOT_API_URL
 ENV NEXT_PUBLIC_BOT_ADDRESS=$NEXT_PUBLIC_BOT_ADDRESS
 ENV NEXT_PUBLIC_WEB_APP_ADDRESS=$NEXT_PUBLIC_WEB_APP_ADDRESS
 ENV NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS=$NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS
+ENV DOCKER_TAGS=${DOCKER_TAGS}
 
 RUN yarn install
 RUN yarn build
 
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY package.json ./
-COPY yarn.lock ./
-
-RUN yarn install
-
-CMD ["yarn", "start"]
+CMD ["entrypoint.sh"]

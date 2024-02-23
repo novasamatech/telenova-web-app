@@ -58,6 +58,7 @@ jobs:
             NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}
             NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS }}
             NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS=${{ secrets.NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS }}
+            DOCKER_TAGS=${{ steps.meta.outputs.tags }}
 
   deploy-dev:
     runs-on: ubuntu-latest
