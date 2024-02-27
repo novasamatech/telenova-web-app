@@ -30,6 +30,8 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [deposit, setDeposit] = useState(0);
 
+  const isAccountTerminate = Boolean(!transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit);
+
   useEffect(() => {
     mainButton.setText(mainButtonText);
     BackButton?.show();
@@ -64,7 +66,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
   }, [BackButton]);
 
   useEffect(() => {
-    if (!isAmountValid || !Number(amount)) {
+    if (!isAmountValid || !Number(amount) || isAccountTerminate || isPending) {
       mainButton.disable();
       mainButton.setText(mainButtonText);
 
@@ -82,7 +84,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     return () => {
       reset();
     };
-  }, [amount, isAmountValid, maxAmountToSend]);
+  }, [amount, isAmountValid, maxAmountToSend, isPending, isAccountTerminate]);
 
   const handleMaxSend = () => {
     if (maxAmountToSend === '') return;
@@ -112,15 +114,11 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     setAmount(formattedValue);
   };
 
-  const checkBalanceDeposit = Boolean(
-    !transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit,
-  );
-
   return {
     handleMaxSend,
     handleChange,
     setIsAmountValid,
-    checkBalanceDeposit,
+    isAccountTerminate,
     isPending,
     deposit,
     selectedAsset,

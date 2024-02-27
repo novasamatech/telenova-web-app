@@ -12,7 +12,7 @@ export default function AmountGiftPage() {
     handleMaxSend,
     handleChange,
     setIsAmountValid,
-    checkBalanceDeposit,
+    isAccountTerminate,
     isPending,
     deposit,
     selectedAsset,
@@ -53,7 +53,7 @@ export default function AmountGiftPage() {
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
-        checkBalanceDeposit={checkBalanceDeposit}
+        isAccountTerminate={isAccountTerminate}
         handleChange={handleChange}
       >
         {!!deposit && +amount < deposit && (

@@ -9,7 +9,7 @@ export default function AmountPage() {
   const {
     handleMaxSend,
     handleChange,
-    checkBalanceDeposit,
+    isAccountTerminate,
     isPending,
     deposit,
     selectedAsset,
@@ -44,7 +44,7 @@ export default function AmountPage() {
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
-        checkBalanceDeposit={checkBalanceDeposit}
+        isAccountTerminate={isAccountTerminate}
         handleChange={handleChange}
       />
     </>
