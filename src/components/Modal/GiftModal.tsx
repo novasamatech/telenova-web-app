@@ -131,28 +131,29 @@ export default function GiftModal() {
         placement="center"
         isDismissable={false}
         classNames={{
-          header: 'p-3',
-          footer: 'p-3',
+          header: 'p-4 pb-1',
+          footer: 'p-4 pt-1',
           closeButton: 'mt-[10px]',
         }}
+        className="h-[450px]"
         onClose={handleClose}
       >
         <ModalContent>
-          <ModalHeader className="text-center">
-            <BigTitle> {GIFTS[giftStatus || GIFT_STATUS.NOT_CLAIMED].text}</BigTitle>
-          </ModalHeader>
           {giftStatus !== null ? (
             <>
+              <ModalHeader className="text-center">
+                <BigTitle> {GIFTS[giftStatus].text}</BigTitle>
+              </ModalHeader>
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
                   <Lottie
                     path={`/gifs/Gift_claim_${giftSymbol}.json`}
-                    className="player w-[210px] h-[170px] m-auto"
+                    className="player w-[248px] h-[248px] m-auto"
                     ref={lottieRef}
                     loop={false}
                   />
                 ) : (
-                  <Icon name="GiftClaimed" className="w-[210px] h-[220px] m-auto" />
+                  <Icon name="GiftClaimed" className="w-[248px] h-[248px] m-auto" />
                 )}
               </ModalBody>
               <ModalFooter className="justify-center">
@@ -168,10 +169,17 @@ export default function GiftModal() {
               </ModalFooter>
             </>
           ) : (
-            <div className="w-full grid gap-4 justify-center mb-4">
-              <Icon name="PendingGift" className="w-[210px] h-[190px] m-auto" />
-              <Shimmering width={220} height={40} />
-            </div>
+            <>
+              <ModalHeader className="text-center">
+                <Shimmering width={200} height={30} className="rounded-full" />
+              </ModalHeader>
+              <ModalBody>
+                <Icon name="PendingGift" className="w-[170px] h-[170px] m-auto" />
+              </ModalBody>
+              <ModalFooter className="justify-center">
+                <Shimmering height={50} width={300} className="w-full rounded-full" />
+              </ModalFooter>
+            </>
           )}
         </ModalContent>
       </Modal>
