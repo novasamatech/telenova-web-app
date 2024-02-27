@@ -35,7 +35,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
 
   return (
     <main className={`${manrope.variable} font-sans`}>
-      <style jsx global>{`
+      <style>{`
         :root {
           --font-manrope: ${manrope.style.fontFamily};
         }
