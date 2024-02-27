@@ -15,7 +15,7 @@ type AmountDetailsProps = {
   handleChange: (value: string) => void;
   children?: React.ReactNode;
 };
-//todo change layout mobile text
+//TODO: change layout mobile text
 
 export default function AmountDetails({
   selectedAsset,
