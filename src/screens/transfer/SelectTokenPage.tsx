@@ -25,7 +25,7 @@ export default function SelectTokenPage() {
 
   return (
     <>
-      <TitleText className="mt-10 mb-6">Select a token to send</TitleText>
+      <TitleText className="mt-6 mb-10">Select a token to send</TitleText>
       <div className="flex flex-col gap-2 mt-4">
         {assets.map((asset) => (
           <Link
@@ -36,7 +36,7 @@ export default function SelectTokenPage() {
             <AssetBalance
               asset={asset.asset}
               balance={asset.totalBalance}
-              className="bg-white rounded-lg px-4 py-2 w-full hover:bg-bg-item-pressed active:bg-bg-item-pressed"
+              className="bg-white rounded-lg px-4 py-3 w-full hover:bg-bg-item-pressed active:bg-bg-item-pressed"
               name={asset.name}
               showArrow
             />

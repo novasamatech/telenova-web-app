@@ -3,7 +3,8 @@ import type { Config } from 'tailwindcss';
 const fontSizes: Required<Config>['theme']['fontSize'] = {
   // EXTRA BOLD
   'large-title': ['2.5rem', { lineHeight: 'normal', letterSpacing: '-0.5px', fontWeight: 700 }],
-  title: ['1.25rem', { lineHeight: '2rem', letterSpacing: '-0.013em', fontWeight: 700 }],
+  title: ['1.5rem', { lineHeight: '2rem', letterSpacing: '-0.013em', fontWeight: 700 }],
+  'big-title': ['1.375rem', { lineHeight: 'normal', letterSpacing: '-0.013em', fontWeight: 700 }],
   'body-bold': ['1rem', { lineHeight: '1.25rem', letterSpacing: '-0.013em', fontWeight: 800 }],
 
   // SEMI BOLD

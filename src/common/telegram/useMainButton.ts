@@ -25,8 +25,6 @@ export const useMainButton = () => {
   const addMainButton = useCallback(
     (event: VoidFunction, text: string = 'Continue') => {
       reset();
-      window?.Telegram?.WebApp?.enableClosingConfirmation();
-
       mainButton.setText(text);
       mainButton.show();
       mainButton.onClick(event);
@@ -37,7 +35,6 @@ export const useMainButton = () => {
 
   const hideMainButton = useCallback(() => {
     mainButton.hide();
-    window?.Telegram?.WebApp?.disableClosingConfirmation();
     reset();
   }, []);
 

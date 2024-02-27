@@ -42,13 +42,14 @@ export default function ReceivePage() {
   }, []);
 
   return (
-    <div className="flex items-center flex-col h-[95vh] justify-center mx-[-16px]">
-      <TitleText className="mb-7">Receive {assets[activeSlideIndex].asset.symbol}</TitleText>
+    <div className="flex items-center flex-col min-h-[95vh] mx-[-16px]">
+      <TitleText className="mt-6 mb-10">Receive {assets[activeSlideIndex].asset.symbol}</TitleText>
       <Carousel
         activeSlideIndex={activeSlideIndex}
         containerProps={{
           style: {
-            gap: 10,
+            gap: 24,
+            marginTop: 16,
             width: '100%',
             position: 'relative',
           },
@@ -58,7 +59,10 @@ export default function ReceivePage() {
           containerProps: {
             style: {
               position: 'absolute',
-              top: '-20px',
+              background: '#E0E4F5',
+              borderRadius: '12px',
+              padding: '0 10px',
+              top: '-16px',
             },
           },
           itemBtnProps: {
@@ -82,7 +86,6 @@ export default function ReceivePage() {
         updateOnItemClick
         centerMode
         infinite
-        preventScrollOnSwipe
         onRequestChange={setActiveSlideIndex}
       >
         {assets.map((asset) => (
@@ -109,7 +112,7 @@ export default function ReceivePage() {
         <PopoverTrigger>
           <Button
             color="primary"
-            className="w-[200px] h-[50px] rounded-full mt-6"
+            className="w-[200px] min-h-[50px] rounded-full"
             onClick={() => navigator.clipboard.writeText(assets[activeSlideIndex].address)}
           >
             <MediumTitle as="span" className="text-white">
@@ -124,7 +127,7 @@ export default function ReceivePage() {
         <Button
           color="primary"
           variant="flat"
-          className="w-[200px] h-[50px] mt-4 rounded-full"
+          className="w-[200px] min-h-[50px] mt-4 rounded-full"
           onClick={() => shareQrAddress(assets[activeSlideIndex].asset.symbol, assets[activeSlideIndex].address)}
         >
           <MediumTitle as="span" className="text-text-on-button-bold">

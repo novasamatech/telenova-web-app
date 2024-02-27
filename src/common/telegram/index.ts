@@ -12,9 +12,9 @@ export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): 
   }
 };
 
-export const createTgLink = (secret: string, symbol: string): TgLink => {
+export const createTgLink = (secret: string, symbol: string, amount: string): TgLink => {
   const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}_${symbol}`;
-  const text = 'Here is your gift';
+  const text = `\nHey, I have sent you **${amount} ${symbol}** as a Gift in the Telenova app, tap on the link to claim it!`;
 
   return { url, text };
 };

@@ -10,7 +10,7 @@ import {
   CheckboxGroup,
 } from '@nextui-org/react';
 
-import { Icon, BodyText, TitleText } from '@/components';
+import { Icon, BodyText, BigTitle } from '@/components';
 import { IconNames } from '../Icon/types';
 
 type Props = {
@@ -25,8 +25,9 @@ const checkboxes = [
     iconName: 'Blind',
     label: (
       <>
-        Having the recovery phrase means having <strong>total and permanent access to all connected wallets</strong> and
-        the money within them.
+        Having the recovery phrase means having{' '}
+        <strong className="text-text-primary">total and permanent access to all connected wallets</strong> and the money
+        within them.
       </>
     ),
   },
@@ -36,7 +37,7 @@ const checkboxes = [
     label: (
       <>
         Do not enter your recovery phrase or private key into any form or app. They are
-        <strong> not needed for app functionality.</strong>
+        <strong className="text-text-primary"> not needed for app functionality.</strong>
       </>
     ),
   },
@@ -45,8 +46,8 @@ const checkboxes = [
     iconName: 'UserBlock',
     label: (
       <>
-        Nova Wallet <strong>admins will never request your recovery phrase</strong> or private key under any
-        circumstances.
+        Support or <strong className="text-text-primary">admins will never request your recovery phrase</strong> or
+        private key under any circumstances.
       </>
     ),
   },
@@ -60,7 +61,7 @@ export default function RecoveryModal({ isOpen, onClose, onSubmit }: Props) {
       <Modal isOpen={isOpen} size="xs" placement="center" isDismissable={false} onClose={onClose}>
         <ModalContent>
           <ModalHeader className="">
-            <TitleText>Please read this carefully </TitleText>
+            <BigTitle>Read this carefully</BigTitle>
           </ModalHeader>
           <CheckboxGroup color="default" value={selected} onValueChange={setSelected}>
             <ModalBody className="gap-6 mb-2">
@@ -79,7 +80,7 @@ export default function RecoveryModal({ isOpen, onClose, onSubmit }: Props) {
           <ModalFooter className="justify-center">
             <Button
               color="primary"
-              className="w-full rounded-full"
+              className="w-full rounded-full h-[50px]"
               isDisabled={selected.length !== 3}
               onPress={onSubmit}
             >

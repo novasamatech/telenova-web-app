@@ -34,7 +34,7 @@ export default function CreateGiftPage() {
       await handleSendGift(submitExtrinsic, selectedAsset as TrasferAsset, wallet.address)
         .then(() => {
           backupGifts(wallet.address, wallet.secret, selectedAsset.chainId as ChainId, selectedAsset.amount as string);
-          setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string));
+          setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string, selectedAsset?.amount as string));
         })
         .catch((error) => alert(`Error: ${error.message}\nTry to relaod`));
     })();
@@ -51,17 +51,17 @@ export default function CreateGiftPage() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="grid items-end justify-center h-[93vh]">
       <Player
         src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
         keepLastFrame
         autoplay
-        className="player mb-3 w-[256px] h-[256px]"
+        className="mb-3 w-[256px] h-[256px]"
         onEvent={(event) => handleOnEvent(event)}
       />
       {loading || !link ? (
         <>
-          <div className="h-[100px]">
+          <div className="h-[100px] mb-auto">
             <div className="opacity-0 animate-text mt-3">
               <HeadlineText className="text-text-hint" align="center">
                 Adding tokens...

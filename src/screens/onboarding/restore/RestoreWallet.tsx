@@ -77,7 +77,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         isClearable
         placeholder="Enter Password Here"
         type="password"
-        className="max-w-sm text-left"
+        className="max-w-sm text-left mb-10"
         classNames={{
           inputWrapper: [
             'bg-bg-input border-1 shadow-none',

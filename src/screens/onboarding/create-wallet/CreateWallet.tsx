@@ -84,7 +84,6 @@ export default function CreateWalletPage() {
             <BodyText className="text-text-hint m-3">
               Your Telenova wallet is now ready to use! You can now begin exploring Polkadot ecosystem assets with ease!
             </BodyText>
-            <BodyText className="text-text-hint">Remember, do NOT share your passwords with anyone!</BodyText>
           </>
         )}
       </div>

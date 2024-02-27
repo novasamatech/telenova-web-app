@@ -15,6 +15,7 @@ type AmountDetailsProps = {
   handleChange: (value: string) => void;
   children?: React.ReactNode;
 };
+//todo change layout mobile text
 
 export default function AmountDetails({
   selectedAsset,
@@ -62,8 +63,8 @@ export default function AmountDetails({
       </div>
       {checkBalanceDeposit && (
         <BodyText align="left" className="text-text-hint mt-4">
-          The balance that remains after sending this amount is less than the minimal network deposit ({deposit}), you
-          may choose a different amount or use Max instead.
+          The balance that remains after sending your amount is less than the minimal network deposit ({deposit}{' '}
+          {selectedAsset?.asset?.symbol}), please choose a different amount or use Max instead.
         </BodyText>
       )}
     </>

@@ -26,10 +26,10 @@ export default function TransferPage() {
 
   return (
     <>
-      <TitleText className="mt-10 mb-6">How to send tokens</TitleText>
+      <TitleText className="mt-6 mb-10">How to send tokens</TitleText>
       <LinkCard
         href={Paths.TRANSFER_SELECT_TOKEN}
-        text="Send as Gift"
+        text="Send as Gift in Telegram"
         iconClassName="text-bg-icon-accent-primary"
         helpText="Transfer to one of your contacts"
         iconName="Gift"
@@ -39,7 +39,7 @@ export default function TransferPage() {
       />
       <LinkCard
         href={Paths.TRANSFER_SELECT_TOKEN}
-        text="External Address"
+        text="Send to Address"
         helpText="Transfer to address within the network"
         iconName="Address"
         wrapperClassName="py-1"
