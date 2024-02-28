@@ -103,10 +103,10 @@ export const westend: Chain = {
     },
   ],
   nodes: [
-    {
-      url: 'wss://westend-rpc.dwellir.com',
-      name: 'Dwellir node',
-    },
+    // {
+    //   url: 'wss://westend-rpc.dwellir.com',
+    //   name: 'Dwellir node',
+    // },
     {
       url: 'wss://rpc.ibp.network/westend',
       name: 'IBP network node',
