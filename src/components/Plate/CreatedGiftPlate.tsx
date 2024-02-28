@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Paths } from '@/common/routing';
-import { BodyText, Icon, Plate, TitleText } from '@/components';
+import { BodyText, Icon, Plate, BigTitle } from '@/components';
 import { GIFT_STORE } from '@/common/utils/constants';
 import { getStoreName } from '@/common/wallet';
 import { getGifts } from '@/common/utils/gift';
@@ -28,9 +28,9 @@ const CreatedGiftPlate = () => {
   return (
     <Plate className="w-full h-[90px] rounded-3xl mt-4 active:bg-bg-item-pressed">
       <Link to={Paths.GIFTS} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
-        <Icon name="Present" className="w-[60px] h-[60px]" />
+        <Icon name="Present" size={60} />
         <div className="grid">
-          <TitleText align="left">Created Gifts</TitleText>
+          <BigTitle align="left">Created Gifts</BigTitle>
           <BodyText align="left" className="text-text-hint">
             {unclaimed.length ? `Unclamed: ${unclaimed.length}` : 'All your gifts were claimed'}
           </BodyText>

@@ -55,6 +55,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
     setIsDirty(true);
     validatePassword(password);
   };
+  // TODO: return btn on keyboard
 
   return (
     <form className="flex flex-col mt-8 gap-4 w-full items-center">
@@ -74,7 +75,7 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         className="max-w-sm text-left"
         value={password}
         isInvalid={!isPasswordValid}
-        errorMessage={!isPasswordValid && 'Enter correct 8-character password here'}
+        errorMessage={!isPasswordValid && 'Enter correct password here'}
         onBlur={validateOnBlur}
         onValueChange={validateOnChange}
         onClear={() => setPassword('')}

@@ -5,7 +5,7 @@ const AssetsList = () => {
   const { assets } = useGlobalContext();
 
   return (
-    <div className="flex flex-col gap-4 mt-4">
+    <div className="flex flex-col gap-6 mt-4">
       {assets.map((asset) => (
         <AssetBalance
           className="m-1"

@@ -98,7 +98,11 @@ export const DashboardMain = () => {
           }}
         />
         <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
-        <Button isIconOnly className="bg-transparent drop-shadow-button" onClick={() => navigate(Paths.SETTINGS)}>
+        <Button
+          isIconOnly
+          className="bg-transparent overflow-visible drop-shadow-button"
+          onClick={() => navigate(Paths.SETTINGS)}
+        >
           <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
         </Button>
       </div>

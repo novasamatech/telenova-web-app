@@ -58,7 +58,10 @@ export default function GiftPage() {
       ) : unclaimedGifts.length ? (
         unclaimedGifts.map((gift) => (
           <Link
-            to={{ pathname: `${Paths.GIFT_DETAILS}`, search: `?seed=${gift.secret}&symbol=${gift.chainAsset?.symbol}` }}
+            to={{
+              pathname: `${Paths.GIFT_DETAILS}`,
+              search: `?seed=${gift.secret}&symbol=${gift.chainAsset?.symbol}&balance=${gift.balance}`,
+            }}
             key={gift.timestamp}
           >
             <GiftPlate gift={gift} isClaimed={false} />

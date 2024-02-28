@@ -6,11 +6,13 @@ import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvide
 import { useChainRegistry } from '@/common/chainRegistry';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { claimGift } from '@/common/utils/extrinsics';
+import { claimGift, handleFeeTrasferAll } from '@/common/utils/extrinsics';
 import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGiftInfo } from '@/common/utils/gift';
 import { PublicKey } from '@/common/types';
-import { Icon, Shimmering, TitleText } from '@/components';
+import { BigTitle, Icon, Shimmering } from '@/components';
+import { formatBalance } from '@/common/utils/balance';
+import { ChainAsset } from '@/common/chainRegistry/types';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -23,13 +25,13 @@ type GiftStatusType = {
 
 const GIFTS: GiftStatusType = {
   [GIFT_STATUS.NOT_CLAIMED]: { text: 'Claim your gift', btnText: 'Claim' },
-  [GIFT_STATUS.CLAIMED]: { text: 'Seems like the gift was already claimed', btnText: 'Okay' },
+  [GIFT_STATUS.CLAIMED]: { text: 'Gift was claimed', btnText: 'Okay' },
 };
 
 export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
-  const { submitExtrinsic } = useExtrinsicProvider();
+  const { submitExtrinsic, estimateFee } = useExtrinsicProvider();
   const { getAssetBySymbol } = useChainRegistry();
   const { getFreeBalance } = useBalances();
 
@@ -41,6 +43,15 @@ export default function GiftModal() {
 
   const lottieRef = useRef();
 
+  const showBalance = async (chain: ChainAsset, balance: string) => {
+    const fee = await handleFeeTrasferAll(estimateFee, chain.chain.chainId);
+    const formattedFee = Number(formatBalance(fee.toString(), chain.asset.precision).formattedValue);
+    const { formattedValue } = formatBalance(balance, chain.asset.precision);
+    const formattedBalance = parseFloat((+formattedValue - formattedFee).toFixed(4));
+
+    return formattedBalance;
+  };
+
   useEffect(() => {
     if (isGiftClaimed || !startParam || !publicKey) {
       return;
@@ -50,9 +61,16 @@ export default function GiftModal() {
     (async () => {
       const { giftAddress, chain, symbol } = await getGiftInfo(publicKey, startParam, getAssetBySymbol);
       const balance = await getFreeBalance(giftAddress, chain.chain.chainId);
-      setGiftBalance(balance);
       setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
       setGiftSymbol(balance === '0' ? '' : symbol);
+
+      if (balance === '0') {
+        setGiftBalance(balance);
+      } else {
+        showBalance(chain, balance).then((giftBalance) => {
+          setGiftBalance(giftBalance.toString());
+        });
+      }
     })();
   }, [startParam, publicKey, isGiftClaimed]);
 
@@ -65,11 +83,14 @@ export default function GiftModal() {
 
   const handleGiftClaim = async () => {
     setIsDisabled(true);
-
     if (giftBalance === '0') {
       handleClose();
 
       return;
+    }
+    if (lottieRef.current) {
+      // @ts-expect-error no types
+      lottieRef.current.play();
     }
 
     const { chainAddress, chain, keyring } = await getGiftInfo(
@@ -78,58 +99,74 @@ export default function GiftModal() {
       getAssetBySymbol,
     );
     claimGift(keyring, chainAddress, chain.chain.chainId, submitExtrinsic)
-      .then(() => {
-        // TODO optimistic update balance
-      })
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');
       })
       .finally(() => {
-        if (lottieRef.current) {
-          // @ts-expect-error no types
-          lottieRef.current.play();
-        }
+        handleClose();
       });
   };
 
-  const handleOnEvent = () => {
-    handleClose();
-  };
+  // TODO: add pause gift
+  // opt:  lib to change balance - animate
 
   return (
     <>
-      <Modal isOpen={isOpen} size="xs" placement="center" isDismissable={false} onClose={handleClose}>
+      <Modal
+        isOpen={isOpen}
+        size="xs"
+        placement="center"
+        isDismissable={false}
+        classNames={{
+          header: 'p-4 pb-1',
+          footer: 'p-4 pt-1',
+          closeButton: 'mt-[10px]',
+        }}
+        className="h-[450px]"
+        onClose={handleClose}
+      >
         <ModalContent>
-          <ModalHeader>You have a gift</ModalHeader>
           {giftStatus !== null ? (
             <>
+              <ModalHeader className="text-center">
+                <BigTitle> {GIFTS[giftStatus].text}</BigTitle>
+              </ModalHeader>
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
                   <Lottie
                     path={`/gifs/Gift_claim_${giftSymbol}.json`}
-                    className="player w-[210px] h-[170px] m-auto"
+                    className="player w-[248px] h-[248px] m-auto"
                     ref={lottieRef}
                     loop={false}
-                    onComplete={handleOnEvent}
                   />
                 ) : (
-                  <Icon name="GiftClaimed" className="w-[210px] h-[220px] m-auto" />
+                  <Icon name="GiftClaimed" className="w-[248px] h-[248px] m-auto" />
                 )}
-                <TitleText align="center">{GIFTS[giftStatus].text} </TitleText>
               </ModalBody>
               <ModalFooter className="justify-center">
-                <Button color="primary" className="w-[250px]" isDisabled={isDisabled} onPress={handleGiftClaim}>
-                  {GIFTS[giftStatus].btnText}
+                <Button
+                  color="primary"
+                  className="w-full h-[50px] rounded-full"
+                  isDisabled={isDisabled}
+                  isLoading={!giftBalance}
+                  onPress={handleGiftClaim}
+                >
+                  {GIFTS[giftStatus].btnText} {giftStatus === GIFT_STATUS.NOT_CLAIMED && `${giftBalance} ${giftSymbol}`}
                 </Button>
               </ModalFooter>
             </>
           ) : (
-            <div className="w-full grid gap-4 justify-center mb-4">
-              <Icon name="PendingGift" className="w-[210px] h-[190px] m-auto" />
-              <Shimmering width={220} height={15} />
-              <Shimmering width={150} height={15} className="mx-auto" />
-              <Shimmering width={220} height={15} />
-            </div>
+            <>
+              <ModalHeader className="text-center">
+                <Shimmering width={200} height={30} className="rounded-full" />
+              </ModalHeader>
+              <ModalBody>
+                <Icon name="PendingGift" className="w-[170px] h-[170px] m-auto" />
+              </ModalBody>
+              <ModalFooter className="justify-center">
+                <Shimmering height={50} width={300} className="w-full rounded-full" />
+              </ModalFooter>
+            </>
           )}
         </ModalContent>
       </Modal>

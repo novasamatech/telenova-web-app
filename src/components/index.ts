@@ -7,6 +7,7 @@ import {
   LabelText,
   HelpText,
   TextBase,
+  BigTitle,
 } from './Typography';
 import { Icon, IconButton } from './Icon';
 import Price from './Price/Price';
@@ -33,6 +34,7 @@ export {
   HeadlineText,
   LabelText,
   HelpText,
+  BigTitle,
   Icon,
   IconButton,
   Price,

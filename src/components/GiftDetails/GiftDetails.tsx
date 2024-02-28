@@ -1,6 +1,6 @@
-import { Button } from '@nextui-org/react';
 import { WebApp } from '@twa-dev/types';
 
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { BodyText, TitleText } from '@/components';
 import { navigateTranferById } from '@/common/telegram';
 import { TgLink } from '@/common/telegram/types';
@@ -11,18 +11,17 @@ type GiftDetailsProps = {
 };
 
 export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
+  const { addMainButton } = useMainButton();
   if (!link) return;
+
+  addMainButton(() => navigateTranferById(webApp, link), 'Send to contact');
 
   return (
     <>
-      <TitleText>The gift has been prepared!</TitleText>
-      <BodyText className="text-text-hint mb-4" align="center">
-        Send the link to anyone or share it directly to your Telegram contact. Don’t worry If you accidentally close
-        this window, your prepared gift will be waiting for you on the Main Screen
+      <TitleText className="mb-auto">The gift has been prepared!</TitleText>
+      <BodyText className="text-text-hint mt-auto" align="center">
+        Your gifts can be managed on Main screen
       </BodyText>
-      <Button color="primary" className="rounded-full w-[200px]" onClick={() => navigateTranferById(webApp, link)}>
-        Share with contact
-      </Button>
     </>
   );
 }

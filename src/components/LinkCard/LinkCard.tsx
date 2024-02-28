@@ -34,7 +34,7 @@ const LinkCard = ({
   <Plate className={cnTw(`w-full p-0 hover:bg-bg-item-pressed active:bg-bg-item-pressed`, wrapperClassName)}>
     <Link
       to={href}
-      className={cnTw(`w-full grid grid-cols-[auto,1fr,auto] items-center gap-4 min-h-[48px] px-4`, className)}
+      className={cnTw(`w-full grid grid-cols-[auto,1fr,auto] items-center gap-4 min-h-[56px] px-4`, className)}
       onClick={onClick}
     >
       {iconName && <Icon name={iconName} className={cnTw(`w-10 h-10`, iconClassName)} />}

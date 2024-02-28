@@ -11,10 +11,11 @@ type AmountDetailsProps = {
   maxAmountToSend: string;
   isPending: boolean;
   deposit: number;
-  checkBalanceDeposit: boolean;
+  isAccountTerminate: boolean;
   handleChange: (value: string) => void;
   children?: React.ReactNode;
 };
+//TODO: change layout mobile text
 
 export default function AmountDetails({
   selectedAsset,
@@ -23,7 +24,7 @@ export default function AmountDetails({
   maxAmountToSend,
   isPending,
   deposit,
-  checkBalanceDeposit,
+  isAccountTerminate,
   handleChange,
   children,
 }: AmountDetailsProps) {
@@ -60,11 +61,14 @@ export default function AmountDetails({
           </>
         )}
       </div>
-      {checkBalanceDeposit && (
-        <BodyText align="left" className="text-text-hint mt-4">
-          The balance that remains after sending this amount is less than the minimal network deposit ({deposit}), you
-          may choose a different amount or use Max instead.
-        </BodyText>
+      {isAccountTerminate && (
+        <div className="mt-4 p-4 bg-[#FFE2E0] border border-border-danger rounded-lg grid grid-cols-[auto,1fr]">
+          <Icon name="ExclamationMark" size={28} />
+          <BodyText align="left" className="text-text-danger">
+            The balance that remains after sending your amount is less than the minimal network deposit ({deposit}{' '}
+            {selectedAsset?.asset?.symbol}), please choose a different amount or use Max instead.
+          </BodyText>
+        </div>
       )}
     </>
   );

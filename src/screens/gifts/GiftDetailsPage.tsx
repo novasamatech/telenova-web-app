@@ -14,19 +14,24 @@ export default function GiftDetailsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { BackButton, webApp } = useTelegram();
-  const { hideMainButton } = useMainButton();
+  const { mainButton } = useMainButton();
 
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
     BackButton?.show();
-    hideMainButton();
-
+    mainButton.show();
     const callback = async () => {
       navigate(Paths.GIFTS);
     };
     BackButton?.onClick(callback);
-    setLink(createTgLink(searchParams.get('seed') as string, searchParams.get('symbol') as string));
+    setLink(
+      createTgLink(
+        searchParams.get('seed') as string,
+        searchParams.get('symbol') as string,
+        searchParams.get('balance') as string,
+      ),
+    );
 
     return () => {
       BackButton?.hide();
@@ -35,8 +40,8 @@ export default function GiftDetailsPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 h-[95vh]">
-      <Icon name="Present" size={250} />
+    <div className="grid items-center justify-center h-[93vh]">
+      <Icon name="Present" size={250} className="justify-self-center mt-auto" />
       <GiftDetails link={link} webApp={webApp as WebApp} />
     </div>
   );

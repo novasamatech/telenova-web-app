@@ -75,6 +75,14 @@ export async function handleFee(
   });
 }
 
+export async function handleFeeTrasferAll(estimateFee: EstimateFee, chainId: ChainId): Promise<number> {
+  return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
+    builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(FAKE_ACCOUNT_ID), false)),
+  ).then((fee: Balance) => {
+    return Number(fee);
+  });
+}
+
 export async function claimGift(
   keyring: KeyringPair,
   address: Address,
