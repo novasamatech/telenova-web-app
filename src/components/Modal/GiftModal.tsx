@@ -11,7 +11,7 @@ import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGiftInfo } from '@/common/utils/gift';
 import { PublicKey } from '@/common/types';
 import { BigTitle, Icon, Shimmering } from '@/components';
-import { formatAmount, formatBalance } from '@/common/utils/balance';
+import { formatBalance } from '@/common/utils/balance';
 import { ChainAsset } from '@/common/chainRegistry/types';
 
 enum GIFT_STATUS {
@@ -29,7 +29,7 @@ const GIFTS: GiftStatusType = {
 };
 
 export default function GiftModal() {
-  const { publicKey, isGiftClaimed, setAssets, setIsGiftClaimed } = useGlobalContext();
+  const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
   const { submitExtrinsic, estimateFee } = useExtrinsicProvider();
   const { getAssetBySymbol } = useChainRegistry();
@@ -99,19 +99,6 @@ export default function GiftModal() {
       getAssetBySymbol,
     );
     claimGift(keyring, chainAddress, chain.chain.chainId, submitExtrinsic)
-      .then(() => {
-        setAssets((assets) =>
-          assets.map((asset) => {
-            if (asset.chainId === chain.chain.chainId) {
-              const balance = +formatAmount(giftBalance, chain.asset.precision);
-
-              return { ...asset, totalBalance: (Number(asset?.totalBalance || 0) + balance).toString() };
-            }
-
-            return asset;
-          }),
-        );
-      })
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');
       })
