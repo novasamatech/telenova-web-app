@@ -27,6 +27,7 @@ const GIFTS: GiftStatusType = {
   [GIFT_STATUS.NOT_CLAIMED]: { text: 'Claim your gift', btnText: 'Claim' },
   [GIFT_STATUS.CLAIMED]: { text: 'Gift was claimed', btnText: 'Okay' },
 };
+let timeoutId: ReturnType<typeof setTimeout>;
 
 export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
@@ -67,14 +68,23 @@ export default function GiftModal() {
       if (balance === '0') {
         setGiftBalance(balance);
       } else {
-        showBalance(chain, balance).then((giftBalance) => {
-          setGiftBalance(giftBalance.toString());
-        });
+        showBalance(chain, balance)
+          .then((giftBalance) => {
+            setGiftBalance(giftBalance.toString());
+          })
+          .catch(() => {
+            setGiftBalance('');
+          });
       }
     })();
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [startParam, publicKey, isGiftClaimed]);
 
   const handleClose = () => {
+    clearTimeout(timeoutId);
     setIsOpen(false);
     if (giftBalance) {
       setIsGiftClaimed(true);
@@ -88,6 +98,7 @@ export default function GiftModal() {
 
       return;
     }
+    clearTimeout(timeoutId);
     if (lottieRef.current) {
       // @ts-expect-error no types
       lottieRef.current.play();
@@ -101,14 +112,32 @@ export default function GiftModal() {
     claimGift(keyring, chainAddress, chain.chain.chainId, submitExtrinsic)
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');
+        handleClose();
       })
       .finally(() => {
-        handleClose();
+        setIsGiftClaimed(true);
+        // @ts-expect-error no types
+        if (lottieRef.current && lottieRef.current.totalFrames - 1 === lottieRef.current.currentFrame) {
+          setIsOpen(false);
+        }
       });
   };
 
-  // TODO: add pause gift
   // opt:  lib to change balance - animate
+  const handleFrame = () => {
+    // @ts-expect-error no types
+    if (lottieRef.current && lottieRef.current.currentFrame === 0) {
+      // @ts-expect-error no types
+      timeoutId = setTimeout(() => lottieRef.current && lottieRef.current.pause(), 3015);
+    }
+  };
+
+  const handleComplete = () => {
+    if (lottieRef.current && isGiftClaimed) {
+      setIsOpen(false);
+    }
+  };
+  //TODO: change gifs
 
   return (
     <>
@@ -134,10 +163,13 @@ export default function GiftModal() {
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
                   <Lottie
-                    path={`/gifs/Gift_claim_${giftSymbol}.json`}
-                    className="player w-[248px] h-[248px] m-auto"
+                    path={`/gifs/4.DOT.json`}
+                    play
+                    className="w-[248px] h-[248px] m-auto"
                     ref={lottieRef}
                     loop={false}
+                    onEnterFrame={handleFrame}
+                    onComplete={handleComplete}
                   />
                 ) : (
                   <Icon name="GiftClaimed" className="w-[248px] h-[248px] m-auto" />
