@@ -45,11 +45,13 @@ export async function handleSend(
 
 export async function handleSendGift(
   submitExtrinsic: SubmitExtrinsic,
-  { chainId, amount, transferAll, asset, fee }: TrasferAsset,
+  estimateFee: EstimateFee,
+  { chainId, amount, transferAll, asset }: TrasferAsset,
   giftTransferAddress: string,
 ) {
+  const fee = await handleFeeTrasferAll(estimateFee, chainId);
   const transferAmmount = formatAmount(amount as string, asset?.precision as number);
-  const giftAmount = (+transferAmmount + (fee as number) / 2).toString();
+  const giftAmount = (+transferAmmount + fee).toString();
 
   return await transferExtrinsic(
     submitExtrinsic,
