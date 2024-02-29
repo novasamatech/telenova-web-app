@@ -163,7 +163,7 @@ export default function GiftModal() {
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
                   <Lottie
-                    path={`/gifs/4.DOT.json`}
+                    path={`/gifs/Gift_claim_${giftSymbol}.json`}
                     play
                     className="w-[248px] h-[248px] m-auto"
                     ref={lottieRef}
