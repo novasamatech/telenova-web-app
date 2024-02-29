@@ -108,8 +108,8 @@ export const westend: Chain = {
     //   name: 'Dwellir node',
     // },
     {
-      url: 'wss://rpc.ibp.network/westend',
-      name: 'IBP network node',
+      url: 'wss://westend-rpc.blockops.network/ws',
+      name: 'Blockops node',
     },
     {
       url: 'wss://rpc.dotters.network/westend',
@@ -119,6 +119,10 @@ export const westend: Chain = {
       url: 'wss://westend.api.onfinality.io/public-ws',
       name: 'OnFinality node',
     },
+    // {
+    //   url: 'wss://rpc.ibp.network/westend',
+    //   name: 'IBP network node',
+    // },
   ],
   addressPrefix: 42,
 };
