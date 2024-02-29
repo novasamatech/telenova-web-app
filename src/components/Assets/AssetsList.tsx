@@ -14,6 +14,7 @@ const AssetsList = () => {
           name={asset.name}
           key={asset.chainId}
           showPrice
+          animate
         />
       ))}
     </div>

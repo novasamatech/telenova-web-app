@@ -123,7 +123,6 @@ export default function GiftModal() {
       });
   };
 
-  // opt:  lib to change balance - animate
   const handleFrame = () => {
     // @ts-expect-error no types
     if (lottieRef.current && lottieRef.current.currentFrame === 0) {
@@ -137,7 +136,6 @@ export default function GiftModal() {
       setIsOpen(false);
     }
   };
-  //TODO: change gifs
 
   return (
     <>
