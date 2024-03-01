@@ -45,7 +45,12 @@ export default function GiftModal() {
   const lottieRef = useRef();
 
   const showBalance = async (chain: ChainAsset, balance: string) => {
+    const timerID = setTimeout(() => {
+      setGiftBalance('-');
+    }, 5500);
+
     const fee = await handleFeeTrasferAll(estimateFee, chain.chain.chainId);
+    clearTimeout(timerID);
     const formattedFee = Number(formatBalance(fee.toString(), chain.asset.precision).formattedValue);
     const { formattedValue } = formatBalance(balance, chain.asset.precision);
     const formattedBalance = parseFloat((+formattedValue - formattedFee).toFixed(4));
@@ -68,13 +73,9 @@ export default function GiftModal() {
       if (balance === '0') {
         setGiftBalance(balance);
       } else {
-        showBalance(chain, balance)
-          .then((giftBalance) => {
-            setGiftBalance(giftBalance.toString());
-          })
-          .catch(() => {
-            setGiftBalance('');
-          });
+        showBalance(chain, balance).then((giftBalance) => {
+          setGiftBalance(giftBalance.toString());
+        });
       }
     })();
 
@@ -137,7 +138,6 @@ export default function GiftModal() {
       setIsOpen(false);
     }
   };
-  //TODO: change gifs
 
   return (
     <>
