@@ -20,7 +20,7 @@ const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow }:
   const { precision, symbol, priceId } = asset;
 
   return (
-    <div className={cnTw('grid grid-cols-[50px,1fr,auto] items-center gap-x-2 grid-rows-[1fr,auto]', className)}>
+    <div className={cnTw('grid grid-cols-[40px,1fr,auto] items-center gap-x-3 grid-rows-[1fr,auto]', className)}>
       <Icon name={symbol as IconNames} size={40} alt={name} className="row-span-2" />
       <MediumTitle>{symbol}</MediumTitle>
       <MediumTitle className="flex items-center justify-self-end">
