@@ -25,3 +25,8 @@ export const navigateTranferById = (webApp: WebApp, link: TgLink): void => {
   );
   webApp.close();
 };
+
+export const openLink = (link: string, webApp: WebApp) => {
+  webApp.openLink(link);
+  webApp.close();
+};

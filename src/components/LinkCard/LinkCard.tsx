@@ -20,7 +20,6 @@ type Props = {
 
 const LinkCard = ({
   href = '',
-  onClick,
   iconName,
   className,
   iconClassName,
@@ -30,6 +29,7 @@ const LinkCard = ({
   helpText,
   valueText,
   showArrow,
+  onClick,
 }: Props) => (
   <Plate className={cnTw(`w-full p-0 hover:bg-bg-item-pressed active:bg-bg-item-pressed`, wrapperClassName)}>
     <Link
