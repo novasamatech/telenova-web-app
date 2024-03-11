@@ -33,14 +33,15 @@ function unwrapHexString(string: string): HexString {
   return u8aToHex(hexToU8a(string));
 }
 
-function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {
+export function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {
   const passwordBytes = new TextEncoder().encode(password.normalize('NFKC'));
-  const key = syncScrypt(passwordBytes, salt.words, 16384, 8, 1, 32);
+  const buffer = Buffer.from(salt.words);
+  const key = syncScrypt(passwordBytes, buffer, 16384, 8, 1, 32);
 
   return CryptoJS.lib.WordArray.create(key);
 }
 
-function encryptMnemonic(mnemonic: string, password: string): string {
+export function encryptMnemonic(mnemonic: string, password: string): string {
   const salt = CryptoJS.lib.WordArray.random(SALT_SIZE_BYTES);
   const derivedKey = getScryptKey(password, salt);
 
@@ -51,13 +52,12 @@ function encryptMnemonic(mnemonic: string, password: string): string {
 
   const saltHex = CryptoJS.enc.Hex.stringify(salt);
 
-  return saltHex + encryptedMnemonic;
+  return saltHex + encryptedMnemonic.toString();
 }
 
-function decryptMnemonic(encryptedMnemonicWithSalt: string, password: string): string {
-  const salt = CryptoJS.enc.Hex.parse(encryptedMnemonicWithSalt.substr(0, SALT_SIZE_BYTES * 2));
-  const encryptedMnemonic = encryptedMnemonicWithSalt.substr(SALT_SIZE_BYTES * 2);
-
+export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: string): string {
+  const salt = CryptoJS.enc.Hex.parse(encryptedMnemonicWithSalt.slice(0, SALT_SIZE_BYTES * 2));
+  const encryptedMnemonic = encryptedMnemonicWithSalt.slice(SALT_SIZE_BYTES * 2);
   const derivedKey = getScryptKey(password, salt);
 
   return AES.decrypt(encryptedMnemonic, derivedKey, {
