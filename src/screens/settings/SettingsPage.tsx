@@ -104,21 +104,21 @@ export default function SettingsPage() {
       </button>
       <Plate className="w-full p-0">
         <LinkCard
-          text="Legal Information"
+          text="Privacy Policy"
           className="grid-cols-[1fr,auto]"
           textClassName="text-text-link"
           wrapperClassName="rounded-b-none"
           showArrow
-          // onClick={() => openLink('https://novawallet.io', webApp!)}
+          onClick={() => openLink('https://novasama.io/telenova/privacy', webApp!)}
         />
         <Divider className="h-[0.5px] ml-4 w-auto border-solid" />
         <LinkCard
-          text="User Agreement"
+          text="Terms & Conditions"
           className="grid-cols-[1fr,auto]"
           textClassName="text-text-link"
           wrapperClassName="rounded-t-none"
           showArrow
-          // onClick={() => openLink('https://novawallet.io', webApp!)}
+          onClick={() => openLink('https://novasama.io/telenova/terms', webApp!)}
         />
       </Plate>
       <div className="mt-auto grid gap-4 justify-items-center">
