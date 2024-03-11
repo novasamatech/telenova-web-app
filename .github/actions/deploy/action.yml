@@ -62,4 +62,4 @@ runs:
           commit: ${{ github.sha }}
           updated_bot: @${{ inputs.DEPLOYED_BOT }}
           
-          Lunch app: ${{ inputs.APP_LINK }}
+          Launch app: ${{ inputs.APP_LINK }}
