@@ -1,17 +1,6 @@
 import CryptoJS from 'crypto-js';
 import { encryptMnemonic, decryptMnemonic, getScryptKey } from './store';
 
-// describe('Encrypting/Decrypting secret', () => {
-//   it('should decrypt secret after encryption', () => {
-//     const password = 'my password';
-//     const secret = 'super secret string';
-//     const encrypted = encryptMnemonic(secret, password);
-//     const descrypted = decryptMnemonic(encrypted, password);
-
-//     expect(descrypted.toEqual(secret));
-//   });
-// });
-
 describe('Encryption Utility Functions', () => {
   test('getScryptKey returns a valid key', () => {
     const password = 'yourPassword';
