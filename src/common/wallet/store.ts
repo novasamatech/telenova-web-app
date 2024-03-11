@@ -8,6 +8,7 @@ import {
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
 import CryptoJS, { AES } from 'crypto-js';
+import { syncScrypt } from 'scrypt-js';
 import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import secureLocalStorage from 'react-secure-storage';
@@ -17,6 +18,8 @@ import { HexString } from '@common/types';
 import { GiftWallet, Wallet } from './types';
 
 const keyring = new Keyring({ type: 'sr25519' });
+
+const SALT_SIZE_BYTES = 16;
 
 export const getStoreName = (key: string) => {
   if (!window) return '';
@@ -28,6 +31,41 @@ export const getStoreName = (key: string) => {
 
 function unwrapHexString(string: string): HexString {
   return u8aToHex(hexToU8a(string));
+}
+
+export function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {
+  const passwordBytes = new TextEncoder().encode(password.normalize('NFKC'));
+  const buffer = Buffer.from(salt.words);
+  const key = syncScrypt(passwordBytes, buffer, 16384, 8, 1, 32);
+
+  return CryptoJS.lib.WordArray.create(key);
+}
+
+export function encryptMnemonic(mnemonic: string, password: string): string {
+  const salt = CryptoJS.lib.WordArray.random(SALT_SIZE_BYTES);
+  const derivedKey = getScryptKey(password, salt);
+
+  const encryptedMnemonic = AES.encrypt(mnemonic, derivedKey, {
+    mode: CryptoJS.mode.CBC,
+    iv: salt,
+  });
+
+  const saltHex = CryptoJS.enc.Hex.stringify(salt);
+  const mnemonicHex = encryptedMnemonic.toString(CryptoJS.format.Hex);
+
+  return saltHex + mnemonicHex;
+}
+
+export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: string): string {
+  const salt = CryptoJS.enc.Hex.parse(encryptedMnemonicWithSalt.slice(0, SALT_SIZE_BYTES * 2));
+  const encryptedHexMnemonic = encryptedMnemonicWithSalt.slice(SALT_SIZE_BYTES * 2);
+  const derivedKey = getScryptKey(password, salt);
+
+  return AES.decrypt(encryptedHexMnemonic, derivedKey, {
+    format: CryptoJS.format.Hex,
+    mode: CryptoJS.mode.CBC,
+    iv: salt,
+  }).toString(CryptoJS.enc.Utf8);
 }
 
 export const getWallet = (): Wallet | null => {
@@ -53,9 +91,9 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
 };
 
 export const backupMnemonic = (mnemonic: string, password: string): void => {
-  const encryptedMnemonic = AES.encrypt(mnemonic, password).toString();
+  const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
 
-  window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonic);
+  window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
   window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, Date.now().toString());
 };
 
@@ -96,7 +134,7 @@ export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: 
   if (!encryptedMnemonic) return null;
   let mnemonic;
   try {
-    mnemonic = AES.decrypt(encryptedMnemonic, password).toString(CryptoJS.enc.Utf8);
+    mnemonic = decryptMnemonic(encryptedMnemonic, password);
   } catch {
     return null;
   }
