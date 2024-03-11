@@ -51,16 +51,18 @@ export function encryptMnemonic(mnemonic: string, password: string): string {
   });
 
   const saltHex = CryptoJS.enc.Hex.stringify(salt);
+  const mnemonicHex = encryptedMnemonic.toString(CryptoJS.format.Hex);
 
-  return saltHex + encryptedMnemonic.toString();
+  return saltHex + mnemonicHex;
 }
 
 export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: string): string {
   const salt = CryptoJS.enc.Hex.parse(encryptedMnemonicWithSalt.slice(0, SALT_SIZE_BYTES * 2));
-  const encryptedMnemonic = encryptedMnemonicWithSalt.slice(SALT_SIZE_BYTES * 2);
+  const encryptedHexMnemonic = encryptedMnemonicWithSalt.slice(SALT_SIZE_BYTES * 2);
   const derivedKey = getScryptKey(password, salt);
 
-  return AES.decrypt(encryptedMnemonic, derivedKey, {
+  return AES.decrypt(encryptedHexMnemonic, derivedKey, {
+    format: CryptoJS.format.Hex,
     mode: CryptoJS.mode.CBC,
     iv: salt,
   }).toString(CryptoJS.enc.Utf8);
