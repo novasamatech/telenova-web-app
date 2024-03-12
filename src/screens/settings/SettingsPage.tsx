@@ -120,6 +120,22 @@ export default function SettingsPage() {
           showArrow
           onClick={() => openLink('https://novasama.io/telenova/terms', webApp!)}
         />
+        <LinkCard
+          text="Open Link"
+          className="grid-cols-[1fr,auto]"
+          textClassName="text-text-link"
+          wrapperClassName="rounded-t-none"
+          showArrow
+          onClick={() => openLink('https://exchange.mercuryo.io', webApp!)}
+        />
+        <LinkCard
+          text="Open tg Link"
+          className="grid-cols-[1fr,auto]"
+          textClassName="text-text-link"
+          wrapperClassName="rounded-t-none"
+          showArrow
+          onClick={() => openLink('https://exchange.mercuryo.io', webApp!)}
+        />
       </Plate>
       <div className="mt-auto grid gap-4 justify-items-center">
         <HelpText className="text-icon-neutral text-[10px]">Developed with love by</HelpText>
