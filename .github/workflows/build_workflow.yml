@@ -45,8 +45,25 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push
+      - name: Build DEV
         uses: docker/build-push-action@v5
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          file: ./docker/Dockerfile
+          build-args: |
+            NEXT_PUBLIC_BOT_API_URL=${{ secrets.NEXT_PUBLIC_BOT_API_URL_DEV }}
+            NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS_DEV }}
+            NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS_DEV }}
+            NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS=${{ secrets.NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS }}
+            DOCKER_TAGS=${{ steps.meta.outputs.tags }}
+
+      - name: Build PROD
+        uses: docker/build-push-action@v5
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
