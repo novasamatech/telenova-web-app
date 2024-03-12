@@ -25,7 +25,7 @@ export default function BuyPage() {
     const signature = SHA512('1514j2gUQjmvXwdYM8t6XQp4MGZEqNKQXzG4qTmCwuuuUe2H' + 'secret').toString();
 
     window.mercuryoWidget.run({
-      widgetId: 'fde83da2-2a4c-4af9-a2ca-30aead5d65a0',
+      widgetId: 'debffff3-5bdb-46f4-ab0d-efb2245d7494',
       host: document.getElementById('mercuryo-widget'),
       returnUrl: Paths.DASHBOARD,
       address: '1514j2gUQjmvXwdYM8t6XQp4MGZEqNKQXzG4qTmCwuuuUe2H',
@@ -34,7 +34,7 @@ export default function BuyPage() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 min-h-[95vh]">
+    <div className="flex flex-col items-center gap-4">
       <Plate className="w-full p-0">
         <div id="mercuryo-widget"></div>
       </Plate>

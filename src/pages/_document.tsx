@@ -5,7 +5,7 @@ export default function Document() {
     <Html>
       <Head>
         <script defer src="https://telegram.org/js/telegram-web-app.js" />
-        <script src="https://widget.mercuryo.io/embed.2.0.js"></script>
+        <script defer src="https://widget.mercuryo.io/embed.2.0.js" />
       </Head>
       <body>
         <Main />
