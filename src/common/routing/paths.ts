@@ -8,6 +8,7 @@ export const Paths = {
 
   DASHBOARD: '/dashboard',
   RECEIVE: '/dashboard/receive',
+  BUY: '/dashboard/buy',
 
   SETTINGS: '/settings',
   SETTINGS_BACKUP: '/settings/backup',

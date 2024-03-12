@@ -114,6 +114,9 @@ export const DashboardMain = () => {
         <div className="grid grid-cols-2 w-full mt-7 gap-2">
           <IconButton text="Send" iconName="Send" onClick={() => navigate(Paths.TRANSFER)} />
           <IconButton text="Receive" iconName="Receive" onClick={() => navigate(Paths.RECEIVE)} />
+          <Button className="btn btn-blue mt-4" onClick={() => navigate(Paths.BUY)}>
+            Widget
+          </Button>
         </div>
       </div>
       <CreatedGiftPlate />

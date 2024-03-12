@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router-dom';
 import { Paths } from './paths';
 
 import { OnboardingPage, CreateWalletPage, PasswordPage } from '@/screens/onboarding/';
-import { DashboardMain, ReceivePage } from '@/screens/dashboard';
+import { DashboardMain, ReceivePage, BuyPage } from '@/screens/dashboard';
 import {
   SettingsPage,
   SettingsBackupPage,
@@ -43,6 +43,10 @@ export const routesConfig: RouteObject[] = [
   {
     path: Paths.RECEIVE,
     element: <ReceivePage />,
+  },
+  {
+    path: Paths.BUY,
+    element: <BuyPage />,
   },
   {
     path: Paths.SETTINGS,
