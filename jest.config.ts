@@ -15,9 +15,6 @@ const config: Config = {
     '^@/(.*)$': './src/$1',
     '^@/components/(.*)$': './components/$1',
   },
-  transform: {
-    '^.+\\.(js|jsx|mjs|cjs|ts|tsx)$': 'babel-jest',
-  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
