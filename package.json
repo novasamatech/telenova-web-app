@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "jest --config=jest.config.ts --json --outputFile=jest-unit-results.json",
     "test:ci": "jest --ci"
   },
   "dependencies": {
