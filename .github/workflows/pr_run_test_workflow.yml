@@ -1,0 +1,30 @@
+name: Run test in PR
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run test
+        run: yarn test
+
+      - name: 📄 Post results
+        if: always()
+        uses: im-open/process-jest-test-results@v2.0.6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          results-file: jest-unit-results.json
+          report-name: 'Jest Unit tests results'
+          create-status-check: true
