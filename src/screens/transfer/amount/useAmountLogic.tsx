@@ -94,7 +94,11 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
   };
 
   const handleChange = (value: string) => {
-    const formattedValue = value.trim().replace(/,/g, '.');
+    let formattedValue = value.trim().replace(/,/g, '.');
+    if (formattedValue.charAt(0) === '.') {
+      formattedValue = '0' + formattedValue;
+    }
+
     setTransferAll(false);
     startTransition(async () => {
       const { max, fee, formattedDeposit } = await getTransferDetails(
