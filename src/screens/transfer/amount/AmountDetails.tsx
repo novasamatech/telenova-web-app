@@ -50,7 +50,7 @@ export default function AmountDetails({
         <TokenPrice
           priceId={selectedAsset?.asset?.priceId}
           balance={amount || '0'}
-          showBalance={isAmountValid && !isPending}
+          showBalance={!isNaN(+amount) && isAmountValid && !isPending}
         />
         {!isAmountValid && (
           <>
