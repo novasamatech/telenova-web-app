@@ -94,9 +94,9 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, ba
   );
 };
 
-export const formatAmount = (amount: string, precision: number): string => {
-  if (!amount) return ZERO_BALANCE;
-
+export const formatAmount = (rawAmount: string, precision: number): string => {
+  if (!rawAmount || !isNaN(+rawAmount)) return ZERO_BALANCE;
+  const amount = (+rawAmount).toString();
   const isDecimalValue = amount.match(/^(\d+)\.(\d+)$/);
   const bnPrecision = new BN(precision);
   if (isDecimalValue) {

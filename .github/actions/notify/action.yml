@@ -1,0 +1,35 @@
+name: 'Notify'
+description: 'Composite action to notify'
+inputs:
+  TELEGRAM_TO:
+    description: 'Telegram To'
+    required: true
+  TELEGRAM_TOKEN:
+    description: 'Telegram Token'
+    required: true
+  DEPLOYED_BOT:
+    description: 'Which bot was updated'
+    required: true
+  IMAGE_TO_DEPLOY:
+    description: 'Which bot was updated'
+    required: true
+  APP_LINK:
+    description: 'Link to the web application'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Notify Telegram channel
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ inputs.TELEGRAM_TO }}
+        token: ${{ inputs.TELEGRAM_TOKEN }}
+        message: |
+          🖥️ New version for bot web app was deployed!
+
+          version: ${{ inputs.IMAGE_TO_DEPLOY }}
+          commit: ${{ github.sha }}
+          updated_bot: @${{ inputs.DEPLOYED_BOT }}
+          
+          Launch app: ${{ inputs.APP_LINK }}

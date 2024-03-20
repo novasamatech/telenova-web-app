@@ -34,7 +34,6 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier', 'import', 'unused-imports', 'jest-dom', 'json'],
   parserOptions: {
     ecmaVersion: 2021,
-    sourceType: 'module',
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
     createDefaultProgram: true,
@@ -84,6 +83,8 @@ module.exports = {
     'release',
     'node_modules',
     'jest-unit-results.json',
+    'jest.config.ts',
+    'jest.setup.ts',
     'package.json',
     'next.config.js',
   ],
