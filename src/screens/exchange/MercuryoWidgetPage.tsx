@@ -31,6 +31,7 @@ export default function MercuryoWidgetPage() {
       BackButton?.onClick(() => navigate(Paths.DASHBOARD));
     }
   };
+
   const handleSell = (data: any) => {
     setIsSendBtnVisible(true);
     setSelectedAsset((prev) => ({ ...prev, destinationAddress: data.address, amount: data.amount }));
