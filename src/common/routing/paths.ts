@@ -8,7 +8,10 @@ export const Paths = {
 
   DASHBOARD: '/dashboard',
   RECEIVE: '/dashboard/receive',
-  BUY: '/dashboard/buy',
+
+  EXCHANGE: '/exchange',
+  EXCHANGE_WIDGET: '/exchange/widget',
+  EXCHANGE_SELECT: '/exchange/select',
 
   SETTINGS: '/settings',
   SETTINGS_BACKUP: '/settings/backup',

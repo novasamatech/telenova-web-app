@@ -23,10 +23,10 @@ export default {
         manrope: ['var(--font-manrope)'],
       },
       boxShadow: {
-        'md-sm': '0px 4px 4px 0px #b2b5c87d, 0px 1px 1px 0px #B2B5C8',
+        'md-sm': '0px 3px 4px 0px #E0E4F5, 0px 1px 1px 0px #C8CBD9',
       },
       dropShadow: {
-        button: ['0px 3px 4px #b2b5c87d', '0px 1px 1px #B2B5C8'],
+        button: ['0px 3px 4px #E0E4F5', '0px 1px 1px #C8CBD9'],
       },
       fontSize: fontSizes,
       backgroundImage: {

@@ -29,6 +29,9 @@ import DotWelcome from '@common/assets/svg/welcome/Polkadot.svg';
 import GiftClaimed from '@common/assets/svg/GiftClaimed.svg';
 import PendingGift from '@common/assets/svg/pendingGift.svg';
 import ExclamationMark from '@common/assets/svg/exclamationMark.svg';
+import BuySell from '@common/assets/svg/BuySell.svg';
+import Buy from '@common/assets/svg/Buy.svg';
+import Sell from '@common/assets/svg/Sell.svg';
 
 const AllIcons = {
   DOT,
@@ -62,6 +65,9 @@ const AllIcons = {
   GiftClaimed,
   PendingGift,
   ExclamationMark,
+  Buy,
+  Sell,
+  BuySell,
 };
 
 export type IconNames = keyof typeof AllIcons;

@@ -6,14 +6,13 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
 import { TitleText, LinkCard } from '@/components';
 
-export default function TransferPage() {
+export default function ExchangePage() {
   const navigate = useNavigate();
   const { BackButton } = useTelegram();
   const { setSelectedAsset } = useGlobalContext();
 
   useEffect(() => {
     const callback = () => {
-      setSelectedAsset(null);
       navigate(Paths.DASHBOARD);
     };
     BackButton?.show();
@@ -25,29 +24,30 @@ export default function TransferPage() {
     };
   }, []);
 
+  //TODO: change text
   return (
     <>
       <TitleText className="mt-6 mb-10">How to send tokens</TitleText>
       <LinkCard
-        href={Paths.TRANSFER_SELECT_TOKEN}
-        text="Send as Gift in Telegram"
+        href={Paths.EXCHANGE_SELECT}
+        text="Buy Crypto"
         textClassName="text-medium-title"
         iconClassName="text-bg-icon-accent-primary"
-        helpText="Transfer to one of your contacts"
-        iconName="Gift"
+        helpText="Bank card, Google Pay, SEPA, PIX"
+        iconName="Buy"
         wrapperClassName="mb-2 py-1"
         showArrow
-        onClick={() => setSelectedAsset({ isGift: true })}
+        onClick={() => setSelectedAsset({ operationType: 'buy' })}
       />
       <LinkCard
-        href={Paths.TRANSFER_SELECT_TOKEN}
-        text="Send to Address"
+        href={Paths.EXCHANGE_SELECT}
+        text="Sell Crypto"
         textClassName="text-medium-title"
-        helpText="Transfer to address within the network"
-        iconName="Address"
+        helpText="Bank card"
+        iconName="Sell"
         wrapperClassName="py-1"
         showArrow
-        onClick={() => setSelectedAsset(null)}
+        onClick={() => setSelectedAsset({ operationType: 'sell' })}
       />
     </>
   );

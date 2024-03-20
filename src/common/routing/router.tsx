@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router-dom';
 import { Paths } from './paths';
 
 import { OnboardingPage, CreateWalletPage, PasswordPage } from '@/screens/onboarding/';
-import { DashboardMain, ReceivePage, BuyPage } from '@/screens/dashboard';
+import { DashboardMain, ReceivePage } from '@/screens/dashboard';
 import {
   SettingsPage,
   SettingsBackupPage,
@@ -22,6 +22,7 @@ import {
   CreateGiftPage,
   AmountGiftPage,
 } from '@/screens/transfer/';
+import { MercuryoWidgetPage, SelectTokenExchangePage, ExchangePage } from '@/screens/exchange';
 
 export const routesConfig: RouteObject[] = [
   {
@@ -45,8 +46,16 @@ export const routesConfig: RouteObject[] = [
     element: <ReceivePage />,
   },
   {
-    path: Paths.BUY,
-    element: <BuyPage />,
+    path: Paths.EXCHANGE_WIDGET,
+    element: <MercuryoWidgetPage />,
+  },
+  {
+    path: Paths.EXCHANGE_SELECT,
+    element: <SelectTokenExchangePage />,
+  },
+  {
+    path: Paths.EXCHANGE,
+    element: <ExchangePage />,
   },
   {
     path: Paths.SETTINGS,
