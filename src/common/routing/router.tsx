@@ -22,6 +22,7 @@ import {
   CreateGiftPage,
   AmountGiftPage,
 } from '@/screens/transfer/';
+import { MercuryoWidgetPage, SelectTokenExchangePage, ExchangePage } from '@/screens/exchange';
 
 export const routesConfig: RouteObject[] = [
   {
@@ -43,6 +44,18 @@ export const routesConfig: RouteObject[] = [
   {
     path: Paths.RECEIVE,
     element: <ReceivePage />,
+  },
+  {
+    path: Paths.EXCHANGE_WIDGET,
+    element: <MercuryoWidgetPage />,
+  },
+  {
+    path: Paths.EXCHANGE_SELECT,
+    element: <SelectTokenExchangePage />,
+  },
+  {
+    path: Paths.EXCHANGE,
+    element: <ExchangePage />,
   },
   {
     path: Paths.SETTINGS,

@@ -28,6 +28,7 @@ jobs:
       NEXT_PUBLIC_BOT_API_URL: ${{ secrets.NEXT_PUBLIC_BOT_API_URL_DEV }}
       NEXT_PUBLIC_BOT_ADDRESS: ${{ secrets.NEXT_PUBLIC_BOT_ADDRESS_DEV }}
       NEXT_PUBLIC_WEB_APP_ADDRESS: ${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS_DEV }}
+      NEXT_PUBLIC_WEB_APP_URL: ${{ secrets.NEXT_PUBLIC_WEB_APP_URL_DEV }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,6 +56,7 @@ jobs:
           echo "NEXT_PUBLIC_BOT_API_URL=${{ secrets.NEXT_PUBLIC_BOT_API_URL }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_WEB_APP_URL=${{ secrets.NEXT_PUBLIC_WEB_APP_URL }}" >> $GITHUB_ENV
       
       - name: Build
         uses: docker/build-push-action@v5
@@ -68,7 +70,9 @@ jobs:
             NEXT_PUBLIC_BOT_API_URL=${{ env.NEXT_PUBLIC_BOT_API_URL }}
             NEXT_PUBLIC_BOT_ADDRESS=${{ env.NEXT_PUBLIC_BOT_ADDRESS }}
             NEXT_PUBLIC_WEB_APP_ADDRESS=${{ env.NEXT_PUBLIC_WEB_APP_ADDRESS }}
+            NEXT_PUBLIC_WEB_APP_URL=${{ env.NEXT_PUBLIC_WEB_APP_URL }}
             NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS=${{ secrets.NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS }}
+            NEXT_PUBLIC_WIDGET_SECRET=${{ secrets.NEXT_PUBLIC_WIDGET_SECRET }}
             DOCKER_TAGS=${{ steps.meta.outputs.tags }}
 
   notify-dev:

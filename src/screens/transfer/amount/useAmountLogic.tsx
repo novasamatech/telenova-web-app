@@ -24,7 +24,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
 
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
-  const [amount, setAmount] = useState<string>('');
+  const [amount, setAmount] = useState<string>(selectedAsset?.amount || '');
   const [transferAll, setTransferAll] = useState(false);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('');
   const [isAmountValid, setIsAmountValid] = useState(true);

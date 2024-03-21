@@ -106,14 +106,15 @@ export const DashboardMain = () => {
           <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
         </Button>
       </div>
-      <div className="flex flex-col m-4">
+      <div className="flex flex-col mt-4 items-center">
         <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
         <LargeTitleText>
           <Price amount={getTotalBalance(assets, assetsPrices)} decimalSize={32} />
         </LargeTitleText>
-        <div className="grid grid-cols-2 w-full mt-7 gap-2">
+        <div className="grid grid-cols-3 w-full mt-7 gap-2">
           <IconButton text="Send" iconName="Send" onClick={() => navigate(Paths.TRANSFER)} />
           <IconButton text="Receive" iconName="Receive" onClick={() => navigate(Paths.RECEIVE)} />
+          <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate(Paths.EXCHANGE)} />
         </div>
       </div>
       <CreatedGiftPlate />

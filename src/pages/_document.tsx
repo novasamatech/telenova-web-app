@@ -9,6 +9,7 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
+        <script defer src="https://widget.mercuryo.io/embed.2.0.js" />
       </body>
     </Html>
   );

@@ -40,6 +40,7 @@ export type TrasferAsset = AssetAccount & {
   fee?: number;
   transferAll?: boolean;
   isGift?: boolean;
+  operationType?: 'buy' | 'sell';
 };
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
 
