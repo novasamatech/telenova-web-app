@@ -30,3 +30,10 @@ export const openLink = (link: string, webApp: WebApp) => {
   webApp.openLink(link);
   webApp.close();
 };
+
+export const isOpenInWeb = (platform: string): boolean => {
+  const webPlatforms = ['web', 'weba', 'webk'];
+  const isWebPlatform = webPlatforms.includes(platform);
+
+  return isWebPlatform;
+};
