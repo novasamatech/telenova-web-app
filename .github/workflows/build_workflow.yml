@@ -87,6 +87,6 @@ jobs:
         with:
           TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          DEPLOYED_BOT: ${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}
+          DEPLOYED_BOT: ${{ secrets.NEXT_PUBLIC_BOT_ADDRESS_DEV }}
           IMAGE_TO_DEPLOY: ${{ needs.build-docker.outputs.docker_tags }}
           APP_LINK: https://t.me/nova_wallet_dev_bot/novawallet_dev
