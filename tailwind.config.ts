@@ -26,7 +26,7 @@ export default {
         'md-sm': '0px 3px 4px 0px #E0E4F5, 0px 1px 1px 0px #C8CBD9',
       },
       dropShadow: {
-        button: ['0px 3px 4px #E0E4F5', '0px 1px 1px #C8CBD9'],
+        button: ['0px 1px 4px #E0E4F5', '0px 1px 1px #C8CBD9'],
       },
       fontSize: fontSizes,
       backgroundImage: {

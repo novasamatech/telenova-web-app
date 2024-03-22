@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@nextui-org/react';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { handleWidget } from '@/common/utils/exchange';
 import { isOpenInWeb } from '@/common/telegram';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import { MediumTitle } from '@/components/Typography';
 
 export default function MercuryoWidgetPage() {
@@ -14,6 +14,7 @@ export default function MercuryoWidgetPage() {
   const navigate = useNavigate();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
   const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
+  const { hideMainButton, addMainButton } = useMainButton();
 
   useEffect(() => {
     BackButton?.show();
@@ -27,9 +28,20 @@ export default function MercuryoWidgetPage() {
       BackButton?.offClick(callback);
     };
   }, []);
+  useEffect(() => {
+    if (isSendBtnVisible) {
+      addMainButton(() => {
+        navigate(Paths.TRANSFER_AMOUNT);
+      }, `Send ${selectedAsset?.asset?.symbol} to sell`);
+    }
+
+    return () => {
+      hideMainButton();
+    };
+  }, [isSendBtnVisible]);
 
   const handleStatus = (data: any) => {
-    if (data.status === 'paid') {
+    if (data.status === 'paid' || data.status === 'new') {
       BackButton?.onClick(() => navigate(Paths.DASHBOARD));
     }
   };
@@ -41,13 +53,8 @@ export default function MercuryoWidgetPage() {
 
   return (
     <>
-      {isSendBtnVisible && (
-        <Button className="mb-2" color="primary" fullWidth onClick={() => navigate(Paths.TRANSFER_AMOUNT)}>
-          Send it now
-        </Button>
-      )}
       <div className="w-full h-[95svh]" id="mercuryo-widget">
-        {isOpenInWeb(webApp!.platform) && (
+        {isOpenInWeb(webApp?.platform) && (
           <div>
             <MediumTitle align="center">
               Sorry, the widget is not supported in the web version. Proceed with the application.
