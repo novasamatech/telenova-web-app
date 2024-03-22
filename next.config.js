@@ -18,4 +18,11 @@ nextConfig.webpack = (config, context) => {
   return config;
 };
 
+nextConfig.env = {
+  NEXT_PUBLIC_BOT_API_URL: process.env.NEXT_PUBLIC_BOT_API_URL,
+  NEXT_PUBLIC_BOT_ADDRESS: process.env.NEXT_PUBLIC_BOT_ADDRESS,
+  NEXT_PUBLIC_WEB_APP_ADDRESS: process.env.NEXT_PUBLIC_WEB_APP_ADDRESS,
+  NEXT_PUBLIC_WEB_APP_URL: process.env.NEXT_PUBLIC_WEB_APP_URL,
+};
+
 module.exports = nextConfig;
