@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../types';
-import { Chain } from '../chainRegistry/types';
-import { IAssetBalance } from '../balances/types';
-import { EstimateFee, GetExistentialDeposit } from '../extrinsicService/types';
-import { handleFee } from './extrinsics';
+import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../../types';
+import { Chain } from '../../chainRegistry/types';
+import { IAssetBalance } from '../../balances/types';
+import { EstimateFee, GetExistentialDeposit } from '../../extrinsicService/types';
+import { handleFee } from '../extrinsics';
 
 const ZERO_BALANCE = '0';
 
