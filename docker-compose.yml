@@ -1,7 +1,9 @@
 version: '3'
 services:
   app:
-    build: ./docker/Dockerfile
+    build: 
+      dockerfile: ./docker/Dockerfile
+      context: .
     ports:
       - 3000:3000
     volumes:

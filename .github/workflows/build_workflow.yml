@@ -24,11 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       docker_tags: ${{ steps.meta.outputs.tags }}
-    env:
-      NEXT_PUBLIC_BOT_API_URL: ${{ secrets.NEXT_PUBLIC_BOT_API_URL_DEV }}
-      NEXT_PUBLIC_BOT_ADDRESS: ${{ secrets.NEXT_PUBLIC_BOT_ADDRESS_DEV }}
-      NEXT_PUBLIC_WEB_APP_ADDRESS: ${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS_DEV }}
-      NEXT_PUBLIC_WEB_APP_URL: ${{ secrets.NEXT_PUBLIC_WEB_APP_URL_DEV }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,13 +46,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Set PROD environment variables
-        if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
-        run: |
-          echo "NEXT_PUBLIC_BOT_API_URL=${{ secrets.NEXT_PUBLIC_BOT_API_URL }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_BOT_ADDRESS=${{ secrets.NEXT_PUBLIC_BOT_ADDRESS }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_WEB_APP_ADDRESS=${{ secrets.NEXT_PUBLIC_WEB_APP_ADDRESS }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_WEB_APP_URL=${{ secrets.NEXT_PUBLIC_WEB_APP_URL }}" >> $GITHUB_ENV
       
       - name: Build
         uses: docker/build-push-action@v5
@@ -66,14 +55,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./docker/Dockerfile
-          build-args: |
-            NEXT_PUBLIC_BOT_API_URL=${{ env.NEXT_PUBLIC_BOT_API_URL }}
-            NEXT_PUBLIC_BOT_ADDRESS=${{ env.NEXT_PUBLIC_BOT_ADDRESS }}
-            NEXT_PUBLIC_WEB_APP_ADDRESS=${{ env.NEXT_PUBLIC_WEB_APP_ADDRESS }}
-            NEXT_PUBLIC_WEB_APP_URL=${{ env.NEXT_PUBLIC_WEB_APP_URL }}
-            NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS=${{ secrets.NEXT_PUBLIC_SECURE_LOCAL_STORAGE_DISABLED_KEYS }}
-            NEXT_PUBLIC_WIDGET_SECRET=${{ secrets.NEXT_PUBLIC_WIDGET_SECRET }}
-            DOCKER_TAGS=${{ steps.meta.outputs.tags }}
 
   notify-dev:
     runs-on: ubuntu-latest
