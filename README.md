@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/novasamatech/nova-wallet-web-app/assets/63446892/0d236abe-c4ed-47e2-bbfd-783709c05955" alt="Telenova logo">
+  <img src="https://github.com/novasamatech/nova-wallet-web-app/assets/63446892/492b624c-fb27-45f8-9ccd-759f3a172d2c" alt="Telenova logo">
 </div>
 
 # Introduction
