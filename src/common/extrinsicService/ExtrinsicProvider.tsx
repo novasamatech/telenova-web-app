@@ -78,9 +78,11 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
 
     const convertedFee = await api.call.assetConversionApi.quotePriceTokensForExactTokens(
       {
-        // Custom token MultiLocation
+        // Token MultiLocation
+        // @ts-expect-error type error
         parents: 0,
         interior: {
+          // @ts-expect-error type error
           X2: [{ PalletInstance: 50 }, { GeneralIndex: assetId }],
         },
       },
