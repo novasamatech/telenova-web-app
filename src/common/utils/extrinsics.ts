@@ -5,7 +5,17 @@ import { Balance } from '@polkadot/types/interfaces';
 import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
 import { formatAmount } from './balance';
 import { Address, ChainId, TrasferAsset } from '../types';
-import { FAKE_ACCOUNT_ID } from './constants';
+import { ASSET_STATEMINE, FAKE_ACCOUNT_ID } from './constants';
+import { ChainAsset } from '../chainRegistry/types';
+
+const getAssetIdSignOption = (assetId: number) => ({
+  assetId: {
+    parents: 0,
+    interior: {
+      X2: [{ PalletInstance: 50 }, { GeneralIndex: assetId }],
+    },
+  },
+});
 
 const transferExtrinsic = async (
   submitExtrinsic: SubmitExtrinsic,
@@ -16,12 +26,39 @@ const transferExtrinsic = async (
 ) => {
   const address = decodeAddress(destinationAddress);
 
-  return await submitExtrinsic(chainId, (builder) => {
-    const transferFunction = transferAll
-      ? builder.api.tx.balances.transferAll(address, false)
-      : builder.api.tx.balances.transferKeepAlive(address, transferAmmount);
+  return await submitExtrinsic({
+    chainId: chainId,
+    building: (builder) => {
+      const transferFunction = transferAll
+        ? builder.api.tx.balances.transferAll(address, false)
+        : builder.api.tx.balances.transferKeepAlive(address, transferAmmount);
 
-    builder.addCall(transferFunction);
+      builder.addCall(transferFunction);
+    },
+  }).then((hash) => {
+    if (!hash) throw Error('Something went wrong');
+    console.log('Success, Hash:', hash?.toString());
+  });
+};
+
+const transferExtrinsicStatemine = async (
+  submitExtrinsic: SubmitExtrinsic,
+  destinationAddress: string,
+  chainId: ChainId,
+  transferAmmount: string,
+  assetId: number,
+  giftKeyringPair?: KeyringPair,
+) => {
+  const address = decodeAddress(destinationAddress);
+
+  // trasferAll does not exist on statemine
+  return await submitExtrinsic({
+    chainId: chainId,
+    building: (builder) => {
+      builder.addCall(builder.api.tx.assets.transfer(assetId, address, transferAmmount));
+    },
+    signOptions: getAssetIdSignOption(assetId),
+    giftKeyringPair,
   }).then((hash) => {
     if (!hash) throw Error('Something went wrong');
     console.log('Success, Hash:', hash?.toString());
@@ -32,7 +69,17 @@ export async function handleSend(
   submitExtrinsic: SubmitExtrinsic,
   { destinationAddress, chainId, amount, transferAll, asset }: TrasferAsset,
 ) {
-  const transferAmmount = formatAmount(amount as string, asset?.precision as number);
+  const transferAmmount = formatAmount(amount!, asset?.precision as number);
+
+  if (asset?.type === ASSET_STATEMINE) {
+    return await transferExtrinsicStatemine(
+      submitExtrinsic,
+      destinationAddress!,
+      chainId,
+      transferAmmount,
+      Number(asset?.typeExtras?.assetId),
+    );
+  }
 
   return await transferExtrinsic(
     submitExtrinsic,
@@ -46,12 +93,25 @@ export async function handleSend(
 export async function handleSendGift(
   submitExtrinsic: SubmitExtrinsic,
   estimateFee: EstimateFee,
-  { chainId, amount, transferAll, asset }: TrasferAsset,
+  { chainId, amount, transferAll, asset, fee }: TrasferAsset,
   giftTransferAddress: string,
 ) {
-  const fee = await handleFeeTrasferAll(estimateFee, chainId);
   const transferAmmount = formatAmount(amount as string, asset?.precision as number);
-  const giftAmount = (+transferAmmount + fee).toString();
+  if (asset?.type === ASSET_STATEMINE) {
+    // Fee is 2x the transfer fee - we add 1 fee to the transfer amount
+    const giftAmount = Math.ceil(+transferAmmount + fee! / 2).toString();
+
+    return await transferExtrinsicStatemine(
+      submitExtrinsic,
+      giftTransferAddress!,
+      chainId,
+      giftAmount,
+      Number(asset?.typeExtras?.assetId),
+    );
+  }
+
+  const trasferAllFee = await handleFeeTrasferAll(estimateFee, chainId);
+  const giftAmount = (+transferAmmount + trasferAllFee).toString();
 
   return await transferExtrinsic(
     submitExtrinsic,
@@ -77,6 +137,22 @@ export async function handleFee(
   });
 }
 
+export async function handleFeeStatemine(
+  estimateFee: EstimateFee,
+  chainId: ChainId,
+  assetId: string,
+  amount: string,
+): Promise<number> {
+  return await estimateFee(
+    chainId,
+    (builder: ExtrinsicBuilder) =>
+      builder.addCall(builder.api.tx.assets.transfer(Number(assetId), decodeAddress(FAKE_ACCOUNT_ID), amount)),
+    getAssetIdSignOption(+assetId),
+  ).then((fee: Balance) => {
+    return Number(fee);
+  });
+}
+
 export async function handleFeeTrasferAll(estimateFee: EstimateFee, chainId: ChainId): Promise<number> {
   return await estimateFee(chainId, (builder: ExtrinsicBuilder) =>
     builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(FAKE_ACCOUNT_ID), false)),
@@ -88,16 +164,31 @@ export async function handleFeeTrasferAll(estimateFee: EstimateFee, chainId: Cha
 export async function claimGift(
   keyring: KeyringPair,
   address: Address,
-  chainId: ChainId,
+  chain: ChainAsset,
   submitExtrinsic: SubmitExtrinsic,
+  amount?: string,
 ): Promise<void> {
-  return await submitExtrinsic(
-    chainId,
-    (builder) => {
+  if (chain.asset.type === ASSET_STATEMINE) {
+    if (!amount || !chain.asset.typeExtras?.assetId) throw Error('Amount is required');
+    const transferAmmount = formatAmount(amount, chain.asset.precision);
+
+    return await transferExtrinsicStatemine(
+      submitExtrinsic,
+      address,
+      chain.chain.chainId,
+      transferAmmount,
+      +chain.asset.typeExtras?.assetId,
+      keyring,
+    );
+  }
+
+  return await submitExtrinsic({
+    chainId: chain.chain.chainId,
+    building: (builder) => {
       builder.addCall(builder.api.tx.balances.transferAll(decodeAddress(address), false));
     },
-    keyring,
-  ).then((hash) => {
+    giftKeyringPair: keyring,
+  }).then((hash) => {
     if (!hash) throw Error('Something went wrong');
     console.log('Success, Hash:', hash?.toString());
   });

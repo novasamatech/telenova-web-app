@@ -7,6 +7,7 @@ import { useMainButton } from '@/common/telegram/useMainButton';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { getTransferDetails } from '@/common/utils/balance';
 import { TrasferAsset } from '@/common/types';
+import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 
 type AmountPageLogic = {
   prevPage: string;
@@ -17,11 +18,11 @@ type AmountPageLogic = {
 
 export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountChange = () => {} }: AmountPageLogic) {
   const navigate = useNavigate();
-  const { estimateFee, getExistentialDeposit } = useExtrinsicProvider();
+  const { estimateFee, getExistentialDeposit, getExistentialDepositStatemine } = useExtrinsicProvider();
   const { BackButton } = useTelegram();
   const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
   const [isPending, startTransition] = useTransition();
-
+  const { getAssetHubFee } = useAssetHub();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
 
   const [amount, setAmount] = useState<string>(selectedAsset?.amount || '');
@@ -51,6 +52,8 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
         amount,
         estimateFee,
         getExistentialDeposit,
+        getExistentialDepositStatemine,
+        getAssetHubFee,
       );
 
       setDeposit(formattedDeposit);
@@ -106,6 +109,8 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
         formattedValue,
         estimateFee,
         getExistentialDeposit,
+        getExistentialDepositStatemine,
+        getAssetHubFee,
       );
 
       setDeposit(formattedDeposit);

@@ -56,6 +56,7 @@ export type PersistentGift = {
   balance: string;
   chainId: ChainId;
   status: GiftStatus;
+  assetId: string;
 };
 
 export type Gift = PersistentGift & {

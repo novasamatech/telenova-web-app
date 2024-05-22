@@ -12,7 +12,9 @@ import { getGiftInfo } from '@/common/utils/gift';
 import { PublicKey } from '@/common/types';
 import { BigTitle, Icon, Shimmering } from '@/components';
 import { formatBalance } from '@/common/utils/balance';
-import { ChainAsset } from '@/common/chainRegistry/types';
+import { ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types';
+import { ASSET_STATEMINE } from '@/common/utils/constants';
+import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -33,8 +35,9 @@ export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
   const { submitExtrinsic, estimateFee } = useExtrinsicProvider();
-  const { getAssetBySymbol } = useChainRegistry();
+  const { getAssetBySymbol, connectionStates } = useChainRegistry();
   const { getFreeBalance } = useBalances();
+  const { getGiftBalanceStatemine } = useAssetHub();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -44,16 +47,21 @@ export default function GiftModal() {
 
   const lottieRef = useRef();
 
-  const showBalance = async (chain: ChainAsset, balance: string) => {
+  const getGiftBalance = async (chain: ChainAsset, giftAddress: string) => {
     const timerID = setTimeout(() => {
       setGiftBalance('-');
     }, 5500);
 
+    const giftBalance = await getFreeBalance(giftAddress, chain.chain.chainId);
+    if (giftBalance === '0') {
+      clearTimeout(timerID);
+
+      return '0';
+    }
     const fee = await handleFeeTrasferAll(estimateFee, chain.chain.chainId);
     clearTimeout(timerID);
-    const formattedFee = Number(formatBalance(fee.toString(), chain.asset.precision).formattedValue);
-    const { formattedValue } = formatBalance(balance, chain.asset.precision);
-    const formattedBalance = parseFloat((+formattedValue - formattedFee).toFixed(4));
+    const rawBalance = +giftBalance - fee;
+    const formattedBalance = formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
 
     return formattedBalance;
   };
@@ -66,23 +74,25 @@ export default function GiftModal() {
 
     (async () => {
       const { giftAddress, chain, symbol } = await getGiftInfo(publicKey, startParam, getAssetBySymbol);
-      const balance = await getFreeBalance(giftAddress, chain.chain.chainId);
+      if (connectionStates[chain.chain.chainId].connectionStatus === ConnectionStatus.NONE) {
+        return;
+      }
+
+      const balance =
+        chain.asset?.type === ASSET_STATEMINE
+          ? await getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress)
+          : await getGiftBalance(chain, giftAddress);
+
       setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
       setGiftSymbol(balance === '0' ? '' : symbol);
 
-      if (balance === '0') {
-        setGiftBalance(balance);
-      } else {
-        showBalance(chain, balance).then((giftBalance) => {
-          setGiftBalance(giftBalance.toString());
-        });
-      }
+      setGiftBalance(balance);
     })();
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [startParam, publicKey, isGiftClaimed]);
+  }, [startParam, publicKey, isGiftClaimed, connectionStates]);
 
   const handleClose = () => {
     clearTimeout(timeoutId);
@@ -110,7 +120,8 @@ export default function GiftModal() {
       startParam as string,
       getAssetBySymbol,
     );
-    claimGift(keyring, chainAddress, chain.chain.chainId, submitExtrinsic)
+
+    claimGift(keyring, chainAddress, chain, submitExtrinsic, giftBalance)
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');
         handleClose();

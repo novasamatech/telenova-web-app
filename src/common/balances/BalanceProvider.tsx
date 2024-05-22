@@ -7,6 +7,7 @@ import { useNumId } from '@common/utils/NumId';
 import { SubscriptionState } from '@common/subscription/types';
 import { createBalanceService } from '@common/balances/BalanceService';
 import { chainAssetAccountIdToString } from '../utils/balance';
+import { ASSET_STATEMINE } from '../utils/constants';
 
 type StateStore = Record<string, SubscriptionState<IAssetBalance>>;
 type UpdateCallback = (balance: IAssetBalance) => void;
@@ -17,13 +18,14 @@ type BalanceProviderContextProps = {
   unsubscribeBalance: (unsubscribeId: number) => void;
   getGiftsState: (mapGifts: Map<ChainId, PersistentGift[]>) => Promise<[Gift[], Gift[]]>;
   getFreeBalance: (address: Address, chainId: ChainId) => Promise<string>;
+  getFreeBalanceStatemine: (address: Address, chainId: ChainId, assetId: string) => Promise<string>;
 };
 
 const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as BalanceProviderContextProps);
 
 export const BalanceProvider = ({ children }: PropsWithChildren) => {
   const { nextId } = useNumId();
-  const { getConnection, getChain } = useChainRegistry();
+  const { getConnection, getChain, getAssetByChainId } = useChainRegistry();
   const unsubscribeToAccount = useRef<Record<number, ChainAssetAccount>>({});
   const accountToState = useRef<StateStore>({});
 
@@ -102,13 +104,17 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     const service = createBalanceService(connection);
 
     setupSubscriptionState(account, unsubscribeId, onUpdate);
-
-    const unsubscribe = await service.subscribe(address, (balance: IAssetBalance) => {
+    const handleUpdate = (balance: IAssetBalance) => {
       console.log(`New balance: ${balance.total().toString()}`);
 
       updateBalance(account, balance);
       notifySubscribers(account, balance);
-    });
+    };
+
+    const unsubscribe =
+      account.asset.type === 'statemine'
+        ? await service.subscribeStatemineAssets(address, account.asset, handleUpdate)
+        : await service.subscribe(address, handleUpdate);
 
     if (!setupUnsubscribeOnState(account, unsubscribe)) {
       // this should never happen but let's cleanup remote subscription anyway
@@ -155,6 +161,8 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     }
   }
 
+  //TODO delete it after PR for asset hub is merged
+  const USDT_LEFTOVER = 80000;
   async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
     const unclaimed = [] as Gift[];
     const claimed = [] as Gift[];
@@ -162,18 +170,37 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     await Promise.all(
       Array.from(mapGifts).map(async ([chainId, accounts]) => {
         const connection = await getConnection(chainId);
-        const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
         const chain = await getChain(chainId);
+        // To have a backward compatibility with old gifts
+        const asset = accounts[0].assetId ? getAssetByChainId(accounts[0].assetId, chainId) : chain?.assets[0];
 
-        balances.forEach((d, idx) =>
-          d.data.free.isEmpty
-            ? claimed.push({
-                ...accounts[idx],
-                chainAsset: chain?.assets[0],
-                status: GiftStatus.CLAIMED,
-              })
-            : unclaimed.push({ ...accounts[idx], chainAsset: chain?.assets[0], status: GiftStatus.UNCLAIMED }),
-        );
+        if (asset?.type === ASSET_STATEMINE) {
+          const balances = await connection.api.query.assets.account.multi(
+            accounts.map((i) => [asset.typeExtras?.assetId, i.address]),
+          );
+
+          balances.forEach((balance, idx) => {
+            balance.isNone || Number(balance.unwrap().balance) <= USDT_LEFTOVER
+              ? claimed.push({
+                  ...accounts[idx],
+                  chainAsset: asset,
+                  status: GiftStatus.CLAIMED,
+                })
+              : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED });
+          });
+        } else {
+          const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
+
+          balances.forEach((d, idx) =>
+            d.data.free.isEmpty
+              ? claimed.push({
+                  ...accounts[idx],
+                  chainAsset: asset,
+                  status: GiftStatus.CLAIMED,
+                })
+              : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED }),
+          );
+        }
       }),
     );
 
@@ -186,8 +213,17 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     return balance.data.free.toString();
   }
 
+  async function getFreeBalanceStatemine(address: Address, chainId: ChainId, assetId: string): Promise<string> {
+    const connection = await getConnection(chainId);
+    const balance = await connection.api.query.assets.account(assetId, address);
+
+    return balance.isNone ? '0' : balance.unwrap().balance.toString();
+  }
+
   return (
-    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance, getGiftsState, getFreeBalance }}>
+    <BalanceProviderContext.Provider
+      value={{ subscribeBalance, unsubscribeBalance, getGiftsState, getFreeBalance, getFreeBalanceStatemine }}
+    >
       {children}
     </BalanceProviderContext.Provider>
   );

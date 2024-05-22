@@ -1,8 +1,9 @@
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api-base/types';
-import { ChainId } from '@common/types';
+import { SignerOptions } from '@polkadot/api/types';
 import { Balance, Hash } from '@polkadot/types/interfaces';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { ChainId } from '@common/types';
 
 export interface ExtrinsicBuilder {
   api: ApiPromise;
@@ -36,14 +37,25 @@ export interface ExtrinsicBuilderFactory {
 export type EstimateFee = (
   chainId: ChainId,
   building: ExtrinsicBuilding,
+  signOptions?: Partial<SignerOptions>,
   options?: Partial<ExtrinsicBuildingOptions>,
 ) => Promise<Balance>;
 
-export type SubmitExtrinsic = (
-  chainId: ChainId,
-  building: ExtrinsicBuilding,
-  giftKeyringPair?: KeyringPair,
-  options?: Partial<ExtrinsicBuildingOptions>,
-) => Promise<Hash | undefined>;
+export type SubmitExtrinsicParams = {
+  chainId: ChainId;
+  building: ExtrinsicBuilding;
+  giftKeyringPair?: KeyringPair;
+  options?: Partial<ExtrinsicBuildingOptions>;
+  signOptions?: Partial<SignerOptions>;
+};
+
+export type SubmitExtrinsic = ({
+  chainId,
+  building,
+  giftKeyringPair,
+  options,
+  signOptions,
+}: SubmitExtrinsicParams) => Promise<Hash | undefined>;
 
 export type GetExistentialDeposit = (chainId: ChainId) => Promise<string | undefined>;
+export type GetExistentialDepositStatemine = (chainId: ChainId, assetId?: string) => Promise<string | undefined>;

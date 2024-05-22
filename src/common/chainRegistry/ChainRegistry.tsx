@@ -3,12 +3,13 @@ import { createContext, PropsWithChildren, useContext, useEffect, useRef, useSta
 import { useChains } from './ChainProvider';
 import { useConnections } from './ConnectionProvider';
 import { useRuntimeProvider } from './RuntimeProvider';
-import { Chain, ChainAsset, ConnectionState, Connection, ConnectionRequest, RuntimeMetadata } from './types';
+import { Chain, ChainAsset, ConnectionState, Connection, ConnectionRequest, RuntimeMetadata, Asset } from './types';
 import { ChainId, StateResolution } from '@common/types';
 
 type ChainRegistryContextProps = {
   getAllChains: () => Promise<Chain[]>;
   getAssetBySymbol: (symbol: string) => Promise<ChainAsset>;
+  getAssetByChainId: (assetId: string, chainId: ChainId) => Asset | undefined;
   getChain: (chainId: ChainId) => Promise<Chain | undefined>;
   getConnection: (chainId: ChainId) => Promise<Connection>;
   connectionStates: Record<ChainId, ConnectionState>;
@@ -17,7 +18,7 @@ type ChainRegistryContextProps = {
 const ChainRegistryContext = createContext<ChainRegistryContextProps>({} as ChainRegistryContextProps);
 
 export const ChainRegistry = ({ children }: PropsWithChildren) => {
-  const { getAllChains, getAssetBySymbol, getChain } = useChains();
+  const { getAllChains, getAssetBySymbol, getChain, getAssetByChainId } = useChains();
   const [isRegistryReady, setIsRegistryReady] = useState(false);
   const { connectionStates, createConnections, getConnection } = useConnections();
   const { getMetadata, subscribeMetadata } = useRuntimeProvider();
@@ -85,7 +86,14 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
 
   return (
     <ChainRegistryContext.Provider
-      value={{ getAllChains, getAssetBySymbol, getChain, getConnection: getReadyConnection, connectionStates }}
+      value={{
+        getAllChains,
+        getAssetBySymbol,
+        getChain,
+        getConnection: getReadyConnection,
+        getAssetByChainId,
+        connectionStates,
+      }}
     >
       {children}
     </ChainRegistryContext.Provider>

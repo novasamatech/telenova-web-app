@@ -7,7 +7,7 @@ import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { HeadlineText, GiftDetails } from '@/components';
 import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { ChainId, TrasferAsset } from '@/common/types';
+import { TrasferAsset } from '@/common/types';
 import { createGiftWallet } from '@/common/wallet';
 import { createTgLink } from '@/common/telegram';
 import { TgLink } from '@/common/telegram/types';
@@ -33,7 +33,7 @@ export default function CreateGiftPage() {
     (async function () {
       await handleSendGift(submitExtrinsic, estimateFee, selectedAsset as TrasferAsset, wallet.address)
         .then(() => {
-          backupGifts(wallet.address, wallet.secret, selectedAsset.chainId as ChainId, selectedAsset.amount as string);
+          backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
           setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string, selectedAsset?.amount as string));
         })
         .catch((error) => alert(`Error: ${error.message}\nTry to relaod`));
