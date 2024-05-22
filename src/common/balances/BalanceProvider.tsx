@@ -3,7 +3,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { useChainRegistry } from '@common/chainRegistry';
 import { IAssetBalance } from '@common/balances/types';
 import { ChainAssetAccount, ChainId, Address } from '@common/types';
-import { useNumId } from '@common/utils/NumId';
+import { useNumId } from '@/common/utils/hooks/useNumId';
 import { SubscriptionState } from '@common/subscription/types';
 import { createBalanceService } from '@common/balances/BalanceService';
 import { chainAssetAccountIdToString } from '../utils/balance';

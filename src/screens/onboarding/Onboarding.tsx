@@ -19,7 +19,7 @@ export default function OnboardingPage() {
     setTimeout(() => {
       setIsLoading(false);
     }, 2000);
-  }, []);
+  }, [webApp]);
 
   if (isLoading)
     return (
