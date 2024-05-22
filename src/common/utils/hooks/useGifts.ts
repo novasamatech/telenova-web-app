@@ -1,0 +1,58 @@
+import { useChainRegistry } from '@common/chainRegistry';
+import { ChainId, Gift, PersistentGift, GiftStatus } from '@common/types';
+import { ASSET_STATEMINE } from '../constants';
+import { useAssetHub } from './useAssetHub';
+
+export const useGifts = () => {
+  const { getConnection, getChain, getAssetByChainId } = useChainRegistry();
+  const { getAssetHubFee } = useAssetHub();
+
+  async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
+    const unclaimed = [] as Gift[];
+    const claimed = [] as Gift[];
+
+    await Promise.all(
+      Array.from(mapGifts).map(async ([chainId, accounts]) => {
+        const connection = await getConnection(chainId);
+        const chain = await getChain(chainId);
+        // To have a backward compatibility with old gifts
+        const asset = accounts[0].assetId ? getAssetByChainId(accounts[0].assetId, chainId) : chain?.assets[0];
+
+        if (asset?.type === ASSET_STATEMINE && asset?.typeExtras?.assetId) {
+          const balances = await connection.api.query.assets.account.multi(
+            accounts.map((i) => [asset?.typeExtras?.assetId, i.address]),
+          );
+
+          const maxBalance = Math.max(...balances.map((balance) => Number(balance?.unwrap()?.balance) || 0)).toString();
+          const fee = await getAssetHubFee(chainId, asset.typeExtras.assetId, maxBalance);
+
+          balances.forEach((balance, idx) => {
+            balance.isNone || Number(balance.unwrap().balance) <= fee
+              ? claimed.push({
+                  ...accounts[idx],
+                  chainAsset: asset,
+                  status: GiftStatus.CLAIMED,
+                })
+              : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED });
+          });
+        } else {
+          const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
+
+          balances.forEach((d, idx) =>
+            d.data.free.isEmpty
+              ? claimed.push({
+                  ...accounts[idx],
+                  chainAsset: asset,
+                  status: GiftStatus.CLAIMED,
+                })
+              : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED }),
+          );
+        }
+      }),
+    );
+
+    return [unclaimed.sort((a, b) => b.timestamp - a.timestamp), claimed.sort((a, b) => b.timestamp - a.timestamp)];
+  }
+
+  return { getGiftsState };
+};

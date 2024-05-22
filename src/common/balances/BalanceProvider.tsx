@@ -2,12 +2,11 @@ import { createContext, PropsWithChildren, useContext, useRef } from 'react';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { useChainRegistry } from '@common/chainRegistry';
 import { IAssetBalance } from '@common/balances/types';
-import { ChainAssetAccount, ChainId, Gift, PersistentGift, GiftStatus, Address } from '@common/types';
+import { ChainAssetAccount, ChainId, Address } from '@common/types';
 import { useNumId } from '@common/utils/NumId';
 import { SubscriptionState } from '@common/subscription/types';
 import { createBalanceService } from '@common/balances/BalanceService';
 import { chainAssetAccountIdToString } from '../utils/balance';
-import { ASSET_STATEMINE } from '../utils/constants';
 
 type StateStore = Record<string, SubscriptionState<IAssetBalance>>;
 type UpdateCallback = (balance: IAssetBalance) => void;
@@ -16,7 +15,6 @@ type UpdaterCallbackStore = Record<number, UpdateCallback>;
 type BalanceProviderContextProps = {
   subscribeBalance: (account: ChainAssetAccount, onUpdate: UpdateCallback) => number;
   unsubscribeBalance: (unsubscribeId: number) => void;
-  getGiftsState: (mapGifts: Map<ChainId, PersistentGift[]>) => Promise<[Gift[], Gift[]]>;
   getFreeBalance: (address: Address, chainId: ChainId) => Promise<string>;
   getFreeBalanceStatemine: (address: Address, chainId: ChainId, assetId: string) => Promise<string>;
 };
@@ -25,7 +23,7 @@ const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as 
 
 export const BalanceProvider = ({ children }: PropsWithChildren) => {
   const { nextId } = useNumId();
-  const { getConnection, getChain, getAssetByChainId } = useChainRegistry();
+  const { getConnection, getChain } = useChainRegistry();
   const unsubscribeToAccount = useRef<Record<number, ChainAssetAccount>>({});
   const accountToState = useRef<StateStore>({});
 
@@ -161,51 +159,6 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     }
   }
 
-  //TODO delete it after PR for asset hub is merged
-  const USDT_LEFTOVER = 80000;
-  async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
-    const unclaimed = [] as Gift[];
-    const claimed = [] as Gift[];
-
-    await Promise.all(
-      Array.from(mapGifts).map(async ([chainId, accounts]) => {
-        const connection = await getConnection(chainId);
-        const chain = await getChain(chainId);
-        // To have a backward compatibility with old gifts
-        const asset = accounts[0].assetId ? getAssetByChainId(accounts[0].assetId, chainId) : chain?.assets[0];
-
-        if (asset?.type === ASSET_STATEMINE) {
-          const balances = await connection.api.query.assets.account.multi(
-            accounts.map((i) => [asset.typeExtras?.assetId, i.address]),
-          );
-
-          balances.forEach((balance, idx) => {
-            balance.isNone || Number(balance.unwrap().balance) <= USDT_LEFTOVER
-              ? claimed.push({
-                  ...accounts[idx],
-                  chainAsset: asset,
-                  status: GiftStatus.CLAIMED,
-                })
-              : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED });
-          });
-        } else {
-          const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
-
-          balances.forEach((d, idx) =>
-            d.data.free.isEmpty
-              ? claimed.push({
-                  ...accounts[idx],
-                  chainAsset: asset,
-                  status: GiftStatus.CLAIMED,
-                })
-              : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED }),
-          );
-        }
-      }),
-    );
-
-    return [unclaimed.sort((a, b) => b.timestamp - a.timestamp), claimed.sort((a, b) => b.timestamp - a.timestamp)];
-  }
   async function getFreeBalance(address: Address, chainId: ChainId): Promise<string> {
     const connection = await getConnection(chainId);
     const balance = await connection.api.query.system.account(address);
@@ -222,7 +175,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <BalanceProviderContext.Provider
-      value={{ subscribeBalance, unsubscribeBalance, getGiftsState, getFreeBalance, getFreeBalanceStatemine }}
+      value={{ subscribeBalance, unsubscribeBalance, getFreeBalance, getFreeBalanceStatemine }}
     >
       {children}
     </BalanceProviderContext.Provider>

@@ -151,8 +151,8 @@ export async function getTransferDetails(
     fee = await getAssetHubFee(
       selectedAsset.chainId,
       selectedAsset.asset.typeExtras?.assetId,
-      selectedAsset.address,
       transferAmmount,
+      selectedAsset.address,
       selectedAsset?.isGift,
     );
   } else {

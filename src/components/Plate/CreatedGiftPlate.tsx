@@ -6,11 +6,11 @@ import { BodyText, Icon, Plate, BigTitle } from '@/components';
 import { GIFT_STORE } from '@/common/utils/constants';
 import { getStoreName } from '@/common/wallet';
 import { getGifts } from '@/common/utils/gift';
-import { useBalances } from '@/common/balances/BalanceProvider';
+import { useGifts } from '@/common/utils/hooks/useGifts';
 import { Gift } from '@/common/types';
 
 const CreatedGiftPlate = () => {
-  const { getGiftsState } = useBalances();
+  const { getGiftsState } = useGifts();
   const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
   const [unclaimed, setUnclaimed] = useState<Gift[]>([]);
 

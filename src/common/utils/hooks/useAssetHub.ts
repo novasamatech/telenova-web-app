@@ -13,11 +13,11 @@ export const useAssetHub = () => {
   const { estimateFee, assetConversion } = useExtrinsicProvider();
   const { getFreeBalanceStatemine } = useBalances();
 
-  const getAssetHubFee: GetAssetHubFee = async (chainId, assetId, address, transferAmmount, isGift) => {
+  const getAssetHubFee: GetAssetHubFee = async (chainId, assetId, transferAmmount, address, isGift) => {
     const fee = await handleFeeStatemine(estimateFee, chainId as ChainId, assetId, transferAmmount);
 
     // TODO: Delete it after PR for asset hub is merged
-    const dotAHBalance = await getFreeBalanceStatemine(address, chainId, DOT_ASSET_ID);
+    const dotAHBalance = address ? await getFreeBalanceStatemine(address, chainId, DOT_ASSET_ID) : '0';
 
     const dotFee = +dotAHBalance < DOT_ED_AH ? fee + DOT_ED_AH : fee;
     // Add more fee if it's a gift
@@ -33,7 +33,7 @@ export const useAssetHub = () => {
     const giftBalance = await getFreeBalanceStatemine(address, chainId, assetId);
     if (giftBalance === '0') return '0';
 
-    const fee = await getAssetHubFee(chainId, assetId, address, giftBalance);
+    const fee = await getAssetHubFee(chainId, assetId, giftBalance, address);
 
     const rawBalance = +giftBalance - fee;
     if (rawBalance <= 0) return '0';
