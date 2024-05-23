@@ -4,6 +4,7 @@ WORKDIR /app
 COPY . .
 COPY docker/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /app/scripts/replace-variable.sh
 
 RUN yarn install
 RUN yarn build
