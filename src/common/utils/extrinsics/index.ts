@@ -2,10 +2,10 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { Balance } from '@polkadot/types/interfaces';
 
-import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../extrinsicService/types';
-import { formatAmount } from './balance';
-import { Address, ChainId, TrasferAsset } from '../types';
-import { FAKE_ACCOUNT_ID } from './constants';
+import { EstimateFee, ExtrinsicBuilder, SubmitExtrinsic } from '../../extrinsicService/types';
+import { formatAmount } from '../balance';
+import { Address, ChainId, TrasferAsset } from '../../types';
+import { FAKE_ACCOUNT_ID } from '../constants';
 
 const transferExtrinsic = async (
   submitExtrinsic: SubmitExtrinsic,
