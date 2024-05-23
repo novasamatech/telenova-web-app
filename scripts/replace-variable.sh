@@ -15,6 +15,6 @@ while read -r file; do
     for VAR in $VARIABLES; do
         VALUE=$(eval echo \$$VAR)
         ESCAPED_VALUE=$(printf '%s\n' "$VALUE" | sed -e 's/[\/&]/\\&/g')
-        sed -i '' "s|BAKED_$VAR|$ESCAPED_VALUE|g" "$file"
+        sed -i "s|BAKED_$VAR|$ESCAPED_VALUE|g" "$file"
     done
 done
