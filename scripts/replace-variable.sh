@@ -10,7 +10,7 @@ for VAR in $VARIABLES; do
     fi
 done
 
-find public .next -type f -name "*.js" |
+find /app/public /app/.next -type f -name "*.js" |
 while read -r file; do
     for VAR in $VARIABLES; do
         VALUE=$(eval echo \$$VAR)
