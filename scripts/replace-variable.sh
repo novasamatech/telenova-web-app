@@ -10,9 +10,11 @@ for VAR in $VARIABLES; do
     fi
 done
 
-find /app/public /app/.next -type f -name "*.js" |
-while read file; do
-    for VAR in "${VARIABLES[@]}"; do
-        sed -i "s|BAKED_$VAR|${!VAR}|g" "$file"
+find public .next -type f -name "*.js" |
+while read -r file; do
+    for VAR in $VARIABLES; do
+        VALUE=$(eval echo \$$VAR)
+        ESCAPED_VALUE=$(printf '%s\n' "$VALUE" | sed -e 's/[\/&]/\\&/g')
+        sed -i '' "s|BAKED_$VAR|$ESCAPED_VALUE|g" "$file"
     done
 done
