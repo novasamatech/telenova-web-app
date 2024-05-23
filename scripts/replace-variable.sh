@@ -13,6 +13,6 @@ done
 find /app/public /app/.next -type f -name "*.js" |
 while read file; do
     for VAR in $VARIABLES; do
-        sed -i "s|$VAR|$(eval echo \$$VAR)|g" "$file"
+        sed -i "s|process.env.$VAR|$(eval echo \$$VAR)|g" "$file"
     done
 done
