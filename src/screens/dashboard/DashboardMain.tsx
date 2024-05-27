@@ -3,15 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { Avatar, Button } from '@nextui-org/react';
 
-import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useBalances } from '@common/balances/BalanceProvider';
+import { IAssetBalance } from '@common/balances/types';
 import { useChainRegistry } from '@common/chainRegistry';
 import { getMnemonic, resetWallet } from '@common/wallet';
 import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
-import { IAssetBalance } from '@common/balances/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
 import {
