@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
 import Lottie from 'react-lottie-player';
 
-import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
 import { useChainRegistry } from '@/common/chainRegistry';
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { claimGift, handleFeeTrasferAll } from '@/common/utils/extrinsics';
 import { getGiftInfo } from '@/common/utils/gift';
 import { AssetType, PublicKey } from '@/common/types';
 import { BigTitle, Icon, Shimmering } from '@/components';
-import { formatBalance } from '@/common/utils/balance';
+import { formatAmount, formatBalance } from '@/common/utils/balance';
 import { ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 import { useQueryService } from '@/common/queryService/QueryService';
+import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
+import { TransactionType } from '@/common/extrinsicService/types';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -32,7 +32,7 @@ let timeoutId: ReturnType<typeof setTimeout>;
 export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
-  const { submitExtrinsic, estimateFee } = useExtrinsicProvider();
+  const { sendTransaction, handleFee } = useExtrinsic();
   const { getAssetBySymbol, connectionStates } = useChainRegistry();
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
@@ -56,7 +56,7 @@ export default function GiftModal() {
 
       return '0';
     }
-    const fee = await handleFeeTrasferAll(estimateFee, chain.chain.chainId);
+    const fee = await handleFee(chain.chain.chainId, TransactionType.TRANSFER_ALL);
     clearTimeout(timerID);
     const rawBalance = +giftBalance - fee;
     const formattedBalance = formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
@@ -119,7 +119,14 @@ export default function GiftModal() {
       getAssetBySymbol,
     );
 
-    claimGift(keyring, chainAddress, chain, submitExtrinsic, giftBalance)
+    sendTransaction({
+      destinationAddress: chainAddress,
+      chainId: chain.chain.chainId,
+      transferAmmount: formatAmount(giftBalance, chain.asset.precision),
+      asset: chain.asset,
+      keyring,
+      transferAll: true,
+    })
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');
         handleClose();

@@ -1,23 +1,26 @@
-import { useChainRegistry } from '@common/chainRegistry';
-import { ChainId, Gift, PersistentGift, GiftStatus, AssetType } from '@common/types';
+import { ConnectionStatus, useChainRegistry } from '@common/chainRegistry';
+import { ChainId, Gift, PersistentGift, GiftStatus } from '@common/types';
 import { useAssetHub } from './useAssetHub';
+import { isStatemineAsset } from '../assets';
 
 export const useGifts = () => {
-  const { getConnection, getChain, getAssetByChainId } = useChainRegistry();
+  const { getConnection, getChain, getAssetByChainId, connectionStates } = useChainRegistry();
   const { getAssetHubFee } = useAssetHub();
 
   async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
     const unclaimed = [] as Gift[];
     const claimed = [] as Gift[];
-
     await Promise.all(
       Array.from(mapGifts).map(async ([chainId, accounts]) => {
+        if (connectionStates[chainId].connectionStatus === ConnectionStatus.NONE) {
+          return;
+        }
         const connection = await getConnection(chainId);
         const chain = await getChain(chainId);
         // To have a backward compatibility with old gifts
         const asset = accounts[0].assetId ? getAssetByChainId(accounts[0].assetId, chainId) : chain?.assets[0];
 
-        if (asset?.type === AssetType.STATEMINE && asset?.typeExtras?.assetId) {
+        if (isStatemineAsset(asset?.type) && asset?.typeExtras?.assetId) {
           const balances = await connection.api.query.assets.account.multi(
             accounts.map((i) => [asset?.typeExtras?.assetId, i.address]),
           );

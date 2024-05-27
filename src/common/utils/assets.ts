@@ -8,3 +8,9 @@ export const getAssetId = (asset: Asset): string => {
 
   return asset.assetId.toString();
 };
+
+export const isStatemineAsset = (type?: string) => {
+  if (!type) return false;
+
+  return type === AssetType.STATEMINE;
+};

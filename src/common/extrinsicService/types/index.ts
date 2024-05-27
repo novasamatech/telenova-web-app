@@ -13,7 +13,10 @@ export interface ExtrinsicBuilder {
   build(options?: Partial<ExtrinsicBuildingOptions>): SubmittableExtrinsic<'promise'>;
 }
 
-export type ExtrinsicBuilding = (builder: ExtrinsicBuilder) => void;
+export type ExtrinsicTransaction = {
+  args: Record<string, any>;
+  type: TransactionType;
+};
 
 export interface ExtrinsicBuildingOptions {
   batchMode: BatchMode;
@@ -34,25 +37,27 @@ export interface ExtrinsicBuilderFactory {
   forChain(chainId: ChainId): Promise<ExtrinsicBuilder>;
 }
 
-export type EstimateFee = (
-  chainId: ChainId,
-  building: ExtrinsicBuilding,
-  signOptions?: Partial<SignerOptions>,
-  options?: Partial<ExtrinsicBuildingOptions>,
-) => Promise<Balance>;
+export type EstimateFeeParams = {
+  chainId: ChainId;
+  transaction: ExtrinsicTransaction;
+  signOptions?: Partial<SignerOptions>;
+  options?: Partial<ExtrinsicBuildingOptions>;
+};
+
+export type EstimateFee = (params: EstimateFeeParams) => Promise<Balance>;
 
 export type SubmitExtrinsicParams = {
   chainId: ChainId;
-  building: ExtrinsicBuilding;
-  giftKeyringPair?: KeyringPair;
+  transaction: ExtrinsicTransaction;
+  keyring?: KeyringPair;
   options?: Partial<ExtrinsicBuildingOptions>;
   signOptions?: Partial<SignerOptions>;
 };
 
-export type SubmitExtrinsic = ({
-  chainId,
-  building,
-  giftKeyringPair,
-  options,
-  signOptions,
-}: SubmitExtrinsicParams) => Promise<Hash | undefined>;
+export type SubmitExtrinsic = (params: SubmitExtrinsicParams) => Promise<Hash | undefined>;
+
+export const enum TransactionType {
+  TRANSFER = 'transfer',
+  TRANSFER_ALL = 'transferAll',
+  TRANSFER_STATEMINE = 'transferStatemine',
+}

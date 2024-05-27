@@ -1,14 +1,7 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
-import { SignerOptions } from '@polkadot/api/types/submittable';
-import { ChainId } from '@common/types';
-import {
-  EstimateFee,
-  ExtrinsicBuilding,
-  ExtrinsicBuildingOptions,
-  SubmitExtrinsic,
-  SubmitExtrinsicParams,
-} from '@common/extrinsicService/types';
 import { Balance, Hash } from '@polkadot/types/interfaces';
+
+import { EstimateFee, EstimateFeeParams, SubmitExtrinsic, SubmitExtrinsicParams } from '@common/extrinsicService/types';
 import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
 import { getKeyringPair } from '../wallet';
 import { FAKE_ACCOUNT_ID } from '../utils/constants';
@@ -23,13 +16,8 @@ const ExtrinsicProviderContext = createContext<ExtrinsicProviderContextProps>({}
 export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   const { prepareExtrinsic } = useExtrinsicService();
 
-  async function estimateFee(
-    chainId: ChainId,
-    building: ExtrinsicBuilding,
-    signOptions?: Partial<SignerOptions>,
-    options?: Partial<ExtrinsicBuildingOptions>,
-  ): Promise<Balance> {
-    const extrinsic = await prepareExtrinsic<'promise'>(chainId, building, options);
+  async function estimateFee({ chainId, transaction, signOptions, options }: EstimateFeeParams): Promise<Balance> {
+    const extrinsic = await prepareExtrinsic<'promise'>(chainId, transaction, options);
     const paymentInfo = await extrinsic.paymentInfo(FAKE_ACCOUNT_ID, signOptions);
 
     return paymentInfo.partialFee;
@@ -37,14 +25,14 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
 
   async function submitExtrinsic({
     chainId,
-    building,
-    giftKeyringPair,
+    transaction,
+    keyring,
     options,
     signOptions,
   }: SubmitExtrinsicParams): Promise<Hash | undefined> {
-    const extrinsic = await prepareExtrinsic<'promise'>(chainId, building, options);
+    const extrinsic = await prepareExtrinsic<'promise'>(chainId, transaction, options);
 
-    const keyringPair = giftKeyringPair || getKeyringPair();
+    const keyringPair = keyring || getKeyringPair();
     if (!keyringPair) return;
 
     await extrinsic.signAsync(keyringPair, signOptions);
