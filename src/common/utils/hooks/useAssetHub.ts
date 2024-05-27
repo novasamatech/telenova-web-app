@@ -1,27 +1,27 @@
 import { Asset } from '@/common/chainRegistry/types';
-import { useBalances } from '../../balances/BalanceProvider';
 import { useExtrinsicProvider } from '../../extrinsicService/ExtrinsicProvider';
 import { ChainId } from '../../types';
 import { formatBalance } from '../balance';
 import { handleFeeStatemine } from '../extrinsics';
 import { GetAssetHubFee } from './types';
+import { useQueryService } from '@/common/queryService/QueryService';
 
-const DOT_ED_AH = 100000000; // 0.01 DOT ED
 const DOT_ASSET_ID = '0';
 
 export const useAssetHub = () => {
-  const { estimateFee, assetConversion } = useExtrinsicProvider();
-  const { getFreeBalanceStatemine } = useBalances();
+  const { estimateFee } = useExtrinsicProvider();
+  const { assetConversion, getExistentialDeposit, getFreeBalanceStatemine } = useQueryService();
 
   const getAssetHubFee: GetAssetHubFee = async (chainId, assetId, transferAmmount, address, isGift) => {
     const fee = await handleFeeStatemine(estimateFee, chainId as ChainId, assetId, transferAmmount);
-
     // TODO: Delete it after PR for asset hub is merged
+    const dotED = Number((await getExistentialDeposit(chainId)) || '0');
+
     const dotAHBalance = address ? await getFreeBalanceStatemine(address, chainId, DOT_ASSET_ID) : '0';
 
-    const dotFee = +dotAHBalance < DOT_ED_AH ? fee + DOT_ED_AH : fee;
+    const dotFee = +dotAHBalance < dotED ? fee + dotED : fee;
     // Add more fee if it's a gift
-    const totalDotFee = isGift ? dotFee + fee + DOT_ED_AH : dotFee;
+    const totalDotFee = isGift ? dotFee + fee + dotED : dotFee;
     const totalFee = await assetConversion(chainId, totalDotFee, assetId);
 
     return totalFee;

@@ -8,6 +8,7 @@ import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvide
 import { getTransferDetails } from '@/common/utils/balance';
 import { TrasferAsset } from '@/common/types';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
+import { useQueryService } from '@/common/queryService/QueryService';
 
 type AmountPageLogic = {
   prevPage: string;
@@ -18,7 +19,9 @@ type AmountPageLogic = {
 
 export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountChange = () => {} }: AmountPageLogic) {
   const navigate = useNavigate();
-  const { estimateFee, getExistentialDeposit, getExistentialDepositStatemine } = useExtrinsicProvider();
+  const { estimateFee } = useExtrinsicProvider();
+  const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
+
   const { BackButton } = useTelegram();
   const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
   const [isPending, startTransition] = useTransition();

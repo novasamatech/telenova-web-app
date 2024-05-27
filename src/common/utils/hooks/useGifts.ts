@@ -1,6 +1,5 @@
 import { useChainRegistry } from '@common/chainRegistry';
-import { ChainId, Gift, PersistentGift, GiftStatus } from '@common/types';
-import { ASSET_STATEMINE } from '../constants';
+import { ChainId, Gift, PersistentGift, GiftStatus, AssetType } from '@common/types';
 import { useAssetHub } from './useAssetHub';
 
 export const useGifts = () => {
@@ -18,7 +17,7 @@ export const useGifts = () => {
         // To have a backward compatibility with old gifts
         const asset = accounts[0].assetId ? getAssetByChainId(accounts[0].assetId, chainId) : chain?.assets[0];
 
-        if (asset?.type === ASSET_STATEMINE && asset?.typeExtras?.assetId) {
+        if (asset?.type === AssetType.STATEMINE && asset?.typeExtras?.assetId) {
           const balances = await connection.api.query.assets.account.multi(
             accounts.map((i) => [asset?.typeExtras?.assetId, i.address]),
           );

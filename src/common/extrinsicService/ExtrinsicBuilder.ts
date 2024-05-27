@@ -1,8 +1,9 @@
 import { SubmittableExtrinsic, SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
-import { useChainRegistry } from '@common/chainRegistry';
-import { ApiPromise } from '@polkadot/api';
-import { ChainId } from '@common/types';
 import '@polkadot/api-augment';
+import { ApiPromise } from '@polkadot/api';
+
+import { useChainRegistry } from '@common/chainRegistry';
+import { ChainId } from '@common/types';
 import {
   BatchMode,
   ExtrinsicBuilder,

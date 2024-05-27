@@ -1,13 +1,13 @@
 import BigNumber from 'bignumber.js';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../types';
+import { AssetAccount, AssetPrice, AssetType, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../types';
 import { handleFee } from './extrinsics';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
-import { EstimateFee, GetExistentialDeposit, GetExistentialDepositStatemine } from '../extrinsicService/types';
+import { EstimateFee } from '../extrinsicService/types';
 import { GetAssetHubFee } from './hooks/types';
-import { ASSET_STATEMINE } from './constants';
+import { GetExistentialDeposit, GetExistentialDepositStatemine } from '@common/queryService/types';
 
 const ZERO_BALANCE = '0';
 
@@ -143,7 +143,7 @@ export async function getTransferDetails(
 
   let deposit;
   let fee = 0;
-  if (selectedAsset.asset.type === ASSET_STATEMINE && selectedAsset.asset.typeExtras?.assetId) {
+  if (selectedAsset.asset.type === AssetType.STATEMINE && selectedAsset.asset.typeExtras?.assetId) {
     deposit = await getExistentialDepositStatemine(
       selectedAsset.chainId as ChainId,
       selectedAsset.asset.typeExtras?.assetId,

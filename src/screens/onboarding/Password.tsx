@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@nextui-org/react';
 
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { useTelegram } from '@/common/providers/telegramProvider';
-import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { Paths } from '@/common/routing';
 import { createWallet, generateWalletMnemonic, backupMnemonic } from '@common/wallet';
 import { BodyText, TitleText } from '@/components/Typography';

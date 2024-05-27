@@ -9,10 +9,9 @@ import {
   Connection,
   IChainConnectionService,
   RpcNode,
-} from '@common/chainRegistry/types';
-
+  createCachedProvider,
+} from '@common/chainRegistry';
 import { ChainId, StateResolution } from '@common/types';
-import { createCachedProvider } from './CachedMetadataConnection';
 
 const CONNECTION_RETRY_DELAY = 2000;
 

@@ -62,3 +62,7 @@ export type PersistentGift = {
 export type Gift = PersistentGift & {
   chainAsset?: Asset;
 };
+
+export const enum AssetType {
+  STATEMINE = 'statemine',
+}

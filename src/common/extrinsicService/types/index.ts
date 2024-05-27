@@ -56,6 +56,3 @@ export type SubmitExtrinsic = ({
   options,
   signOptions,
 }: SubmitExtrinsicParams) => Promise<Hash | undefined>;
-
-export type GetExistentialDeposit = (chainId: ChainId) => Promise<string | undefined>;
-export type GetExistentialDepositStatemine = (chainId: ChainId, assetId?: string) => Promise<string | undefined>;

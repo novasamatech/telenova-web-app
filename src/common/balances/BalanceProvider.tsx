@@ -1,10 +1,9 @@
 import { createContext, PropsWithChildren, useContext, useRef } from 'react';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { useChainRegistry } from '@common/chainRegistry';
-import { IAssetBalance } from '@common/balances/types';
-import { ChainAssetAccount, ChainId, Address } from '@common/types';
+import { IAssetBalance, SubscriptionState } from '@common/balances/types';
+import { AssetType, ChainAssetAccount } from '@common/types';
 import { useNumId } from '@/common/utils/hooks/useNumId';
-import { SubscriptionState } from '@common/subscription/types';
 import { createBalanceService } from '@common/balances/BalanceService';
 import { chainAssetAccountIdToString } from '../utils/balance';
 
@@ -15,8 +14,6 @@ type UpdaterCallbackStore = Record<number, UpdateCallback>;
 type BalanceProviderContextProps = {
   subscribeBalance: (account: ChainAssetAccount, onUpdate: UpdateCallback) => number;
   unsubscribeBalance: (unsubscribeId: number) => void;
-  getFreeBalance: (address: Address, chainId: ChainId) => Promise<string>;
-  getFreeBalanceStatemine: (address: Address, chainId: ChainId, assetId: string) => Promise<string>;
 };
 
 const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as BalanceProviderContextProps);
@@ -110,7 +107,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     };
 
     const unsubscribe =
-      account.asset.type === 'statemine'
+      account.asset.type === AssetType.STATEMINE
         ? await service.subscribeStatemineAssets(address, account.asset, handleUpdate)
         : await service.subscribe(address, handleUpdate);
 
@@ -159,24 +156,8 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     }
   }
 
-  async function getFreeBalance(address: Address, chainId: ChainId): Promise<string> {
-    const connection = await getConnection(chainId);
-    const balance = await connection.api.query.system.account(address);
-
-    return balance.data.free.toString();
-  }
-
-  async function getFreeBalanceStatemine(address: Address, chainId: ChainId, assetId: string): Promise<string> {
-    const connection = await getConnection(chainId);
-    const balance = await connection.api.query.assets.account(assetId, address);
-
-    return balance.isNone ? '0' : balance.unwrap().balance.toString();
-  }
-
   return (
-    <BalanceProviderContext.Provider
-      value={{ subscribeBalance, unsubscribeBalance, getFreeBalance, getFreeBalanceStatemine }}
-    >
+    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance }}>
       {children}
     </BalanceProviderContext.Provider>
   );
