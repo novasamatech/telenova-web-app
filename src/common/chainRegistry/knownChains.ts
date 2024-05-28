@@ -126,3 +126,68 @@ export const westend: Chain = {
   ],
   addressPrefix: 42,
 };
+
+export const assetHub: Chain = {
+  name: 'Polkadot Asset Hub',
+  addressPrefix: 0,
+  chainId: '0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f',
+  assets: [
+    {
+      assetId: 1,
+      symbol: 'USDT',
+      precision: 6,
+      type: 'statemine',
+      priceId: 'tether',
+      typeExtras: {
+        assetId: '1984',
+      },
+      name: 'USD Tether',
+    },
+  ],
+  nodes: [
+    {
+      url: 'wss://sys.ibp.network/statemint',
+      name: 'IBP network node',
+    },
+    {
+      url: 'wss://sys.dotters.network/statemint',
+      name: 'Dotters Net node',
+    },
+    {
+      url: 'wss://statemint-rpc.dwellir.com',
+      name: 'Dwellir node',
+    },
+    {
+      url: 'wss://statemint.api.onfinality.io/public-ws',
+      name: 'OnFinality node',
+    },
+  ],
+};
+
+// export const westmint = {
+//   name: 'Westmint',
+//   addressPrefix: 42,
+//   chainId: '0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9',
+//   nodes: [
+//     {
+//       url: 'wss://westmint-rpc.dwellir.com',
+//       name: 'Dwellir node',
+//     },
+//     {
+//       url: 'wss://wnd-rpc.stakeworld.io/assethub',
+//       name: 'Stakeworld node',
+//     },
+//   ],
+//   assets: [
+//     {
+//       assetId: 1,
+//       symbol: 'SIRI',
+//       precision: 10,
+//       type: 'statemine',
+//       typeExtras: {
+//         assetId: '81',
+//       },
+//       name: 'Siri',
+//     },
+//   ],
+// };

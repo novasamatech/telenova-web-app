@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Paths } from '@/common/routing';
-import { BodyText, Icon, Plate, BigTitle } from '@/components';
+import { BodyText, Icon, Plate, BigTitle, Shimmering } from '@/components';
 import { GIFT_STORE } from '@/common/utils/constants';
 import { getStoreName } from '@/common/wallet';
 import { getGifts } from '@/common/utils/gift';
-import { useBalances } from '@/common/balances/BalanceProvider';
+import { useGifts } from '@/common/utils/hooks/useGifts';
 import { Gift } from '@/common/types';
+import { useChainRegistry } from '@/common/chainRegistry';
 
 const CreatedGiftPlate = () => {
-  const { getGiftsState } = useBalances();
+  const { connectionStates } = useChainRegistry();
+  const { getGiftsState } = useGifts();
   const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
-  const [unclaimed, setUnclaimed] = useState<Gift[]>([]);
+  const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
 
   useEffect(() => {
     if (!gifts) return;
@@ -21,7 +23,7 @@ const CreatedGiftPlate = () => {
       const [unclaimed] = await getGiftsState(mapGifts!);
       setUnclaimed(unclaimed);
     })();
-  }, []);
+  }, [connectionStates]);
 
   if (!gifts) return;
 
@@ -31,9 +33,13 @@ const CreatedGiftPlate = () => {
         <Icon name="Present" size={60} />
         <div className="grid">
           <BigTitle align="left">Created Gifts</BigTitle>
-          <BodyText align="left" className="text-text-hint">
-            {unclaimed.length ? `Unclamed: ${unclaimed.length}` : 'All your gifts were claimed'}
-          </BodyText>
+          {unclaimed ? (
+            <BodyText align="left" className="text-text-hint">
+              {unclaimed.length ? `Unclamed: ${unclaimed.length}` : 'All your gifts were claimed'}
+            </BodyText>
+          ) : (
+            <Shimmering width={100} height={20} />
+          )}
         </div>
         <Icon name="ArrowBold" className="w-10 h-10 self-center" />
       </Link>

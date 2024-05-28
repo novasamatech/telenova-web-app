@@ -1,10 +1,16 @@
-import { Connection } from '@common/chainRegistry/types';
-import { Address } from '@common/types';
 import { BN } from '@polkadot/util';
+
+import { Asset, Connection } from '@common/chainRegistry/types';
+import { Address } from '@common/types';
 import { IAssetBalance } from '@common/balances/types';
 
 export interface IBalanceService {
   subscribe: (address: Address, onUpdate: (result: IAssetBalance) => void) => Promise<() => void>;
+  subscribeStatemineAssets: (
+    address: Address,
+    asset: Asset,
+    onUpdate: (result: IAssetBalance) => void,
+  ) => Promise<() => void>;
 }
 
 export const createBalanceService = (connection: Connection): IBalanceService => {
@@ -42,7 +48,30 @@ export const createBalanceService = (connection: Connection): IBalanceService =>
     });
   }
 
+  function subscribeStatemineAssets(
+    address: Address,
+    asset: Asset,
+    onUpdate: (result: IAssetBalance) => void,
+  ): Promise<() => void> {
+    return connection.api.query.assets.account.multi([[asset.typeExtras?.assetId, address]], (data) => {
+      const balance = data[0].isNone ? '0' : data[0].unwrap().balance.toString();
+
+      // No frozen and lock for statemine
+      const assetBalance: IAssetBalance = {
+        total: () => {
+          return balance;
+        },
+        transferable: () => {
+          return balance;
+        },
+      };
+
+      onUpdate(assetBalance);
+    });
+  }
+
   return {
     subscribe,
+    subscribeStatemineAssets,
   };
 };

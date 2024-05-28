@@ -1,14 +1,14 @@
 import { ApiPromise } from '@polkadot/api';
 import { ApiTypes } from '@polkadot/api-base/types/base';
 import { ChainId } from '@common/types';
-import { ExtrinsicBuilding, ExtrinsicBuildingOptions } from '@common/extrinsicService/types';
+import { ExtrinsicBuildingOptions, ExtrinsicTransaction, TransactionType } from '@common/extrinsicService/types';
 import { SubmittableExtrinsic } from '@polkadot/api-base/types';
 import { useExtrinsicBuilderFactory } from '@common/extrinsicService/ExtrinsicBuilder';
 
 interface ExtrinsicService {
   prepareExtrinsic<ApiType extends ApiTypes>(
     chainId: ChainId,
-    building: ExtrinsicBuilding,
+    transaction: ExtrinsicTransaction,
     options?: Partial<ExtrinsicBuildingOptions>,
   ): Promise<SubmittableExtrinsic<ApiType>>;
   prepareApi(chainId: ChainId): Promise<ApiPromise>;
@@ -17,14 +17,26 @@ interface ExtrinsicService {
 export function useExtrinsicService(): ExtrinsicService {
   const extrinsicBuilderFactory = useExtrinsicBuilderFactory();
 
+  const getExtrinsic: Record<
+    TransactionType,
+    (args: Record<string, any>, api: ApiPromise) => SubmittableExtrinsic<'promise'>
+  > = {
+    [TransactionType.TRANSFER]: ({ dest, value }, api) =>
+      api.tx.balances.transferKeepAlive
+        ? api.tx.balances.transferKeepAlive(dest, value)
+        : api.tx.balances.transfer(dest, value),
+    [TransactionType.TRANSFER_ALL]: ({ dest }, api) => api.tx.balances.transferAll(dest, false),
+    [TransactionType.TRANSFER_STATEMINE]: ({ dest, value, asset }, api) => api.tx.assets.transfer(asset, dest, value),
+  };
+
   const prepareExtrinsic = async (
     chainId: ChainId,
-    building: ExtrinsicBuilding,
+    transaction: ExtrinsicTransaction,
     options?: Partial<ExtrinsicBuildingOptions>,
   ): Promise<SubmittableExtrinsic<any>> => {
     const extrinsicBuilder = await extrinsicBuilderFactory.forChain(chainId);
 
-    building(extrinsicBuilder);
+    extrinsicBuilder.addCall(getExtrinsic[transaction.type](transaction.args, extrinsicBuilder.api));
 
     return extrinsicBuilder.build(options);
   };

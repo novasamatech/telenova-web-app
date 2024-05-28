@@ -5,7 +5,6 @@ import { Divider } from '@nextui-org/react';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { Paths } from '@/common/routing';
-import { handleSend } from '@/common/utils/extrinsics';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import {
   HeadlineText,
@@ -17,14 +16,13 @@ import {
   MediumTitle,
   TruncateAddress,
 } from '@/components';
-import { formatBalance } from '@/common/utils/balance';
+import { formatAmount, formatBalance } from '@/common/utils/balance';
 import { IconNames } from '@/components/Icon/types';
-import { useExtrinsicProvider } from '@/common/extrinsicService/ExtrinsicProvider';
-import { TrasferAsset } from '@/common/types';
+import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
 
 export default function ConfirmationPage() {
   const navigate = useNavigate();
-  const { submitExtrinsic } = useExtrinsicProvider();
+  const { sendTransaction } = useExtrinsic();
   const { reset, addMainButton, mainButton } = useMainButton();
   const { BackButton } = useTelegram();
   const { selectedAsset } = useGlobalContext();
@@ -34,7 +32,12 @@ export default function ConfirmationPage() {
 
     const mainCallback = async () => {
       mainButton.showProgress(false);
-      await handleSend(submitExtrinsic, selectedAsset as TrasferAsset)
+      await sendTransaction({
+        destinationAddress: selectedAsset.destinationAddress!,
+        chainId: selectedAsset.chainId!,
+        transferAmmount: formatAmount(selectedAsset.amount!, selectedAsset.asset!.precision),
+        asset: selectedAsset.asset!,
+      })
         .then(() => {
           navigate(Paths.TRANSFER_RESULT);
         })

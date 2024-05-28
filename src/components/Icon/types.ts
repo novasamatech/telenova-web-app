@@ -1,6 +1,7 @@
 import DOT from '@common/assets/svg/assets/DOT.svg';
 import WND from '@common/assets/svg/assets/WND.svg';
 import KSM from '@common/assets/svg/assets/KSM.svg';
+import USDT from '@common/assets/svg/assets/USDT.svg';
 import Settings from '@common/assets/svg/settings.svg';
 import Send from '@common/assets/svg/Send.svg';
 import Receive from '@common/assets/svg/Receive.svg';
@@ -37,6 +38,7 @@ const AllIcons = {
   DOT,
   WND,
   KSM,
+  USDT,
   Settings,
   Send,
   Receive,

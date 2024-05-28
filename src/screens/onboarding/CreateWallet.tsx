@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Player, PlayerEvent } from '@lottiefiles/react-lottie-player';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { useGlobalContext } from '@/common/providers/contextProvider';
 import { completeOnboarding } from '@common/telegram';
 import { BodyText, HeadlineText, TitleText } from '@/components/Typography';
 import { Paths } from '@/common/routing';

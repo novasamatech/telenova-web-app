@@ -8,6 +8,11 @@ export type Asset = {
   symbol: string;
   precision: number;
   priceId?: string;
+  type?: string;
+  typeExtras?: {
+    assetId: string;
+  };
+  name?: string;
 };
 
 export type Chain = {
@@ -59,6 +64,7 @@ export type ConnectionRequest = {
 export interface IChainProviderService {
   getAllChains: () => Promise<Chain[]>;
   getAssetBySymbol: (symbol: string) => Promise<ChainAsset>;
+  getAssetByChainId: (assetId: string, chainId: ChainId) => Asset | undefined;
   getChain: (chainId: ChainId) => Promise<Chain | undefined>;
 }
 
