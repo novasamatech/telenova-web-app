@@ -146,16 +146,16 @@ export const assetHub: Chain = {
   ],
   nodes: [
     {
+      url: 'wss://asset-hub-polkadot-rpc.dwellir.com',
+      name: 'Dwellir node',
+    },
+    {
       url: 'wss://sys.ibp.network/statemint',
       name: 'IBP network node',
     },
     {
       url: 'wss://sys.dotters.network/statemint',
       name: 'Dotters Net node',
-    },
-    {
-      url: 'wss://statemint-rpc.dwellir.com',
-      name: 'Dwellir node',
     },
     {
       url: 'wss://statemint.api.onfinality.io/public-ws',
