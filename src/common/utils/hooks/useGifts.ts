@@ -25,7 +25,9 @@ export const useGifts = () => {
             accounts.map((i) => [asset?.typeExtras?.assetId, i.address]),
           );
 
-          const maxBalance = Math.max(...balances.map((balance) => Number(balance?.unwrap()?.balance) || 0)).toString();
+          const maxBalance = Math.max(
+            ...balances.map((balance) => (balance.isNone ? 0 : Number(balance.unwrap().balance))),
+          ).toString();
           const fee = await getAssetHubFee(chainId, asset.typeExtras.assetId, maxBalance);
 
           balances.forEach((balance, idx) => {

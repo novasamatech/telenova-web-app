@@ -49,7 +49,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
       ? await getAssetHubFee(
           selectedAsset.chainId,
           selectedAsset.asset.typeExtras!.assetId,
-          transferAmmount,
+          selectedAsset.transferableBalance || '0',
           selectedAsset.address,
           selectedAsset?.isGift,
         )

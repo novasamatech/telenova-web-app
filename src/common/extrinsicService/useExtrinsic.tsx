@@ -80,7 +80,6 @@ export function useExtrinsic() {
         destinationAddress: giftTransferAddress,
         chainId,
         transferAmmount: giftAmount,
-        transferAll,
         asset,
       });
     }
@@ -92,6 +91,7 @@ export function useExtrinsic() {
       destinationAddress: giftTransferAddress,
       chainId,
       transferAmmount: giftAmount,
+      transferAll,
       asset,
     });
   }
