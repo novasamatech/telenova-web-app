@@ -13,6 +13,7 @@ export default function TransferPage() {
 
   useEffect(() => {
     const callback = () => {
+      setSelectedAsset(null);
       navigate(Paths.DASHBOARD);
     };
     BackButton?.show();
@@ -30,6 +31,7 @@ export default function TransferPage() {
       <LinkCard
         href={Paths.TRANSFER_SELECT_TOKEN}
         text="Send as Gift in Telegram"
+        textClassName="text-medium-title"
         iconClassName="text-bg-icon-accent-primary"
         helpText="Transfer to one of your contacts"
         iconName="Gift"
@@ -40,6 +42,7 @@ export default function TransferPage() {
       <LinkCard
         href={Paths.TRANSFER_SELECT_TOKEN}
         text="Send to Address"
+        textClassName="text-medium-title"
         helpText="Transfer to address within the network"
         iconName="Address"
         wrapperClassName="py-1"

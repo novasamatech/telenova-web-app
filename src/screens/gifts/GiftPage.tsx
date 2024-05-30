@@ -4,17 +4,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { Paths } from '@/common/routing';
 import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
-import { useBalances } from '@/common/balances/BalanceProvider';
 import { getGifts } from '@/common/utils/gift';
 import { Gift } from '@/common/types';
 import { useMainButton } from '@/common/telegram/useMainButton';
+import { useGifts } from '@/common/utils/hooks/useGifts';
 
 export default function GiftPage() {
   const navigate = useNavigate();
   const { BackButton } = useTelegram();
   const { hideMainButton } = useMainButton();
 
-  const { getGiftsState } = useBalances();
+  const { getGiftsState } = useGifts();
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
   const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,7 @@ export default function GiftPage() {
         Unclaimed <span className="text-text-on-button-disabled">{unclaimedGifts.length || 0}</span>
       </BodyText>
       {loading ? (
-        <Shimmering width={250} height={92} />
+        <Shimmering width={350} height={92} />
       ) : unclaimedGifts.length ? (
         unclaimedGifts.map((gift) => (
           <Link
@@ -77,7 +77,7 @@ export default function GiftPage() {
         Claimed <span className="text-text-on-button-disabled">{claimedGifts.length || 0}</span>
       </BodyText>
       {loading ? (
-        <Shimmering width={250} height={92} />
+        <Shimmering width={350} height={92} />
       ) : claimedGifts.length ? (
         claimedGifts.map((gift) => <GiftPlate gift={gift} key={gift.timestamp} isClaimed={true} />)
       ) : (

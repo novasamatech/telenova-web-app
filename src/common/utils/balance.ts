@@ -1,13 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId, ChainId, TrasferAsset } from '../types';
+import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId } from '../types';
 import { Chain } from '../chainRegistry/types';
 import { IAssetBalance } from '../balances/types';
-import { EstimateFee, GetExistentialDeposit } from '../extrinsicService/types';
-import { handleFee } from './extrinsics';
 
-const ZERO_BALANCE = '0';
+import { ZERO_BALANCE } from './constants';
 
 type FormattedBalance = {
   formattedValue: string;
@@ -94,9 +92,10 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, ba
   );
 };
 
-export const formatAmount = (amount: string, precision: number): string => {
-  if (!amount) return ZERO_BALANCE;
+export const formatAmount = (rawAmount: string, precision: number): string => {
+  if (!rawAmount) return ZERO_BALANCE;
 
+  const amount = (+rawAmount).toString();
   const isDecimalValue = amount.match(/^(\d+)\.(\d+)$/);
   const bnPrecision = new BN(precision);
   if (isDecimalValue) {
@@ -126,24 +125,3 @@ export const getTotalBalance = (assets: AssetAccount[], assetsPrices: AssetPrice
     return acc;
   }, 0);
 };
-
-export async function getTransferDetails(
-  selectedAsset: TrasferAsset,
-  amount: string,
-  estimateFee: EstimateFee,
-  getExistentialDeposit: GetExistentialDeposit,
-) {
-  const transferAmmount = formatAmount(amount || '0', selectedAsset.asset?.precision as number);
-  const fee = await handleFee(estimateFee, selectedAsset.chainId as ChainId, transferAmmount, selectedAsset?.isGift);
-  const formattedFee = Number(formatBalance(fee.toString(), selectedAsset.asset?.precision).formattedValue);
-
-  const formattedBalance = Number(
-    formatBalance(selectedAsset.transferableBalance, selectedAsset.asset?.precision).formattedValue,
-  );
-  const max = Math.max(formattedBalance - formattedFee, 0).toFixed(5);
-
-  const deposit = await getExistentialDeposit(selectedAsset.chainId as ChainId);
-  const formattedDeposit = Number(formatBalance(deposit, selectedAsset.asset?.precision).formattedValue);
-
-  return { fee, max, formattedDeposit };
-}

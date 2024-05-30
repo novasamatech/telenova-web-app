@@ -1,9 +1,10 @@
-import { polkadot, kusama, westend } from './knownChains';
-import { Chain, ChainAsset, IChainProviderService } from './types';
+import { polkadot, kusama, westend, assetHub } from './knownChains';
+import { Asset, Chain, ChainAsset, IChainProviderService } from './types';
 import { ChainId } from '@common/types';
 
 export const useChains = (): IChainProviderService => {
-  const chains = [polkadot, kusama, westend];
+  // TODO change to chain.json
+  const chains = [polkadot, kusama, westend, assetHub];
 
   const getAllChains = (): Promise<Chain[]> => {
     return new Promise(function (resolve) {
@@ -25,6 +26,13 @@ export const useChains = (): IChainProviderService => {
     });
   };
 
+  const getAssetByChainId = (assetId: string, chainId: ChainId): Asset | undefined => {
+    const chain = chains.find((chain) => chain.chainId == chainId);
+    const asset = chain?.assets.find((asset) => asset.assetId == +assetId);
+
+    return asset;
+  };
+
   const getChain = (chainId: ChainId): Promise<Chain | undefined> => {
     return new Promise(function (resolve) {
       for (const chain of chains) {
@@ -42,6 +50,7 @@ export const useChains = (): IChainProviderService => {
   return {
     getAllChains,
     getAssetBySymbol,
+    getAssetByChainId,
     getChain,
   };
 };

@@ -43,7 +43,7 @@ export default function ReceivePage() {
 
   return (
     <div className="flex items-center flex-col min-h-[95vh] mx-[-16px]">
-      <TitleText className="mt-6 mb-10">Receive {assets[activeSlideIndex].asset.symbol}</TitleText>
+      <TitleText className="mt-6 mb-10">Receive {assets[activeSlideIndex]?.asset.symbol}</TitleText>
       <Carousel
         activeSlideIndex={activeSlideIndex}
         containerProps={{
@@ -113,7 +113,7 @@ export default function ReceivePage() {
           <Button
             color="primary"
             className="w-[200px] min-h-[50px] rounded-full"
-            onClick={() => navigator.clipboard.writeText(assets[activeSlideIndex].address)}
+            onClick={() => navigator.clipboard.writeText(assets[activeSlideIndex]?.address)}
           >
             <MediumTitle as="span" className="text-white">
               Copy address
@@ -128,7 +128,7 @@ export default function ReceivePage() {
           color="primary"
           variant="flat"
           className="w-[200px] min-h-[50px] mt-4 rounded-full"
-          onClick={() => shareQrAddress(assets[activeSlideIndex].asset.symbol, assets[activeSlideIndex].address)}
+          onClick={() => shareQrAddress(assets[activeSlideIndex]?.asset.symbol, assets[activeSlideIndex]?.address)}
         >
           <MediumTitle as="span" className="text-text-on-button-bold">
             Share

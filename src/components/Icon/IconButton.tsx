@@ -13,9 +13,8 @@ type Props = {
 const IconButton = ({ iconName, onClick, size = 40, text = '' }: Props) => {
   return (
     <Button
-      radius="full"
       variant="shadow"
-      className="bg-white h-[48px] w-full p-1 gap-4 justify-start border border-border-neutral overflow-visible shadow-md-sm"
+      className="bg-white h-auto w-full px-3 py-[14px] gap-3 justify-start rounded-[20px] flex-col shadow-md-sm"
       onClick={onClick}
     >
       <span className="w-[40px]">

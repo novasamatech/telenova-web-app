@@ -1,4 +1,4 @@
-import ReceivePage from './receive/ReceivePage';
+import ReceivePage from './ReceivePage';
 
-export { DashboardMain } from './main/DashboardMain';
+export { DashboardMain } from './DashboardMain';
 export { ReceivePage };

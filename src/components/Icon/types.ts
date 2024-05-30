@@ -1,6 +1,7 @@
 import DOT from '@common/assets/svg/assets/DOT.svg';
 import WND from '@common/assets/svg/assets/WND.svg';
 import KSM from '@common/assets/svg/assets/KSM.svg';
+import USDT from '@common/assets/svg/assets/USDT.svg';
 import Settings from '@common/assets/svg/settings.svg';
 import Send from '@common/assets/svg/Send.svg';
 import Receive from '@common/assets/svg/Receive.svg';
@@ -29,11 +30,15 @@ import DotWelcome from '@common/assets/svg/welcome/Polkadot.svg';
 import GiftClaimed from '@common/assets/svg/GiftClaimed.svg';
 import PendingGift from '@common/assets/svg/pendingGift.svg';
 import ExclamationMark from '@common/assets/svg/exclamationMark.svg';
+import BuySell from '@common/assets/svg/BuySell.svg';
+import Buy from '@common/assets/svg/Buy.svg';
+import Sell from '@common/assets/svg/Sell.svg';
 
 const AllIcons = {
   DOT,
   WND,
   KSM,
+  USDT,
   Settings,
   Send,
   Receive,
@@ -62,6 +67,9 @@ const AllIcons = {
   GiftClaimed,
   PendingGift,
   ExclamationMark,
+  Buy,
+  Sell,
+  BuySell,
 };
 
 export type IconNames = keyof typeof AllIcons;

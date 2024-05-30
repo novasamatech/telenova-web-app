@@ -2,12 +2,19 @@ import { encodeAddress } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
 
 import { getKeyringPairFromSeed, getStoreName } from '../wallet';
-import { ChainId, PersistentGift, PublicKey } from '../types';
+import { ChainId, PersistentGift, PublicKey, TrasferAsset } from '../types';
 import { ChainAsset } from '../chainRegistry/types';
 import { GIFT_STORE } from './constants';
 
-export const backupGifts = (address: string, secret: string, chainId: ChainId, balance: string): void => {
-  const gift = { timestamp: Date.now(), address, secret, chainId, balance };
+export const backupGifts = (address: string, secret: string, selectedAsset: TrasferAsset): void => {
+  const gift = {
+    timestamp: Date.now(),
+    address,
+    secret,
+    chainId: selectedAsset.chainId,
+    balance: selectedAsset.amount,
+    assetId: selectedAsset.asset.assetId,
+  };
   const storedGifts = localStorage.getItem(getStoreName(GIFT_STORE)) as string;
   const backup = storedGifts ? [...JSON.parse(storedGifts), gift] : [gift];
 

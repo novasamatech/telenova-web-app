@@ -40,6 +40,7 @@ export type TrasferAsset = AssetAccount & {
   fee?: number;
   transferAll?: boolean;
   isGift?: boolean;
+  operationType?: 'buy' | 'sell';
 };
 export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
 
@@ -55,8 +56,13 @@ export type PersistentGift = {
   balance: string;
   chainId: ChainId;
   status: GiftStatus;
+  assetId: string;
 };
 
 export type Gift = PersistentGift & {
   chainAsset?: Asset;
 };
+
+export const enum AssetType {
+  STATEMINE = 'statemine',
+}

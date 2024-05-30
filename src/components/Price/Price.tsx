@@ -11,7 +11,8 @@ const Price = ({ amount, decimalSize, symbol = '$' }: Props) => {
   if (amount === undefined) return <Shimmering width={50} height={30} />;
   const value = amount === 0 ? '0.00' : parseFloat(amount.toFixed(3));
   const [integerPart, decimalPart] = value.toString().split('.');
-  const style = decimalSize && `text-[${decimalSize}px]`;
+  // decimalSize don't apply dinamically
+  const style = decimalSize && `text-3xl`;
 
   return (
     <>

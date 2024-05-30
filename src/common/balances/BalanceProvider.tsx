@@ -1,10 +1,9 @@
 import { createContext, PropsWithChildren, useContext, useRef } from 'react';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { useChainRegistry } from '@common/chainRegistry';
-import { IAssetBalance } from '@common/balances/types';
-import { ChainAssetAccount, ChainId, Gift, PersistentGift, GiftStatus, Address } from '@common/types';
-import { useNumId } from '@common/utils/NumId';
-import { SubscriptionState } from '@common/subscription/types';
+import { IAssetBalance, SubscriptionState } from '@common/balances/types';
+import { AssetType, ChainAssetAccount } from '@common/types';
+import { useNumId } from '@/common/utils/hooks/useNumId';
 import { createBalanceService } from '@common/balances/BalanceService';
 import { chainAssetAccountIdToString } from '../utils/balance';
 
@@ -15,8 +14,6 @@ type UpdaterCallbackStore = Record<number, UpdateCallback>;
 type BalanceProviderContextProps = {
   subscribeBalance: (account: ChainAssetAccount, onUpdate: UpdateCallback) => number;
   unsubscribeBalance: (unsubscribeId: number) => void;
-  getGiftsState: (mapGifts: Map<ChainId, PersistentGift[]>) => Promise<[Gift[], Gift[]]>;
-  getFreeBalance: (address: Address, chainId: ChainId) => Promise<string>;
 };
 
 const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as BalanceProviderContextProps);
@@ -102,13 +99,17 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     const service = createBalanceService(connection);
 
     setupSubscriptionState(account, unsubscribeId, onUpdate);
-
-    const unsubscribe = await service.subscribe(address, (balance: IAssetBalance) => {
+    const handleUpdate = (balance: IAssetBalance) => {
       console.log(`New balance: ${balance.total().toString()}`);
 
       updateBalance(account, balance);
       notifySubscribers(account, balance);
-    });
+    };
+
+    const unsubscribe =
+      account.asset.type === AssetType.STATEMINE
+        ? await service.subscribeStatemineAssets(address, account.asset, handleUpdate)
+        : await service.subscribe(address, handleUpdate);
 
     if (!setupUnsubscribeOnState(account, unsubscribe)) {
       // this should never happen but let's cleanup remote subscription anyway
@@ -155,39 +156,8 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     }
   }
 
-  async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
-    const unclaimed = [] as Gift[];
-    const claimed = [] as Gift[];
-
-    await Promise.all(
-      Array.from(mapGifts).map(async ([chainId, accounts]) => {
-        const connection = await getConnection(chainId);
-        const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
-        const chain = await getChain(chainId);
-
-        balances.forEach((d, idx) =>
-          d.data.free.isEmpty
-            ? claimed.push({
-                ...accounts[idx],
-                chainAsset: chain?.assets[0],
-                status: GiftStatus.CLAIMED,
-              })
-            : unclaimed.push({ ...accounts[idx], chainAsset: chain?.assets[0], status: GiftStatus.UNCLAIMED }),
-        );
-      }),
-    );
-
-    return [unclaimed.sort((a, b) => b.timestamp - a.timestamp), claimed.sort((a, b) => b.timestamp - a.timestamp)];
-  }
-  async function getFreeBalance(address: Address, chainId: ChainId): Promise<string> {
-    const connection = await getConnection(chainId);
-    const balance = await connection.api.query.system.account(address);
-
-    return balance.data.free.toString();
-  }
-
   return (
-    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance, getGiftsState, getFreeBalance }}>
+    <BalanceProviderContext.Provider value={{ subscribeBalance, unsubscribeBalance }}>
       {children}
     </BalanceProviderContext.Provider>
   );

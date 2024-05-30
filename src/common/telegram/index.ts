@@ -14,7 +14,7 @@ export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): 
 
 export const createTgLink = (secret: string, symbol: string, amount: string): TgLink => {
   const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}_${symbol}`;
-  const text = `\nHey, I have sent you ${amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
+  const text = `\nHey, I have sent you ${+amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
 
   return { url, text };
 };
@@ -24,4 +24,17 @@ export const navigateTranferById = (webApp: WebApp, link: TgLink): void => {
     `http://t.me/share/url?url=${encodeURIComponent(link.url)}&text=${encodeURIComponent(link.text)}`,
   );
   webApp.close();
+};
+
+export const openLink = (link: string, webApp: WebApp) => {
+  webApp.openLink(link);
+  webApp.close();
+};
+
+export const isOpenInWeb = (platform?: string): boolean => {
+  if (!platform) return true;
+  const webPlatforms = ['web', 'weba', 'webk'];
+  const isWebPlatform = webPlatforms.includes(platform);
+
+  return isWebPlatform;
 };
