@@ -14,9 +14,10 @@ type Props = {
   className?: string;
   showPrice?: boolean;
   showArrow?: boolean;
+  animate?: boolean;
 };
 
-const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow }: Props) => {
+const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow, animate }: Props) => {
   const { precision, symbol, priceId } = asset;
 
   return (
@@ -24,7 +25,7 @@ const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow }:
       <Icon name={symbol as IconNames} size={40} alt={name} className="row-span-2" />
       <MediumTitle>{symbol}</MediumTitle>
       <MediumTitle className="flex items-center justify-self-end">
-        <Balance balance={balance} precision={precision} />
+        <Balance balance={balance} precision={precision} animate={animate} />
         {showArrow && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
       </MediumTitle>
       {showPrice && <TokenPrice priceId={priceId} balance={balance} precision={precision} />}
