@@ -1,8 +1,8 @@
+import { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 
 import Shimmering from '@/components/Shimmering/Shimmering';
 import { formatBalance } from '@/common/utils/balance';
-import { useEffect, useState } from 'react';
 
 type Props = {
   balance?: string;
