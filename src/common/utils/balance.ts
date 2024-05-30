@@ -125,18 +125,3 @@ export const getTotalBalance = (assets: AssetAccount[], assetsPrices: AssetPrice
     return acc;
   }, 0);
 };
-
-export function getFormattedTransferDetails(
-  precision: number,
-  transferableBalance: string,
-  deposit: string,
-  fee: number,
-) {
-  const formattedFee = Number(formatBalance(fee.toString(), precision).formattedValue);
-  const formattedBalance = Number(formatBalance(transferableBalance, precision).formattedValue);
-  const formattedDeposit = Number(formatBalance(deposit, precision).formattedValue);
-
-  const max = Math.max(formattedBalance - formattedFee, 0).toFixed(5);
-
-  return { fee, max, formattedDeposit };
-}

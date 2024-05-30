@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '@common/providers/telegramProvider';
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { formatAmount, getFormattedTransferDetails } from '@/common/utils/balance';
+import { formatAmount, formatBalance } from '@/common/utils/balance';
 import { TrasferAsset } from '@/common/types';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 import { useQueryService } from '@/common/queryService/QueryService';
@@ -38,13 +38,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
 
   const isAccountTerminate = Boolean(!transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit);
 
-  async function getTransferDetails(selectedAsset: TrasferAsset, amount: string) {
-    const transferAmmount = formatAmount(amount || '0', selectedAsset.asset?.precision as number);
-
-    const deposit = isStatemineAsset(selectedAsset.asset.type)
-      ? await getExistentialDepositStatemine(selectedAsset.chainId, selectedAsset.asset.typeExtras!.assetId)
-      : await getExistentialDeposit(selectedAsset.chainId);
-
+  const handleAmountFee = async (selectedAsset: TrasferAsset, transferAmmount: string) => {
     const fee = isStatemineAsset(selectedAsset.asset.type)
       ? await getAssetHubFee(
           selectedAsset.chainId,
@@ -55,12 +49,31 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
         )
       : await handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmmount);
 
-    return getFormattedTransferDetails(
-      selectedAsset.asset?.precision,
-      selectedAsset.transferableBalance || '0',
-      deposit,
+    return fee;
+  };
+
+  const getMaxAmount = async (selectedAsset: TrasferAsset) => {
+    const amount = selectedAsset.transferableBalance || '0';
+    const fee = await handleAmountFee(selectedAsset, amount);
+    const max = Math.max(+amount - fee, 0).toString();
+    const formattedMax = Number(formatBalance(max, selectedAsset.asset.precision).formattedValue).toFixed(5);
+
+    return formattedMax;
+  };
+
+  async function getTransferDetails(selectedAsset: TrasferAsset, amount: string) {
+    const transferAmmount = formatAmount(amount || '0', selectedAsset.asset?.precision);
+
+    const deposit = isStatemineAsset(selectedAsset.asset.type)
+      ? await getExistentialDepositStatemine(selectedAsset.chainId, selectedAsset.asset.typeExtras!.assetId)
+      : await getExistentialDeposit(selectedAsset.chainId);
+
+    const fee = await handleAmountFee(selectedAsset, transferAmmount);
+
+    return {
       fee,
-    );
+      formattedDeposit: Number(formatBalance(deposit, selectedAsset.asset.precision).formattedValue),
+    };
   }
 
   useEffect(() => {
@@ -77,7 +90,8 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     if (!selectedAsset) return;
 
     (async () => {
-      const { max, fee, formattedDeposit } = await getTransferDetails(selectedAsset as TrasferAsset, amount);
+      const { fee, formattedDeposit } = await getTransferDetails(selectedAsset as TrasferAsset, amount);
+      const max = await getMaxAmount(selectedAsset as TrasferAsset);
 
       setDeposit(formattedDeposit);
       setMaxAmountToSend(max);
@@ -127,14 +141,13 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
 
     setTransferAll(false);
     startTransition(async () => {
-      const { max, fee, formattedDeposit } = await getTransferDetails(selectedAsset as TrasferAsset, formattedValue);
+      const { fee, formattedDeposit } = await getTransferDetails(selectedAsset as TrasferAsset, formattedValue);
 
       setDeposit(formattedDeposit);
-      setMaxAmountToSend(max);
       setSelectedAsset((prev) => ({ ...prev!, fee }));
-      const checkBalanceDeposit = !transferAll && +max - +formattedValue < formattedDeposit;
+      const checkBalanceDeposit = !transferAll && +maxAmountToSend - +formattedValue < formattedDeposit;
 
-      setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +max && !checkBalanceDeposit);
+      setIsAmountValid(!!Number(formattedValue) && +formattedValue <= +maxAmountToSend && !checkBalanceDeposit);
     });
     setAmount(formattedValue);
   };
