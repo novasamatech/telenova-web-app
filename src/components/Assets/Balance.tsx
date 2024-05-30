@@ -1,6 +1,7 @@
+import CountUp from 'react-countup';
+
 import Shimmering from '@/components/Shimmering/Shimmering';
 import { formatBalance } from '@/common/utils/balance';
-import CountUp from 'react-countup';
 import { useEffect, useState } from 'react';
 
 type Props = {
