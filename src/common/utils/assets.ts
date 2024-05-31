@@ -15,9 +15,16 @@ export const isStatemineAsset = (type?: string) => {
   return type === AssetType.STATEMINE;
 };
 
+const isPolkadotOrUSDT = (symbol: string): boolean => {
+  return symbol === 'USDT' || symbol === 'DOT';
+};
+
 export const sortingAssets = (first: Asset, second: Asset) => {
-  if (first.symbol === 'DOT') return -1;
-  if (second.symbol === 'USDT') return 1;
+  const isFirstPolkadotOrUSDT = isPolkadotOrUSDT(first.symbol);
+  const isSecondPolkadotOrUSDT = isPolkadotOrUSDT(second.symbol);
+
+  if (isFirstPolkadotOrUSDT && !isSecondPolkadotOrUSDT) return -1;
+  if (!isFirstPolkadotOrUSDT && isSecondPolkadotOrUSDT) return 1;
 
   return first.symbol.localeCompare(second.symbol);
 };
