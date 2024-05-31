@@ -7,8 +7,9 @@ import Send from '@common/assets/svg/Send.svg';
 import Receive from '@common/assets/svg/Receive.svg';
 import Address from '@common/assets/svg/Address.svg';
 import User from '@common/assets/svg/User.svg';
-import ChevronForward from '@common/assets/svg/chevron-forward.svg';
-import ArrowBold from '@common/assets/svg/arrow-bold.svg';
+import ChevronForward from '@common/assets/svg/arrows/chevron-forward.svg';
+import ArrowBold from '@common/assets/svg/arrows/arrow-bold.svg';
+import ArrowUp from '@common/assets/svg/arrows/arrow-up.svg';
 import ScanQr from '@common/assets/svg/scan.svg';
 import Gift from '@common/assets/svg/gift.svg';
 import Backup from '@common/assets/svg/backup.svg';
@@ -70,6 +71,7 @@ const AllIcons = {
   Buy,
   Sell,
   BuySell,
+  ArrowUp,
 };
 
 export type IconNames = keyof typeof AllIcons;

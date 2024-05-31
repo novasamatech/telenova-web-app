@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { Player, PlayerEvent } from '@lottiefiles/react-lottie-player';
 import { WebApp } from '@twa-dev/types';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useTelegram, useGlobalContext } from '@common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { HeadlineText, GiftDetails } from '@/components';
 import { TrasferAsset } from '@/common/types';

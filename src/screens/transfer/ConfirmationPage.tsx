@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Divider } from '@nextui-org/react';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useTelegram, useGlobalContext } from '@common/providers';
 import { Paths } from '@/common/routing';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import {
@@ -77,7 +76,7 @@ export default function ConfirmationPage() {
     },
     {
       title: 'Network',
-      value: selectedAsset?.name,
+      value: selectedAsset?.chainName,
     },
   ];
 

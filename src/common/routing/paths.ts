@@ -7,7 +7,9 @@ export const Paths = {
   ONBOARDING_IMPORT_WALLET: '/onboarding/import-wallet',
 
   DASHBOARD: '/dashboard',
-  RECEIVE: '/dashboard/receive',
+
+  RECEIVE: '/receive',
+  RECEIVE_SELECT_TOKEN: '/receive/select-token',
 
   EXCHANGE: '/exchange',
   EXCHANGE_WIDGET: '/exchange/widget',

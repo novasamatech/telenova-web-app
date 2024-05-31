@@ -14,3 +14,10 @@ export const isStatemineAsset = (type?: string) => {
 
   return type === AssetType.STATEMINE;
 };
+
+export const sortingAssets = (first: Asset, second: Asset) => {
+  if (first.symbol === 'DOT') return -1;
+  if (second.symbol === 'USDT') return 1;
+
+  return first.symbol.localeCompare(second.symbol);
+};

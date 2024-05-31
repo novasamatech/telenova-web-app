@@ -23,7 +23,7 @@ export type PriceObject = Record<string, AssetPrice>;
 export type ChainAssetAccount = {
   chainId: ChainId;
   publicKey: PublicKey;
-  name: string;
+  chainName: string;
   asset: Asset;
   addressPrefix: number;
 };

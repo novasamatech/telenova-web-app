@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input } from '@nextui-org/react';
 
-import { useTelegram } from '@common/providers/telegramProvider';
+import { useTelegram, useGlobalContext } from '@common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { useGlobalContext } from '@/common/providers/contextProvider';
 import { validateAddress } from '@/common/utils/address';
 import { Icon, HelpText, BodyText, Identicon } from '@/components';
 import { Paths } from '@/common/routing';

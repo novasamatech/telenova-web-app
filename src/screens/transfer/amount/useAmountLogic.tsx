@@ -1,8 +1,7 @@
 import { useEffect, useState, useTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useTelegram, useGlobalContext } from '@common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { formatAmount, formatBalance } from '@/common/utils/balance';
 import { TrasferAsset } from '@/common/types';
