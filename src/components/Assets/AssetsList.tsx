@@ -11,7 +11,7 @@ const AssetsList = () => {
           className="m-1"
           asset={asset.asset}
           balance={asset.totalBalance}
-          name={asset.name}
+          name={asset.chainName}
           key={asset.chainId}
           showPrice
           animate

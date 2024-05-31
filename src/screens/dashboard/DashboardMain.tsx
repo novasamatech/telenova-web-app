@@ -13,6 +13,7 @@ import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { Paths } from '@/common/routing';
 import { getPrice } from '@/common/utils/coingecko';
+import { sortingAssets } from '@/common/utils/assets';
 import {
   MediumTitle,
   AssetsList,
@@ -58,7 +59,7 @@ export const DashboardMain = () => {
         const account: ChainAssetAccount = {
           chainId: chain.chainId,
           publicKey: publicKey,
-          name: chain.name,
+          chainName: chain.name,
           asset: chain.assets[0],
           addressPrefix: chain.addressPrefix,
         };
@@ -80,7 +81,7 @@ export const DashboardMain = () => {
         setAssetsPrices(prices);
       }
 
-      setAssets((prevAssets) => prevAssets.sort((a, b) => a.asset.symbol.localeCompare(b.asset.symbol)));
+      setAssets((prevAssets) => prevAssets.sort((a, b) => sortingAssets(a.asset, b.asset)));
     })();
   }, [publicKey]);
 
@@ -112,7 +113,7 @@ export const DashboardMain = () => {
         </LargeTitleText>
         <div className="grid grid-cols-3 w-full mt-7 gap-2">
           <IconButton text="Send" iconName="Send" onClick={() => navigate(Paths.TRANSFER)} />
-          <IconButton text="Receive" iconName="Receive" onClick={() => navigate(Paths.RECEIVE)} />
+          <IconButton text="Receive" iconName="Receive" onClick={() => navigate(Paths.RECEIVE_SELECT_TOKEN)} />
           <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate(Paths.EXCHANGE)} />
         </div>
       </div>

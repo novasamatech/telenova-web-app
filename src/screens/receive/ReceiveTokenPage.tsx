@@ -5,14 +5,15 @@ import { useTelegram, useGlobalContext } from '@common/providers';
 import { Paths } from '@/common/routing';
 import { TitleText, AssetBalance } from '@/components';
 
-export default function SelectTokenExchangePage() {
+export default function ReceiveTokenPage() {
   const navigate = useNavigate();
   const { BackButton } = useTelegram();
-  const { assets, selectedAsset, setSelectedAsset } = useGlobalContext();
+  const { assets, setSelectedAsset } = useGlobalContext();
 
   useEffect(() => {
     const callback = () => {
-      navigate(Paths.EXCHANGE);
+      setSelectedAsset(null);
+      navigate(Paths.DASHBOARD);
     };
     BackButton?.show();
     BackButton?.onClick(callback);
@@ -21,18 +22,13 @@ export default function SelectTokenExchangePage() {
       BackButton?.offClick(callback);
     };
   }, []);
-  const exchangeAssets = assets.filter((i) => i.asset.symbol !== 'WND');
 
   return (
     <>
-      <TitleText className="mt-6 mb-10">Select a token to {selectedAsset?.operationType}</TitleText>
+      <TitleText className="mt-6 mb-10">Select a token to receive</TitleText>
       <div className="flex flex-col gap-2 mt-4">
-        {exchangeAssets.map((asset) => (
-          <Link
-            to={Paths.EXCHANGE_WIDGET}
-            key={asset.chainId}
-            onClick={() => setSelectedAsset((prev) => ({ operationType: prev?.operationType, ...asset }))}
-          >
+        {assets.map((asset) => (
+          <Link to={Paths.RECEIVE} key={asset.chainId} onClick={() => setSelectedAsset(asset)}>
             <AssetBalance
               asset={asset.asset}
               balance={asset.totalBalance}

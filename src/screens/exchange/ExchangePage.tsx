@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useTelegram, useGlobalContext } from '@common/providers';
 import { Paths } from '@/common/routing';
 import { TitleText, LinkCard } from '@/components';
 

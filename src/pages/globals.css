@@ -19,6 +19,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--gray-gray50);
+  min-height: 100vh;
 }
 
 /* Hovered links */
@@ -30,7 +31,6 @@ a:hover {
   -ms-user-select: none;
   user-select: none;
 }
-
 
 /* Scrollbar for Firefox */
 * {

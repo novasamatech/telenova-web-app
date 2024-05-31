@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { useGlobalContext } from '@/common/providers/contextProvider';
+import { useTelegram, useGlobalContext } from '@common/providers';
 import { Paths } from '@/common/routing';
 import { TitleText, AssetBalance } from '@/components';
 
@@ -37,7 +36,7 @@ export default function SelectTokenPage() {
               asset={asset.asset}
               balance={asset.totalBalance}
               className="bg-white rounded-lg px-4 py-3 w-full hover:bg-bg-item-pressed active:bg-bg-item-pressed"
-              name={asset.name}
+              name={asset.chainName}
               showArrow
             />
           </Link>

@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useTelegram, useGlobalContext } from '@common/providers';
 import { Paths } from '@/common/routing';
-import { useGlobalContext } from '@/common/providers/contextProvider';
 import { handleWidget } from '@/common/utils/exchange';
 import { isOpenInWeb } from '@/common/telegram';
 import { useMainButton } from '@/common/telegram/useMainButton';
