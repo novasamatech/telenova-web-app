@@ -21,7 +21,7 @@ export default function SelectTokenExchangePage() {
       BackButton?.offClick(callback);
     };
   }, []);
-  const exchangeAssets = assets.filter((i) => i.asset.symbol !== 'WND');
+  const exchangeAssets = assets.filter((i) => i.asset.symbol !== 'WND' && i.asset.symbol !== 'USDT');
 
   return (
     <>
