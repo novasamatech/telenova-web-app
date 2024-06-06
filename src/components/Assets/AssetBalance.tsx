@@ -1,9 +1,8 @@
 import { cnTw } from '@/common/utils/twMerge';
-
 import { MediumTitle, Icon, TokenPrice } from '@/components';
 import { PriceItem } from '@/common/types';
-import { IconNames } from '../Icon/types';
 import { Asset } from '@/common/chainRegistry/types';
+import { IconNames } from '../Icon/types';
 import Balance from './Balance';
 
 type Props = {

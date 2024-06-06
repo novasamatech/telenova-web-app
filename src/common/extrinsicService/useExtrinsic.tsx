@@ -3,12 +3,9 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { Balance } from '@polkadot/types/interfaces';
 
 import { AssetType, ChainId, TrasferAsset } from '@common/types';
-import { TransactionType } from '@common/extrinsicService/types';
-import { formatAmount } from '../utils/balance';
-import { getAssetId, isStatemineAsset } from '../utils/assets';
-import { ASSET_LOCATION, FAKE_ACCOUNT_ID } from '../utils/constants';
+import { TransactionType, useExtrinsicProvider } from '@common/extrinsicService';
+import { formatAmount, getAssetId, isStatemineAsset, ASSET_LOCATION, FAKE_ACCOUNT_ID } from '../utils';
 import { Asset } from '../chainRegistry';
-import { useExtrinsicProvider } from './ExtrinsicProvider';
 
 type SendTransaction = {
   destinationAddress: string;

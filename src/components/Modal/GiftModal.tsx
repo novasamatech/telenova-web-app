@@ -4,15 +4,13 @@ import Lottie from 'react-lottie-player';
 
 import { useChainRegistry } from '@/common/chainRegistry';
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { getGiftInfo } from '@/common/utils/gift';
+import { getGiftInfo, formatAmount, formatBalance } from '@/common/utils';
 import { AssetType, PublicKey } from '@/common/types';
 import { BigTitle, Icon, Shimmering } from '@/components';
-import { formatAmount, formatBalance } from '@/common/utils/balance';
 import { ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types';
-import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
+import { useAssetHub } from '@/common/utils/hooks';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
-import { TransactionType } from '@/common/extrinsicService/types';
+import { useExtrinsic, TransactionType } from '@/common/extrinsicService';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,

@@ -1,11 +1,10 @@
 import { ChainId } from '@common/types';
 import { Asset } from '@/common/chainRegistry/types';
+import { useQueryService } from '@/common/queryService/QueryService';
+import { useExtrinsic, TransactionType } from '@/common/extrinsicService';
+import { ZERO_BALANCE } from '../constants';
 import { formatBalance } from '../balance';
 import { GetAssetHubGiftFee, GetTransferFee } from './types';
-import { useQueryService } from '@/common/queryService/QueryService';
-import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
-import { TransactionType } from '@/common/extrinsicService/types';
-import { ZERO_BALANCE } from '../constants';
 
 const DOT_ASSET_ID = '0';
 
