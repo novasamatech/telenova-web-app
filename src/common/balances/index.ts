@@ -1,3 +1,3 @@
-export * from './types';
 export * from './BalanceProvider';
 export * from './BalanceService';
+export * from './types';

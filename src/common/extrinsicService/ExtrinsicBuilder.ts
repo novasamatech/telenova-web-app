@@ -4,12 +4,7 @@ import { ApiPromise } from '@polkadot/api';
 
 import { useChainRegistry } from '@common/chainRegistry';
 import { ChainId } from '@common/types';
-import {
-  BatchMode,
-  ExtrinsicBuilder,
-  ExtrinsicBuilderFactory,
-  ExtrinsicBuildingOptions,
-} from '@common/extrinsicService/types';
+import { BatchMode, ExtrinsicBuilder, ExtrinsicBuilderFactory, ExtrinsicBuildingOptions } from './types';
 
 export function useExtrinsicBuilderFactory(): ExtrinsicBuilderFactory {
   const { getConnection } = useChainRegistry();
