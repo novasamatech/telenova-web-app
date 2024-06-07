@@ -34,6 +34,7 @@ export default function ConfirmationPage() {
       await sendTransaction({
         destinationAddress: selectedAsset.destinationAddress!,
         chainId: selectedAsset.chainId!,
+        transferAll: selectedAsset.transferAll,
         transferAmmount: formatAmount(selectedAsset.amount!, selectedAsset.asset!.precision),
         asset: selectedAsset.asset!,
       })
