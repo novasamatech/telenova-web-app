@@ -123,10 +123,10 @@ export const getKeyringPairFromSeed = (seed: string): KeyringPair => {
 };
 
 export const resetWallet = (clearLocal: boolean = false) => {
-  localStorage.removeItem(getStoreName(PUBLIC_KEY_STORE));
-  secureLocalStorage.removeItem(getStoreName(MNEMONIC_STORE));
+  localStorage.clear();
+  secureLocalStorage.clear();
   if (!clearLocal) {
-    window.Telegram.WebApp.CloudStorage.removeItem(MNEMONIC_STORE);
+    window.Telegram.WebApp.CloudStorage.removeItems([MNEMONIC_STORE, BACKUP_DATE]);
   }
 };
 
