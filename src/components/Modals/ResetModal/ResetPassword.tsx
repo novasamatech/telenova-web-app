@@ -31,12 +31,12 @@ export default function ResetPassword({ onClose, onSubmit }: Props) {
         <Icon name="ResetPassword" size={96} className="self-center" />
         <BodyText className="text-text-hint">
           You are the only owner of your password, which is not stored anywhere in Telenova. Without a backup password,
-          you cannot access your account or funds. If you lose or forget your password only option is to delete the
+          you cannot access your account or funds. If you lose or forget your password the only option is to delete the
           current backup and its associated account before creating a new one.
         </BodyText>
         <BodyText className="text-text-on-button-danger font-bold">
-          You will lose your funds and access to account after Deleting Backup. Delete Backup is your option only if you
-          cannot restore the Password at all.
+          You will lose your funds and access to the account after Deleting Backup. Delete Backup is your option only if
+          you cannot restore the Password at all.
         </BodyText>
       </ModalBody>
       <ModalFooter className="flex-col justify-center">
