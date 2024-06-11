@@ -13,10 +13,10 @@
   "dependencies": {
     "@lottiefiles/react-lottie-player": "3.5.3",
     "@nextui-org/react": "2.2.9",
-    "@polkadot/api": "11.0.3",
+    "@polkadot/api": "11.2.1",
     "@polkadot/keyring": "12.6.2",
     "@polkadot/react-identicon": "3.6.4",
-    "@polkadot/types": "11.0.3",
+    "@polkadot/types": "11.2.1",
     "@polkadot/util": "12.6.2",
     "@polkadot/util-crypto": "12.6.2",
     "bignumber.js": "^9.1.2",
