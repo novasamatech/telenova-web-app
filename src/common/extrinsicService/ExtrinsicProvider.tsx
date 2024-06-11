@@ -1,7 +1,7 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { Balance, Hash } from '@polkadot/types/interfaces';
 
-import { getKeyringPair } from '@common//wallet';
+import { getKeyringPair } from '@common/wallet';
 import { FAKE_ACCOUNT_ID } from '@common/utils';
 import type { EstimateFee, EstimateFeeParams, SubmitExtrinsic, SubmitExtrinsicParams } from './types';
 import { useExtrinsicService } from './ExtrinsicService';
