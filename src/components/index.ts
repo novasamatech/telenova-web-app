@@ -22,8 +22,10 @@ import Layout from './Layout/Layout';
 import TruncateAddress from './Address/TruncateAddress';
 import LinkCard from './LinkCard/LinkCard';
 import GiftDetails from './GiftDetails/GiftDetails';
-import GiftModal from './Modal/GiftModal';
+import GiftModal from './Modals/GiftModal';
+import ResetPasswordModal from './Modals/ResetModal/ResetPasswordModal';
 import RecoveryPhrase from './RecoveryPhrase/RecoveryPhrase';
+import Countdown from './Countdown/Countdown';
 
 export {
   TextBase,
@@ -53,4 +55,6 @@ export {
   GiftModal,
   RecoveryPhrase,
   CreatedGiftPlate,
+  Countdown,
+  ResetPasswordModal,
 };

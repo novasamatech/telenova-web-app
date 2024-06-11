@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { useTelegram, useGlobalContext } from '@common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { formatAmount, formatBalance } from '@/common/utils/balance';
+import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
 import { TrasferAsset } from '@/common/types';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
-import { isStatemineAsset } from '@/common/utils/assets';
-import { TransactionType } from '@/common/extrinsicService/types';
+import { useExtrinsic, TransactionType } from '@/common/extrinsicService';
 
 type AmountPageLogic = {
   prevPage: string;

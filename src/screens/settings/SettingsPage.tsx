@@ -72,7 +72,7 @@ export default function SettingsPage() {
           onOpenChange={() => handleOpenChange(setIsPopoverCurrencyOpen)}
         >
           <PopoverTrigger>
-            <button className="w-full hover:bg-unset active:bg-unset outline-none	">
+            <button className="w-full hover:bg-unset active:bg-unset outline-none">
               <LinkCard
                 text="Default Currency"
                 iconName="Currency"

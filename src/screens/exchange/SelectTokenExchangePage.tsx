@@ -5,6 +5,8 @@ import { useTelegram, useGlobalContext } from '@common/providers';
 import { Paths } from '@/common/routing';
 import { TitleText, AssetBalance } from '@/components';
 
+const skippedBuyAssets = ['WND', 'USDT'];
+
 export default function SelectTokenExchangePage() {
   const navigate = useNavigate();
   const { BackButton } = useTelegram();
@@ -21,7 +23,7 @@ export default function SelectTokenExchangePage() {
       BackButton?.offClick(callback);
     };
   }, []);
-  const skippedBuyAssets = ['WND', 'USDT'];
+
   const exchangeAssets = assets.filter((i) => !skippedBuyAssets.includes(i.asset.symbol));
 
   return (

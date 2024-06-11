@@ -2,9 +2,9 @@ export const Paths = {
   ROOT: '/',
 
   ONBOARDING: '/onboarding',
+  ONBOARDING_START: '/onboarding/start',
   ONBOARDING_CREATE_WALLET: '/onboarding/create-wallet',
   ONBOARDING_PASSWORD: '/onboarding/password',
-  ONBOARDING_IMPORT_WALLET: '/onboarding/import-wallet',
 
   DASHBOARD: '/dashboard',
 

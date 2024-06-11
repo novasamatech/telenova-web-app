@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Avatar, Button, Input } from '@nextui-org/react';
 
 import { useTelegram, useGlobalContext } from '@common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { Avatar, Input } from '@nextui-org/react';
-import { BodyText, TitleText } from '@/components/Typography';
+import { BodyText, TitleText, ResetPasswordModal } from '@/components';
 import { Paths } from '@/common/routing';
 import { createWallet, initializeWalletFromCloud } from '@/common/wallet';
 
@@ -20,6 +20,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
 
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     mainButton.show();
@@ -72,24 +73,34 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
         We&apos;ve found a backup of your existing Telenova wallet in the cloud. To get access to it just enter the
         password you used when creating the wallet
       </BodyText>
-      <Input
-        isClearable
-        placeholder="Enter Password Here"
-        type="password"
-        className="max-w-sm text-left mb-10"
-        classNames={{
-          inputWrapper: [
-            'bg-bg-input border-1 shadow-none',
-            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-          ],
-          clearButton: ['text-text-hint'],
-        }}
-        value={password}
-        isInvalid={!isPasswordValid}
-        errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}
-        onValueChange={setPassword}
-        onClear={() => setPassword('')}
-      />
+      <div className="max-w-sm w-full text-start">
+        <Input
+          isClearable
+          placeholder="Enter Password Here"
+          type="password"
+          className="max-w-sm text-left"
+          classNames={{
+            inputWrapper: [
+              'bg-bg-input border-1 shadow-none',
+              'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+            ],
+            clearButton: ['text-text-hint'],
+          }}
+          value={password}
+          isInvalid={!isPasswordValid}
+          errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}
+          onValueChange={setPassword}
+          onClear={() => setPassword('')}
+        />
+        <Button
+          aria-label="Reset Password"
+          className="self-baseline p-0 bg-transparent"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <BodyText className="text-text-link">Forgot Password?</BodyText>
+        </Button>
+      </div>
+      <ResetPasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

@@ -2,7 +2,7 @@ import { BN } from '@polkadot/util';
 
 import { Asset, Connection } from '@common/chainRegistry/types';
 import { Address } from '@common/types';
-import { IAssetBalance } from '@common/balances/types';
+import { IAssetBalance } from './types';
 
 export interface IBalanceService {
   subscribe: (address: Address, onUpdate: (result: IAssetBalance) => void) => Promise<() => void>;

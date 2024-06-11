@@ -34,6 +34,8 @@ import ExclamationMark from '@common/assets/svg/exclamationMark.svg';
 import BuySell from '@common/assets/svg/BuySell.svg';
 import Buy from '@common/assets/svg/Buy.svg';
 import Sell from '@common/assets/svg/Sell.svg';
+import ResetPassword from '@common/assets/svg/ResetPassword.svg';
+import ResetPasswordDone from '@common/assets/svg/ResetPasswordDone.svg';
 
 const AllIcons = {
   DOT,
@@ -72,6 +74,8 @@ const AllIcons = {
   Sell,
   BuySell,
   ArrowUp,
+  ResetPassword,
+  ResetPasswordDone,
 };
 
 export type IconNames = keyof typeof AllIcons;

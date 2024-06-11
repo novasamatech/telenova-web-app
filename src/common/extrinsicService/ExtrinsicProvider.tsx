@@ -1,10 +1,10 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { Balance, Hash } from '@polkadot/types/interfaces';
 
-import { EstimateFee, EstimateFeeParams, SubmitExtrinsic, SubmitExtrinsicParams } from '@common/extrinsicService/types';
-import { useExtrinsicService } from '@common/extrinsicService/ExtrinsicService';
-import { getKeyringPair } from '../wallet';
-import { FAKE_ACCOUNT_ID } from '../utils/constants';
+import { getKeyringPair } from '@common/wallet';
+import { FAKE_ACCOUNT_ID } from '@common/utils';
+import type { EstimateFee, EstimateFeeParams, SubmitExtrinsic, SubmitExtrinsicParams } from './types';
+import { useExtrinsicService } from './ExtrinsicService';
 
 type ExtrinsicProviderContextProps = {
   estimateFee: EstimateFee;

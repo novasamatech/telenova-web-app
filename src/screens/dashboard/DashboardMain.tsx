@@ -5,15 +5,12 @@ import { Avatar, Button } from '@nextui-org/react';
 
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { useBalances } from '@common/balances/BalanceProvider';
-import { IAssetBalance } from '@common/balances/types';
+import { useBalances, IAssetBalance } from '@common/balances';
 import { useChainRegistry } from '@common/chainRegistry';
 import { getMnemonic, resetWallet } from '@common/wallet';
-import { getTotalBalance, updateAssetsBalance } from '@/common/utils/balance';
 import { ChainAssetAccount } from '@common/types';
 import { Paths } from '@/common/routing';
-import { getPrice } from '@/common/utils/coingecko';
-import { sortingAssets } from '@/common/utils/assets';
+import { sortingAssets, getPrice, getTotalBalance, updateAssetsBalance } from '@/common/utils';
 import {
   MediumTitle,
   AssetsList,

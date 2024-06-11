@@ -1,7 +1,7 @@
 import { RouteObject } from 'react-router-dom';
 import { Paths } from './paths';
 
-import { OnboardingPage, CreateWalletPage, PasswordPage } from '@/screens/onboarding/';
+import { OnboardingPage, CreateWalletPage, PasswordPage, OnboardingStartPage } from '@/screens/onboarding/';
 import { DashboardMain } from '@/screens/dashboard';
 import {
   SettingsPage,
@@ -29,6 +29,10 @@ export const routesConfig: RouteObject[] = [
   {
     path: Paths.ONBOARDING,
     element: <OnboardingPage />,
+  },
+  {
+    path: Paths.ONBOARDING_START,
+    element: <OnboardingStartPage />,
   },
   {
     path: Paths.ONBOARDING_CREATE_WALLET,

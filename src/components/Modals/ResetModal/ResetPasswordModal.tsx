@@ -1,0 +1,56 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Modal, ModalContent } from '@nextui-org/react';
+
+import { resetWallet } from '@/common/wallet';
+import { Paths } from '@/common/routing';
+import ResetPassword from './ResetPassword';
+import BackupDeleted from './BackupDeleted';
+
+const enum Step {
+  INIT,
+  BACKUP_DELETED,
+}
+
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function ResetPasswordModal({ isOpen, onClose }: Props) {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(Step.INIT);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = () => {
+    resetWallet();
+    setStep(Step.BACKUP_DELETED);
+  };
+
+  const handleClose = () => {
+    onClose();
+    if (step === Step.BACKUP_DELETED) {
+      navigate(Paths.ONBOARDING_START);
+    }
+  };
+
+  return (
+    <>
+      <Modal
+        isOpen={isOpen}
+        size="xs"
+        placement="center"
+        classNames={{
+          closeButton: 'mt-2 text-2xl text-icon-neutral',
+        }}
+        onClose={handleClose}
+      >
+        <ModalContent>
+          {step === Step.INIT && <ResetPassword onClose={onClose} onSubmit={handleSubmit} />}
+          {step === Step.BACKUP_DELETED && <BackupDeleted onClose={handleClose} />}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}

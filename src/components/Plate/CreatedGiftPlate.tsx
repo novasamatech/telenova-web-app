@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom';
 
 import { Paths } from '@/common/routing';
 import { BodyText, Icon, Plate, BigTitle, Shimmering } from '@/components';
-import { GIFT_STORE } from '@/common/utils/constants';
+import { GIFT_STORE, getGifts } from '@/common/utils';
 import { getStoreName } from '@/common/wallet';
-import { getGifts } from '@/common/utils/gift';
-import { useGifts } from '@/common/utils/hooks/useGifts';
+import { useGifts } from '@/common/utils/hooks';
 import { Gift } from '@/common/types';
 import { useChainRegistry } from '@/common/chainRegistry';
 
