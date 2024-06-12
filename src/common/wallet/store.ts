@@ -70,8 +70,13 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
 
 export const getWallet = (): Wallet | null => {
   const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
+  let isCloudStorageExist = false;
 
-  return publicKey ? { publicKey: unwrapHexString(publicKey) } : null;
+  window.Telegram.WebApp.CloudStorage.getItem(MNEMONIC_STORE, (err) => {
+    isCloudStorageExist = !err;
+  });
+
+  return publicKey && isCloudStorageExist ? { publicKey: unwrapHexString(publicKey) } : null;
 };
 
 export const generateWalletMnemonic = (): string => {
