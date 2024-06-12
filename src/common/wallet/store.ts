@@ -68,15 +68,33 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
   }).toString(CryptoJS.enc.Utf8);
 }
 
-export const getWallet = (): Wallet | null => {
-  const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
-  let isCloudStorageExist = false;
+export const getCloudStorageItem = (store: string): Promise<string> => {
+  const CloudStorage = window.Telegram?.WebApp?.CloudStorage;
 
-  window.Telegram.WebApp.CloudStorage.getItem(MNEMONIC_STORE, (err) => {
-    isCloudStorageExist = !err;
+  return new Promise((resolve, reject) => {
+    if (!CloudStorage) reject('CloudStorage is not available');
+
+    window.Telegram.WebApp.CloudStorage.getItem(store, (err, value) => {
+      if (err || !value) {
+        reject(err);
+      }
+
+      resolve(value!);
+    });
   });
+};
 
-  return publicKey && isCloudStorageExist ? { publicKey: unwrapHexString(publicKey) } : null;
+export const getWallet = async (): Promise<Wallet | null> => {
+  const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
+  const backupLocalDate = localStorage.getItem(getStoreName(BACKUP_DATE));
+  try {
+    const backupCloudDate = await getCloudStorageItem(BACKUP_DATE);
+    const compareBackupDate = backupCloudDate === backupLocalDate;
+
+    return publicKey && compareBackupDate ? { publicKey: unwrapHexString(publicKey) } : null;
+  } catch {
+    return null;
+  }
 };
 
 export const generateWalletMnemonic = (): string => {
@@ -97,9 +115,11 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
 
 export const backupMnemonic = (mnemonic: string, password: string): void => {
   const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
+  const date = Date.now().toString();
 
   window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
-  window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, Date.now().toString());
+  window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, date);
+  localStorage.setItem(getStoreName(BACKUP_DATE), date);
 };
 
 export const getMnemonic = (): string | null => {
