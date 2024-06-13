@@ -28,10 +28,9 @@ yarn dev
 
 ### Start the application locally:
 1) Create a new bot in tg via @BotFather
-2) Create a external domain for your local host (localTunnel/ngrok - `lt -p 3000 -s your-domain-name` or `ngrok http --domain=your-domain`)
+2) Create a external domain for your local host (`localTunnel/ngrok` - `lt -p 3000 -s your-domain-name` or `ngrok http --domain=your-domain`)
 3) Run yarn dev
-4) Clone [wallet-bot-backend](https://github.com/novasamatech/wallet-bot-backend)
-5) Put your variables into the wallet-bot-backend env file (BOT_API_KEY, BOT_ALIAS, NOVA_APP_HOST)
+5) Put your variables into the backend repo env file (BOT_API_KEY, BOT_ALIAS, NOVA_APP_HOST)
 6) Run docker (`docker compose up`)
 7) Optional - connect web app domain to the local bot (via BotFather) to open gifts locally 
 
