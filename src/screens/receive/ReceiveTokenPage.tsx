@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { Paths } from '@/common/routing';
-import { TitleText, AssetBalance } from '@/components';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
+import { AssetBalance, TitleText } from '@/components';
 
 export default function ReceiveTokenPage() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function ReceiveTokenPage() {
   useEffect(() => {
     const callback = () => {
       setSelectedAsset(null);
-      navigate(Paths.DASHBOARD);
+      navigate($path('/dashboard'));
     };
     BackButton?.show();
     BackButton?.onClick(callback);
@@ -27,8 +28,8 @@ export default function ReceiveTokenPage() {
     <>
       <TitleText className="mt-6 mb-10">Select a token to receive</TitleText>
       <div className="flex flex-col gap-2 mt-4">
-        {assets.map((asset) => (
-          <Link to={Paths.RECEIVE} key={asset.chainId} onClick={() => setSelectedAsset(asset)}>
+        {assets.map(asset => (
+          <Link to={$path('/receive')} key={asset.chainId} onClick={() => setSelectedAsset(asset)}>
             <AssetBalance
               asset={asset.asset}
               balance={asset.totalBalance}

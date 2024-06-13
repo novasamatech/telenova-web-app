@@ -1,6 +1,6 @@
-import { ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
+import { Button, ModalBody, ModalFooter, ModalHeader } from '@nextui-org/react';
 
-import { BigTitle, MediumTitle, Icon } from '@/components';
+import { BigTitle, Icon, MediumTitle } from '@/components';
 
 type Props = {
   onClose: () => void;

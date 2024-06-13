@@ -1,7 +1,9 @@
-import { WebApp } from '@twa-dev/types';
-import { HexString } from '@common/types';
+import { type WebApp } from '@twa-dev/types';
+
+import { type HexString } from '@/common/types';
+
 import { getTelegramBotApi } from './bot-api';
-import { TgLink } from './types';
+import { type TgLink } from './types';
 
 export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): Promise<void> => {
   try {
@@ -13,7 +15,9 @@ export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): 
 };
 
 export const createTgLink = (secret: string, symbol: string, amount: string): TgLink => {
-  const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}_${symbol}`;
+  const url = `https://t.me/${import.meta.env.PUBLIC_BOT_ADDRESS}/${
+    import.meta.env.PUBLIC_WEB_APP_ADDRESS
+  }?startapp=${secret}_${symbol}`;
   const text = `\nHey, I have sent you ${+amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
 
   return { url, text };
@@ -32,7 +36,9 @@ export const openLink = (link: string, webApp: WebApp) => {
 };
 
 export const isOpenInWeb = (platform?: string): boolean => {
-  if (!platform) return true;
+  if (!platform) {
+    return true;
+  }
   const webPlatforms = ['web', 'weba', 'webk'];
   const isWebPlatform = webPlatforms.includes(platform);
 

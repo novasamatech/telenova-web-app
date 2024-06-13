@@ -1,12 +1,14 @@
-import { createContext, PropsWithChildren, useContext, useRef } from 'react';
+import { type PropsWithChildren, createContext, useCallback, useContext, useRef } from 'react';
+
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { useChainRegistry } from '@common/chainRegistry';
-import { AssetType, ChainAssetAccount } from '@common/types';
+import { useChainRegistry } from '@/common/chainRegistry';
+import { AssetType, type ChainAssetAccount } from '@/common/types';
+import { chainAssetAccountIdToString } from '@/common/utils';
 import { useNumId } from '@/common/utils/hooks/useNumId';
-import { chainAssetAccountIdToString } from '@common/utils';
+
 import { createBalanceService } from './BalanceService';
-import { IAssetBalance, SubscriptionState } from './types';
+import { type IAssetBalance, type SubscriptionState } from './types';
 
 type StateStore = Record<string, SubscriptionState<IAssetBalance>>;
 type UpdateCallback = (balance: IAssetBalance) => void;
@@ -48,7 +50,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     return unsubscribeId;
   };
 
-  const unsubscribeBalance = (unsubscribeId: number) => {
+  const unsubscribeBalance = useCallback((unsubscribeId: number) => {
     const account = unsubscribeToAccount.current[unsubscribeId];
     delete unsubscribeToAccount.current[unsubscribeId];
 
@@ -60,7 +62,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     const state = accountToState.current[stateKey];
     delete state.updaters[unsubscribeId];
     accountToState.current[stateKey] = state;
-  };
+  }, []);
 
   function setupSubscriptionState(
     account: ChainAssetAccount,
@@ -85,6 +87,8 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     onUpdate: (balance: IAssetBalance) => void,
     unsubscribeId: number,
   ): Promise<void> {
+    setupSubscriptionState(account, unsubscribeId, onUpdate);
+
     const chain = await getChain(account.chainId);
 
     if (!chain) {
@@ -99,7 +103,6 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
     const service = createBalanceService(connection);
 
-    setupSubscriptionState(account, unsubscribeId, onUpdate);
     const handleUpdate = (balance: IAssetBalance) => {
       console.log(`New balance: ${balance.total().toString()}`);
 
@@ -151,7 +154,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     const state = accountToState.current[stateKey];
 
     if (state) {
-      Object.values(state.updaters).forEach((callback) => {
+      Object.values(state.updaters).forEach(callback => {
         callback(balance);
       });
     }

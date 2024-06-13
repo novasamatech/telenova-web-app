@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar } from '@nextui-org/react';
 
-import { useMainButton } from '@/common/telegram/useMainButton';
+import { Avatar } from '@nextui-org/react';
+import { $path } from 'remix-routes';
+
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { Paths } from '@/common/routing';
-import { createWallet, generateWalletMnemonic, backupMnemonic } from '@common/wallet';
-import { BodyText, TitleText } from '@/components/Typography';
+import { useMainButton } from '@/common/telegram/useMainButton';
+import { backupMnemonic, createWallet, generateWalletMnemonic } from '@/common/wallet';
 import PasswordForm from '@/components/PasswordForm/PasswordForm';
+import { BodyText, TitleText } from '@/components/Typography';
 
 export default function PasswordPage() {
   const { user, startParam } = useTelegram();
@@ -27,7 +28,7 @@ export default function PasswordPage() {
   const handleSubmit = (password: string) => {
     mainButton.enable();
     addMainButton(() => {
-      navigate(Paths.ONBOARDING_CREATE_WALLET);
+      navigate($path('/onboarding/create-wallet'));
 
       const mnemonic = generateWalletMnemonic();
       const wallet = createWallet(mnemonic as string);

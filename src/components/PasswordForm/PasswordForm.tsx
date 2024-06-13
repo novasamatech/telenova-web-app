@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { Input } from '@nextui-org/react';
 
-import { BodyText } from '@/components/Typography';
 import { cnTw } from '@/common/utils/twMerge';
+import { BodyText } from '@/components/Typography';
 
 interface PasswordFormProps {
   onSubmit: (password: string) => void;
 }
+
 type Variants = 'error' | 'success' | 'default';
 const VariantStyles: Record<Variants, string> = {
   success: 'text-text-positive',
@@ -23,7 +25,9 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
   const [hintColor, setHintColor] = useState<Variants>('default');
 
   useEffect(() => {
-    if (password.length === 0 || !isPasswordValid || password !== confirmPassword) return;
+    if (password.length === 0 || !isPasswordValid || password !== confirmPassword) {
+      return;
+    }
     onSubmit(password);
   }, [password, confirmPassword, isPasswordValid, isConfirmPasswordValid]);
 

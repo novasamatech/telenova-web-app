@@ -1,9 +1,10 @@
-import { ApiPromise } from '@polkadot/api';
-import { UnsubscribePromise } from '@polkadot/api/types';
+import { type ApiPromise } from '@polkadot/api';
+import { type UnsubscribePromise } from '@polkadot/api/types';
 
-import { IRuntimeProviderService, RuntimeMetadata } from './types';
-import { useRepository } from '@common/repository/Repository';
-import { ChainId } from '@common/types';
+import { useRepository } from '@/common/repository/Repository';
+import { type ChainId } from '@/common/types';
+
+import { type IRuntimeProviderService, type RuntimeMetadata } from './types';
 
 export const useRuntimeProvider = (): IRuntimeProviderService => {
   const metadataStorage = useRepository<ChainId, RuntimeMetadata>();
@@ -13,7 +14,7 @@ export const useRuntimeProvider = (): IRuntimeProviderService => {
   };
 
   const subscribeMetadata = (api: ApiPromise): UnsubscribePromise => {
-    return api.rpc.state.subscribeRuntimeVersion(async (version) => {
+    return api.rpc.state.subscribeRuntimeVersion(async version => {
       const chainId = api.genesisHash.toHex();
       const oldMetadata = await getMetadata(chainId);
 

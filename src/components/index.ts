@@ -1,31 +1,32 @@
-import {
-  LargeTitleText,
-  TitleText,
-  MediumTitle,
-  HeadlineText,
-  BodyText,
-  LabelText,
-  HelpText,
-  TextBase,
-  BigTitle,
-} from './Typography';
-import { Icon, IconButton } from './Icon';
-import Price from './Price/Price';
-import TokenPrice from '@/components/Price/TokenPrice';
+import TruncateAddress from './Address/TruncateAddress';
 import AssetBalance from './Assets/AssetBalance';
 import AssetsList from './Assets/AssetsList';
-import { Plate, GiftPlate, CreatedGiftPlate } from './Plate';
-import PasswordForm from './PasswordForm/PasswordForm';
-import Shimmering from './Shimmering/Shimmering';
-import Identicon from './Identicon/Identicon';
-import Layout from './Layout/Layout';
-import TruncateAddress from './Address/TruncateAddress';
-import LinkCard from './LinkCard/LinkCard';
+import Countdown from './Countdown/Countdown';
+import { ErrorScreen } from './ErrorScreen/ErrorScreen';
 import GiftDetails from './GiftDetails/GiftDetails';
+import { Icon, IconButton } from './Icon';
+import Identicon from './Identicon/Identicon';
+import LinkCard from './LinkCard/LinkCard';
+import { LoadingScreen } from './LoadingScreen/LoadingScreen';
 import GiftModal from './Modals/GiftModal';
 import ResetPasswordModal from './Modals/ResetModal/ResetPasswordModal';
+import PasswordForm from './PasswordForm/PasswordForm';
+import { CreatedGiftPlate, GiftPlate, Plate } from './Plate';
+import Price from './Price/Price';
+import TokenPrice from './Price/TokenPrice';
 import RecoveryPhrase from './RecoveryPhrase/RecoveryPhrase';
-import Countdown from './Countdown/Countdown';
+import Shimmering from './Shimmering/Shimmering';
+import {
+  BigTitle,
+  BodyText,
+  HeadlineText,
+  HelpText,
+  LabelText,
+  LargeTitleText,
+  MediumTitle,
+  TextBase,
+  TitleText,
+} from './Typography';
 
 export {
   TextBase,
@@ -46,7 +47,6 @@ export {
   PasswordForm,
   Shimmering,
   Identicon,
-  Layout,
   GiftPlate,
   TokenPrice,
   TruncateAddress,
@@ -57,4 +57,6 @@ export {
   CreatedGiftPlate,
   Countdown,
   ResetPasswordModal,
+  LoadingScreen,
+  ErrorScreen,
 };

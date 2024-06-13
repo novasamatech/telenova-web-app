@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { $path } from 'remix-routes';
+
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { Paths } from '@/common/routing';
 import { BodyText, RecoveryPhrase, TitleText } from '@/components';
 
 export default function RecoveryPage() {
@@ -11,7 +12,7 @@ export default function RecoveryPage() {
 
   useEffect(() => {
     BackButton?.show();
-    const callback = () => navigate(Paths.SETTINGS_BACKUP);
+    const callback = () => navigate($path('/settings/backup'));
     BackButton?.onClick(callback);
 
     return () => {

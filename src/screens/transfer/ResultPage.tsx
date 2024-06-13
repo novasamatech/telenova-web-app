@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { Paths } from '@/common/routing';
 import { Icon, MediumTitle, TitleText } from '@/components';
 
 export default function ResultPage() {
@@ -17,7 +18,7 @@ export default function ResultPage() {
     BackButton?.hide();
     mainButton.show();
     const callback = () => {
-      navigate(Paths.DASHBOARD, { replace: true });
+      navigate($path('/dashboard'), { replace: true });
     };
     addMainButton(callback, 'Done');
 

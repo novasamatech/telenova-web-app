@@ -1,6 +1,7 @@
 import { isHex, isU8a, u8aToU8a } from '@polkadot/util';
 import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
-import { AccountId, Address } from '../types';
+
+import { type AccountId, type Address } from '../types';
 
 const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
 const ACCOUNT_ID_LENGTH = 32;
@@ -11,7 +12,9 @@ const ACCOUNT_ID_LENGTH = 32;
  * @return {Boolean}
  */
 export const validateAddress = (address?: Address | AccountId): boolean => {
-  if (!address) return false;
+  if (!address) {
+    return false;
+  }
 
   if (isU8a(address) || isHex(address)) {
     return u8aToU8a(address).length === ACCOUNT_ID_LENGTH;
@@ -19,7 +22,9 @@ export const validateAddress = (address?: Address | AccountId): boolean => {
 
   try {
     const decoded = base58Decode(address);
-    if (!ADDRESS_ALLOWED_ENCODED_LENGTHS.includes(decoded.length)) return false;
+    if (!ADDRESS_ALLOWED_ENCODED_LENGTHS.includes(decoded.length)) {
+      return false;
+    }
 
     const [isValid, endPos, ss58Length] = checkAddressChecksum(decoded);
 
@@ -30,7 +35,12 @@ export const validateAddress = (address?: Address | AccountId): boolean => {
 };
 
 export async function shareQrAddress(symbol: string, address: string) {
-  const canvasElement = document.getElementById(`qrcode_${symbol}`) as HTMLCanvasElement;
+  const canvasElement = document.getElementById(`qrcode_${symbol}`) as HTMLCanvasElement | null;
+
+  if (!canvasElement || !('toDataURL' in canvasElement)) {
+    throw new Error(`Element qrcode_${symbol}  is not canvas element`);
+  }
+
   const dataUrl = canvasElement.toDataURL();
   const blob = await (await fetch(dataUrl)).blob();
 
@@ -44,5 +54,5 @@ export async function shareQrAddress(symbol: string, address: string) {
     text: address,
   };
 
-  navigator.share(shareData).catch((error) => console.warn(error));
+  navigator.share(shareData).catch(error => console.warn(error));
 }

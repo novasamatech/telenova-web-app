@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { Paths } from '@/common/routing';
-import { TitleText, LinkCard } from '@/components';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
+import { LinkCard, TitleText } from '@/components';
 
 export default function ExchangePage() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function ExchangePage() {
 
   useEffect(() => {
     const callback = () => {
-      navigate(Paths.DASHBOARD);
+      navigate($path('/dashboard'));
     };
     BackButton?.show();
     BackButton?.onClick(callback);
@@ -28,7 +29,7 @@ export default function ExchangePage() {
     <>
       <TitleText className="mt-6 mb-10">How to send tokens</TitleText>
       <LinkCard
-        href={Paths.EXCHANGE_SELECT}
+        href={$path('/exchange/select')}
         text="Buy Crypto"
         textClassName="text-medium-title"
         iconClassName="text-bg-icon-accent-primary"
@@ -39,7 +40,7 @@ export default function ExchangePage() {
         onClick={() => setSelectedAsset({ operationType: 'buy' })}
       />
       <LinkCard
-        href={Paths.EXCHANGE_SELECT}
+        href={$path('/exchange/select')}
         text="Sell Crypto"
         textClassName="text-medium-title"
         helpText="Bank card"

@@ -1,4 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import secureLocalStorage from 'react-secure-storage';
+
+import Keyring from '@polkadot/keyring';
+import { type KeyringPair } from '@polkadot/keyring/types';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
 import {
   encodeAddress,
@@ -7,24 +10,28 @@ import {
   randomAsHex,
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
-import CryptoJS, { AES } from 'crypto-js';
-import { syncScrypt } from 'scrypt-js';
-import Keyring from '@polkadot/keyring';
-import { KeyringPair } from '@polkadot/keyring/types';
-import secureLocalStorage from 'react-secure-storage';
+
+import CryptoJS from 'crypto-js';
+import scryptJS from 'scrypt-js';
 
 import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
-import { HexString } from '@common/types';
-import { GiftWallet, Wallet } from './types';
+
+import { type HexString } from '@/common/types';
+
+import { type GiftWallet, type Wallet } from './types';
 
 const keyring = new Keyring({ type: 'sr25519' });
 
 const SALT_SIZE_BYTES = 16;
 
 export const getStoreName = (key: string) => {
-  if (!window) return '';
+  if (!window) {
+    return '';
+  }
   const userId = window.Telegram?.WebApp.initDataUnsafe?.user?.id;
-  if (!userId) return '';
+  if (!userId) {
+    return '';
+  }
 
   return `${userId}_${key}`;
 };
@@ -36,7 +43,7 @@ function unwrapHexString(string: string): HexString {
 export function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {
   const passwordBytes = new TextEncoder().encode(password.normalize('NFKC'));
   const buffer = Buffer.from(salt.words);
-  const key = syncScrypt(passwordBytes, buffer, 16384, 8, 1, 32);
+  const key = scryptJS.syncScrypt(passwordBytes, buffer, 16384, 8, 1, 32);
 
   return CryptoJS.lib.WordArray.create(key);
 }
@@ -45,7 +52,7 @@ export function encryptMnemonic(mnemonic: string, password: string): string {
   const salt = CryptoJS.lib.WordArray.random(SALT_SIZE_BYTES);
   const derivedKey = getScryptKey(password, salt);
 
-  const encryptedMnemonic = AES.encrypt(mnemonic, derivedKey, {
+  const encryptedMnemonic = CryptoJS.AES.encrypt(mnemonic, derivedKey, {
     mode: CryptoJS.mode.CBC,
     iv: salt,
   });
@@ -61,7 +68,7 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
   const encryptedHexMnemonic = encryptedMnemonicWithSalt.slice(SALT_SIZE_BYTES * 2);
   const derivedKey = getScryptKey(password, salt);
 
-  return AES.decrypt(encryptedHexMnemonic, derivedKey, {
+  return CryptoJS.AES.decrypt(encryptedHexMnemonic, derivedKey, {
     format: CryptoJS.format.Hex,
     mode: CryptoJS.mode.CBC,
     iv: salt,
@@ -79,7 +86,9 @@ export const generateWalletMnemonic = (): string => {
 };
 
 export const createWallet = (mnemonic: string | null): Wallet | null => {
-  if (!mnemonic) return null;
+  if (!mnemonic) {
+    return null;
+  }
   const seed = mnemonicToMiniSecret(mnemonic);
   const keypair = sr25519PairFromSeed(seed);
   const publicKey: HexString = u8aToHex(keypair.publicKey);
@@ -110,11 +119,15 @@ export const getKeyringPair = (): KeyringPair | undefined => {
   try {
     const mnemonic = getMnemonic();
 
-    if (mnemonic === null) return;
+    if (mnemonic === null) {
+      return;
+    }
 
     return keyring.createFromUri(mnemonic);
   } catch (e) {
     console.warn(e);
+
+    return undefined;
   }
 };
 
@@ -131,7 +144,9 @@ export const resetWallet = (clearLocal: boolean = false) => {
 };
 
 export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: string): string | null => {
-  if (!encryptedMnemonic) return null;
+  if (!encryptedMnemonic) {
+    return null;
+  }
   let mnemonic;
   try {
     mnemonic = decryptMnemonic(encryptedMnemonic, password);

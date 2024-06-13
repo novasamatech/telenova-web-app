@@ -1,9 +1,12 @@
-import { createContext, PropsWithChildren, useContext } from 'react';
-import { Balance, Hash } from '@polkadot/types/interfaces';
-
-import { getKeyringPair } from '@common/wallet';
-import { FAKE_ACCOUNT_ID } from '@common/utils';
 import type { EstimateFee, EstimateFeeParams, SubmitExtrinsic, SubmitExtrinsicParams } from './types';
+
+import { type PropsWithChildren, createContext, useContext } from 'react';
+
+import { type Balance, type Hash } from '@polkadot/types/interfaces';
+
+import { FAKE_ACCOUNT_ID } from '@/common/utils';
+import { getKeyringPair } from '@/common/wallet';
+
 import { useExtrinsicService } from './ExtrinsicService';
 
 type ExtrinsicProviderContextProps = {
@@ -33,7 +36,9 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
     const extrinsic = await prepareExtrinsic<'promise'>(chainId, transaction, options);
 
     const keyringPair = keyring || getKeyringPair();
-    if (!keyringPair) return;
+    if (!keyringPair) {
+      return;
+    }
 
     await extrinsic.signAsync(keyringPair, signOptions);
     keyringPair.lock();

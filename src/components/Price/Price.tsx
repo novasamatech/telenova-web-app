@@ -8,7 +8,9 @@ type Props = {
 };
 
 const Price = ({ amount, decimalSize, symbol = '$' }: Props) => {
-  if (amount === undefined) return <Shimmering width={50} height={30} />;
+  if (amount === undefined) {
+    return <Shimmering width={50} height={30} />;
+  }
   const value = amount === 0 ? '0.00' : parseFloat(amount.toFixed(3));
   const [integerPart, decimalPart] = value.toString().split('.');
   // decimalSize don't apply dynamically

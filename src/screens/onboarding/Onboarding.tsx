@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
+import { useTelegram } from '@/common/providers/telegramProvider';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
-import { BodyText, Icon } from '@/components';
+import { LoadingScreen } from '@/components';
+import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
 
 export default function OnboardingPage() {
   const { webApp } = useTelegram();
@@ -12,23 +12,20 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
-      setMnenonic(value as string | null);
+      if (value) {
+        setMnenonic(value);
+      }
     });
 
     // to avoid blinking
     setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 1000);
   }, [webApp]);
 
-  if (isLoading)
-    return (
-      <div className="flex flex-col items-center justify-center h-[93svh]">
-        <Icon name="Loader" size={130} className="animate-pulse m-auto pl-5" />
-        <BodyText className="text-text-on-button-disabled mb-2">by</BodyText>
-        <Icon name="Novasama" size={110} className="ml-[10px]" />
-      </div>
-    );
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex flex-col items-center text-center">

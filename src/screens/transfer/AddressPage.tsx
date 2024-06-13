@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Input } from '@nextui-org/react';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
+import { Button, Input } from '@nextui-org/react';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { validateAddress } from '@/common/utils/address';
-import { Icon, HelpText, BodyText, Identicon } from '@/components';
-import { Paths } from '@/common/routing';
+import { BodyText, HelpText, Icon, Identicon } from '@/components';
 
 export default function AddressPage() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function AddressPage() {
 
   useEffect(() => {
     const callback = () => {
-      navigate(Paths.TRANSFER_SELECT_TOKEN);
+      navigate($path('/transfer/select-token'));
     };
 
     BackButton?.show();
@@ -32,8 +33,8 @@ export default function AddressPage() {
 
   useEffect(() => {
     const callback = () => {
-      setSelectedAsset((prev) => ({ ...prev!, destinationAddress: address }));
-      navigate(Paths.TRANSFER_AMOUNT);
+      setSelectedAsset(prev => ({ ...prev!, destinationAddress: address }));
+      navigate($path('/transfer/amount'));
     };
 
     if (address.length) {
@@ -54,7 +55,7 @@ export default function AddressPage() {
   };
 
   const handleQrCode = () => {
-    webApp?.showScanQrPopup({ text: 'Scan QR code' }, (value) => {
+    webApp?.showScanQrPopup({ text: 'Scan QR code' }, value => {
       setAddress(value);
       setIsAddressValid(validateAddress(value));
       webApp.closeScanQrPopup();

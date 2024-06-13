@@ -1,4 +1,11 @@
-import { AssetPrice } from '../types';
+import { type AssetPrice } from '../types';
+
+type Params = {
+  ids: string[];
+  currency?: string;
+  includeRateChange?: boolean;
+  abortSignal?: AbortSignal;
+};
 
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3';
 
@@ -6,11 +13,12 @@ function getCurrencyChangeKey(currency: string): string {
   return `${currency}_24h_change`;
 }
 
-export async function getPrice(
-  ids: (string | undefined)[],
-  currency: string = 'usd',
-  includeRateChange: boolean = true,
-): Promise<AssetPrice | null> {
+export async function getPrice({
+  ids,
+  currency = 'usd',
+  includeRateChange = true,
+  abortSignal,
+}: Params): Promise<AssetPrice | null> {
   const url = new URL(`${COINGECKO_URL}/simple/price`);
   url.search = new URLSearchParams({
     ids: ids.join(','),
@@ -19,19 +27,20 @@ export async function getPrice(
   }).toString();
 
   try {
-    const response = await fetch(url);
-    const data = await response.json();
+    const data = await fetch(url, { signal: abortSignal }).then(r => r.json());
+    const prices: AssetPrice = {};
 
-    return ids.reduce<AssetPrice>((acc, assetId) => {
-      if (!assetId) return acc;
-      acc[assetId] = {
+    for (const assetId of ids) {
+      prices[assetId] = {
         price: data[assetId][currency],
         change: data[assetId][getCurrencyChangeKey(currency)],
       };
+    }
 
-      return acc;
-    }, {});
+    return prices;
   } catch (e) {
+    console.error(e);
+
     return null;
   }
 }

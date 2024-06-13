@@ -1,4 +1,4 @@
-import { SignerOptions } from '@polkadot/api/types';
+import { type SignerOptions } from '@polkadot/api/types';
 
 export const PUBLIC_KEY_STORE = 'publicKey';
 export const MNEMONIC_STORE = 'mnemonic';

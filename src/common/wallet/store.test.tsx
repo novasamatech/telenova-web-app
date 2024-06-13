@@ -1,5 +1,7 @@
 import CryptoJS from 'crypto-js';
-import { getScryptKey, encryptMnemonic, decryptMnemonic } from './store';
+import { describe, expect, test } from 'vitest';
+
+import { decryptMnemonic, encryptMnemonic, getScryptKey } from './store';
 
 describe('Encryption functions', () => {
   test('getScryptKey returns a valid key', () => {

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AssetAccount, AssetPrice, HexString, TrasferAsset } from '../types';
+
+import { type AssetAccount, type AssetPrice, type HexString, type TrasferAsset } from '../types';
 import { getWallet } from '../wallet';
 
 export interface IContext {

@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { Paths } from '@/common/routing';
-import { TitleText, LinkCard } from '@/components';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
+import { LinkCard, TitleText } from '@/components';
 
 export default function TransferPage() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function TransferPage() {
   useEffect(() => {
     const callback = () => {
       setSelectedAsset(null);
-      navigate(Paths.DASHBOARD);
+      navigate($path('/dashboard'));
     };
     BackButton?.show();
     BackButton?.onClick(callback);
@@ -28,7 +29,7 @@ export default function TransferPage() {
     <>
       <TitleText className="mt-6 mb-10">How to send tokens</TitleText>
       <LinkCard
-        href={Paths.TRANSFER_SELECT_TOKEN}
+        href={$path('/transfer/select-token')}
         text="Send as Gift in Telegram"
         textClassName="text-medium-title"
         iconClassName="text-bg-icon-accent-primary"
@@ -39,7 +40,7 @@ export default function TransferPage() {
         onClick={() => setSelectedAsset({ isGift: true })}
       />
       <LinkCard
-        href={Paths.TRANSFER_SELECT_TOKEN}
+        href={$path('/transfer/select-token')}
         text="Send to Address"
         textClassName="text-medium-title"
         helpText="Transfer to address within the network"

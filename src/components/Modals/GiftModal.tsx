@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
 import Lottie from 'react-lottie-player';
 
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
+
 import { useChainRegistry } from '@/common/chainRegistry';
+import { type ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types';
+import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { getGiftInfo, formatAmount, formatBalance } from '@/common/utils';
-import { AssetType, PublicKey } from '@/common/types';
-import { BigTitle, Icon, Shimmering } from '@/components';
-import { ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types';
-import { useAssetHub } from '@/common/utils/hooks';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { useExtrinsic, TransactionType } from '@/common/extrinsicService';
+import { AssetType, type PublicKey } from '@/common/types';
+import { formatAmount, formatBalance, getGiftInfo } from '@/common/utils';
+import { useAssetHub } from '@/common/utils/hooks';
+import { BigTitle, Icon, Shimmering } from '@/components';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,

@@ -1,9 +1,10 @@
-import { ApiPromise } from '@polkadot/api';
-import { SubmittableExtrinsic } from '@polkadot/api-base/types';
-import { SignerOptions } from '@polkadot/api/types';
-import { Balance, Hash } from '@polkadot/types/interfaces';
-import { KeyringPair } from '@polkadot/keyring/types';
-import { ChainId } from '@common/types';
+import { type ApiPromise } from '@polkadot/api';
+import { type SignerOptions } from '@polkadot/api/types';
+import { type SubmittableExtrinsic } from '@polkadot/api-base/types';
+import { type KeyringPair } from '@polkadot/keyring/types';
+import { type Balance, type Hash } from '@polkadot/types/interfaces';
+
+import { type ChainId } from '@/common/types';
 
 export interface ExtrinsicBuilder {
   api: ApiPromise;

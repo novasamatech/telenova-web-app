@@ -1,5 +1,6 @@
-import React, { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { WebApp, WebAppUser, BackButton } from '@twa-dev/types';
+import { type PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+import { type BackButton, type WebApp, type WebAppUser } from '@twa-dev/types';
 
 export interface ITelegramContext {
   webApp?: WebApp;

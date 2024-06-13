@@ -1,10 +1,11 @@
-import { SubmittableExtrinsic, SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import '@polkadot/api-augment';
-import { ApiPromise } from '@polkadot/api';
+import { type ApiPromise } from '@polkadot/api';
+import { type SubmittableExtrinsic, type SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 
-import { useChainRegistry } from '@common/chainRegistry';
-import { ChainId } from '@common/types';
-import { BatchMode, ExtrinsicBuilder, ExtrinsicBuilderFactory, ExtrinsicBuildingOptions } from './types';
+import { useChainRegistry } from '@/common/chainRegistry';
+import { type ChainId } from '@/common/types';
+
+import { BatchMode, type ExtrinsicBuilder, type ExtrinsicBuilderFactory, type ExtrinsicBuildingOptions } from './types';
 
 export function useExtrinsicBuilderFactory(): ExtrinsicBuilderFactory {
   const { getConnection } = useChainRegistry();

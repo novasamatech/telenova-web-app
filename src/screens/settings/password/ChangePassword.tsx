@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { Input } from '@nextui-org/react';
+import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { Paths } from '@/common/routing';
-import { TitleText } from '@/components';
-import { initializeWalletFromCloud } from '@/common/wallet';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
+import { initializeWalletFromCloud } from '@/common/wallet';
+import { TitleText } from '@/components';
 
 export default function ChangePasswordPage() {
   const { BackButton, webApp } = useTelegram();
@@ -19,7 +20,7 @@ export default function ChangePasswordPage() {
 
   useEffect(() => {
     BackButton?.show();
-    const callback = () => navigate(Paths.SETTINGS_BACKUP);
+    const callback = () => navigate($path('/settings/backup'));
     BackButton?.onClick(callback);
     mainButton.show();
     mainButton.disable();
@@ -42,7 +43,7 @@ export default function ChangePasswordPage() {
         setIsPasswordValid(Boolean(decryptedMnemonic));
 
         if (decryptedMnemonic) {
-          navigate(Paths.SETTINGS_NEW_PASSWORD);
+          navigate($path('/settings/new-password'));
         }
       });
     };

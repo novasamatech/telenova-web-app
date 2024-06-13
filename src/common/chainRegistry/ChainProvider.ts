@@ -1,19 +1,16 @@
-import { polkadot, kusama, westend, assetHub } from './knownChains';
-import { Asset, Chain, ChainAsset, IChainProviderService } from './types';
-import { ChainId } from '@common/types';
+import { type ChainId } from '@/common/types';
+
+import { assetHub, kusama, polkadot, westend } from './knownChains';
+import { type Asset, type Chain, type ChainAsset, type IChainProviderService } from './types';
+
+// TODO change to chain.json
+const chains = [polkadot, kusama, westend, assetHub];
 
 export const useChains = (): IChainProviderService => {
-  // TODO change to chain.json
-  const chains = [polkadot, kusama, westend, assetHub];
-
-  const getAllChains = (): Promise<Chain[]> => {
-    return new Promise(function (resolve) {
-      resolve(chains);
-    });
-  };
+  const getAllChains = (): Promise<Chain[]> => Promise.resolve(chains);
 
   const getAssetBySymbol = (symbol: string): Promise<ChainAsset> => {
-    return new Promise(function (resolve) {
+    return new Promise(resolve => {
       for (const chain of chains) {
         for (const asset of chain.assets) {
           if (asset.symbol == symbol) {
@@ -27,14 +24,14 @@ export const useChains = (): IChainProviderService => {
   };
 
   const getAssetByChainId = (assetId: string, chainId: ChainId): Asset | undefined => {
-    const chain = chains.find((chain) => chain.chainId == chainId);
-    const asset = chain?.assets.find((asset) => asset.assetId == +assetId);
+    const chain = chains.find(chain => chain.chainId == chainId);
+    const asset = chain?.assets.find(asset => asset.assetId == +assetId);
 
     return asset;
   };
 
   const getChain = (chainId: ChainId): Promise<Chain | undefined> => {
-    return new Promise(function (resolve) {
+    return new Promise(resolve => {
       for (const chain of chains) {
         if (chain.chainId == chainId) {
           resolve(chain);

@@ -1,8 +1,8 @@
 import { Input } from '@nextui-org/react';
 
-import { Icon, LargeTitleText, BodyText, TokenPrice } from '@/components';
-import { IconNames } from '@/components/Icon/types';
-import { TrasferAsset } from '@/common/types';
+import { type TrasferAsset } from '@/common/types';
+import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
+import { type IconNames } from '@/components/Icon/types';
 
 type AmountDetailsProps = {
   selectedAsset?: Partial<TrasferAsset | null>;
@@ -28,6 +28,8 @@ export default function AmountDetails({
   handleChange,
   children,
 }: AmountDetailsProps) {
+  const shouldShowPrice = !isNaN(+amount) && isAmountValid && !isPending;
+
   return (
     <>
       <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">
@@ -37,7 +39,7 @@ export default function AmountDetails({
           fullWidth={false}
           variant="underlined"
           className="mt-[-10px] font-manrope h-full"
-          classNames={{ input: ['text-right !text-large-title max-w-[160px]'] }}
+          classNames={{ input: ['text-right !text-large-title max-w-[7ch]'] }}
           value={amount}
           isInvalid={!isAmountValid}
           type="text"
@@ -47,11 +49,13 @@ export default function AmountDetails({
         />
       </div>
       <div className="grid grid-cols-[auto,1fr]">
-        <TokenPrice
-          priceId={selectedAsset?.asset?.priceId}
-          balance={amount || '0'}
-          showBalance={!isNaN(+amount) && isAmountValid && !isPending}
-        />
+        {shouldShowPrice && (
+          <TokenPrice
+            priceId={selectedAsset?.asset?.priceId}
+            balance={amount || '0'}
+            showBalance={!isNaN(+amount) && isAmountValid && !isPending}
+          />
+        )}
         {!isAmountValid && (
           <>
             <BodyText align="right" className="text-text-danger">

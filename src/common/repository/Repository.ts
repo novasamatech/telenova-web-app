@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-import { IRepositoryService } from './types';
+import { type IRepositoryService } from './types';
 
 export const useRepository = <K extends string, V>(): IRepositoryService<K, V> => {
   const store = useRef<Record<K, V>>({} as Record<K, V>);

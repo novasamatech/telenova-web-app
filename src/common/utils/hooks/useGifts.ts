@@ -1,7 +1,9 @@
-import { ConnectionStatus, useChainRegistry } from '@common/chainRegistry';
-import { ChainId, Gift, PersistentGift, GiftStatus } from '@common/types';
-import { useAssetHub } from './useAssetHub';
 import { isStatemineAsset } from '../assets';
+
+import { ConnectionStatus, useChainRegistry } from '@/common/chainRegistry';
+import { type ChainId, type Gift, GiftStatus, type PersistentGift } from '@/common/types';
+
+import { useAssetHub } from './useAssetHub';
 
 export const useGifts = () => {
   const { getConnection, getChain, getAssetByChainId, connectionStates } = useChainRegistry();
@@ -22,11 +24,11 @@ export const useGifts = () => {
 
         if (isStatemineAsset(asset?.type) && asset?.typeExtras?.assetId) {
           const balances = await connection.api.query.assets.account.multi(
-            accounts.map((i) => [asset?.typeExtras?.assetId, i.address]),
+            accounts.map(i => [asset?.typeExtras?.assetId, i.address]),
           );
 
           const maxBalance = Math.max(
-            ...balances.map((balance) => (balance.isNone ? 0 : Number(balance.unwrap().balance))),
+            ...balances.map(balance => (balance.isNone ? 0 : Number(balance.unwrap().balance))),
           ).toString();
           const fee = await getAssetHubFee(chainId, asset.typeExtras.assetId, maxBalance);
 
@@ -40,7 +42,7 @@ export const useGifts = () => {
               : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED });
           });
         } else {
-          const balances = await connection.api.query.system.account.multi(accounts.map((i) => i.address));
+          const balances = await connection.api.query.system.account.multi(accounts.map(i => i.address));
 
           balances.forEach((d, idx) =>
             d.data.free.isEmpty

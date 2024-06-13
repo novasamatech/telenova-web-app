@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Button, Input } from '@nextui-org/react';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
+import { Avatar, Button, Input } from '@nextui-org/react';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { BodyText, TitleText, ResetPasswordModal } from '@/components';
-import { Paths } from '@/common/routing';
 import { createWallet, initializeWalletFromCloud } from '@/common/wallet';
+import { BodyText, ResetPasswordModal, TitleText } from '@/components';
 
 type Props = {
   mnemonic: string;
@@ -39,7 +40,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
       setIsPasswordValid(Boolean(wallet));
       if (wallet) {
         setPublicKey(wallet?.publicKey);
-        navigate(Paths.DASHBOARD);
+        navigate($path('/dashboard'));
         hideMainButton();
       }
     };

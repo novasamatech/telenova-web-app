@@ -1,8 +1,9 @@
 import { useState } from 'react';
 
-import { getMnemonic } from '@/common/wallet';
 import { cnTw } from '@/common/utils/twMerge';
+import { getMnemonic } from '@/common/wallet';
 import { BodyText, MediumTitle, Plate } from '@/components';
+
 import RecoveryModal from './RecoveryModal';
 
 const RecoveryPhrase = () => {
@@ -11,7 +12,9 @@ const RecoveryPhrase = () => {
   const mnemonic = getMnemonic();
 
   const handleClick = () => {
-    if (!isBlur) return;
+    if (!isBlur) {
+      return;
+    }
     setIsModalOpen(true);
   };
 

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { HexString } from '@common/types';
-import { Telegram } from '@twa-dev/types';
+import { type Telegram } from '@twa-dev/types';
+
+import { type HexString } from '@/common/types';
 
 declare global {
   interface Window {

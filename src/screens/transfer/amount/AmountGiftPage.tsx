@@ -1,10 +1,11 @@
-import { Button, CircularProgress } from '@nextui-org/react';
+import { Button, Progress } from '@nextui-org/react';
+import { $path } from 'remix-routes';
 
-import { Paths } from '@/common/routing';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { BodyText, HeadlineText, Icon } from '@/components';
-import { useAmountLogic } from './useAmountLogic';
+
 import AmountDetails from './AmountDetails';
+import { useAmountLogic } from './useAmountLogic';
 
 export default function AmountGiftPage() {
   const { mainButton } = useMainButton();
@@ -20,12 +21,12 @@ export default function AmountGiftPage() {
     maxAmountToSend,
     isAmountValid,
   } = useAmountLogic({
-    prevPage: Paths.TRANSFER_SELECT_TOKEN,
-    nextPage: Paths.TRANSFER_CREATE_GIFT,
+    prevPage: $path('/transfer/select-token'),
+    nextPage: $path('/transfer/create-gift'),
     mainButtonText: 'Enter Amount',
     onAmountChange: () => {
       mainButton.setText('Create gift');
-      setIsAmountValid((prev) => prev && !!deposit && +amount >= deposit);
+      setIsAmountValid(prev => prev && !!deposit && +amount >= deposit);
     },
   });
 
@@ -40,8 +41,13 @@ export default function AmountGiftPage() {
         <Icon name="Gift" className="w-8 h-8 text-bg-icon-accent-primary" />
         <HeadlineText>Preparing Gift</HeadlineText>
         <Button variant="light" size="md" className="p-2" onClick={handleMaxGiftSend}>
-          <HeadlineText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
+          <HeadlineText className="flex items-center text-text-link">
+            Max:{' '}
+            {maxAmountToSend || (
+              <div className="shrink-0 w-[7ch]">
+                <Progress size="md" isIndeterminate />
+              </div>
+            )}{' '}
             {selectedAsset?.asset?.symbol}
           </HeadlineText>
         </Button>

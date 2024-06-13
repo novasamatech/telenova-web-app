@@ -46,7 +46,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      
+
       - name: Build
         uses: docker/build-push-action@v5
         with:
@@ -54,7 +54,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          file: ./docker/Dockerfile
+          file: .docker/Dockerfile
 
   notify-dev:
     runs-on: ubuntu-latest
@@ -68,6 +68,6 @@ jobs:
         with:
           TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          DEPLOYED_BOT: ${{ secrets.NEXT_PUBLIC_BOT_ADDRESS_DEV }}
+          DEPLOYED_BOT: ${{ secrets.PUBLIC_BOT_ADDRESS_DEV }}
           IMAGE_TO_DEPLOY: ${{ needs.build-docker.outputs.docker_tags }}
           APP_LINK: https://t.me/nova_wallet_dev_bot/novawallet_dev

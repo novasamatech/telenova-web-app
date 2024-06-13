@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useMainButton } from '@/common/telegram/useMainButton';
+import { $path } from 'remix-routes';
+
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { Paths } from '@/common/routing';
-import { TitleText, BodyText, MediumTitle } from '@/components/Typography';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import Icon from '@/components/Icon/Icon';
-import { IconNames } from '@/components/Icon/types';
+import { type IconNames } from '@/components/Icon/types';
+import { BodyText, MediumTitle, TitleText } from '@/components/Typography';
 
 const welcomeData = [
   {
@@ -33,11 +34,10 @@ export const OnboardingStartPage = () => {
 
   useEffect(() => {
     mainButton.enable();
-    const callback = () => {
-      navigate(Paths.ONBOARDING_PASSWORD);
+    addMainButton(() => {
+      navigate($path('/onboarding/password'));
       mainButton.showProgress(false);
-    };
-    addMainButton(callback);
+    });
 
     return () => {
       reset();

@@ -1,9 +1,10 @@
-import { Button, CircularProgress } from '@nextui-org/react';
+import { Button, Progress } from '@nextui-org/react';
+import { $path } from 'remix-routes';
 
-import { Paths } from '@/common/routing';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
-import { useAmountLogic } from './useAmountLogic';
+
 import AmountDetails from './AmountDetails';
+import { useAmountLogic } from './useAmountLogic';
 
 export default function AmountPage() {
   const {
@@ -17,8 +18,8 @@ export default function AmountPage() {
     maxAmountToSend,
     isAmountValid,
   } = useAmountLogic({
-    prevPage: Paths.TRANSFER_ADDRESS,
-    nextPage: Paths.TRANSFER_CONFIRMATION,
+    prevPage: $path('/transfer/address'),
+    nextPage: $path('/transfer/confirmation'),
     mainButtonText: 'Continue',
   });
 
@@ -31,8 +32,13 @@ export default function AmountPage() {
           <TruncateAddress address={selectedAsset?.destinationAddress} className="max-w-[120px]" />
         </HeadlineText>
         <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
-          <HeadlineText className="text-text-link">
-            Max: {maxAmountToSend || <CircularProgress size="sm" className="inline-block h-[22px]" />}{' '}
+          <HeadlineText className="flex items-center text-text-link">
+            Max:{' '}
+            {maxAmountToSend || (
+              <div className="shrink-0 w-[7ch]">
+                <Progress size="md" isIndeterminate />
+              </div>
+            )}{' '}
             {selectedAsset?.asset?.symbol}
           </HeadlineText>
         </Button>

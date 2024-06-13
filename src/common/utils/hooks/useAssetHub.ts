@@ -1,10 +1,12 @@
-import { ChainId } from '@common/types';
-import { Asset } from '@/common/chainRegistry/types';
-import { useQueryService } from '@/common/queryService/QueryService';
-import { useExtrinsic, TransactionType } from '@/common/extrinsicService';
-import { ZERO_BALANCE } from '../constants';
 import { formatBalance } from '../balance';
-import { GetAssetHubGiftFee, GetTransferFee } from './types';
+import { ZERO_BALANCE } from '../constants';
+
+import { type Asset } from '@/common/chainRegistry/types';
+import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
+import { useQueryService } from '@/common/queryService/QueryService';
+import { type ChainId } from '@/common/types';
+
+import { type GetAssetHubGiftFee, type GetTransferFee } from './types';
 
 const DOT_ASSET_ID = '0';
 
@@ -62,11 +64,15 @@ export const useAssetHub = () => {
     const assetId = asset.typeExtras!.assetId;
 
     const giftBalance = await getFreeBalanceStatemine(address, chainId, assetId);
-    if (giftBalance === ZERO_BALANCE) return ZERO_BALANCE;
+    if (giftBalance === ZERO_BALANCE) {
+      return ZERO_BALANCE;
+    }
 
     const fee = await getAssetHubFee(chainId, assetId, giftBalance, address);
     const rawBalance = +giftBalance - fee;
-    if (rawBalance <= 0) return ZERO_BALANCE;
+    if (rawBalance <= 0) {
+      return ZERO_BALANCE;
+    }
 
     const formattedBalance = formatBalance(rawBalance.toString(), asset.precision).formattedValue;
 

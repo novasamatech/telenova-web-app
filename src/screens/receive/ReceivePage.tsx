@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import { QRCode } from 'react-qrcode-logo';
+import { useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { shareQrAddress } from '@/common/utils/address';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/components';
-import { Paths } from '@/common/routing';
 
 export default function ReceivePage() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function ReceivePage() {
     hideMainButton();
 
     const callback = async () => {
-      navigate(Paths.RECEIVE_SELECT_TOKEN);
+      navigate($path('/receive/select-token'));
     };
     BackButton?.onClick(callback);
 
@@ -30,7 +31,9 @@ export default function ReceivePage() {
     };
   }, []);
 
-  if (!selectedAsset || !selectedAsset.asset) return null;
+  if (!selectedAsset || !selectedAsset.asset) {
+    return null;
+  }
   const asset = selectedAsset.asset;
 
   return (

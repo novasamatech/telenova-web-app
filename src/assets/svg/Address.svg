@@ -1,0 +1,22 @@
+<svg width="width" height="height" viewBox="0 0 41 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0.5" width="40" height="40" rx="20" fill="#9225FF"/>
+    <ellipse cx="20.4999" cy="10.667" rx="2" ry="2" fill="white"/>
+    <ellipse cx="16.5001" cy="12.667" rx="2" ry="2" fill="white"/>
+    <ellipse cx="24.5" cy="12.667" rx="2" ry="2" fill="white"/>
+    <ellipse cx="20.4999" cy="15.3335" rx="2" ry="2" fill="white"/>
+    <ellipse cx="28.5001" cy="15.3335" rx="2" ry="2" fill="white"/>
+    <ellipse cx="12.5" cy="15.3335" rx="2" ry="2" fill="white"/>
+    <ellipse cx="16.5001" cy="17.334" rx="2" ry="2" fill="white"/>
+    <ellipse cx="24.5" cy="17.334" rx="2" ry="2" fill="white"/>
+    <ellipse cx="20.4999" cy="24.667" rx="2" ry="2" fill="white"/>
+    <ellipse cx="28.5001" cy="24.667" rx="2" ry="2" fill="white"/>
+    <ellipse cx="12.5" cy="24.667" rx="2" ry="2" fill="white"/>
+    <ellipse cx="16.5001" cy="26.667" rx="2" ry="2" fill="white"/>
+    <ellipse cx="24.5" cy="26.667" rx="2" ry="2" fill="white"/>
+    <circle cx="20.4999" cy="29.3335" r="2" fill="white"/>
+    <circle cx="20.4999" cy="20.0005" r="2" fill="white"/>
+    <circle cx="28.5001" cy="20.0005" r="2" fill="white"/>
+    <ellipse cx="12.5" cy="20.0005" rx="2" ry="2" fill="white"/>
+    <ellipse cx="16.5001" cy="22.0005" rx="2" ry="2" fill="white"/>
+    <ellipse cx="24.5" cy="22.0005" rx="2" ry="2" fill="white"/>
+</svg>
