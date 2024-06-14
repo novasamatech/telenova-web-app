@@ -68,18 +68,18 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
   }).toString(CryptoJS.enc.Utf8);
 }
 
-export const getCloudStorageItem = (store: string): Promise<string> => {
-  const CloudStorage = window.Telegram?.WebApp?.CloudStorage;
+export const getCloudStorageItem = (store: string): Promise<string | undefined> => {
+  const cloudStorage = window.Telegram?.WebApp?.CloudStorage;
 
   return new Promise((resolve, reject) => {
-    if (!CloudStorage) reject('CloudStorage is not available');
+    if (!cloudStorage) reject('CloudStorage is not available');
 
-    window.Telegram.WebApp.CloudStorage.getItem(store, (err, value) => {
-      if (err || !value) {
+    cloudStorage.getItem(store, (err, value) => {
+      if (err) {
         reject(err);
       }
 
-      resolve(value!);
+      resolve(value);
     });
   });
 };
@@ -89,11 +89,11 @@ export const getWallet = async (): Promise<Wallet | null> => {
   const backupLocalDate = localStorage.getItem(getStoreName(BACKUP_DATE));
   try {
     const backupCloudDate = await getCloudStorageItem(BACKUP_DATE);
-    const compareBackupDate = backupCloudDate === backupLocalDate;
+    const compareBackupDate = Boolean(backupCloudDate) && backupCloudDate === backupLocalDate;
 
     return publicKey && compareBackupDate ? { publicKey: unwrapHexString(publicKey) } : null;
-  } catch {
-    return null;
+  } catch (err) {
+    throw Error(`Something went wrong in the Telegram CloudStorage: ${err}`);
   }
 };
 

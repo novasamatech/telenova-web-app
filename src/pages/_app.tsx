@@ -45,7 +45,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"></meta>
       </Head>
       <NextUIProvider>
-        <ErrorBoundary fallback={<Error />}>
+        <ErrorBoundary fallbackRender={({ error }) => <Error error={error} />}>
           <GlobalStateProvider>
             {render && (
               <TelegramProvider>
