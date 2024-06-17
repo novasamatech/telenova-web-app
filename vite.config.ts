@@ -5,6 +5,7 @@ import { vitePlugin as remix } from '@remix-run/dev';
 import react from '@vitejs/plugin-react';
 import { remixRoutes } from 'remix-routes/vite';
 import { defineConfig } from 'vite';
+import { compression } from 'vite-plugin-compression2';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -19,13 +20,10 @@ export default defineConfig(({ mode }) => ({
       },
     }),
     // remix v2 doesn't disable hmr in test mode, so we simply replace it with react plugin
-    mode === 'test'
-      ? react()
-      : remix({
-          appDirectory: './src/app',
-          ssr: false,
-        }),
+    mode === 'test' ? react() : remix({ appDirectory: './src/app', ssr: false }),
     remixRoutes({ strict: true }),
+    mode === 'production' && compression({ algorithm: 'gzip', compressionOptions: { level: 9 } }),
+    mode === 'production' && compression({ algorithm: 'brotliCompress' }),
   ],
   test: {
     globals: true,
