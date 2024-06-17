@@ -68,10 +68,33 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
   }).toString(CryptoJS.enc.Utf8);
 }
 
-export const getWallet = (): Wallet | null => {
-  const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
+export const getCloudStorageItem = (store: string): Promise<string | undefined> => {
+  const cloudStorage = window.Telegram?.WebApp?.CloudStorage;
 
-  return publicKey ? { publicKey: unwrapHexString(publicKey) } : null;
+  return new Promise((resolve, reject) => {
+    if (!cloudStorage) reject('CloudStorage is not available');
+
+    cloudStorage.getItem(store, (err, value) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve(value);
+    });
+  });
+};
+
+export const getWallet = async (): Promise<Wallet | null> => {
+  const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
+  const backupLocalDate = localStorage.getItem(getStoreName(BACKUP_DATE));
+  try {
+    const backupCloudDate = await getCloudStorageItem(BACKUP_DATE);
+    const compareBackupDate = Boolean(backupCloudDate) && backupCloudDate === backupLocalDate;
+
+    return publicKey && compareBackupDate ? { publicKey: unwrapHexString(publicKey) } : null;
+  } catch (err) {
+    throw Error(`Something went wrong in the Telegram CloudStorage: ${err}`);
+  }
 };
 
 export const generateWalletMnemonic = (): string => {
@@ -92,9 +115,11 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
 
 export const backupMnemonic = (mnemonic: string, password: string): void => {
   const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
+  const date = Date.now().toString();
 
   window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
-  window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, Date.now().toString());
+  window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, date);
+  localStorage.setItem(getStoreName(BACKUP_DATE), date);
 };
 
 export const getMnemonic = (): string | null => {
