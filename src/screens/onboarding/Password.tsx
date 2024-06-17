@@ -28,13 +28,13 @@ export default function PasswordPage() {
   const handleSubmit = (password: string) => {
     mainButton.enable();
     addMainButton(() => {
-      navigate($path('/onboarding/create-wallet'));
-
       const mnemonic = generateWalletMnemonic();
       const wallet = createWallet(mnemonic as string);
 
       setPublicKey(wallet?.publicKey);
       backupMnemonic(mnemonic, password);
+
+      navigate($path('/onboarding/create-wallet'));
     });
   };
 

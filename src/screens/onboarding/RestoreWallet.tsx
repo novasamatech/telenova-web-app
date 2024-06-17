@@ -38,6 +38,7 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
       const decryptedMnemonic = initializeWalletFromCloud(password, mnemonic);
       const wallet = createWallet(decryptedMnemonic);
       setIsPasswordValid(Boolean(wallet));
+      console.log({ wallet });
       if (wallet) {
         setPublicKey(wallet?.publicKey);
         navigate($path('/dashboard'));

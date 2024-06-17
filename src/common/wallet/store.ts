@@ -41,11 +41,16 @@ function unwrapHexString(string: string): HexString {
 }
 
 export function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {
-  const passwordBytes = new TextEncoder().encode(password.normalize('NFKC'));
-  const buffer = Buffer.from(salt.words);
-  const key = scryptJS.syncScrypt(passwordBytes, buffer, 16384, 8, 1, 32);
+  try {
+    const passwordBytes = new TextEncoder().encode(password.normalize('NFKC'));
+    const buffer = new Uint8Array(salt.words);
+    const key = scryptJS.syncScrypt(passwordBytes, buffer, 16384, 8, 1, 32);
 
-  return CryptoJS.lib.WordArray.create(key);
+    return CryptoJS.lib.WordArray.create(key);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 export function encryptMnemonic(mnemonic: string, password: string): string {
@@ -125,7 +130,6 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
 export const backupMnemonic = (mnemonic: string, password: string): void => {
   const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
   const date = Date.now().toString();
-
   window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
   window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, date);
   localStorage.setItem(getStoreName(BACKUP_DATE), date);

@@ -1,15 +1,19 @@
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type MetaFunction } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
+import { $path } from 'remix-routes';
+
 import { BalanceProvider } from '@/common/balances';
 import { ChainRegistry } from '@/common/chainRegistry';
 import { ExtrinsicProvider } from '@/common/extrinsicService';
-import { GlobalStateProvider } from '@/common/providers/contextProvider.tsx';
+import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider.tsx';
 import { TelegramProvider } from '@/common/providers/telegramProvider.tsx';
+import { getWallet } from '@/common/wallet';
 import { ErrorScreen, LoadingScreen } from '@/components';
 
 import stylesheet from './tailwind.css?url';
@@ -46,7 +50,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => (
       <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
     </head>
     <body>
-      {children}
+      <DataContext>{children}</DataContext>
       <ScrollRestoration />
       <script defer src="https://telegram.org/js/telegram-web-app.js" />
       <script defer src="https://widget.mercuryo.io/embed.2.0.js" />
@@ -55,31 +59,57 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => (
   </html>
 );
 
-export default function App() {
+const DataContext: FC<PropsWithChildren> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     cryptoWaitReady().then(() => setLoading(false));
   }, []);
 
   return (
+    <GlobalStateProvider>
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <TelegramProvider>
+          <ChainRegistry>
+            <ExtrinsicProvider>
+              <BalanceProvider>{children}</BalanceProvider>
+            </ExtrinsicProvider>
+          </ChainRegistry>
+        </TelegramProvider>
+      )}
+    </GlobalStateProvider>
+  );
+};
+
+export default function App() {
+  const [error, setError] = useState<string | null>(null);
+  const { setPublicKey } = useGlobalContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getWallet()
+      .then(wallet => {
+        if (!wallet) {
+          return navigate($path('/onboarding'), { replace: true });
+        }
+        setPublicKey(wallet?.publicKey);
+        navigate($path('/dashboard'), { replace: true });
+      })
+      .catch(e => {
+        setError(e instanceof Error ? e.toString() : 'Unknown error');
+      });
+  }, []);
+
+  if (error) {
+    return <ErrorScreen error={error} />;
+  }
+
+  return (
     <main className="font-manrope flex justify-center">
-      <GlobalStateProvider>
-        {loading ? (
-          <LoadingScreen />
-        ) : (
-          <TelegramProvider>
-            <ChainRegistry>
-              <ExtrinsicProvider>
-                <BalanceProvider>
-                  <div className="min-h-screen p-4 w-full overflow-x-auto break-words">
-                    <Outlet />
-                  </div>
-                </BalanceProvider>
-              </ExtrinsicProvider>
-            </ChainRegistry>
-          </TelegramProvider>
-        )}
-      </GlobalStateProvider>
+      <div className="min-h-screen p-4 w-full overflow-x-auto break-words">
+        <Outlet />
+      </div>
     </main>
   );
 }

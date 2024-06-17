@@ -16,7 +16,6 @@ export default defineConfig(({ mode }) => ({
       include: '**/*.svg',
       svgrOptions: {
         plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
-        svgoConfig: { floatPrecision: 3 },
       },
     }),
     // remix v2 doesn't disable hmr in test mode, so we simply replace it with react plugin
