@@ -57,6 +57,16 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
     };
   }, [password]);
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    mainButton.disable();
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    mainButton.enable();
+  };
+
   return (
     <>
       <Avatar
@@ -93,15 +103,11 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
           onValueChange={setPassword}
           onClear={() => setPassword('')}
         />
-        <Button
-          aria-label="Reset Password"
-          className="self-baseline p-0 bg-transparent"
-          onClick={() => setIsModalOpen(true)}
-        >
+        <Button aria-label="Reset Password" className="self-baseline p-0 bg-transparent" onClick={handleOpenModal}>
           <BodyText className="text-text-link">Forgot Password?</BodyText>
         </Button>
       </div>
-      <ResetPasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ResetPasswordModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 
 import { type LinksFunction, type MetaFunction } from '@remix-run/node';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
@@ -27,7 +27,11 @@ export const meta: MetaFunction = () => [
   },
 ];
 
-export const ErrorBoundary: FC = () => <ErrorScreen />;
+export const ErrorBoundary: FC = () => {
+  const error = useRouteError();
+
+  return <ErrorScreen error={error instanceof Error ? error.toString() : 'Unknown error'} />;
+};
 
 export const HydrationFallback: FC = () => <LoadingScreen />;
 

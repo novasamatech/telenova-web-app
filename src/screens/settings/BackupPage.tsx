@@ -6,10 +6,11 @@ import { $path } from 'remix-routes';
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { BACKUP_DATE } from '@/common/utils/constants';
+import { getStoreName } from '@/common/wallet';
 import { BodyText, LinkCard, TitleText } from '@/components';
 
 export default function SettingsBackupPage() {
-  const { BackButton, webApp } = useTelegram();
+  const { BackButton } = useTelegram();
   const { hideMainButton } = useMainButton();
   const navigate = useNavigate();
   const [backupDate, setBackupDate] = useState('');
@@ -19,11 +20,9 @@ export default function SettingsBackupPage() {
     BackButton?.show();
     const callback = () => navigate($path('/settings'));
     BackButton?.onClick(callback);
-
-    webApp?.CloudStorage.getItem(BACKUP_DATE, (_err, value) => {
-      const date = value ? new Date(+value).toUTCString() : '';
-      setBackupDate(date);
-    });
+    const storeDate = localStorage.getItem(getStoreName(BACKUP_DATE));
+    const date = storeDate ? new Date(+storeDate).toUTCString() : '';
+    setBackupDate(date);
 
     return () => {
       BackButton?.offClick(callback);

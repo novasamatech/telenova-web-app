@@ -48,6 +48,7 @@ export default function ResetPasswordModal({ isOpen, onClose }: Props) {
         classNames={{
           closeButton: 'mt-2 text-2xl text-icon-neutral',
         }}
+        className="max-h-[93vh] overflow-y-auto"
         onClose={handleClose}
       >
         <ModalContent>

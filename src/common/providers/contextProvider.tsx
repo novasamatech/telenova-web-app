@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 import { type AssetAccount, type AssetPrice, type HexString, type TrasferAsset } from '../types';
-import { getWallet } from '../wallet';
 
 export interface IContext {
   assets: AssetAccount[] | [];
@@ -35,13 +34,6 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [selectedAsset, setSelectedAsset] = useState<Partial<TrasferAsset | null>>(null);
   const [assetsPrices, setAssetsPrices] = useState<AssetPrice | null>(null);
   const [isGiftClaimed, setIsGiftClaimed] = useState(false);
-
-  useEffect(() => {
-    if (!publicKey) {
-      const wallet = getWallet();
-      setPublicKey(wallet?.publicKey);
-    }
-  }, []);
 
   const value = {
     publicKey,

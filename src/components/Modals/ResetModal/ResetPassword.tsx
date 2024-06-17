@@ -19,6 +19,7 @@ export default function ResetPassword({ onClose, onSubmit }: Props) {
   };
 
   const handleSubmit = () => {
+    setIsDisabled(true);
     resetWallet();
     onSubmit();
   };
