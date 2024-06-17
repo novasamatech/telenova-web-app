@@ -32,12 +32,9 @@ export default function MercuryoWidgetPage() {
   }, []);
   useEffect(() => {
     if (isSendBtnVisible) {
-      addMainButton(
-        () => {
-          navigate($path('/transfer/amount'));
-        },
-        `Send ${selectedAsset?.asset?.symbol} to sell`,
-      );
+      addMainButton(() => {
+        navigate($path('/transfer/amount'));
+      }, `Send ${selectedAsset?.asset?.symbol} to sell`);
     }
 
     return () => {
