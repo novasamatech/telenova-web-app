@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "remix vite:dev --port 3000 --host",
     "build": "remix vite:build",
-    "start": "sirv ./build/client --single --host --port 3000 --maxage 300",
+    "start": "sirv ./build/client --quiet --single --host --port 3000 --maxage 86400",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "typecheck": "tsc --noEmit",
