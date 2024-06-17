@@ -26,7 +26,6 @@ export default defineConfig(({ mode }) => ({
           ssr: false,
         }),
     remixRoutes({ strict: true }),
-    // basicSsl({ name: 'dev-cert' }),
   ],
   test: {
     globals: true,
