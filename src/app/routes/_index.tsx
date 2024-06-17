@@ -14,7 +14,7 @@ const Page: FC = () => {
   useEffect(() => {
     setPublicKey(wallet?.publicKey);
     if (wallet) {
-      navigate($path('/onboarding/password'), { replace: true });
+      navigate($path('/dashboard'), { replace: true });
     } else {
       navigate($path('/onboarding'), { replace: true });
     }
