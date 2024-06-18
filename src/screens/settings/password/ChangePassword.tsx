@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Input } from '@nextui-org/react';
 import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
 import { initializeWalletFromCloud } from '@/common/wallet';
-import { TitleText } from '@/components';
+import { Input, TitleText } from '@/components';
 
 export default function ChangePasswordPage() {
   const { BackButton, webApp } = useTelegram();
@@ -69,13 +68,6 @@ export default function ChangePasswordPage() {
         placeholder="Enter Password Here"
         type="password"
         className="max-w-sm text-left mt-8"
-        classNames={{
-          inputWrapper: [
-            'bg-bg-input border-1 shadow-none',
-            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-          ],
-          clearButton: ['text-text-hint'],
-        }}
         value={password}
         isInvalid={!isPasswordValid}
         errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}

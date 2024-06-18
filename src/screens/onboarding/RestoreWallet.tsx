@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Avatar, Button, Input } from '@nextui-org/react';
+import { Avatar, Button } from '@nextui-org/react';
 import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { createWallet, initializeWalletFromCloud } from '@/common/wallet';
-import { BodyText, ResetPasswordModal, TitleText } from '@/components';
+import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
 
 type Props = {
   mnemonic: string;
@@ -90,13 +90,6 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
           placeholder="Enter Password Here"
           type="password"
           className="max-w-sm text-left"
-          classNames={{
-            inputWrapper: [
-              'bg-bg-input border-1 shadow-none',
-              'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-            ],
-            clearButton: ['text-text-hint'],
-          }}
           value={password}
           isInvalid={!isPasswordValid}
           errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}

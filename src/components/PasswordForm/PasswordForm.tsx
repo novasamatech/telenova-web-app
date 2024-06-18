@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { Input } from '@nextui-org/react';
-
 import { cnTw } from '@/common/utils/twMerge';
-import { BodyText } from '@/components/Typography';
+import { BodyText, Input } from '@/components';
 
 interface PasswordFormProps {
   onSubmit: (password: string) => void;
@@ -68,14 +66,6 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         variant="flat"
         placeholder="Enter Password Here"
         type="password"
-        classNames={{
-          inputWrapper: [
-            'bg-bg-input border-1 shadow-none',
-            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-            !isPasswordValid && 'border-border-danger',
-          ],
-          clearButton: ['text-text-hint'],
-        }}
         className="max-w-sm text-left"
         value={password}
         isInvalid={!isPasswordValid}
@@ -89,14 +79,6 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         variant="flat"
         placeholder="Confirm Password"
         type="password"
-        classNames={{
-          inputWrapper: [
-            'bg-bg-input border-1 shadow-none',
-            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-            !isConfirmPasswordValid && 'border-border-danger',
-          ],
-          clearButton: ['text-text-hint'],
-        }}
         className="max-w-sm text-left"
         value={confirmPassword}
         isInvalid={!isConfirmPasswordValid}

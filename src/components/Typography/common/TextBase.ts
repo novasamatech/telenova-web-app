@@ -7,7 +7,17 @@ import { type TypographyProps } from './types';
 const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyProps) => {
   return createElement(
     as,
-    { className: cnTw(`text-${align} text-text-primary font-manrope antialiased`, className) },
+    {
+      className: cnTw(
+        `text-text-primary font-manrope antialiased`,
+        {
+          'text-left': align === 'left',
+          'text-right': align === 'right',
+          'text-center': align === 'center',
+        },
+        className,
+      ),
+    },
     children,
   );
 };

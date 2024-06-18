@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Input } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { validateAddress } from '@/common/utils/address';
-import { BodyText, HelpText, Icon, Identicon } from '@/components';
+import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
 
 export default function AddressPage() {
   const navigate = useNavigate();
@@ -68,13 +68,6 @@ export default function AddressPage() {
         isClearable
         variant="flat"
         placeholder="Enter address"
-        classNames={{
-          inputWrapper: [
-            'bg-bg-input border-1 text-left shadow-none',
-            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-          ],
-          clearButton: ['text-text-hint'],
-        }}
         className="font-manrope"
         value={address}
         onValueChange={handleChange}

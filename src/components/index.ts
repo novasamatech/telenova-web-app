@@ -1,3 +1,5 @@
+import { Input } from '@/components/Input/Input.tsx';
+
 import TruncateAddress from './Address/TruncateAddress';
 import AssetBalance from './Assets/AssetBalance';
 import AssetsList from './Assets/AssetsList';
@@ -59,4 +61,5 @@ export {
   ResetPasswordModal,
   LoadingScreen,
   ErrorScreen,
+  Input,
 };
