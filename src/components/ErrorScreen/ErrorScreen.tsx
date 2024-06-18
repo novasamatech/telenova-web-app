@@ -1,10 +1,12 @@
+import { type FC } from 'react';
+
 import { BodyText, MediumTitle, TitleText } from '@/components/Typography';
 
 type Props = {
   error?: string;
 };
 
-export const ErrorScreen = ({ error }: Props) => {
+export const ErrorScreen: FC<Props> = ({ error = 'Unknown error' }) => {
   return (
     <div className="h-screen p-4 w-full flex flex-col items-center justify-center gap-3">
       <img src="/images/error.svg" alt="error" width={100} height={100} />

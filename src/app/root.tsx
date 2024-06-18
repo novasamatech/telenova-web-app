@@ -14,7 +14,7 @@ import { ExtrinsicProvider } from '@/common/extrinsicService';
 import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider.tsx';
 import { TelegramProvider } from '@/common/providers/telegramProvider.tsx';
 import { getWallet } from '@/common/wallet';
-import { ErrorScreen, LoadingScreen } from '@/components';
+import { ErrorScreen } from '@/components';
 
 import stylesheet from './tailwind.css?url';
 
@@ -34,10 +34,8 @@ export const meta: MetaFunction = () => [
 export const ErrorBoundary: FC = () => {
   const error = useRouteError();
 
-  return <ErrorScreen error={error instanceof Error ? error.toString() : 'Unknown error'} />;
+  return <ErrorScreen error={error?.toString?.()} />;
 };
-
-export const HydrationFallback: FC = () => <LoadingScreen />;
 
 export const Layout: FC<PropsWithChildren> = ({ children }) => (
   <html lang="en">
@@ -65,19 +63,19 @@ const DataContext: FC<PropsWithChildren> = ({ children }) => {
     cryptoWaitReady().then(() => setLoading(false));
   }, []);
 
+  if (loading) {
+    return null;
+  }
+
   return (
     <GlobalStateProvider>
-      {loading ? (
-        <LoadingScreen />
-      ) : (
-        <TelegramProvider>
-          <ChainRegistry>
-            <ExtrinsicProvider>
-              <BalanceProvider>{children}</BalanceProvider>
-            </ExtrinsicProvider>
-          </ChainRegistry>
-        </TelegramProvider>
-      )}
+      <TelegramProvider>
+        <ChainRegistry>
+          <ExtrinsicProvider>
+            <BalanceProvider>{children}</BalanceProvider>
+          </ExtrinsicProvider>
+        </ChainRegistry>
+      </TelegramProvider>
     </GlobalStateProvider>
   );
 };
@@ -96,9 +94,7 @@ export default function App() {
         setPublicKey(wallet?.publicKey);
         navigate($path('/dashboard'), { replace: true });
       })
-      .catch(e => {
-        setError(e instanceof Error ? e.toString() : 'Unknown error');
-      });
+      .catch(e => setError(e?.toString?.()));
   }, []);
 
   if (error) {
