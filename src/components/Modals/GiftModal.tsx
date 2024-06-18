@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+// TODO replace with LottiePlayer
 import Lottie from 'react-lottie-player';
 
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';

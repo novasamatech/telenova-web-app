@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Player, type PlayerEvent } from '@lottiefiles/react-lottie-player';
+import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
 import { type WebApp } from '@twa-dev/types';
 
 import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
@@ -11,7 +11,7 @@ import { useMainButton } from '@/common/telegram/useMainButton';
 import { type TrasferAsset } from '@/common/types';
 import { backupGifts } from '@/common/utils/gift';
 import { createGiftWallet } from '@/common/wallet';
-import { GiftDetails, HeadlineText } from '@/components';
+import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 
 export default function CreateGiftPage() {
   const { BackButton, webApp } = useTelegram();
@@ -52,7 +52,7 @@ export default function CreateGiftPage() {
 
   return (
     <div className="grid items-end justify-center h-[93vh]">
-      <Player
+      <LottiePlayer
         src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
         keepLastFrame
         autoplay

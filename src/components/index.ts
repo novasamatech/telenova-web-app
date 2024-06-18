@@ -10,6 +10,7 @@ import { Icon, IconButton } from './Icon';
 import Identicon from './Identicon/Identicon';
 import LinkCard from './LinkCard/LinkCard';
 import { LoadingScreen } from './LoadingScreen/LoadingScreen';
+import { LottiePlayer } from './LottiePlayer/LottiePlayer';
 import GiftModal from './Modals/GiftModal';
 import ResetPasswordModal from './Modals/ResetModal/ResetPasswordModal';
 import PasswordForm from './PasswordForm/PasswordForm';
@@ -62,4 +63,5 @@ export {
   LoadingScreen,
   ErrorScreen,
   Input,
+  LottiePlayer,
 };

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Player, type PlayerEvent } from '@lottiefiles/react-lottie-player';
+import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
 import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { completeOnboarding } from '@/common/telegram';
 import { useMainButton } from '@/common/telegram/useMainButton';
+import { LottiePlayer } from '@/components';
 import { BodyText, HeadlineText, TitleText } from '@/components/Typography';
 
 export default function CreateWalletPage() {
@@ -52,7 +53,7 @@ export default function CreateWalletPage() {
 
   return (
     <div className="flex flex-col justify-center items-center h-[95vh]">
-      <Player
+      <LottiePlayer
         src="/gifs/create-wallet.json"
         keepLastFrame
         autoplay
