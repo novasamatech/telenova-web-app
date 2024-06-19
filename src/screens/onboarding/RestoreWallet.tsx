@@ -6,7 +6,8 @@ import { useTelegram, useGlobalContext } from '@common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { BodyText, TitleText, ResetPasswordModal } from '@/components';
 import { Paths } from '@/common/routing';
-import { createWallet, initializeWalletFromCloud } from '@/common/wallet';
+import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
+import { BACKUP_DATE } from '@/common/utils';
 
 type Props = {
   mnemonic: string;
@@ -38,6 +39,9 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
       const wallet = createWallet(decryptedMnemonic);
       setIsPasswordValid(Boolean(wallet));
       if (wallet) {
+        getCloudStorageItem(BACKUP_DATE).then((value) => {
+          value && localStorage.setItem(getStoreName(BACKUP_DATE), value);
+        });
         setPublicKey(wallet?.publicKey);
         navigate(Paths.DASHBOARD);
         hideMainButton();
