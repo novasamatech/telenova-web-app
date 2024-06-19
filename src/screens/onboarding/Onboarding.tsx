@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
-import { BACKUP_DATE, MNEMONIC_STORE } from '@/common/utils/constants';
-import { getStoreName } from '@/common/wallet';
+import { useTelegram } from '@/common/providers';
+import { MNEMONIC_STORE } from '@/common/utils/constants';
+import { getCloudStorageItem } from '@/common/wallet';
 import { LoadingScreen } from '@/components';
 import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
 
@@ -12,10 +12,9 @@ export default function OnboardingPage() {
   const [mnemonic, setMnenonic] = useState<string | null>(null);
 
   useEffect(() => {
-    webApp?.CloudStorage.getItems([MNEMONIC_STORE, BACKUP_DATE], (_err, value) => {
+    getCloudStorageItem(MNEMONIC_STORE).then(value => {
       if (!value) return;
-      setMnenonic(value[MNEMONIC_STORE]);
-      localStorage.setItem(getStoreName(BACKUP_DATE), value[BACKUP_DATE]);
+      setMnenonic(value);
     });
 
     // to avoid blinking
