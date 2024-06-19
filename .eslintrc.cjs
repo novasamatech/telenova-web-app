@@ -8,7 +8,6 @@ const localesDir = './src/common/utils/locales';
 const enLocalePath = path.resolve(localesDir, 'en.json');
 
 /**
- *
  * @type {import('eslint').Linter.Config}
  */
 module.exports = {

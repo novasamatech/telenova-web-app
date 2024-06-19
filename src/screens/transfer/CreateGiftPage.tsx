@@ -21,6 +21,7 @@ export default function CreateGiftPage() {
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
+  // TODO refactor
   useEffect(() => {
     if (!selectedAsset) {
       return;
