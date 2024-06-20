@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Player, PlayerEvent } from '@lottiefiles/react-lottie-player';
+
+import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
+import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
+import { completeOnboarding } from '@/common/telegram';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { completeOnboarding } from '@common/telegram';
+import { LottiePlayer } from '@/components';
 import { BodyText, HeadlineText, TitleText } from '@/components/Typography';
-import { Paths } from '@/common/routing';
 
 export default function CreateWalletPage() {
   const navigate = useNavigate();
@@ -43,7 +45,7 @@ export default function CreateWalletPage() {
     if (event === 'complete') {
       setIsLoading(false);
       addMainButton(() => {
-        navigate(Paths.DASHBOARD);
+        navigate($path('/dashboard'));
       }, 'Get started');
       mainButton.hideProgress();
     }
@@ -51,12 +53,12 @@ export default function CreateWalletPage() {
 
   return (
     <div className="flex flex-col justify-center items-center h-[95vh]">
-      <Player
+      <LottiePlayer
         src="/gifs/create-wallet.json"
         keepLastFrame
         autoplay
         className="player w-[256px] h-[256px] mb-4"
-        onEvent={(event) => handleOnEvent(event)}
+        onEvent={event => handleOnEvent(event)}
       />
       <div className="h-[150px]">
         {isLoading ? (

@@ -1,4 +1,5 @@
 import { useGlobalContext } from '@/common/providers/contextProvider';
+
 import AssetBalance from './AssetBalance';
 
 const AssetsList = () => {
@@ -6,7 +7,7 @@ const AssetsList = () => {
 
   return (
     <div className="flex flex-col gap-6 mt-4">
-      {assets.map((asset) => (
+      {assets.map(asset => (
         <AssetBalance
           className="m-1"
           asset={asset.asset}

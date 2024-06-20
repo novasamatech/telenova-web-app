@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { MainButton } from '@twa-dev/types';
+
+import { type MainButton } from '@twa-dev/types';
 
 export const useMainButton = () => {
   const mainButtonEvent = useRef<VoidFunction | null>(null);

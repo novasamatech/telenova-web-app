@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { $path } from 'remix-routes';
+
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { Paths } from '@/common/routing';
-import { BodyText, LinkCard, TitleText } from '@/components';
 import { BACKUP_DATE } from '@/common/utils/constants';
 import { getStoreName } from '@/common/wallet';
+import { BodyText, LinkCard, TitleText } from '@/components';
 
 export default function SettingsBackupPage() {
   const { BackButton } = useTelegram();
@@ -17,7 +18,7 @@ export default function SettingsBackupPage() {
   useEffect(() => {
     hideMainButton();
     BackButton?.show();
-    const callback = () => navigate(Paths.SETTINGS);
+    const callback = () => navigate($path('/settings'));
     BackButton?.onClick(callback);
     const storeDate = localStorage.getItem(getStoreName(BACKUP_DATE));
     const date = storeDate ? new Date(+storeDate).toUTCString() : '';
@@ -36,7 +37,7 @@ export default function SettingsBackupPage() {
         and never share it with anyone!
       </BodyText>
       <LinkCard
-        href={Paths.SETTINGS_CHANGE_PASSWORD}
+        href={$path('/settings/change-password')}
         className="grid-cols-[1fr,auto]"
         text="Change Password"
         showArrow
@@ -47,7 +48,7 @@ export default function SettingsBackupPage() {
         You can manually write down your recovery phrase to be sure that everything is safe
       </BodyText>
       <LinkCard
-        href={Paths.SETTINGS_RECOVERY}
+        href={$path('/settings/recovery')}
         className="grid-cols-[1fr,auto]"
         text="Reveal Recovery Phrase"
         showArrow

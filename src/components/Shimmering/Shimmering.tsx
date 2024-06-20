@@ -1,5 +1,7 @@
 import { cnTw } from '@/common/utils/twMerge';
 
+import './Shimmering.css';
+
 type Props = {
   width?: number;
   height?: number;

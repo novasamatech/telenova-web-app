@@ -1,7 +1,8 @@
-import { Address, ChainId } from '@common/types';
-
 import { useExtrinsicService } from '../extrinsicService/ExtrinsicService';
-import { GetExistentialDeposit, GetExistentialDepositStatemine } from './types';
+
+import { type Address, type ChainId } from '@/common/types';
+
+import { type GetExistentialDeposit, type GetExistentialDepositStatemine } from './types';
 
 interface ExtrinsicService {
   getExistentialDeposit: GetExistentialDeposit;

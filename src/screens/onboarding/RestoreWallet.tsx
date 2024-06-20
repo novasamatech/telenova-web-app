@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Button, Input } from '@nextui-org/react';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
+import { Avatar, Button, Input } from '@nextui-org/react';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { BodyText, TitleText, ResetPasswordModal } from '@/components';
-import { Paths } from '@/common/routing';
-import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
 import { BACKUP_DATE } from '@/common/utils';
+import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
+import { BodyText, ResetPasswordModal, TitleText } from '@/components';
 
 type Props = {
   mnemonic: string;
@@ -39,11 +40,11 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
       const wallet = createWallet(decryptedMnemonic);
       setIsPasswordValid(Boolean(wallet));
       if (wallet) {
-        getCloudStorageItem(BACKUP_DATE).then((value) => {
+        getCloudStorageItem(BACKUP_DATE).then(value => {
           value && localStorage.setItem(getStoreName(BACKUP_DATE), value);
         });
         setPublicKey(wallet?.publicKey);
-        navigate(Paths.DASHBOARD);
+        navigate($path('/dashboard'));
         hideMainButton();
       }
     };
@@ -93,13 +94,6 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
           placeholder="Enter Password Here"
           type="password"
           className="max-w-sm text-left"
-          classNames={{
-            inputWrapper: [
-              'bg-bg-input border-1 shadow-none',
-              'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-            ],
-            clearButton: ['text-text-hint'],
-          }}
           value={password}
           isInvalid={!isPasswordValid}
           errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}

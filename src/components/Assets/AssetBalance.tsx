@@ -1,14 +1,14 @@
+import { type IconNames } from '../Icon/types';
+
+import { type Asset } from '@/common/chainRegistry/types';
 import { cnTw } from '@/common/utils/twMerge';
-import { MediumTitle, Icon, TokenPrice } from '@/components';
-import { PriceItem } from '@/common/types';
-import { Asset } from '@/common/chainRegistry/types';
-import { IconNames } from '../Icon/types';
+import { Icon, MediumTitle, TokenPrice } from '@/components';
+
 import Balance from './Balance';
 
 type Props = {
   asset: Asset;
   balance?: string;
-  price?: PriceItem;
   name?: string;
   className?: string;
   showPrice?: boolean;
@@ -27,7 +27,7 @@ const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow, a
         <Balance balance={balance} precision={precision} animate={animate} />
         {showArrow && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
       </MediumTitle>
-      {showPrice && <TokenPrice priceId={priceId} balance={balance} precision={precision} />}
+      {showPrice && <TokenPrice priceId={priceId} precision={precision} />}
     </div>
   );
 };

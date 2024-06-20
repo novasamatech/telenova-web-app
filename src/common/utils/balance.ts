@@ -1,9 +1,9 @@
-import BigNumber from 'bignumber.js';
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { AssetAccount, AssetPrice, ChainAssetAccount, ChainAssetId } from '../types';
-import { Chain } from '../chainRegistry/types';
-import { IAssetBalance } from '../balances/types';
+import BigNumber from 'bignumber.js';
+
+import { type IAssetBalance } from '../balances/types';
+import { type AssetAccount, type AssetPrice, type ChainAssetAccount, type ChainAssetId } from '../types';
 
 import { ZERO_BALANCE } from './constants';
 
@@ -80,9 +80,9 @@ export const formatBalance = (balance = '0', precision = 0): FormattedBalance =>
   };
 };
 
-export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, balance: IAssetBalance) => {
-  return prevAssets.map((asset) =>
-    asset?.chainId === chain.chainId
+export const updateAssetsBalance = (prevAssets: AssetAccount[], chainId: string, balance: IAssetBalance) => {
+  return prevAssets.map(asset =>
+    asset?.chainId === chainId
       ? {
           ...asset,
           totalBalance: balance.total().toString(),
@@ -93,7 +93,9 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chain: Chain, ba
 };
 
 export const formatAmount = (rawAmount: string, precision: number): string => {
-  if (!rawAmount) return ZERO_BALANCE;
+  if (!rawAmount) {
+    return ZERO_BALANCE;
+  }
 
   const amount = (+rawAmount).toString();
   const isDecimalValue = amount.match(/^(\d+)\.(\d+)$/);
@@ -113,10 +115,14 @@ export const formatAmount = (rawAmount: string, precision: number): string => {
 };
 
 export const getTotalBalance = (assets: AssetAccount[], assetsPrices: AssetPrice | null) => {
-  if (!assets.length || !assetsPrices) return;
+  if (!assets.length || !assetsPrices) {
+    return;
+  }
 
   return assets.reduce((acc, asset) => {
-    if (!asset.asset.priceId) return acc;
+    if (!asset.asset.priceId) {
+      return acc;
+    }
 
     const price = assetsPrices[asset.asset.priceId].price || 0;
     const formatedBalance = Number(formatBalance(asset.totalBalance, asset.asset.precision).formattedValue);

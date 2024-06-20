@@ -1,5 +1,5 @@
 import { Identicon as PolkadotIdenticon } from '@polkadot/react-identicon';
-import { IconTheme } from '@polkadot/react-identicon/types';
+import { type IconTheme } from '@polkadot/react-identicon/types';
 
 import { cnTw } from '@/common/utils/twMerge';
 

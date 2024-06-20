@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { Modal, ModalContent } from '@nextui-org/react';
+import { $path } from 'remix-routes';
 
 import { resetWallet } from '@/common/wallet';
-import { Paths } from '@/common/routing';
-import ResetPassword from './ResetPassword';
+
 import BackupDeleted from './BackupDeleted';
+import ResetPassword from './ResetPassword';
 
 const enum Step {
   INIT,
@@ -21,7 +23,9 @@ export default function ResetPasswordModal({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
   const [step, setStep] = useState(Step.INIT);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const handleSubmit = () => {
     resetWallet();
@@ -31,7 +35,7 @@ export default function ResetPasswordModal({ isOpen, onClose }: Props) {
   const handleClose = () => {
     onClose();
     if (step === Step.BACKUP_DELETED) {
-      navigate(Paths.ONBOARDING_START);
+      navigate($path('/onboarding/start'));
     }
   };
 

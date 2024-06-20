@@ -1,5 +1,8 @@
-import type { Asset } from '@common/chainRegistry';
-import { AssetType } from '../types';
+import { encodeAddress } from '@polkadot/util-crypto';
+
+import { type AssetAccount, AssetType, type PublicKey } from '../types';
+
+import { type Asset, type Chain } from '@/common/chainRegistry';
 
 export const getAssetId = (asset: Asset): string => {
   if (asset.type === AssetType.STATEMINE) {
@@ -10,7 +13,9 @@ export const getAssetId = (asset: Asset): string => {
 };
 
 export const isStatemineAsset = (type?: string) => {
-  if (!type) return false;
+  if (!type) {
+    return false;
+  }
 
   return type === AssetType.STATEMINE;
 };
@@ -23,8 +28,26 @@ export const sortingAssets = (first: Asset, second: Asset) => {
   const isFirstPolkadotOrUSDT = isPolkadotOrUSDT(first.symbol);
   const isSecondPolkadotOrUSDT = isPolkadotOrUSDT(second.symbol);
 
-  if (isFirstPolkadotOrUSDT && !isSecondPolkadotOrUSDT) return -1;
-  if (!isFirstPolkadotOrUSDT && isSecondPolkadotOrUSDT) return 1;
+  if (isFirstPolkadotOrUSDT && !isSecondPolkadotOrUSDT) {
+    return -1;
+  }
+  if (!isFirstPolkadotOrUSDT && isSecondPolkadotOrUSDT) {
+    return 1;
+  }
 
   return first.symbol.localeCompare(second.symbol);
 };
+
+export const mapAssetAccountsFromChains = (chains: Chain[], publicKey: PublicKey): AssetAccount[] =>
+  chains
+    .flatMap(chain =>
+      chain.assets.map(asset => ({
+        chainId: chain.chainId,
+        publicKey: publicKey,
+        chainName: chain.name,
+        asset: asset,
+        addressPrefix: chain.addressPrefix,
+        address: encodeAddress(publicKey, chain.addressPrefix),
+      })),
+    )
+    .sort((a, b) => sortingAssets(a.asset, b.asset));

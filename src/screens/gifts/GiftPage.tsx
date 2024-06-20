@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { Paths } from '@/common/routing';
-import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
-import { getGifts } from '@/common/utils/gift';
-import { Gift } from '@/common/types';
+import { $path } from 'remix-routes';
+
+import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
+import { type Gift } from '@/common/types';
+import { getGifts } from '@/common/utils/gift';
 import { useGifts } from '@/common/utils/hooks/useGifts';
+import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
 
 export default function GiftPage() {
   const navigate = useNavigate();
@@ -24,12 +25,14 @@ export default function GiftPage() {
     hideMainButton();
 
     const callback = () => {
-      navigate(Paths.DASHBOARD);
+      navigate($path('/dashboard'));
     };
     BackButton?.onClick(callback);
 
     const mapGifts = getGifts();
-    if (!mapGifts) return;
+    if (!mapGifts) {
+      return;
+    }
 
     (async function () {
       await getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
@@ -56,10 +59,10 @@ export default function GiftPage() {
       {loading ? (
         <Shimmering width={350} height={92} />
       ) : unclaimedGifts.length ? (
-        unclaimedGifts.map((gift) => (
+        unclaimedGifts.map(gift => (
           <Link
             to={{
-              pathname: `${Paths.GIFT_DETAILS}`,
+              pathname: $path('/gifts/details'),
               search: `?seed=${gift.secret}&symbol=${gift.chainAsset?.symbol}&balance=${gift.balance}`,
             }}
             key={gift.timestamp}
@@ -79,7 +82,7 @@ export default function GiftPage() {
       {loading ? (
         <Shimmering width={350} height={92} />
       ) : claimedGifts.length ? (
-        claimedGifts.map((gift) => <GiftPlate gift={gift} key={gift.timestamp} isClaimed={true} />)
+        claimedGifts.map(gift => <GiftPlate gift={gift} key={gift.timestamp} isClaimed={true} />)
       ) : (
         <div className="w-full bg-bg-input h-[92px] rounded-2xl flex justify-center items-center">
           <HelpText className="text-text-hint">No claimed gifts</HelpText>

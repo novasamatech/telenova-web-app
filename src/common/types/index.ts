@@ -1,4 +1,5 @@
-import { Asset } from './../chainRegistry/types/index';
+import { type Asset } from './../chainRegistry/types/index';
+
 export type HexString = `0x${string}`;
 
 export type ChainId = HexString;

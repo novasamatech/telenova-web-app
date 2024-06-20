@@ -1,4 +1,4 @@
-import { Address, HexString } from '@common/types';
+import { type Address, type HexString } from '@/common/types';
 
 export type Wallet = {
   publicKey: HexString;

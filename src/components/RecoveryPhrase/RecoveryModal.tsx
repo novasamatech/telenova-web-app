@@ -1,17 +1,19 @@
 import { useState } from 'react';
+
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Checkbox,
   CheckboxGroup,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
 } from '@nextui-org/react';
 
-import { Icon, BodyText, BigTitle } from '@/components';
-import { IconNames } from '../Icon/types';
+import { type IconNames } from '../Icon/types';
+
+import { BigTitle, BodyText, Icon } from '@/components';
 
 type Props = {
   isOpen: boolean;

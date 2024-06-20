@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Input } from '@nextui-org/react';
+import React, { useEffect, useState } from 'react';
 
-import { BodyText } from '@/components/Typography';
 import { cnTw } from '@/common/utils/twMerge';
+import { BodyText, Input } from '@/components';
 
 interface PasswordFormProps {
   onSubmit: (password: string) => void;
 }
+
 type Variants = 'error' | 'success' | 'default';
 const VariantStyles: Record<Variants, string> = {
   success: 'text-text-positive',
@@ -23,7 +23,9 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
   const [hintColor, setHintColor] = useState<Variants>('default');
 
   useEffect(() => {
-    if (password.length === 0 || !isPasswordValid || password !== confirmPassword) return;
+    if (password.length === 0 || !isPasswordValid || password !== confirmPassword) {
+      return;
+    }
     onSubmit(password);
   }, [password, confirmPassword, isPasswordValid, isConfirmPasswordValid]);
 
@@ -64,14 +66,6 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         variant="flat"
         placeholder="Enter Password Here"
         type="password"
-        classNames={{
-          inputWrapper: [
-            'bg-bg-input border-1 shadow-none',
-            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-            !isPasswordValid && 'border-border-danger',
-          ],
-          clearButton: ['text-text-hint'],
-        }}
         className="max-w-sm text-left"
         value={password}
         isInvalid={!isPasswordValid}
@@ -85,14 +79,6 @@ export default function PasswordForm({ onSubmit }: PasswordFormProps) {
         variant="flat"
         placeholder="Confirm Password"
         type="password"
-        classNames={{
-          inputWrapper: [
-            'bg-bg-input border-1 shadow-none',
-            'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
-            !isConfirmPasswordValid && 'border-border-danger',
-          ],
-          clearButton: ['text-text-hint'],
-        }}
         className="max-w-sm text-left"
         value={confirmPassword}
         isInvalid={!isConfirmPasswordValid}

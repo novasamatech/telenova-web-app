@@ -1,9 +1,10 @@
+import { type KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { KeyringPair } from '@polkadot/keyring/types';
 
+import { type ChainAsset } from '../chainRegistry/types';
+import { type ChainId, type PersistentGift, type PublicKey, type TrasferAsset } from '../types';
 import { getKeyringPairFromSeed, getStoreName } from '../wallet';
-import { ChainId, PersistentGift, PublicKey, TrasferAsset } from '../types';
-import { ChainAsset } from '../chainRegistry/types';
+
 import { GIFT_STORE } from './constants';
 
 export const backupGifts = (address: string, secret: string, selectedAsset: TrasferAsset): void => {
@@ -23,7 +24,9 @@ export const backupGifts = (address: string, secret: string, selectedAsset: Tras
 
 export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
   const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
-  if (!gifts) return null;
+  if (!gifts) {
+    return null;
+  }
 
   const map = new Map();
   gifts.forEach((gift: PersistentGift) => {

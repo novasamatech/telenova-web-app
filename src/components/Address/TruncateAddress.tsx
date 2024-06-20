@@ -1,5 +1,6 @@
 // @ts-expect-error no types
 import MiddleEllipsis from 'react-middle-ellipsis';
+
 import { TextBase } from '@/components';
 
 type Props = {

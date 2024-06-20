@@ -1,17 +1,19 @@
 import { useRef, useState } from 'react';
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { ProviderInterface } from '@polkadot/rpc-provider/types';
 
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { type ProviderInterface } from '@polkadot/rpc-provider/types';
+
+import { type ChainId, type StateResolution } from '@/common/types';
+
+import { createCachedProvider } from './CachedMetadataConnection';
 import {
-  ConnectionRequest,
-  ConnectionState,
+  type Connection,
+  type ConnectionRequest,
+  type ConnectionState,
   ConnectionStatus,
-  Connection,
-  IChainConnectionService,
-  RpcNode,
-  createCachedProvider,
-} from '@common/chainRegistry';
-import { ChainId, StateResolution } from '@common/types';
+  type IChainConnectionService,
+  type RpcNode,
+} from './types';
 
 const CONNECTION_RETRY_DELAY = 2000;
 
@@ -90,7 +92,7 @@ export const useConnections = (): IChainConnectionService => {
     console.info(`🔶 Connecting ==> ${chainId}`);
 
     const provider = createWebsocketProvider(
-      nodes.map((node) => node.url),
+      nodes.map(node => node.url),
       chainId,
     );
 
@@ -186,7 +188,7 @@ export const useConnections = (): IChainConnectionService => {
 
     const connection = state.connection;
 
-    promises.forEach((promise) => {
+    promises.forEach(promise => {
       if (connection) {
         promise.resolve(connection);
       } else {
@@ -196,7 +198,7 @@ export const useConnections = (): IChainConnectionService => {
   };
 
   const updateConnectionState = (chainId: ChainId, updates: Partial<ConnectionState>) => {
-    setConnectionStates((currentStates) => {
+    setConnectionStates(currentStates => {
       const currentState = currentStates[chainId];
 
       if (currentState) {

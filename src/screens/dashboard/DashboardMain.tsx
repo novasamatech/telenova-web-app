@@ -1,86 +1,109 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { encodeAddress } from '@polkadot/util-crypto';
-import { Avatar, Button } from '@nextui-org/react';
 
-import { useMainButton } from '@/common/telegram/useMainButton';
+import { Avatar, Button, Divider } from '@nextui-org/react';
+import { $path } from 'remix-routes';
+
+import { useBalances } from '@/common/balances';
+import { type Chain, useChainRegistry } from '@/common/chainRegistry';
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { useBalances, IAssetBalance } from '@common/balances';
-import { useChainRegistry } from '@common/chainRegistry';
-import { getMnemonic, resetWallet } from '@common/wallet';
-import { ChainAssetAccount } from '@common/types';
-import { Paths } from '@/common/routing';
-import { sortingAssets, getPrice, getTotalBalance, updateAssetsBalance } from '@/common/utils';
+import { useMainButton } from '@/common/telegram/useMainButton';
+import { getPrice, getTotalBalance, mapAssetAccountsFromChains, updateAssetsBalance } from '@/common/utils';
+import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
-  MediumTitle,
   AssetsList,
-  Plate,
-  Price,
+  CreatedGiftPlate,
+  GiftModal,
+  HeadlineText,
+  Icon,
   IconButton,
   LargeTitleText,
-  GiftModal,
-  CreatedGiftPlate,
-  HeadlineText,
+  MediumTitle,
+  Plate,
+  Price,
+  TextBase,
   TitleText,
-  Icon,
 } from '@/components';
 
 export const DashboardMain = () => {
   const navigate = useNavigate();
   const { getAllChains } = useChainRegistry();
-  const { subscribeBalance } = useBalances();
+  const { subscribeBalance, unsubscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
   const { user, BackButton } = useTelegram();
   const { hideMainButton } = useMainButton();
 
+  const [chains, setChains] = useState<Chain[]>([]);
+
   function clearWallet(clearLocal?: boolean) {
     resetWallet(clearLocal);
-    navigate(Paths.ONBOARDING);
+    navigate($path('/onboarding'));
   }
 
+  // Managing telegram buttons
   useEffect(() => {
     hideMainButton();
     BackButton?.hide();
+  }, []);
+
+  // Fetching chains
+  useEffect(() => {
     if (!getMnemonic()) {
       clearWallet(true);
 
       return;
     }
-    if (!publicKey) return;
 
-    (async () => {
-      const chains = await getAllChains();
-      console.info(`Found all ${chains.length} chains`);
-
-      for (const chain of chains) {
-        const account: ChainAssetAccount = {
-          chainId: chain.chainId,
-          publicKey: publicKey,
-          chainName: chain.name,
-          asset: chain.assets[0],
-          addressPrefix: chain.addressPrefix,
-        };
-        const address = encodeAddress(publicKey, chain.addressPrefix);
-
-        if (!assets.length) {
-          setAssets((prevAssets) => [...prevAssets, { ...account, address }]);
-        }
-
-        subscribeBalance(account, (balance: IAssetBalance) => {
-          console.info(`${address} ${chain.name} => balance: ${balance.total()}`);
-          setAssets((prevAssets) => updateAssetsBalance(prevAssets, chain, balance));
-        });
+    let mounted = true;
+    getAllChains().then(chains => {
+      if (mounted) {
+        console.info(`Found all ${chains.length} chains`);
+        setChains(chains);
       }
+    });
 
-      if (!assetsPrices) {
-        const ids = chains.map((i) => i.assets[0].priceId);
-        const prices = await getPrice(ids);
-        setAssetsPrices(prices);
-      }
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-      setAssets((prevAssets) => prevAssets.sort((a, b) => sortingAssets(a.asset, b.asset)));
-    })();
-  }, [publicKey]);
+  // Mapping assets
+  useEffect(() => {
+    if (publicKey) {
+      setAssets(mapAssetAccountsFromChains(chains, publicKey));
+    }
+  }, [chains, publicKey]);
+
+  // Subscribing balances
+  useEffect(() => {
+    if (publicKey) {
+      const assets = mapAssetAccountsFromChains(chains, publicKey);
+      const unsubscribeIds = assets.map(asset =>
+        subscribeBalance(asset, balance => {
+          setAssets(prevAssets => updateAssetsBalance(prevAssets, asset.chainId, balance));
+        }),
+      );
+
+      return () => unsubscribeIds.forEach(unsubscribeBalance);
+    }
+
+    return undefined;
+  }, [chains, publicKey]);
+
+  // Fetching prices
+  useEffect(() => {
+    if (chains.length) {
+      const abortController = new AbortController();
+      getPrice({
+        ids: chains.flatMap(i => i.assets.map(a => a.priceId)).filter((x): x is string => !!x),
+        abortSignal: abortController.signal,
+      }).then(setAssetsPrices);
+
+      return () => abortController.abort();
+    }
+
+    return undefined;
+  }, [chains]);
 
   return (
     <div className="flex flex-col break-words">
@@ -88,7 +111,7 @@ export const DashboardMain = () => {
         <Avatar
           src={user?.photo_url}
           className="w-10 h-10"
-          name={user?.first_name[0]}
+          name={user?.first_name.charAt(0)}
           classNames={{
             base: 'bg-[--tg-theme-button-color]',
             name: 'font-manrope font-black text-base text-white',
@@ -98,7 +121,7 @@ export const DashboardMain = () => {
         <Button
           isIconOnly
           className="bg-transparent overflow-visible drop-shadow-button"
-          onClick={() => navigate(Paths.SETTINGS)}
+          onClick={() => navigate($path('/settings'))}
         >
           <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
         </Button>
@@ -109,9 +132,9 @@ export const DashboardMain = () => {
           <Price amount={getTotalBalance(assets, assetsPrices)} decimalSize={32} />
         </LargeTitleText>
         <div className="grid grid-cols-3 w-full mt-7 gap-2">
-          <IconButton text="Send" iconName="Send" onClick={() => navigate(Paths.TRANSFER)} />
-          <IconButton text="Receive" iconName="Receive" onClick={() => navigate(Paths.RECEIVE_SELECT_TOKEN)} />
-          <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate(Paths.EXCHANGE)} />
+          <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
+          <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/select-token'))} />
+          <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate($path('/exchange'))} />
         </div>
       </div>
       <CreatedGiftPlate />
@@ -121,15 +144,17 @@ export const DashboardMain = () => {
       </Plate>
       <GiftModal />
 
-      {process.env.NODE_ENV === 'development' && (
-        <>
-          <button className="btn btn-blue mt-4" onClick={() => clearWallet()}>
+      {import.meta.env.DEV && (
+        <div className="p-4 flex flex-col gap-2 justify-center bg-warning rounded-lg">
+          <TextBase className="text-amber-50">DEV MODE</TextBase>
+          <Divider className="bg-amber-200" />
+          <Button variant="faded" onClick={() => clearWallet()}>
             Reset Wallet
-          </button>
-          <button className="btn btn-blue mt-4" onClick={() => clearWallet(true)}>
+          </Button>
+          <Button variant="faded" onClick={() => clearWallet(true)}>
             Reset Wallet Local
-          </button>
-        </>
+          </Button>
+        </div>
       )}
     </div>
   );

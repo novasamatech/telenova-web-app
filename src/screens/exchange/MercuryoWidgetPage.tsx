@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { Paths } from '@/common/routing';
-import { handleWidget } from '@/common/utils/exchange';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
 import { useMainButton } from '@/common/telegram/useMainButton';
+import { handleWidget } from '@/common/utils/exchange';
 import { MediumTitle } from '@/components/Typography';
 
 export default function MercuryoWidgetPage() {
@@ -17,9 +18,11 @@ export default function MercuryoWidgetPage() {
 
   useEffect(() => {
     BackButton?.show();
-    const callback = () => navigate(Paths.EXCHANGE_SELECT);
+    const callback = () => navigate($path('/exchange/select'));
     BackButton?.onClick(callback);
-    if (!selectedAsset || isOpenInWeb(webApp!.platform)) return;
+    if (!selectedAsset || isOpenInWeb(webApp!.platform)) {
+      return;
+    }
 
     handleWidget(selectedAsset, handleStatus, handleSell);
 
@@ -30,7 +33,7 @@ export default function MercuryoWidgetPage() {
   useEffect(() => {
     if (isSendBtnVisible) {
       addMainButton(() => {
-        navigate(Paths.TRANSFER_AMOUNT);
+        navigate($path('/transfer/amount'));
       }, `Send ${selectedAsset?.asset?.symbol} to sell`);
     }
 
@@ -41,13 +44,13 @@ export default function MercuryoWidgetPage() {
 
   const handleStatus = (data: any) => {
     if (data.status === 'paid' || data.status === 'new') {
-      BackButton?.onClick(() => navigate(Paths.DASHBOARD));
+      BackButton?.onClick(() => navigate($path('/dashboard')));
     }
   };
 
   const handleSell = (data: any) => {
     setIsSendBtnVisible(true);
-    setSelectedAsset((prev) => ({ ...prev, destinationAddress: data.address, amount: data.amount }));
+    setSelectedAsset(prev => ({ ...prev, destinationAddress: data.address, amount: data.amount }));
   };
 
   return (

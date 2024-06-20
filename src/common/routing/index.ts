@@ -1,1 +1,0 @@
-export { Paths } from './paths';

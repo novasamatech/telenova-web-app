@@ -1,4 +1,7 @@
-import AllIcons, { IconNames } from './types';
+import { type ComponentType, type FC, type SVGAttributes } from 'react';
+
+import AllIcons, { type IconNames } from './types';
+
 type Props = {
   name: IconNames;
   size?: number;
@@ -6,8 +9,8 @@ type Props = {
   alt?: string;
 };
 
-const Icon = ({ name, size = 24, className }: Props) => {
-  const IconComponent = AllIcons[name];
+const Icon: FC<Props> = ({ name, size = 24, className }) => {
+  const IconComponent = AllIcons[name] as unknown as ComponentType<SVGAttributes<unknown>>;
 
   if (!IconComponent) {
     console.warn(`Icon "${name}" doesn't exist`);

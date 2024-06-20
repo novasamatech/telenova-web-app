@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { Divider, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { Paths } from '@/common/routing';
 import { openLink } from '@/common/telegram';
 import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/components';
 
@@ -15,7 +16,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     BackButton?.show();
-    const callback = () => navigate(Paths.DASHBOARD);
+    const callback = () => navigate($path('/dashboard'));
     BackButton?.onClick(callback);
 
     return () => {
@@ -32,7 +33,13 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col items-center gap-4 min-h-[95vh]">
-      <LinkCard text="Manage Backup" iconName="Backup" iconClassName="w-6 h-6" showArrow href={Paths.SETTINGS_BACKUP} />
+      <LinkCard
+        text="Manage Backup"
+        iconName="Backup"
+        iconClassName="w-6 h-6"
+        showArrow
+        href={$path('/settings/backup')}
+      />
       <Plate className="w-full p-0">
         <Popover
           offset={-20}
