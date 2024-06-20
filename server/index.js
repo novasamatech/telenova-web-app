@@ -6,9 +6,6 @@ import { setupStaticController } from './static.js';
 
 const app = express();
 
-setupHealthcheckController(app);
-await setupStaticController(app, process.env.NODE_ENV === 'production');
-
 // Special permission for mercuryo widget
 app.use(
   expressCspHeader({
@@ -19,6 +16,9 @@ app.use(
 );
 
 app.disable('x-powered-by');
+
+setupHealthcheckController(app);
+await setupStaticController(app, process.env.NODE_ENV === 'production');
 
 const port = process.env.PORT || 3000;
 app.listen(port, '0.0.0.0', () => {
