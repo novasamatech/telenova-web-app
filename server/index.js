@@ -33,7 +33,8 @@ if (viteDevServer) {
 const remixHandler = createRequestHandler({
   build: viteDevServer
     ? () => viteDevServer.ssrLoadModule('virtual:remix/server-build')
-    : await import('../build/server/index.js'),
+    : // eslint-disable-next-line import/no-unresolved
+      await import('../build/server/index.js'),
 });
 
 // Special permission for mercuryo widget
