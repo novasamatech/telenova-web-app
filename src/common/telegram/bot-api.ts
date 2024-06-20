@@ -7,12 +7,10 @@ import { type ITelegramBotApi } from './types';
 
 const SUBMIT_WALLET_PATH = 'submit/wallet';
 
-export const getTelegramBotApi = (webApp: WebApp): ITelegramBotApi => {
+export const getTelegramBotApi = (webApp: WebApp, baseUrl: string): ITelegramBotApi => {
   const messageFactory = getMessageFactory(webApp);
 
   async function submitWallet(publicKey: HexString): Promise<void> {
-    const baseUrl = import.meta.env.PUBLIC_BOT_API_URL;
-
     console.info(`API base url ${baseUrl}`);
 
     if (!baseUrl) {

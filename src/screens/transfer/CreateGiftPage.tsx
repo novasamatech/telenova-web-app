@@ -13,7 +13,11 @@ import { backupGifts } from '@/common/utils/gift';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 
-export default function CreateGiftPage() {
+type Props = {
+  botUrl: string;
+};
+
+export default function CreateGiftPage({ botUrl }: Props) {
   const { BackButton, webApp } = useTelegram();
   const { hideMainButton } = useMainButton();
   const { handleSendGift } = useExtrinsic();
@@ -35,7 +39,14 @@ export default function CreateGiftPage() {
       await handleSendGift(selectedAsset as TrasferAsset, wallet.address)
         .then(() => {
           backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
-          setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string, selectedAsset?.amount as string));
+          setLink(
+            createTgLink({
+              botUrl,
+              secret: wallet.secret,
+              symbol: selectedAsset?.asset?.symbol as string,
+              amount: selectedAsset?.amount as string,
+            }),
+          );
         })
         .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
     })();

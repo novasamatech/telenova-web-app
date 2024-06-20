@@ -11,7 +11,11 @@ import { useMainButton } from '@/common/telegram/useMainButton';
 import GiftDetails from '@/components/GiftDetails/GiftDetails';
 import Icon from '@/components/Icon/Icon';
 
-export default function GiftDetailsPage() {
+type Props = {
+  botUrl: string;
+};
+
+export default function GiftDetailsPage({ botUrl }: Props) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { BackButton, webApp } = useTelegram();
@@ -27,11 +31,12 @@ export default function GiftDetailsPage() {
     };
     BackButton?.onClick(callback);
     setLink(
-      createTgLink(
-        searchParams.get('seed') as string,
-        searchParams.get('symbol') as string,
-        searchParams.get('balance') as string,
-      ),
+      createTgLink({
+        secret: searchParams.get('seed') as string,
+        symbol: searchParams.get('symbol') as string,
+        amount: searchParams.get('balance') as string,
+        botUrl: botUrl,
+      }),
     );
 
     return () => {
