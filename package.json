@@ -49,6 +49,7 @@
     "@testing-library/jest-dom": "6.4.6",
     "@testing-library/react": "16.0.0",
     "@twa-dev/types": "7.0.0",
+    "@types/express": "4.17.21",
     "@types/crypto-js": "4.2.2",
     "@types/node": "20.14.1",
     "@types/react": "18.3.3",
