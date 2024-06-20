@@ -10,7 +10,11 @@ import { useMainButton } from '@/common/telegram/useMainButton';
 import { LottiePlayer } from '@/components';
 import { BodyText, HeadlineText, TitleText } from '@/components/Typography';
 
-export default function CreateWalletPage() {
+type Props = {
+  botApiUrl: string;
+};
+
+export default function CreateWalletPage({ botApiUrl }: Props) {
   const navigate = useNavigate();
   const { webApp } = useTelegram();
   const { mainButton, addMainButton, hideMainButton } = useMainButton();
@@ -33,7 +37,7 @@ export default function CreateWalletPage() {
       }
 
       // TODO: Handle errors here and display retry page maybe
-      await completeOnboarding(publicKey, webApp);
+      await completeOnboarding({ publicKey, webApp, baseUrl: botApiUrl });
     })();
 
     return () => {

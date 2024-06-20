@@ -9,7 +9,12 @@ import { useMainButton } from '@/common/telegram/useMainButton';
 import { handleWidget } from '@/common/utils/exchange';
 import { MediumTitle } from '@/components/Typography';
 
-export default function MercuryoWidgetPage() {
+type Props = {
+  mercuryoSecret: string;
+};
+
+export default function MercuryoWidgetPage({ mercuryoSecret }: Props) {
+  const [root, setRoot] = useState<HTMLElement | null>(null);
   const { BackButton, webApp } = useTelegram();
   const navigate = useNavigate();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
@@ -20,16 +25,23 @@ export default function MercuryoWidgetPage() {
     BackButton?.show();
     const callback = () => navigate($path('/exchange/select'));
     BackButton?.onClick(callback);
-    if (!selectedAsset || isOpenInWeb(webApp!.platform)) {
+    if (!selectedAsset || isOpenInWeb(webApp!.platform) || !root) {
       return;
     }
 
-    handleWidget(selectedAsset, handleStatus, handleSell);
+    handleWidget({
+      root,
+      returnPage: $path('/dashboard'),
+      secret: mercuryoSecret,
+      selectedAsset,
+      handleStatus,
+      handleSell,
+    });
 
     return () => {
       BackButton?.offClick(callback);
     };
-  }, []);
+  }, [root]);
   useEffect(() => {
     if (isSendBtnVisible) {
       addMainButton(() => {
@@ -55,7 +67,7 @@ export default function MercuryoWidgetPage() {
 
   return (
     <>
-      <div className="w-full h-[95svh]" id="mercuryo-widget">
+      <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
         {isOpenInWeb(webApp?.platform) && (
           <div>
             <MediumTitle align="center">

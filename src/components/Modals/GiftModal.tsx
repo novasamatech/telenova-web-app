@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-// TODO replace with LottiePlayer
-import Lottie from 'react-lottie-player';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
 
@@ -13,6 +11,9 @@ import { AssetType, type PublicKey } from '@/common/types';
 import { formatAmount, formatBalance, getGiftInfo } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
 import { BigTitle, Icon, Shimmering } from '@/components';
+
+// TODO replace with LottiePlayer
+const LazyLottie = lazy(() => import('react-lottie-player'));
 
 enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -177,15 +178,17 @@ export default function GiftModal() {
               </ModalHeader>
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
-                  <Lottie
-                    path={`/gifs/Gift_claim_${giftSymbol}.json`}
-                    play
-                    className="w-[248px] h-[248px] m-auto"
-                    ref={lottieRef}
-                    loop={false}
-                    onEnterFrame={handleFrame}
-                    onComplete={handleComplete}
-                  />
+                  <Suspense>
+                    <LazyLottie
+                      path={`/gifs/Gift_claim_${giftSymbol}.json`}
+                      play
+                      className="w-[248px] h-[248px] m-auto"
+                      ref={lottieRef}
+                      loop={false}
+                      onEnterFrame={handleFrame}
+                      onComplete={handleComplete}
+                    />
+                  </Suspense>
                 ) : (
                   <Icon name="GiftClaimed" className="w-[248px] h-[248px] m-auto" />
                 )}

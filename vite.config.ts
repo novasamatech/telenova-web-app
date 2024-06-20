@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
       },
     }),
     // remix v2 doesn't disable hmr in test mode, so we simply replace it with react plugin
-    mode === 'test' ? react() : remix({ appDirectory: './src/app', ssr: false }),
+    mode === 'test' ? react() : remix({ appDirectory: './src/app' }),
     remixRoutes({ strict: true }),
     mode === 'production' && compression({ algorithm: 'gzip', compressionOptions: { level: 9 } }),
     mode === 'production' && compression({ algorithm: 'brotliCompress' }),
