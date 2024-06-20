@@ -37,7 +37,7 @@ export default function SettingsBackupPage() {
         and never share it with anyone!
       </BodyText>
       <LinkCard
-        href={$path('/settings/change-password')}
+        href={$path('/settings/password/change')}
         className="grid-cols-[1fr,auto]"
         text="Change Password"
         showArrow

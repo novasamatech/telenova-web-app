@@ -45,7 +45,7 @@ export default function MercuryoWidgetPage({ mercuryoSecret }: Props) {
   useEffect(() => {
     if (isSendBtnVisible) {
       addMainButton(() => {
-        navigate($path('/transfer/amount'));
+        navigate($path('/transfer/direct/amount'));
       }, `Send ${selectedAsset?.asset?.symbol} to sell`);
     }
 

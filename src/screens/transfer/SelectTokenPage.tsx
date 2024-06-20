@@ -29,7 +29,7 @@ export default function SelectTokenPage() {
       <div className="flex flex-col gap-2 mt-4">
         {assets.map(asset => (
           <Link
-            to={selectedAsset?.isGift ? $path('/transfer/amount-gift') : $path('/transfer/address')}
+            to={selectedAsset?.isGift ? $path('/transfer/gift/amount') : $path('/transfer/direct/address')}
             key={asset.chainId}
             onClick={() => setSelectedAsset(prev => (prev ? { isGift: prev.isGift, ...asset } : asset))}
           >

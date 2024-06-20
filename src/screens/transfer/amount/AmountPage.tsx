@@ -18,8 +18,8 @@ export default function AmountPage() {
     maxAmountToSend,
     isAmountValid,
   } = useAmountLogic({
-    prevPage: $path('/transfer/address'),
-    nextPage: $path('/transfer/confirmation'),
+    prevPage: $path('/transfer/direct/address'),
+    nextPage: $path('/transfer/direct/confirmation'),
     mainButtonText: 'Continue',
   });
 

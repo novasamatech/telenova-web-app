@@ -2,7 +2,7 @@ import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type MetaFunction } from '@remix-run/node';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
@@ -53,6 +53,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => (
       <script defer src="https://telegram.org/js/telegram-web-app.js" />
       <script defer src="https://widget.mercuryo.io/embed.2.0.js" />
       <Scripts />
+      <LiveReload />
     </body>
   </html>
 );
