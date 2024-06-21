@@ -26,6 +26,7 @@ export const setupHealthcheckController = app => {
     // TODO use zod schema instead
     const requiredEnvVars = [
       'PUBLIC_WIDGET_SECRET',
+      'PUBLIC_WIDGET_ID',
       'PUBLIC_BOT_ADDRESS',
       'PUBLIC_WEB_APP_ADDRESS',
       'PUBLIC_BOT_API_URL',

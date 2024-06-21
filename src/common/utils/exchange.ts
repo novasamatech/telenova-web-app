@@ -2,10 +2,9 @@ import CryptoJS from 'crypto-js';
 
 import { type TrasferAsset } from '../types';
 
-const WIDGET_ID = 'debffff3-5bdb-46f4-ab0d-efb2245d7494';
-
 type Params = {
   root: HTMLElement;
+  widgetId: string;
   returnPage: string;
   secret: string;
   selectedAsset: Partial<TrasferAsset | null>;
@@ -13,7 +12,15 @@ type Params = {
   handleSell: (data: any) => void;
 };
 
-export const handleWidget = ({ root, secret, returnPage, selectedAsset, handleStatus, handleSell }: Params) => {
+export const handleWidget = ({
+  root,
+  secret,
+  widgetId,
+  returnPage,
+  selectedAsset,
+  handleStatus,
+  handleSell,
+}: Params) => {
   if (!selectedAsset || !selectedAsset.address) {
     return;
   }
@@ -22,7 +29,7 @@ export const handleWidget = ({ root, secret, returnPage, selectedAsset, handleSt
   const returnUrl = new URL(returnPage, window.location.origin).toString();
 
   window.mercuryoWidget.run({
-    widgetId: WIDGET_ID,
+    widgetId,
     host: root,
     returnUrl: returnUrl,
     type: selectedAsset.operationType,
