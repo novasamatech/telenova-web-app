@@ -24,7 +24,12 @@ export const setupHealthcheckController = app => {
     }
 
     // TODO use zod schema instead
-    const requiredEnvVars = ['PUBLIC_WIDGET_SECRET', 'PUBLIC_BOT_ADDRESS', 'PUBLIC_BOT_API_URL'];
+    const requiredEnvVars = [
+      'PUBLIC_WIDGET_SECRET',
+      'PUBLIC_BOT_ADDRESS',
+      'PUBLIC_WEB_APP_ADDRESS',
+      'PUBLIC_BOT_API_URL',
+    ];
     const unsetEnvVars = requiredEnvVars.filter(envVar => typeof process.env[envVar] === 'undefined');
 
     if (unsetEnvVars.length > 0) {

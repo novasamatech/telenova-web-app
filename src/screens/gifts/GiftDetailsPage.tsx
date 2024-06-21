@@ -13,9 +13,10 @@ import Icon from '@/components/Icon/Icon';
 
 type Props = {
   botUrl: string;
+  appName: string;
 };
 
-export default function GiftDetailsPage({ botUrl }: Props) {
+export default function GiftDetailsPage({ botUrl, appName }: Props) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { BackButton, webApp } = useTelegram();
@@ -35,7 +36,8 @@ export default function GiftDetailsPage({ botUrl }: Props) {
         secret: searchParams.get('seed') as string,
         symbol: searchParams.get('symbol') as string,
         amount: searchParams.get('balance') as string,
-        botUrl: botUrl,
+        botUrl,
+        appName,
       }),
     );
 
