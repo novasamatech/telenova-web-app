@@ -5,7 +5,7 @@ concurrency:
 on:
   workflow_dispatch:
   pull_request:
-    types: [closed]
+    types: [closed, synchronize]
     branches:
       - 'main'
       - 'dev'
