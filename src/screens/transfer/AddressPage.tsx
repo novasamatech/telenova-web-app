@@ -34,7 +34,7 @@ export default function AddressPage() {
   useEffect(() => {
     const callback = () => {
       setSelectedAsset(prev => ({ ...prev!, destinationAddress: address }));
-      navigate($path('/transfer/amount'));
+      navigate($path('/transfer/direct/amount'));
     };
 
     if (address.length) {

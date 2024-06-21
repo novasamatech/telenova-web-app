@@ -42,7 +42,7 @@ export default function ChangePasswordPage() {
         setIsPasswordValid(Boolean(decryptedMnemonic));
 
         if (decryptedMnemonic) {
-          navigate($path('/settings/new-password'));
+          navigate($path('/settings/password/new'));
         }
       });
     };

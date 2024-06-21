@@ -16,7 +16,7 @@ export default function NewPasswordPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const callback = () => navigate($path('/settings/change-password'));
+    const callback = () => navigate($path('/settings/password/change'));
     BackButton?.show();
     BackButton?.onClick(callback);
     mainButton?.show();
@@ -31,7 +31,7 @@ export default function NewPasswordPage() {
   const handleSubmit = (password: string) => {
     mainButton?.enable();
     const mainCallback = () => {
-      navigate($path('/settings/password-confirmation'));
+      navigate($path('/settings/password/confirmation'));
       const mnemonic = secureLocalStorage.getItem(getStoreName(MNEMONIC_STORE));
       backupMnemonic(mnemonic as string, password);
     };

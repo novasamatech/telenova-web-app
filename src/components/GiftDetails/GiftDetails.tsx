@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { type WebApp } from '@twa-dev/types';
 
 import { navigateTranferById } from '@/common/telegram';
@@ -16,7 +18,9 @@ export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
     return;
   }
 
-  addMainButton(() => navigateTranferById(webApp, link), 'Send to contact');
+  useEffect(() => {
+    addMainButton(() => navigateTranferById(webApp, link), 'Send to contact');
+  }, [webApp, link]);
 
   return (
     <>

@@ -22,7 +22,7 @@ export default function AmountGiftPage() {
     isAmountValid,
   } = useAmountLogic({
     prevPage: $path('/transfer/select-token'),
-    nextPage: $path('/transfer/create-gift'),
+    nextPage: $path('/transfer/gift/create'),
     mainButtonText: 'Enter Amount',
     onAmountChange: () => {
       mainButton.setText('Create gift');

@@ -42,12 +42,12 @@ export default function ConfirmationPage() {
         asset: selectedAsset.asset!,
       })
         .then(() => {
-          navigate($path('/transfer/result'));
+          navigate($path('/transfer/direct/result'));
         })
         .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
     };
     const backCallback = () => {
-      navigate($path('/transfer/amount'));
+      navigate($path('/transfer/direct/amount'));
     };
 
     BackButton?.show();
