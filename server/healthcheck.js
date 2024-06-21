@@ -7,15 +7,15 @@ export const setupHealthcheckController = app => {
   let isReady = false;
   app.addListener(APP_READY_EVENT, () => (isReady = true));
 
-  app.get('/startup', (req, res) => {
+  app.get('/api/startup', (req, res) => {
     res.status(200).send({ status: 'ok' });
   });
 
-  app.get('/liveness', (req, res) => {
+  app.get('/api/liveness', (req, res) => {
     res.status(200).send({ status: 'ok' });
   });
 
-  app.get('/readiness', (req, res) => {
+  app.get('/api/readiness', (req, res) => {
     if (!isReady) {
       return res.status(500).json({
         status: 'error',
