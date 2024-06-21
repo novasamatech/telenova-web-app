@@ -8,13 +8,14 @@ import { MercuryoWidgetPage } from '@/screens/exchange';
 export const loader = () => {
   return json({
     mercuryoSecret: process.env.PUBLIC_WIDGET_SECRET,
+    mercuryoWidgetId: process.env.PUBLIC_WIDGET_ID,
   });
 };
 
 const Page: FC = () => {
   const data = useLoaderData<typeof loader>();
 
-  return <MercuryoWidgetPage mercuryoSecret={data.mercuryoSecret} />;
+  return <MercuryoWidgetPage mercuryoSecret={data.mercuryoSecret} mercuryoWidgetId={data.mercuryoWidgetId} />;
 };
 
 export default Page;

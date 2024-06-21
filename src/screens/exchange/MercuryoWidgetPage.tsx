@@ -11,9 +11,10 @@ import { MediumTitle } from '@/components/Typography';
 
 type Props = {
   mercuryoSecret: string;
+  mercuryoWidgetId: string;
 };
 
-export default function MercuryoWidgetPage({ mercuryoSecret }: Props) {
+export default function MercuryoWidgetPage({ mercuryoSecret, mercuryoWidgetId }: Props) {
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const { BackButton, webApp } = useTelegram();
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function MercuryoWidgetPage({ mercuryoSecret }: Props) {
       root,
       returnPage: $path('/dashboard'),
       secret: mercuryoSecret,
+      widgetId: mercuryoWidgetId,
       selectedAsset,
       handleStatus,
       handleSell,
