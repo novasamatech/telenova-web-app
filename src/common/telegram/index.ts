@@ -25,11 +25,12 @@ type CreateTgLinkParams = {
   symbol: string;
   amount: string;
   botUrl: string;
+  appName: string;
 };
 
-export const createTgLink = ({ secret, symbol, amount, botUrl }: CreateTgLinkParams): TgLink => {
+export const createTgLink = ({ secret, symbol, amount, botUrl, appName }: CreateTgLinkParams): TgLink => {
   const text = `\nHey, I have sent you ${+amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
-  const url = new URL(`/${botUrl}/${window.location.origin}`, 'https://t.me');
+  const url = new URL(`/${botUrl}/${appName}`, 'https://t.me');
   url.searchParams.set('startapp', `${secret}_${symbol}`);
 
   return { url: url.toString(), text };

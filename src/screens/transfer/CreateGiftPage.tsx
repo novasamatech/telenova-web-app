@@ -15,9 +15,10 @@ import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 
 type Props = {
   botUrl: string;
+  appName: string;
 };
 
-export default function CreateGiftPage({ botUrl }: Props) {
+export default function CreateGiftPage({ botUrl, appName }: Props) {
   const { BackButton, webApp } = useTelegram();
   const { hideMainButton } = useMainButton();
   const { handleSendGift } = useExtrinsic();
@@ -42,6 +43,7 @@ export default function CreateGiftPage({ botUrl }: Props) {
           setLink(
             createTgLink({
               botUrl,
+              appName,
               secret: wallet.secret,
               symbol: selectedAsset?.asset?.symbol as string,
               amount: selectedAsset?.amount as string,
