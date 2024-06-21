@@ -11,6 +11,7 @@ app.use(
   expressCspHeader({
     directives: {
       'frame-src': [SELF, 'https://widget.mercuryo.io'],
+      'frame-ancestors': [SELF, 'https://widget.mercuryo.io'],
     },
   }),
 );
