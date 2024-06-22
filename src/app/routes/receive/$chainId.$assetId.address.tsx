@@ -1,34 +1,37 @@
-import { useEffect } from 'react';
+import { type FC, useEffect } from 'react';
 import { QRCode } from 'react-qrcode-logo';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
-import { $path } from 'remix-routes';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
-import { useMainButton } from '@/common/telegram/useMainButton';
-import { shareQrAddress } from '@/common/utils/address';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import { $params, $path } from 'remix-routes';
+
+import { useGlobalContext } from '@/common/providers';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { pickAsset, shareQrAddress } from '@/common/utils';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/components';
 
-export default function ReceivePage() {
+export const clientLoader = (({ params }) => {
+  return $params('/receive/:chainId/:assetId/address', params);
+}) satisfies ClientLoaderFunction;
+
+const Page: FC = () => {
+  const { chainId, assetId } = useLoaderData<typeof clientLoader>();
+
   const navigate = useNavigate();
-  const { BackButton } = useTelegram();
-  const { selectedAsset } = useGlobalContext();
   const { hideMainButton } = useMainButton();
+  const { addBackButton } = useBackButton();
+  const { assets } = useGlobalContext();
+
+  const selectedAsset = pickAsset({ assets, chainId, assetId });
 
   useEffect(() => {
-    BackButton?.show();
     hideMainButton();
-
-    const callback = async () => {
-      navigate($path('/receive/select-token'));
-    };
-    BackButton?.onClick(callback);
-
-    return () => {
-      BackButton?.hide();
-      BackButton?.offClick(callback);
-    };
+    addBackButton(() => {
+      navigate($path('/receive/token-select'));
+    });
   }, []);
 
   if (!selectedAsset || !selectedAsset.asset) {
@@ -86,4 +89,6 @@ export default function ReceivePage() {
       </div>
     </>
   );
-}
+};
+
+export default Page;

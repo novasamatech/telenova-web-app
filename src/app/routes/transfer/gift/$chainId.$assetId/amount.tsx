@@ -1,14 +1,31 @@
+import { type FC, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+
 import { Button, Progress } from '@nextui-org/react';
-import { $path } from 'remix-routes';
+import { $params, $path } from 'remix-routes';
 
-import { useMainButton } from '@/common/telegram/useMainButton';
+import { useGlobalContext } from '@/common/providers';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { pickAsset } from '@/common/utils';
 import { BodyText, HeadlineText, Icon } from '@/components';
+import { AmountDetails } from '@/components/AmountDetails.tsx';
+import { useAmountLogic } from '@/screens/transfer/amount/useAmountLogic.tsx';
 
-import AmountDetails from './AmountDetails';
-import { useAmountLogic } from './useAmountLogic';
+export const clientLoader = (({ params }) => {
+  return $params('/transfer/gift/:chainId/:assetId/amount', params);
+}) satisfies ClientLoaderFunction;
 
-export default function AmountGiftPage() {
-  const { mainButton } = useMainButton();
+const Page: FC = () => {
+  const { chainId, assetId } = useLoaderData<typeof clientLoader>();
+  const { mainButton, addMainButton, hideMainButton, reset } = useMainButton();
+  const { addBackButton } = useBackButton();
+  const { assets } = useGlobalContext();
+  const navigate = useNavigate();
+  const selectedAsset = pickAsset({ chainId, assetId, assets });
+
   const {
     handleMaxSend,
     handleChange,
@@ -16,14 +33,12 @@ export default function AmountGiftPage() {
     isAccountTerminate,
     isPending,
     deposit,
-    selectedAsset,
     amount,
+    fee,
     maxAmountToSend,
     isAmountValid,
   } = useAmountLogic({
-    prevPage: $path('/transfer/select-token'),
-    nextPage: $path('/transfer/gift/create'),
-    mainButtonText: 'Enter Amount',
+    selectedAsset,
     onAmountChange: () => {
       mainButton.setText('Create gift');
       setIsAmountValid(prev => prev && !!deposit && +amount >= deposit);
@@ -34,6 +49,39 @@ export default function AmountGiftPage() {
     handleMaxSend();
     setIsAmountValid(Boolean(maxAmountToSend) && +maxAmountToSend >= deposit);
   };
+
+  useEffect(() => {
+    mainButton.setText('Continue');
+    mainButton.show();
+    mainButton.disable();
+
+    addBackButton(() => {
+      navigate($path('/transfer/gift/token-select'));
+    });
+
+    return hideMainButton;
+  }, []);
+
+  useEffect(() => {
+    if (!isAmountValid || !Number(fee) || isAccountTerminate || isPending) {
+      mainButton.disable();
+
+      return;
+    }
+
+    mainButton.enable();
+    addMainButton(() => {
+      navigate(
+        $path('/transfer/gift/:chainId/:assetId/:amount/create', {
+          chainId,
+          assetId,
+          amount,
+        }),
+      );
+    }, 'Create gift');
+
+    return reset;
+  }, [fee, isAmountValid, maxAmountToSend, isPending, isAccountTerminate]);
 
   return (
     <>
@@ -70,4 +118,6 @@ export default function AmountGiftPage() {
       </AmountDetails>
     </>
   );
-}
+};
+
+export default Page;

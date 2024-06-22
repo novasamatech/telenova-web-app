@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { type Gift } from '@/common/types';
 import { getGifts } from '@/common/utils/gift';
@@ -12,7 +12,7 @@ import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/componen
 
 export default function GiftPage() {
   const navigate = useNavigate();
-  const { BackButton } = useTelegram();
+  const { addBackButton } = useBackButton();
   const { hideMainButton } = useMainButton();
 
   const { getGiftsState } = useGifts();
@@ -21,13 +21,10 @@ export default function GiftPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    BackButton?.show();
     hideMainButton();
-
-    const callback = () => {
+    addBackButton(() => {
       navigate($path('/dashboard'));
-    };
-    BackButton?.onClick(callback);
+    });
 
     const mapGifts = getGifts();
     if (!mapGifts) {
@@ -41,11 +38,6 @@ export default function GiftPage() {
         setLoading(false);
       });
     })();
-
-    return () => {
-      BackButton?.hide();
-      BackButton?.offClick(callback);
-    };
   }, []);
 
   return (

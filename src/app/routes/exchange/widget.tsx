@@ -1,9 +1,17 @@
-import { type FC } from 'react';
+import { type FC, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
-import { MercuryoWidgetPage } from '@/screens/exchange';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
+import { isOpenInWeb } from '@/common/telegram';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { handleWidget } from '@/common/utils';
+import { MediumTitle } from '@/components';
 
 export const loader = () => {
   return json({
@@ -13,9 +21,77 @@ export const loader = () => {
 };
 
 const Page: FC = () => {
-  const data = useLoaderData<typeof loader>();
+  const { mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof loader>();
 
-  return <MercuryoWidgetPage mercuryoSecret={data.mercuryoSecret} mercuryoWidgetId={data.mercuryoWidgetId} />;
+  const [root, setRoot] = useState<HTMLElement | null>(null);
+  const { webApp } = useTelegram();
+  const navigate = useNavigate();
+  const { selectedAsset, setSelectedAsset } = useGlobalContext();
+  const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
+  const { addBackButton } = useBackButton();
+  const { hideMainButton, addMainButton } = useMainButton();
+
+  useEffect(() => {
+    addBackButton(() => navigate($path('/exchange/select')));
+
+    if (!selectedAsset || isOpenInWeb(webApp!.platform) || !root) {
+      return;
+    }
+
+    handleWidget({
+      root,
+      returnPage: $path('/dashboard'),
+      secret: mercuryoSecret,
+      widgetId: mercuryoWidgetId,
+      selectedAsset,
+      handleStatus,
+      handleSell,
+    });
+  }, [root]);
+  useEffect(() => {
+    if (isSendBtnVisible && selectedAsset) {
+      addMainButton(() => {
+        if (selectedAsset.address && selectedAsset.chainId && selectedAsset.asset?.assetId) {
+          navigate(
+            $path('/transfer/direct/:chainId/:assetId/:address/amount', {
+              assetId: selectedAsset.asset.assetId,
+              chainId: selectedAsset.chainId,
+              address: selectedAsset.address,
+            }),
+          );
+        }
+      }, `Send ${selectedAsset.asset?.symbol} to sell`);
+    }
+
+    return () => {
+      hideMainButton();
+    };
+  }, [isSendBtnVisible]);
+
+  const handleStatus = (data: any) => {
+    if (data.status === 'paid' || data.status === 'new') {
+      addBackButton(() => navigate($path('/dashboard')));
+    }
+  };
+
+  const handleSell = (data: any) => {
+    setIsSendBtnVisible(true);
+    setSelectedAsset(prev => ({ ...prev, destinationAddress: data.address, amount: data.amount }));
+  };
+
+  return (
+    <>
+      <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
+        {isOpenInWeb(webApp?.platform) && (
+          <div>
+            <MediumTitle align="center">
+              Sorry, the widget is not supported in the web version. Proceed with the application.
+            </MediumTitle>
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default Page;

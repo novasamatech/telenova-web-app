@@ -51,3 +51,15 @@ export const mapAssetAccountsFromChains = (chains: Chain[], publicKey: PublicKey
       })),
     )
     .sort((a, b) => sortingAssets(a.asset, b.asset));
+
+export const pickAsset = ({
+  chainId,
+  assetId,
+  assets,
+}: {
+  chainId: string;
+  assetId: string;
+  assets: AssetAccount[];
+}) => {
+  return assets.find(asset => asset.chainId === chainId && asset.asset.assetId.toString() === assetId);
+};

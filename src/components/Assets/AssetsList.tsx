@@ -1,25 +1,36 @@
-import { useGlobalContext } from '@/common/providers/contextProvider';
+import { type ComponentProps, type FC } from 'react';
+
+import { type AssetAccount } from '@/common/types';
+import { cnTw } from '@/common/utils';
 
 import AssetBalance from './AssetBalance';
 
-const AssetsList = () => {
-  const { assets } = useGlobalContext();
+type Props = Pick<ComponentProps<typeof AssetBalance>, 'animate' | 'showArrow' | 'showPrice' | 'className'> & {
+  assets: AssetAccount[];
+  onClick?(asset: AssetAccount): unknown;
+};
 
-  return (
-    <div className="flex flex-col gap-6 mt-4">
-      {assets.map(asset => (
-        <AssetBalance
-          className="m-1"
-          asset={asset.asset}
-          balance={asset.totalBalance}
-          name={asset.chainName}
-          key={asset.chainId}
-          showPrice
-          animate
-        />
-      ))}
-    </div>
-  );
+const AssetsList: FC<Props> = ({ assets, className, onClick, ...props }) => {
+  return assets.map(asset => {
+    if (onClick) {
+      return (
+        <button key={asset.chainId} className={cnTw('appearance-none', className)} onClick={() => onClick(asset)}>
+          <AssetBalance asset={asset.asset} balance={asset.totalBalance} name={asset.chainName} {...props} />
+        </button>
+      );
+    }
+
+    return (
+      <AssetBalance
+        key={asset.chainId}
+        className={className}
+        asset={asset.asset}
+        balance={asset.totalBalance}
+        name={asset.chainName}
+        {...props}
+      />
+    );
+  });
 };
 
 export default AssetsList;

@@ -123,7 +123,7 @@ export default function GiftModal() {
     sendTransaction({
       destinationAddress: chainAddress,
       chainId: chain.chain.chainId,
-      transferAmmount: formatAmount(giftBalance, chain.asset.precision),
+      transferAmount: formatAmount(giftBalance, chain.asset.precision),
       asset: chain.asset,
       keyring,
       transferAll: true,

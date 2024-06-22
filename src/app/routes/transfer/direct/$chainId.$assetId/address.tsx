@@ -1,40 +1,43 @@
-import { useEffect, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+
 import { Button } from '@nextui-org/react';
-import { $path } from 'remix-routes';
+import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { useMainButton } from '@/common/telegram/useMainButton';
-import { validateAddress } from '@/common/utils/address';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { validateAddress } from '@/common/utils';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
 
-export default function AddressPage() {
+export const clientLoader = (({ params }) => {
+  return $params('/transfer/direct/:chainId/:assetId/address', params);
+}) satisfies ClientLoaderFunction;
+
+const Page: FC = () => {
+  const { chainId, assetId } = useLoaderData<typeof clientLoader>();
+
   const navigate = useNavigate();
-  const { BackButton, webApp } = useTelegram();
+  const { webApp } = useTelegram();
   const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
+  const { addBackButton } = useBackButton();
 
   const { setSelectedAsset } = useGlobalContext();
   const [address, setAddress] = useState('');
   const [isAddressValid, setIsAddressValid] = useState(true);
 
   useEffect(() => {
-    const callback = () => {
-      navigate($path('/transfer/select-token'));
-    };
-
-    BackButton?.show();
-    BackButton?.onClick(callback);
-
-    return () => {
-      BackButton?.offClick(callback);
-    };
+    addBackButton(() => {
+      navigate($path('/transfer/direct/token-select'));
+    });
   }, []);
 
   useEffect(() => {
     const callback = () => {
       setSelectedAsset(prev => ({ ...prev!, destinationAddress: address }));
-      navigate($path('/transfer/direct/amount'));
+      navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { address, chainId, assetId }));
     };
 
     if (address.length) {
@@ -63,7 +66,7 @@ export default function AddressPage() {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col">
       <Input
         isClearable
         variant="flat"
@@ -75,7 +78,7 @@ export default function AddressPage() {
       />
       {address &&
         (isAddressValid ? (
-          <div className="flex gap-2 items-center mt-4 self-start break-all">
+          <div className="flex gap-2 items-center mt-4 break-all">
             <Identicon address={address} />
             <BodyText> {address}</BodyText>
           </div>
@@ -90,4 +93,6 @@ export default function AddressPage() {
       )}
     </div>
   );
-}
+};
+
+export default Page;

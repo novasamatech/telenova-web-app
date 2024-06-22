@@ -6,22 +6,18 @@ import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { openLink } from '@/common/telegram';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
 import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/components';
 
 export default function SettingsPage() {
-  const { BackButton, webApp } = useTelegram();
   const navigate = useNavigate();
+  const { webApp } = useTelegram();
+  const { addBackButton } = useBackButton();
   const [isPopoverCurrencyOpen, setIsPopoverCurrencyOpen] = useState(false);
   const [isPopoverLanguageOpen, setIsPopoverLanguageOpen] = useState(false);
 
   useEffect(() => {
-    BackButton?.show();
-    const callback = () => navigate($path('/dashboard'));
-    BackButton?.onClick(callback);
-
-    return () => {
-      BackButton?.offClick(callback);
-    };
+    addBackButton(() => navigate($path('/dashboard')));
   }, []);
 
   const handleOpenChange = (stateFunc: (state: boolean) => void) => {

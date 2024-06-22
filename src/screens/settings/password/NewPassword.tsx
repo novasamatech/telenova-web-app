@@ -4,28 +4,23 @@ import secureLocalStorage from 'react-secure-storage';
 
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
 import { backupMnemonic, getStoreName } from '@/common/wallet';
 import { PasswordForm, TitleText } from '@/components';
 
 export default function NewPasswordPage() {
-  const { BackButton } = useTelegram();
+  const { addBackButton } = useBackButton();
   const { mainButton, addMainButton, reset } = useMainButton();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const callback = () => navigate($path('/settings/password/change'));
-    BackButton?.show();
-    BackButton?.onClick(callback);
+    addBackButton(() => navigate($path('/settings/password/change')));
     mainButton?.show();
     mainButton?.disable();
 
-    return () => {
-      BackButton?.offClick(callback);
-      reset();
-    };
+    return reset;
   }, []);
 
   const handleSubmit = (password: string) => {

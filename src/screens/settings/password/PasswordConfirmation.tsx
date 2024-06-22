@@ -3,21 +3,18 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { Icon } from '@/components';
 import { TitleText } from '@/components/Typography';
 
 export default function PasswordConfirmationPage() {
   const navigate = useNavigate();
-  const { BackButton } = useTelegram();
   const { mainButton, addMainButton, hideMainButton } = useMainButton();
 
   useEffect(() => {
     const callback = () => {
       navigate($path('/dashboard'), { replace: true });
     };
-    BackButton?.hide();
     mainButton.enable();
     addMainButton(callback);
 

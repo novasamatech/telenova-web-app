@@ -1,30 +1,48 @@
-import { useEffect, useState } from 'react';
+import type { PlayerEvent } from '@lottiefiles/react-lottie-player';
+import type { WebApp } from '@twa-dev/types';
 
-import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
-import { type WebApp } from '@twa-dev/types';
+import { type FC, useEffect, useState } from 'react';
 
-import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
+import { type LoaderFunction, json } from '@remix-run/node';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+
+import { $params } from 'remix-routes';
+
+import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
-import { type TgLink } from '@/common/telegram/types';
-import { useMainButton } from '@/common/telegram/useMainButton';
+import { type TgLink } from '@/common/telegram/types.ts';
+import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { type TrasferAsset } from '@/common/types';
-import { backupGifts } from '@/common/utils/gift';
+import { backupGifts, pickAsset } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 
-type Props = {
-  botUrl: string;
-  appName: string;
-};
+export const loader = (() => {
+  return json({
+    botUrl: process.env.PUBLIC_BOT_ADDRESS,
+    appName: process.env.PUBLIC_WEB_APP_ADDRESS,
+  });
+}) satisfies LoaderFunction;
 
-export default function CreateGiftPage({ botUrl, appName }: Props) {
-  const { BackButton, webApp } = useTelegram();
+export const clientLoader = (async ({ params, serverLoader }) => {
+  const serverData = await serverLoader<typeof loader>();
+  const data = $params('/transfer/gift/:chainId/:assetId/:amount/create', params);
+
+  return { ...serverData, ...data };
+}) satisfies ClientLoaderFunction;
+
+const Page: FC = () => {
+  const { botUrl, appName, chainId, assetId, amount } = useLoaderData<typeof clientLoader>();
+
+  const { webApp } = useTelegram();
   const { hideMainButton } = useMainButton();
   const { handleSendGift } = useExtrinsic();
-  const { selectedAsset, setSelectedAsset } = useGlobalContext();
+  const { assets } = useGlobalContext();
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
+
+  const selectedAsset = pickAsset({ assets, chainId, assetId });
 
   // TODO refactor
   useEffect(() => {
@@ -32,7 +50,6 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
       return;
     }
 
-    BackButton?.hide();
     hideMainButton();
 
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
@@ -46,19 +63,15 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
               appName,
               secret: wallet.secret,
               symbol: selectedAsset?.asset?.symbol as string,
-              amount: selectedAsset?.amount as string,
+              amount: amount,
             }),
           );
         })
-        .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
+        .catch(error => alert(`Error: ${error.message}\nTry to reload`));
     })();
-
-    return () => {
-      setSelectedAsset(null);
-    };
   }, []);
 
-  const handleOnEvent = (event: PlayerEvent) => {
+  const handleLottieEvent = (event: PlayerEvent) => {
     if (event === 'complete') {
       setLoading(false);
     }
@@ -67,11 +80,11 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
   return (
     <div className="grid items-end justify-center h-[93vh]">
       <LottiePlayer
+        className="mb-3"
         src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
-        keepLastFrame
         autoplay
-        className="mb-3 w-[256px] h-[256px]"
-        onEvent={event => handleOnEvent(event)}
+        keepLastFrame
+        onEvent={handleLottieEvent}
       />
       {loading || !link ? (
         <>
@@ -98,4 +111,6 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
       )}
     </div>
   );
-}
+};
+
+export default Page;

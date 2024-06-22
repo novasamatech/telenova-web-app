@@ -14,11 +14,11 @@ export const useAssetHub = () => {
   const { handleFee } = useExtrinsic();
   const { assetConversion, getExistentialDeposit, getFreeBalanceStatemine } = useQueryService();
 
-  const getTransferFee: GetTransferFee = async ({ chainId, assetId, transferAmmount, address }) => {
+  const getTransferFee: GetTransferFee = async ({ chainId, assetId, transferAmount, address }) => {
     const transferDotFee = await handleFee(
       chainId as ChainId,
       TransactionType.TRANSFER_STATEMINE,
-      transferAmmount,
+      transferAmount,
       assetId,
     );
     // TODO: Delete it after PR for asset hub is merged
@@ -30,11 +30,11 @@ export const useAssetHub = () => {
     return { transferDotFee, dotED, totalDotFee };
   };
 
-  const getGiftFee: GetAssetHubGiftFee = async ({ chainId, assetId, transferAmmount, address }) => {
+  const getGiftFee: GetAssetHubGiftFee = async ({ chainId, assetId, transferAmount, address }) => {
     const { transferDotFee, dotED, totalDotFee } = await getTransferFee({
       chainId,
       assetId,
-      transferAmmount,
+      transferAmount,
       address,
     });
 
@@ -47,13 +47,13 @@ export const useAssetHub = () => {
   const getAssetHubFee = async (
     chainId: ChainId,
     assetId: string,
-    transferAmmount: string,
+    transferAmount: string,
     address?: string,
     isGift?: boolean,
   ) => {
     const { totalDotFee } = isGift
-      ? await getGiftFee({ chainId, assetId, transferAmmount, address })
-      : await getTransferFee({ chainId, assetId, transferAmmount, address });
+      ? await getGiftFee({ chainId, assetId, transferAmount, address })
+      : await getTransferFee({ chainId, assetId, transferAmount, address });
 
     const totalConvertedFee = await assetConversion(chainId, totalDotFee, assetId);
 

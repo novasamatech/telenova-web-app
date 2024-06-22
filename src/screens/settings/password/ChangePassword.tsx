@@ -4,30 +4,27 @@ import { useNavigate } from 'react-router-dom';
 import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
 import { initializeWalletFromCloud } from '@/common/wallet';
 import { Input, TitleText } from '@/components';
 
 export default function ChangePasswordPage() {
-  const { BackButton, webApp } = useTelegram();
   const { mainButton, addMainButton, reset, hideMainButton } = useMainButton();
+  const { addBackButton } = useBackButton();
+  const { webApp } = useTelegram();
 
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
 
   useEffect(() => {
-    BackButton?.show();
-    const callback = () => navigate($path('/settings/backup'));
-    BackButton?.onClick(callback);
     mainButton.show();
     mainButton.disable();
+    addBackButton(() => navigate($path('/settings/backup')));
 
-    return () => {
-      BackButton?.offClick(callback);
-      hideMainButton();
-    };
+    return hideMainButton;
   }, []);
 
   useEffect(() => {

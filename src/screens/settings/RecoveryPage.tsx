@@ -3,21 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
 import { BodyText, RecoveryPhrase, TitleText } from '@/components';
 
 export default function RecoveryPage() {
-  const { BackButton } = useTelegram();
   const navigate = useNavigate();
+  const { addBackButton } = useBackButton();
 
   useEffect(() => {
-    BackButton?.show();
-    const callback = () => navigate($path('/settings/backup'));
-    BackButton?.onClick(callback);
-
-    return () => {
-      BackButton?.offClick(callback);
-    };
+    addBackButton(() => navigate($path('/settings/backup')));
   }, []);
 
   return (

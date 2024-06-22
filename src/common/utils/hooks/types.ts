@@ -3,7 +3,7 @@ import { type ChainId } from '@/common/types';
 export type GetAssetHubFeeParam = {
   chainId: ChainId;
   assetId: string;
-  transferAmmount: string;
+  transferAmount: string;
   address?: string;
 };
 

@@ -4,9 +4,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { type WebApp } from '@twa-dev/types';
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import GiftDetails from '@/components/GiftDetails/GiftDetails';
 import Icon from '@/components/Icon/Icon';
@@ -19,18 +20,18 @@ type Props = {
 export default function GiftDetailsPage({ botUrl, appName }: Props) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { BackButton, webApp } = useTelegram();
+  const { webApp } = useTelegram();
+  const { addBackButton } = useBackButton();
   const { mainButton } = useMainButton();
 
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
-    BackButton?.show();
     mainButton.show();
-    const callback = async () => {
+    addBackButton(() => {
       navigate($path('/gifts'));
-    };
-    BackButton?.onClick(callback);
+    });
+
     setLink(
       createTgLink({
         secret: searchParams.get('seed') as string,
@@ -40,11 +41,6 @@ export default function GiftDetailsPage({ botUrl, appName }: Props) {
         appName,
       }),
     );
-
-    return () => {
-      BackButton?.hide();
-      BackButton?.offClick(callback);
-    };
   }, []);
 
   return (

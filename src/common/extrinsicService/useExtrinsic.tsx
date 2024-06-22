@@ -12,7 +12,7 @@ type SendTransaction = {
   destinationAddress: string;
   chainId: ChainId;
   asset: Asset;
-  transferAmmount?: string;
+  transferAmount?: string;
   transferAll?: boolean;
   keyring?: KeyringPair;
 };
@@ -27,7 +27,7 @@ export function useExtrinsic() {
   async function sendTransaction({
     destinationAddress,
     chainId,
-    transferAmmount,
+    transferAmount,
     asset,
     transferAll,
     keyring,
@@ -36,7 +36,7 @@ export function useExtrinsic() {
     const assetId = getAssetId(asset);
     const args = {
       dest: address,
-      value: transferAmmount,
+      value: transferAmount,
       asset: assetId,
     };
     let signOptions;
@@ -79,7 +79,7 @@ export function useExtrinsic() {
       return await sendTransaction({
         destinationAddress: giftTransferAddress,
         chainId,
-        transferAmmount: giftAmount,
+        transferAmount: giftAmount,
         asset,
       });
     }
@@ -90,7 +90,7 @@ export function useExtrinsic() {
     return await sendTransaction({
       destinationAddress: giftTransferAddress,
       chainId,
-      transferAmmount: giftAmount,
+      transferAmount: giftAmount,
       transferAll,
       asset,
     });

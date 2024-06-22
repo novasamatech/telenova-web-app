@@ -3,30 +3,25 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
+import { useBackButton } from '@/common/telegram/useBackButton.ts';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { BACKUP_DATE } from '@/common/utils/constants';
 import { getStoreName } from '@/common/wallet';
 import { BodyText, LinkCard, TitleText } from '@/components';
 
 export default function SettingsBackupPage() {
-  const { BackButton } = useTelegram();
   const { hideMainButton } = useMainButton();
+  const { addBackButton } = useBackButton();
   const navigate = useNavigate();
   const [backupDate, setBackupDate] = useState('');
 
   useEffect(() => {
     hideMainButton();
-    BackButton?.show();
-    const callback = () => navigate($path('/settings'));
-    BackButton?.onClick(callback);
+    addBackButton(() => navigate($path('/settings')));
+
     const storeDate = localStorage.getItem(getStoreName(BACKUP_DATE));
     const date = storeDate ? new Date(+storeDate).toUTCString() : '';
     setBackupDate(date);
-
-    return () => {
-      BackButton?.offClick(callback);
-    };
   }, []);
 
   return (

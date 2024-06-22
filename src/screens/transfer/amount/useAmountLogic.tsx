@@ -1,32 +1,26 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useGlobalContext } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { useMainButton } from '@/common/telegram/useMainButton';
 import { type TrasferAsset } from '@/common/types';
 import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 
 type AmountPageLogic = {
-  prevPage: string;
-  nextPage: string;
-  mainButtonText: string;
+  selectedAsset?: TrasferAsset;
   onAmountChange?: () => void;
 };
 
-export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountChange = () => {} }: AmountPageLogic) {
-  const navigate = useNavigate();
+export function useAmountLogic({ selectedAsset }: AmountPageLogic) {
   const { handleFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
 
-  const { BackButton } = useTelegram();
-  const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
   const { getAssetHubFee } = useAssetHub();
-  const { selectedAsset, setSelectedAsset } = useGlobalContext();
+  const { setSelectedAsset } = useGlobalContext();
 
   const [amount, setAmount] = useState<string>(selectedAsset?.amount || '');
+  const [fee, setFee] = useState<number>();
   const [touched, setTouched] = useState(false);
   const [isPending, setPending] = useState(false);
   const [transferAll, setTransferAll] = useState(false);
@@ -35,21 +29,19 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
   const [deposit, setDeposit] = useState(0);
 
   const isAccountTerminate = Boolean(
-    touched && !transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit,
+    touched && !transferAll && maxAmountToSend && fee && +maxAmountToSend - +fee < deposit,
   );
 
-  const handleAmountFee = async (selectedAsset: TrasferAsset, transferAmmount: string) => {
-    const fee = isStatemineAsset(selectedAsset.asset.type)
+  const handleAmountFee = async (selectedAsset: TrasferAsset, transferAmount: string) => {
+    return isStatemineAsset(selectedAsset.asset.type)
       ? await getAssetHubFee(
           selectedAsset.chainId,
           selectedAsset.asset.typeExtras!.assetId,
-          transferAmmount,
+          transferAmount,
           selectedAsset.address,
           selectedAsset?.isGift,
         )
-      : await handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmmount);
-
-    return fee;
+      : await handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmount);
   };
 
   const getMaxAmount = async (selectedAsset: TrasferAsset) => {
@@ -77,34 +69,14 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
   }
 
   useEffect(() => {
-    mainButton.setText(mainButtonText);
-    BackButton?.show();
-    mainButton.show();
-    mainButton.disable();
-
-    const callback = () => {
-      navigate(prevPage);
-    };
-    BackButton?.onClick(callback);
-
-    if (!selectedAsset) {
-      return;
-    }
-
-    return () => {
-      BackButton?.offClick(callback);
-      hideMainButton();
-    };
-  }, [BackButton]);
-
-  useEffect(() => {
     setPending(true);
-    getTransferDetails(selectedAsset as TrasferAsset, amount).then(({ fee, formattedDeposit }) => {
+    getTransferDetails(selectedAsset as TrasferAsset, fee?.toString() ?? '0').then(({ fee, formattedDeposit }) => {
       setPending(false);
+      setFee(fee);
       setDeposit(formattedDeposit);
       setSelectedAsset(prev => ({ ...prev, fee }));
     });
-  }, [amount]);
+  }, [fee]);
 
   useEffect(() => {
     if (selectedAsset) {
@@ -114,31 +86,10 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
 
   useEffect(() => {
     if (touched) {
-      const checkBalanceDeposit = !transferAll && +maxAmountToSend - +amount < deposit;
-      setIsAmountValid(!!Number(amount) && +amount <= +maxAmountToSend && !checkBalanceDeposit);
+      const checkBalanceDeposit = !transferAll && +maxAmountToSend - (fee || 0) < deposit;
+      setIsAmountValid(!!Number(fee) && (fee || 0) <= +maxAmountToSend && !checkBalanceDeposit);
     }
-  }, [transferAll, maxAmountToSend, amount, deposit, touched]);
-
-  useEffect(() => {
-    if (!isAmountValid || !Number(amount) || isAccountTerminate || isPending) {
-      mainButton.disable();
-      mainButton.setText(mainButtonText);
-
-      return;
-    }
-
-    const callback = () => {
-      setSelectedAsset(prev => ({ ...prev!, transferAll, amount }));
-      navigate(nextPage);
-    };
-    mainButton.enable();
-    addMainButton(callback);
-    onAmountChange();
-
-    return () => {
-      reset();
-    };
-  }, [amount, isAmountValid, maxAmountToSend, isPending, isAccountTerminate]);
+  }, [transferAll, maxAmountToSend, fee, deposit, touched]);
 
   const handleMaxSend = () => {
     if (maxAmountToSend === '') {
@@ -170,6 +121,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     deposit,
     selectedAsset,
     amount,
+    fee,
     maxAmountToSend,
     isAmountValid,
   };
