@@ -44,7 +44,7 @@ export const useBackButton = () => {
       hideButtonTimeout = setTimeout(() => {
         hideButtonTimeout = null;
         backButton.hide();
-      }, 100);
+      }, 50);
     }
   }, [backButton]);
 

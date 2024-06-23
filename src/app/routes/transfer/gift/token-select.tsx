@@ -1,25 +1,19 @@
-import { type FC, useEffect } from 'react';
+import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { AssetsList, TitleText } from '@/components';
 
 const Page: FC = () => {
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
-  const { addBackButton } = useBackButton();
-
-  useEffect(() => {
-    addBackButton(() => {
-      navigate($path('/transfer'));
-    });
-  }, []);
 
   return (
     <>
+      <BackButton onClick={() => navigate($path('/transfer'))} />
       <TitleText className="mt-6 mb-10">Select a token to send</TitleText>
       <div className="flex flex-col gap-2 mt-4">
         <AssetsList

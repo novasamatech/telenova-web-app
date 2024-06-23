@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { type Gift } from '@/common/types';
 import { getGifts } from '@/common/utils';
@@ -12,7 +12,6 @@ import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/componen
 
 const Page: FC = () => {
   const navigate = useNavigate();
-  const { addBackButton } = useBackButton();
   const { hideMainButton } = useMainButton();
 
   const { getGiftsState } = useGifts();
@@ -22,9 +21,6 @@ const Page: FC = () => {
 
   useEffect(() => {
     hideMainButton();
-    addBackButton(() => {
-      navigate($path('/dashboard'));
-    });
 
     const mapGifts = getGifts();
     if (!mapGifts) {
@@ -42,6 +38,7 @@ const Page: FC = () => {
 
   return (
     <>
+      <BackButton onClick={() => navigate($path('/dashboard'))} />
       <TitleText className="mb-4" align="left">
         Gifts
       </TitleText>
@@ -53,11 +50,12 @@ const Page: FC = () => {
       ) : unclaimedGifts.length ? (
         unclaimedGifts.map(gift => (
           <Link
-            to={{
-              pathname: $path('/gifts/details'),
-              search: `?seed=${gift.secret}&symbol=${gift.chainAsset?.symbol}&balance=${gift.balance}`,
-            }}
             key={gift.timestamp}
+            to={$path('/gifts/details', {
+              seed: gift.secret,
+              symbol: gift.chainAsset?.symbol ?? '',
+              balance: gift.balance,
+            })}
           >
             <GiftPlate gift={gift} isClaimed={false} />
           </Link>

@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
-import { useQueryService } from '@/common/queryService/QueryService';
+import { useQueryService } from '@/common/queryService/QueryService.ts';
 import { type TrasferAsset } from '@/common/types';
 import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
-import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
+import { useAssetHub } from '@/common/utils/hooks/useAssetHub.ts';
 
 type AmountPageLogic = {
   selectedAsset?: TrasferAsset;

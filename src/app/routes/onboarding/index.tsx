@@ -6,21 +6,25 @@ import { getCloudStorageItem } from '@/common/wallet';
 import { LoadingScreen } from '@/components';
 import { OnboardingStartPage, RestoreWalletPage } from '@/screens/onboarding';
 
+const delay = (ttl: number) => new Promise(resolve => setTimeout(resolve, ttl));
+
 const Page: FC = () => {
   const { webApp } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
   const [mnemonic, setMnenonic] = useState<string | null>(null);
 
   useEffect(() => {
-    getCloudStorageItem(MNEMONIC_STORE).then(value => {
-      if (!value) return;
-      setMnenonic(value);
+    let mounted = true;
+    Promise.all([getCloudStorageItem(MNEMONIC_STORE), delay(1000)]).then(([value]) => {
+      if (mounted) {
+        setMnenonic(value ?? null);
+        setIsLoading(false);
+      }
     });
 
-    // to avoid blinking
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    return () => {
+      mounted = false;
+    };
   }, [webApp]);
 
   if (isLoading) {

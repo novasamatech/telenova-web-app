@@ -6,13 +6,13 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { Button, Progress } from '@nextui-org/react';
 import { $params, $path } from 'remix-routes';
 
+import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic.tsx';
 import { useGlobalContext } from '@/common/providers';
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { pickAsset } from '@/common/utils';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { AmountDetails } from '@/components/AmountDetails.tsx';
-import { useAmountLogic } from '@/screens/transfer/amount/useAmountLogic.tsx';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/:address/amount', params);
@@ -22,7 +22,6 @@ const Page: FC = () => {
   const { chainId, assetId, address } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
-  const { addBackButton } = useBackButton();
   const { hideMainButton, mainButton, reset, addMainButton } = useMainButton();
   const selectedAsset = pickAsset({ assets, chainId, assetId });
 
@@ -42,10 +41,6 @@ const Page: FC = () => {
     mainButton.setText('Continue');
     mainButton.show();
     mainButton.disable();
-
-    addBackButton(() => {
-      navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }));
-    });
 
     return hideMainButton;
   }, []);
@@ -74,6 +69,7 @@ const Page: FC = () => {
 
   return (
     <>
+      <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
         <Identicon address={address} />
         <HeadlineText className="flex gap-1">

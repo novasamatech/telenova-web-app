@@ -8,7 +8,7 @@ import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { handleWidget } from '@/common/utils';
 import { MediumTitle } from '@/components';
@@ -28,12 +28,10 @@ const Page: FC = () => {
   const navigate = useNavigate();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
   const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
-  const { addBackButton } = useBackButton();
+  const [done, setDone] = useState(false);
   const { hideMainButton, addMainButton } = useMainButton();
 
   useEffect(() => {
-    addBackButton(() => navigate($path('/exchange/select')));
-
     if (!selectedAsset || isOpenInWeb(webApp!.platform) || !root) {
       return;
     }
@@ -70,7 +68,7 @@ const Page: FC = () => {
 
   const handleStatus = (data: any) => {
     if (data.status === 'paid' || data.status === 'new') {
-      addBackButton(() => navigate($path('/dashboard')));
+      setDone(true);
     }
   };
 
@@ -81,6 +79,7 @@ const Page: FC = () => {
 
   return (
     <>
+      <BackButton onClick={() => (done ? navigate($path('/dashboard')) : navigate($path('/exchange/select')))} />
       <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
         {isOpenInWeb(webApp?.platform) && (
           <div>

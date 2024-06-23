@@ -8,7 +8,7 @@ import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/rea
 import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { pickAsset, shareQrAddress } from '@/common/utils';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/components';
@@ -22,16 +22,12 @@ const Page: FC = () => {
 
   const navigate = useNavigate();
   const { hideMainButton } = useMainButton();
-  const { addBackButton } = useBackButton();
   const { assets } = useGlobalContext();
 
   const selectedAsset = pickAsset({ assets, chainId, assetId });
 
   useEffect(() => {
     hideMainButton();
-    addBackButton(() => {
-      navigate($path('/receive/token-select'));
-    });
   }, []);
 
   if (!selectedAsset || !selectedAsset.asset) {
@@ -41,6 +37,7 @@ const Page: FC = () => {
 
   return (
     <>
+      <BackButton onClick={() => navigate($path('/receive/token-select'))} />
       <TitleText className="mt-2">Receive {asset.symbol}</TitleText>
       <div className="flex flex-col items-center">
         <Plate className="flex flex-col items-center gap-3 w-[232px] h-[344px] break-all my-6">

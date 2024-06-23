@@ -8,7 +8,7 @@ import { $params, $path } from 'remix-routes';
 
 import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { type ChainId } from '@/common/types';
 import { formatAmount, formatBalance, pickAsset } from '@/common/utils';
@@ -36,7 +36,6 @@ const Page: FC = () => {
   const { sendTransaction } = useExtrinsic();
   const { getAssetHubFee } = useAssetHub();
   const { reset, addMainButton, mainButton } = useMainButton();
-  const { addBackButton } = useBackButton();
   const { assets } = useGlobalContext();
 
   const [fee, setFee] = useState<number>(0);
@@ -71,9 +70,6 @@ const Page: FC = () => {
 
     mainButton.show();
     addMainButton(mainCallback, 'Confirm');
-    addBackButton(() => {
-      navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { chainId, assetId, address }));
-    });
 
     return () => {
       mainButton.hideProgress();
@@ -104,6 +100,11 @@ const Page: FC = () => {
 
   return (
     <>
+      <BackButton
+        onClick={() =>
+          navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { chainId, assetId, address }))
+        }
+      />
       <div className="grid grid-cols-[40px,1fr] items-center">
         <Identicon address={address} />
         <HeadlineText className="flex gap-1">

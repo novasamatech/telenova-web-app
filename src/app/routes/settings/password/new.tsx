@@ -4,19 +4,17 @@ import secureLocalStorage from 'react-secure-storage';
 
 import { $path } from 'remix-routes';
 
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { MNEMONIC_STORE } from '@/common/utils';
 import { backupMnemonic, getStoreName } from '@/common/wallet';
 import { PasswordForm, TitleText } from '@/components';
 
 const Page: FC = () => {
-  const { addBackButton } = useBackButton();
   const { mainButton, addMainButton, reset } = useMainButton();
   const navigate = useNavigate();
 
   useEffect(() => {
-    addBackButton(() => navigate($path('/settings/password/change')));
     mainButton?.show();
     mainButton?.disable();
 
@@ -35,10 +33,13 @@ const Page: FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center pt-14">
-      <TitleText>Enter your new password</TitleText>
-      <PasswordForm onSubmit={handleSubmit} />
-    </div>
+    <>
+      <BackButton onClick={() => navigate($path('/settings/password/change'))} />
+      <div className="flex flex-col items-center pt-14">
+        <TitleText>Enter your new password</TitleText>
+        <PasswordForm onSubmit={handleSubmit} />
+      </div>
+    </>
   );
 };
 

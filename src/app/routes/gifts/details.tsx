@@ -10,10 +10,16 @@ import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
-import type { TgLink } from '@/common/telegram/types.ts';
-import { useBackButton } from '@/common/telegram/useBackButton.ts';
+import { BackButton } from '@/common/telegram/BackButton.tsx';
+import { type TgLink } from '@/common/telegram/types.ts';
 import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { GiftDetails, Icon } from '@/components';
+
+export type SearchParams = {
+  seed: string;
+  symbol: string;
+  balance: string;
+};
 
 export const loader = () => {
   return json({
@@ -28,16 +34,12 @@ const Page: FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { webApp } = useTelegram();
-  const { addBackButton } = useBackButton();
   const { mainButton } = useMainButton();
 
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
     mainButton.show();
-    addBackButton(() => {
-      navigate($path('/gifts'));
-    });
 
     setLink(
       createTgLink({
@@ -51,10 +53,13 @@ const Page: FC = () => {
   }, []);
 
   return (
-    <div className="grid items-center justify-center h-[93vh]">
-      <Icon name="Present" size={250} className="justify-self-center mt-auto" />
-      <GiftDetails link={link} webApp={webApp as WebApp} />
-    </div>
+    <>
+      <BackButton onClick={() => navigate($path('/gifts'))} />
+      <div className="grid items-center justify-center h-[93vh]">
+        <Icon name="Present" size={250} className="justify-self-center mt-auto" />
+        <GiftDetails link={link} webApp={webApp as WebApp} />
+      </div>
+    </>
   );
 };
 
