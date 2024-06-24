@@ -1,10 +1,19 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import { type PropsWithChildren, createContext, useContext, useEffect, useRef, useState } from 'react';
+
+import { type ChainId, type StateResolution } from '@/common/types';
 
 import { useChains } from './ChainProvider';
 import { useConnections } from './ConnectionProvider';
 import { useRuntimeProvider } from './RuntimeProvider';
-import { Chain, ChainAsset, ConnectionState, Connection, ConnectionRequest, RuntimeMetadata, Asset } from './types';
-import { ChainId, StateResolution } from '@common/types';
+import {
+  type Asset,
+  type Chain,
+  type ChainAsset,
+  type Connection,
+  type ConnectionRequest,
+  type ConnectionState,
+  type RuntimeMetadata,
+} from './types';
 
 type ChainRegistryContextProps = {
   getAllChains: () => Promise<Chain[]>;
@@ -64,7 +73,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
   const setupConnections = async () => {
     const chains = await getAllChains();
 
-    const requests: ConnectionRequest[] = chains.map((chain) => {
+    const requests: ConnectionRequest[] = chains.map(chain => {
       return {
         chain: chain,
         onConnected: (chainId, connection) => {
@@ -72,7 +81,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
 
           subscribeMetadata(connection.api);
         },
-        onDisconnected: (chainId) => {
+        onDisconnected: chainId => {
           console.info('🔶 disconnected ==> ', chainId);
         },
         getMetadata: async (chainId): Promise<RuntimeMetadata | undefined> => {

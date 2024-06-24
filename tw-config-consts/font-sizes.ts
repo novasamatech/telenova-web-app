@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss';
 
-const fontSizes: Required<Config>['theme']['fontSize'] = {
+const fontSizes = {
   // EXTRA BOLD
   'large-title': ['2.5rem', { lineHeight: 'normal', letterSpacing: '-0.5px', fontWeight: 700 }],
   title: ['1.5rem', { lineHeight: '2rem', letterSpacing: '-0.013em', fontWeight: 700 }],
@@ -16,6 +16,6 @@ const fontSizes: Required<Config>['theme']['fontSize'] = {
   headline: ['1rem', { lineHeight: '1.5rem', letterSpacing: '-0.027em', fontWeight: 500 }],
   body: ['0.875rem', { lineHeight: '1.25rem', letterSpacing: '-0.154px', fontWeight: 500 }],
   'help-text': ['0.8125rem', { lineHeight: '1.125rem', letterSpacing: '-0.01em', fontWeight: 500 }],
-};
+} satisfies Required<Config>['theme']['fontSize'];
 
 export default fontSizes;

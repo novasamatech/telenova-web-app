@@ -1,23 +1,24 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Divider } from '@nextui-org/react';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { Paths } from '@/common/routing';
+import { Divider } from '@nextui-org/react';
+import { $path } from 'remix-routes';
+
+import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useMainButton } from '@/common/telegram/useMainButton';
+import { formatAmount, formatBalance } from '@/common/utils/balance';
 import {
+  BodyText,
   HeadlineText,
   Icon,
   Identicon,
   LargeTitleText,
-  Plate,
-  BodyText,
   MediumTitle,
+  Plate,
   TruncateAddress,
 } from '@/components';
-import { formatAmount, formatBalance } from '@/common/utils/balance';
-import { IconNames } from '@/components/Icon/types';
-import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
+import { type IconNames } from '@/components/Icon/types';
 
 export default function ConfirmationPage() {
   const navigate = useNavigate();
@@ -27,7 +28,9 @@ export default function ConfirmationPage() {
   const { selectedAsset } = useGlobalContext();
 
   useEffect(() => {
-    if (!selectedAsset) return;
+    if (!selectedAsset) {
+      return;
+    }
 
     const mainCallback = async () => {
       mainButton.showProgress(false);
@@ -39,12 +42,12 @@ export default function ConfirmationPage() {
         asset: selectedAsset.asset!,
       })
         .then(() => {
-          navigate(Paths.TRANSFER_RESULT);
+          navigate($path('/transfer/direct/result'));
         })
-        .catch((error) => alert(`Error: ${error.message}\nTry to relaod`));
+        .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
     };
     const backCallback = () => {
-      navigate(Paths.TRANSFER_AMOUNT);
+      navigate($path('/transfer/direct/amount'));
     };
 
     BackButton?.show();

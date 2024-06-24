@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
 
-import { BodyText, BigTitle, MediumTitle, Icon, Countdown } from '@/components';
+import { Button, ModalBody, ModalFooter, ModalHeader } from '@nextui-org/react';
+
 import { resetWallet } from '@/common/wallet';
+import { BigTitle, BodyText, Countdown, Icon, MediumTitle } from '@/components';
 
 type Props = {
   onSubmit: () => void;

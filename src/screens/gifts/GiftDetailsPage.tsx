@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { WebApp } from '@twa-dev/types';
 
-import { useTelegram } from '@common/providers/telegramProvider';
-import { useMainButton } from '@/common/telegram/useMainButton';
-import { Paths } from '@/common/routing';
+import { type WebApp } from '@twa-dev/types';
+import { $path } from 'remix-routes';
+
+import { useTelegram } from '@/common/providers/telegramProvider';
 import { createTgLink } from '@/common/telegram';
+import { type TgLink } from '@/common/telegram/types';
+import { useMainButton } from '@/common/telegram/useMainButton';
 import GiftDetails from '@/components/GiftDetails/GiftDetails';
-import { TgLink } from '@/common/telegram/types';
 import Icon from '@/components/Icon/Icon';
 
-export default function GiftDetailsPage() {
+type Props = {
+  botUrl: string;
+  appName: string;
+};
+
+export default function GiftDetailsPage({ botUrl, appName }: Props) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { BackButton, webApp } = useTelegram();
@@ -22,15 +28,17 @@ export default function GiftDetailsPage() {
     BackButton?.show();
     mainButton.show();
     const callback = async () => {
-      navigate(Paths.GIFTS);
+      navigate($path('/gifts'));
     };
     BackButton?.onClick(callback);
     setLink(
-      createTgLink(
-        searchParams.get('seed') as string,
-        searchParams.get('symbol') as string,
-        searchParams.get('balance') as string,
-      ),
+      createTgLink({
+        secret: searchParams.get('seed') as string,
+        symbol: searchParams.get('symbol') as string,
+        amount: searchParams.get('balance') as string,
+        botUrl,
+        appName,
+      }),
     );
 
     return () => {

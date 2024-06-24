@@ -1,5 +1,5 @@
 import CreatedGiftPlate from './CreatedGiftPlate';
-import Plate from './Plate';
 import GiftPlate from './GiftPlate';
+import Plate from './Plate';
 
 export { CreatedGiftPlate, Plate, GiftPlate };

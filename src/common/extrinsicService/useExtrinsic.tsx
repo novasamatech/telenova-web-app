@@ -1,11 +1,12 @@
+import { type KeyringPair } from '@polkadot/keyring/types';
+import { type Balance } from '@polkadot/types/interfaces';
 import { decodeAddress } from '@polkadot/util-crypto';
-import { KeyringPair } from '@polkadot/keyring/types';
-import { Balance } from '@polkadot/types/interfaces';
 
-import { AssetType, ChainId, TrasferAsset } from '@common/types';
-import { TransactionType, useExtrinsicProvider } from '@common/extrinsicService';
-import { formatAmount, getAssetId, isStatemineAsset, ASSET_LOCATION, FAKE_ACCOUNT_ID } from '../utils';
-import { Asset } from '../chainRegistry';
+import { type Asset } from '../chainRegistry';
+import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
+
+import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
+import { AssetType, type ChainId, type TrasferAsset } from '@/common/types';
 
 type SendTransaction = {
   destinationAddress: string;
@@ -57,8 +58,10 @@ export function useExtrinsic() {
       },
       signOptions,
       keyring,
-    }).then((hash) => {
-      if (!hash) throw Error('Something went wrong');
+    }).then(hash => {
+      if (!hash) {
+        throw Error('Something went wrong');
+      }
       console.log('Success, Hash:', hash?.toString());
     });
   }

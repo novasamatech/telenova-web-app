@@ -10,9 +10,6 @@ inputs:
   DEPLOYED_BOT:
     description: 'Which bot was updated'
     required: true
-  IMAGE_TO_DEPLOY:
-    description: 'Which bot was updated'
-    required: true
   APP_LINK:
     description: 'Link to the web application'
     required: true
@@ -26,10 +23,9 @@ runs:
         to: ${{ inputs.TELEGRAM_TO }}
         token: ${{ inputs.TELEGRAM_TOKEN }}
         message: |
-          🖥️ New version for bot web app was deployed!
+          🖥️ PR was merged!
 
-          version: ${{ inputs.IMAGE_TO_DEPLOY }}
-          commit: ${{ github.sha }}
+          PR: ${{ github.event.pull_request.html_url }}
           updated_bot: @${{ inputs.DEPLOYED_BOT }}
           
           Launch app: ${{ inputs.APP_LINK }}

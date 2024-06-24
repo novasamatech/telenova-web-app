@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { Paths } from '@/common/routing';
-import { TitleText, AssetBalance } from '@/components';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
+import { AssetBalance, TitleText } from '@/components';
 
 export default function SelectTokenPage() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function SelectTokenPage() {
 
   useEffect(() => {
     const callback = () => {
-      navigate(Paths.TRANSFER);
+      navigate($path('/transfer'));
     };
     BackButton?.show();
     BackButton?.onClick(callback);
@@ -26,11 +27,11 @@ export default function SelectTokenPage() {
     <>
       <TitleText className="mt-6 mb-10">Select a token to send</TitleText>
       <div className="flex flex-col gap-2 mt-4">
-        {assets.map((asset) => (
+        {assets.map(asset => (
           <Link
-            to={selectedAsset?.isGift ? Paths.TRANSFER_AMOUNT_GIFT : Paths.TRANSFER_ADDRESS}
+            to={selectedAsset?.isGift ? $path('/transfer/gift/amount') : $path('/transfer/direct/address')}
             key={asset.chainId}
-            onClick={() => setSelectedAsset((prev) => (prev ? { isGift: prev.isGift, ...asset } : asset))}
+            onClick={() => setSelectedAsset(prev => (prev ? { isGift: prev.isGift, ...asset } : asset))}
           >
             <AssetBalance
               asset={asset.asset}

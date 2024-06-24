@@ -18,12 +18,12 @@
 To install all dependencies:
 
 ```bash
-yarn install
+npm install
 ```
 To start the project in dev mode:
 
 ```bash
-yarn dev
+npm run dev
 ```
 
 ### Start the application locally:

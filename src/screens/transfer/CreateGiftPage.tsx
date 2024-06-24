@@ -1,18 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Player, PlayerEvent } from '@lottiefiles/react-lottie-player';
-import { WebApp } from '@twa-dev/types';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { useMainButton } from '@/common/telegram/useMainButton';
-import { HeadlineText, GiftDetails } from '@/components';
-import { TrasferAsset } from '@/common/types';
-import { createGiftWallet } from '@/common/wallet';
-import { createTgLink } from '@/common/telegram';
-import { TgLink } from '@/common/telegram/types';
-import { backupGifts } from '@/common/utils/gift';
+import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
+import { type WebApp } from '@twa-dev/types';
+
 import { useExtrinsic } from '@/common/extrinsicService/useExtrinsic';
+import { useGlobalContext, useTelegram } from '@/common/providers';
+import { createTgLink } from '@/common/telegram';
+import { type TgLink } from '@/common/telegram/types';
+import { useMainButton } from '@/common/telegram/useMainButton';
+import { type TrasferAsset } from '@/common/types';
+import { backupGifts } from '@/common/utils/gift';
+import { createGiftWallet } from '@/common/wallet';
+import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 
-export default function CreateGiftPage() {
+type Props = {
+  botUrl: string;
+  appName: string;
+};
+
+export default function CreateGiftPage({ botUrl, appName }: Props) {
   const { BackButton, webApp } = useTelegram();
   const { hideMainButton } = useMainButton();
   const { handleSendGift } = useExtrinsic();
@@ -20,8 +26,11 @@ export default function CreateGiftPage() {
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
+  // TODO refactor
   useEffect(() => {
-    if (!selectedAsset) return;
+    if (!selectedAsset) {
+      return;
+    }
 
     BackButton?.hide();
     hideMainButton();
@@ -31,9 +40,17 @@ export default function CreateGiftPage() {
       await handleSendGift(selectedAsset as TrasferAsset, wallet.address)
         .then(() => {
           backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
-          setLink(createTgLink(wallet.secret, selectedAsset?.asset?.symbol as string, selectedAsset?.amount as string));
+          setLink(
+            createTgLink({
+              botUrl,
+              appName,
+              secret: wallet.secret,
+              symbol: selectedAsset?.asset?.symbol as string,
+              amount: selectedAsset?.amount as string,
+            }),
+          );
         })
-        .catch((error) => alert(`Error: ${error.message}\nTry to relaod`));
+        .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
     })();
 
     return () => {
@@ -49,12 +66,12 @@ export default function CreateGiftPage() {
 
   return (
     <div className="grid items-end justify-center h-[93vh]">
-      <Player
+      <LottiePlayer
         src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
         keepLastFrame
         autoplay
         className="mb-3 w-[256px] h-[256px]"
-        onEvent={(event) => handleOnEvent(event)}
+        onEvent={event => handleOnEvent(event)}
       />
       {loading || !link ? (
         <>

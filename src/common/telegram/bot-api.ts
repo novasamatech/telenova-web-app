@@ -1,16 +1,16 @@
-import { WebApp } from '@twa-dev/types';
-import { HexString } from '../types';
+import { type WebApp } from '@twa-dev/types';
+
+import { type HexString } from '../types';
+
 import { getMessageFactory } from './message-factory';
-import { ITelegramBotApi } from './types';
+import { type ITelegramBotApi } from './types';
 
-const SUBMIT_WALLET_PATH = '/submit/wallet';
+const SUBMIT_WALLET_PATH = 'submit/wallet';
 
-export const getTelegramBotApi = (webApp: WebApp): ITelegramBotApi => {
+export const getTelegramBotApi = (webApp: WebApp, baseUrl: string): ITelegramBotApi => {
   const messageFactory = getMessageFactory(webApp);
 
   async function submitWallet(publicKey: HexString): Promise<void> {
-    const baseUrl = process.env.NEXT_PUBLIC_BOT_API_URL;
-
     console.info(`API base url ${baseUrl}`);
 
     if (!baseUrl) {

@@ -1,22 +1,39 @@
-import { WebApp } from '@twa-dev/types';
-import { HexString } from '@common/types';
-import { getTelegramBotApi } from './bot-api';
-import { TgLink } from './types';
+import { type WebApp } from '@twa-dev/types';
 
-export const completeOnboarding = async (publicKey: HexString, webApp: WebApp): Promise<void> => {
+import { type HexString } from '@/common/types';
+
+import { getTelegramBotApi } from './bot-api';
+import { type TgLink } from './types';
+
+type CompleteOnboardingParams = {
+  publicKey: HexString;
+  webApp: WebApp;
+  baseUrl: string;
+};
+
+export const completeOnboarding = async ({ publicKey, webApp, baseUrl }: CompleteOnboardingParams): Promise<void> => {
   try {
-    const botApi = getTelegramBotApi(webApp);
+    const botApi = getTelegramBotApi(webApp, baseUrl);
     await botApi.submitWallet(publicKey);
   } catch (error) {
     console.error(error);
   }
 };
 
-export const createTgLink = (secret: string, symbol: string, amount: string): TgLink => {
-  const url = `https://t.me/${process.env.NEXT_PUBLIC_BOT_ADDRESS}/${process.env.NEXT_PUBLIC_WEB_APP_ADDRESS}?startapp=${secret}_${symbol}`;
-  const text = `\nHey, I have sent you ${+amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
+type CreateTgLinkParams = {
+  secret: string;
+  symbol: string;
+  amount: string;
+  botUrl: string;
+  appName: string;
+};
 
-  return { url, text };
+export const createTgLink = ({ secret, symbol, amount, botUrl, appName }: CreateTgLinkParams): TgLink => {
+  const text = `\nHey, I have sent you ${+amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
+  const url = new URL(`/${botUrl}/${appName}`, 'https://t.me');
+  url.searchParams.set('startapp', `${secret}_${symbol}`);
+
+  return { url: url.toString(), text };
 };
 
 export const navigateTranferById = (webApp: WebApp, link: TgLink): void => {
@@ -32,7 +49,9 @@ export const openLink = (link: string, webApp: WebApp) => {
 };
 
 export const isOpenInWeb = (platform?: string): boolean => {
-  if (!platform) return true;
+  if (!platform) {
+    return true;
+  }
   const webPlatforms = ['web', 'weba', 'webk'];
   const isWebPlatform = webPlatforms.includes(platform);
 

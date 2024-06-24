@@ -1,9 +1,11 @@
-import { WebApp } from '@twa-dev/types';
+import { useEffect } from 'react';
 
+import { type WebApp } from '@twa-dev/types';
+
+import { navigateTranferById } from '@/common/telegram';
+import { type TgLink } from '@/common/telegram/types';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { BodyText, TitleText } from '@/components';
-import { navigateTranferById } from '@/common/telegram';
-import { TgLink } from '@/common/telegram/types';
 
 type GiftDetailsProps = {
   link: TgLink | null;
@@ -12,9 +14,13 @@ type GiftDetailsProps = {
 
 export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
   const { addMainButton } = useMainButton();
-  if (!link) return;
+  if (!link) {
+    return;
+  }
 
-  addMainButton(() => navigateTranferById(webApp, link), 'Send to contact');
+  useEffect(() => {
+    addMainButton(() => navigateTranferById(webApp, link), 'Send to contact');
+  }, [webApp, link]);
 
   return (
     <>

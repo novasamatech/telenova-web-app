@@ -1,8 +1,9 @@
 import { BN } from '@polkadot/util';
 
-import { Asset, Connection } from '@common/chainRegistry/types';
-import { Address } from '@common/types';
-import { IAssetBalance } from './types';
+import { type Asset, type Connection } from '@/common/chainRegistry/types';
+import { type Address } from '@/common/types';
+
+import { type IAssetBalance } from './types';
 
 export interface IBalanceService {
   subscribe: (address: Address, onUpdate: (result: IAssetBalance) => void) => Promise<() => void>;
@@ -53,7 +54,7 @@ export const createBalanceService = (connection: Connection): IBalanceService =>
     asset: Asset,
     onUpdate: (result: IAssetBalance) => void,
   ): Promise<() => void> {
-    return connection.api.query.assets.account.multi([[asset.typeExtras?.assetId, address]], (data) => {
+    return connection.api.query.assets.account.multi([[asset.typeExtras?.assetId, address]], data => {
       const balance = data[0].isNone ? '0' : data[0].unwrap().balance.toString();
 
       // No frozen and lock for statemine

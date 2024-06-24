@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 
+import { type IconNames } from '../Icon/types';
+
 import { cnTw } from '@/common/utils/twMerge';
 import { BodyText, HelpText, Icon, Plate } from '@/components';
-import { IconNames } from '../Icon/types';
 
 type Props = {
   text: string;

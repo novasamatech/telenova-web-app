@@ -1,12 +1,19 @@
-import { MediumTitle, HelpText, Icon, Plate } from '@/components';
-import { Gift, GiftStatus } from '@/common/types';
+import { type Gift, GiftStatus } from '@/common/types';
+import { cnTw } from '@/common/utils';
+import { HelpText, Icon, MediumTitle, Plate } from '@/components';
 
 const GiftPlate = ({ gift, isClaimed }: { gift: Gift; isClaimed: boolean }) => {
   const date = new Date(gift.timestamp).toLocaleString();
 
   return (
     <Plate className="mb-2 grid grid-cols-[40px,1fr,auto] items-center gap-x-3">
-      <Icon name="Gift" className={`w-10 h-10 ${isClaimed ? 'text-bg-icon-accent-primary' : 'text-text-hint'}`} />
+      <Icon
+        name="Gift"
+        className={cnTw(`w-10 h-10`, {
+          'text-bg-icon-accent-primary': isClaimed,
+          'text-text-hint': !isClaimed,
+        })}
+      />
       <div>
         <MediumTitle>
           {gift.balance} {gift.chainAsset?.symbol}

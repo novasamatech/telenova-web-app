@@ -19,7 +19,9 @@ export default function Countdown({ initValue, onFinish }: Props) {
     return () => clearTimeout(timer);
   }, [counter]);
 
-  if (counter === 0) return '';
+  if (counter === 0) {
+    return '';
+  }
 
   return <span>({counter} sec)</span>;
 }

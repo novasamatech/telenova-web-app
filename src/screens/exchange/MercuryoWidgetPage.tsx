@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTelegram, useGlobalContext } from '@common/providers';
-import { Paths } from '@/common/routing';
-import { handleWidget } from '@/common/utils/exchange';
+import { $path } from 'remix-routes';
+
+import { useGlobalContext, useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
 import { useMainButton } from '@/common/telegram/useMainButton';
+import { handleWidget } from '@/common/utils/exchange';
 import { MediumTitle } from '@/components/Typography';
 
-export default function MercuryoWidgetPage() {
+type Props = {
+  mercuryoSecret: string;
+  mercuryoWidgetId: string;
+};
+
+export default function MercuryoWidgetPage({ mercuryoSecret, mercuryoWidgetId }: Props) {
+  const [root, setRoot] = useState<HTMLElement | null>(null);
   const { BackButton, webApp } = useTelegram();
   const navigate = useNavigate();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
@@ -17,20 +24,30 @@ export default function MercuryoWidgetPage() {
 
   useEffect(() => {
     BackButton?.show();
-    const callback = () => navigate(Paths.EXCHANGE_SELECT);
+    const callback = () => navigate($path('/exchange/select'));
     BackButton?.onClick(callback);
-    if (!selectedAsset || isOpenInWeb(webApp!.platform)) return;
+    if (!selectedAsset || isOpenInWeb(webApp!.platform) || !root) {
+      return;
+    }
 
-    handleWidget(selectedAsset, handleStatus, handleSell);
+    handleWidget({
+      root,
+      returnPage: $path('/dashboard'),
+      secret: mercuryoSecret,
+      widgetId: mercuryoWidgetId,
+      selectedAsset,
+      handleStatus,
+      handleSell,
+    });
 
     return () => {
       BackButton?.offClick(callback);
     };
-  }, []);
+  }, [root]);
   useEffect(() => {
     if (isSendBtnVisible) {
       addMainButton(() => {
-        navigate(Paths.TRANSFER_AMOUNT);
+        navigate($path('/transfer/direct/amount'));
       }, `Send ${selectedAsset?.asset?.symbol} to sell`);
     }
 
@@ -41,18 +58,18 @@ export default function MercuryoWidgetPage() {
 
   const handleStatus = (data: any) => {
     if (data.status === 'paid' || data.status === 'new') {
-      BackButton?.onClick(() => navigate(Paths.DASHBOARD));
+      BackButton?.onClick(() => navigate($path('/dashboard')));
     }
   };
 
   const handleSell = (data: any) => {
     setIsSendBtnVisible(true);
-    setSelectedAsset((prev) => ({ ...prev, destinationAddress: data.address, amount: data.amount }));
+    setSelectedAsset(prev => ({ ...prev, destinationAddress: data.address, amount: data.amount }));
   };
 
   return (
     <>
-      <div className="w-full h-[95svh]" id="mercuryo-widget">
+      <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
         {isOpenInWeb(webApp?.platform) && (
           <div>
             <MediumTitle align="center">

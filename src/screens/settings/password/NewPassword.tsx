@@ -2,12 +2,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import secureLocalStorage from 'react-secure-storage';
 
+import { $path } from 'remix-routes';
+
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { Paths } from '@/common/routing';
-import { PasswordForm, TitleText } from '@/components';
-import { backupMnemonic, getStoreName } from '@/common/wallet';
 import { MNEMONIC_STORE } from '@/common/utils/constants';
+import { backupMnemonic, getStoreName } from '@/common/wallet';
+import { PasswordForm, TitleText } from '@/components';
 
 export default function NewPasswordPage() {
   const { BackButton } = useTelegram();
@@ -15,7 +16,7 @@ export default function NewPasswordPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const callback = () => navigate(Paths.SETTINGS_CHANGE_PASSWORD);
+    const callback = () => navigate($path('/settings/password/change'));
     BackButton?.show();
     BackButton?.onClick(callback);
     mainButton?.show();
@@ -30,7 +31,7 @@ export default function NewPasswordPage() {
   const handleSubmit = (password: string) => {
     mainButton?.enable();
     const mainCallback = () => {
-      navigate(Paths.SETTINGS_PASSWORD_CONFIRMATION);
+      navigate($path('/settings/password/confirmation'));
       const mnemonic = secureLocalStorage.getItem(getStoreName(MNEMONIC_STORE));
       backupMnemonic(mnemonic as string, password);
     };

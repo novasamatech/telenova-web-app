@@ -1,4 +1,4 @@
-import { ChainId } from '@/common/types';
+import { type ChainId } from '@/common/types';
 
 export type GetAssetHubFeeParam = {
   chainId: ChainId;
@@ -7,9 +7,11 @@ export type GetAssetHubFeeParam = {
   address?: string;
 };
 
-export type GetTransferFee = (
-  params: GetAssetHubFeeParam,
-) => Promise<{ transferDotFee: number; dotED: number; totalDotFee: number }>;
+export type GetTransferFee = (params: GetAssetHubFeeParam) => Promise<{
+  transferDotFee: number;
+  dotED: number;
+  totalDotFee: number;
+}>;
 
 export type GetAssetHubGiftFee = (params: GetAssetHubFeeParam) => Promise<{ totalDotFee: number }>;
 
