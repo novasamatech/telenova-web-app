@@ -1,4 +1,4 @@
-import { type FC, useEffect } from 'react';
+import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
@@ -9,7 +9,7 @@ import { $params, $path } from 'remix-routes';
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic.tsx';
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { pickAsset } from '@/common/utils';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { AmountDetails } from '@/components/AmountDetails.tsx';
@@ -22,7 +22,6 @@ const Page: FC = () => {
   const { chainId, assetId, address } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
-  const { hideMainButton, mainButton, reset, addMainButton } = useMainButton();
   const selectedAsset = pickAsset({ assets, chainId, assetId });
 
   const {
@@ -37,38 +36,21 @@ const Page: FC = () => {
     isAmountValid,
   } = useAmountLogic({ selectedAsset });
 
-  useEffect(() => {
-    mainButton.setText('Continue');
-    mainButton.show();
-    mainButton.disable();
-
-    return hideMainButton;
-  }, []);
-
-  useEffect(() => {
-    if (!isAmountValid || !Number(fee) || isAccountTerminate || isPending) {
-      mainButton.disable();
-
-      return;
-    }
-
-    mainButton.enable();
-    addMainButton(() => {
-      navigate(
-        $path('/transfer/direct/:chainId/:assetId/:address/:amount/confirmation', {
-          chainId,
-          assetId,
-          address,
-          amount,
-        }),
-      );
-    }, 'Continue');
-
-    return reset;
-  }, [fee, isAmountValid, maxAmountToSend, isPending, isAccountTerminate]);
-
   return (
     <>
+      <MainButton
+        disabled={!isAmountValid || !Number(fee) || isAccountTerminate || isPending}
+        onClick={() => {
+          navigate(
+            $path('/transfer/direct/:chainId/:assetId/:address/:amount/confirmation', {
+              chainId,
+              assetId,
+              address,
+              amount,
+            }),
+          );
+        }}
+      />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
         <Identicon address={address} />

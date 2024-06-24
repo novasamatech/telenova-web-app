@@ -9,7 +9,7 @@ import { $params, $path } from 'remix-routes';
 import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { type ChainId } from '@/common/types';
 import { formatAmount, formatBalance, pickAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
@@ -35,7 +35,6 @@ const Page: FC = () => {
   const navigate = useNavigate();
   const { sendTransaction } = useExtrinsic();
   const { getAssetHubFee } = useAssetHub();
-  const { reset, addMainButton, mainButton } = useMainButton();
   const { assets } = useGlobalContext();
 
   const [fee, setFee] = useState<number>(0);
@@ -46,36 +45,25 @@ const Page: FC = () => {
     getAssetHubFee(chainId as ChainId, assetId, amount, address).then(setFee);
   }, []);
 
-  useEffect(() => {
+  const mainCallback = () => {
     if (!selectedAsset) {
       return;
     }
 
-    const mainCallback = async () => {
-      mainButton.showProgress(false);
-      await sendTransaction({
-        destinationAddress: address,
-        chainId: chainId as ChainId,
-        transferAll: false,
-        transferAmount: formatAmount(amount, selectedAsset.asset!.precision),
-        asset: selectedAsset.asset,
+    sendTransaction({
+      destinationAddress: address,
+      chainId: chainId as ChainId,
+      transferAll: false,
+      transferAmount: formatAmount(amount, selectedAsset.asset!.precision),
+      asset: selectedAsset.asset,
+    })
+      .then(() => {
+        navigate(
+          $path('/transfer/direct/:chainId/:assetId/:address/:amount/result', { chainId, assetId, amount, address }),
+        );
       })
-        .then(() => {
-          navigate(
-            $path('/transfer/direct/:chainId/:assetId/:address/:amount/result', { chainId, assetId, amount, address }),
-          );
-        })
-        .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
-    };
-
-    mainButton.show();
-    addMainButton(mainCallback, 'Confirm');
-
-    return () => {
-      mainButton.hideProgress();
-      reset();
-    };
-  }, [selectedAsset]);
+      .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
+  };
 
   const symbol = selectedAsset?.asset?.symbol;
   const calculatedFee = formatBalance(fee.toString(), selectedAsset?.asset?.precision)?.formattedValue;
@@ -100,6 +88,7 @@ const Page: FC = () => {
 
   return (
     <>
+      <MainButton text="Confirm" onClick={mainCallback} />
       <BackButton
         onClick={() =>
           navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { chainId, assetId, address }))

@@ -6,20 +6,24 @@ import { setupStaticController } from './static.js';
 
 const app = express();
 
+const production = process.env.NODE_ENV === 'production';
+
 // Special permission for mercuryo widget
-app.use(
-  expressCspHeader({
-    directives: {
-      'frame-src': [SELF, 'https://widget.mercuryo.io'],
-      'frame-ancestors': [SELF, 'https://widget.mercuryo.io'],
-    },
-  }),
-);
+if (production) {
+  app.use(
+    expressCspHeader({
+      directives: {
+        'frame-src': [SELF, 'https://widget.mercuryo.io'],
+        'frame-ancestors': [SELF, 'https://widget.mercuryo.io'],
+      },
+    }),
+  );
+}
 
 app.disable('x-powered-by');
 
 setupHealthcheckController(app);
-await setupStaticController(app, process.env.NODE_ENV === 'production');
+await setupStaticController(app, production);
 
 const port = process.env.PORT || 3000;
 app.listen(port, '0.0.0.0', () => {

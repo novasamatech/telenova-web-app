@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { type FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
@@ -6,9 +6,9 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { Button } from '@nextui-org/react';
 import { $params, $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { validateAddress } from '@/common/utils';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
 
@@ -21,29 +21,9 @@ const Page: FC = () => {
 
   const navigate = useNavigate();
   const { webApp } = useTelegram();
-  const { hideMainButton, reset, addMainButton, mainButton } = useMainButton();
 
-  const { setSelectedAsset } = useGlobalContext();
   const [address, setAddress] = useState('');
   const [isAddressValid, setIsAddressValid] = useState(true);
-
-  useEffect(() => {
-    const callback = () => {
-      setSelectedAsset(prev => ({ ...prev!, destinationAddress: address }));
-      navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { address, chainId, assetId }));
-    };
-
-    if (address.length) {
-      isAddressValid ? mainButton.enable() : mainButton.disable();
-      addMainButton(callback);
-    } else {
-      hideMainButton();
-    }
-
-    return () => {
-      reset();
-    };
-  }, [address, isAddressValid]);
 
   const handleChange = (value: string) => {
     setAddress(value);
@@ -60,6 +40,13 @@ const Page: FC = () => {
 
   return (
     <>
+      <MainButton
+        hidden={!address.length}
+        disabled={!isAddressValid}
+        onClick={() => {
+          navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { address, chainId, assetId }));
+        }}
+      />
       <BackButton onClick={() => navigate($path('/transfer/direct/token-select'))} />
       <div className="flex flex-col">
         <Input

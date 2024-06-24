@@ -31,11 +31,7 @@ const Page: FC = () => {
     return <LoadingScreen />;
   }
 
-  return (
-    <div className="flex flex-col items-center text-center">
-      {mnemonic ? <RestoreWalletPage mnemonic={mnemonic} /> : <OnboardingStartPage />}
-    </div>
-  );
+  return mnemonic ? <RestoreWalletPage mnemonic={mnemonic} /> : <OnboardingStartPage />;
 };
 
 export default Page;

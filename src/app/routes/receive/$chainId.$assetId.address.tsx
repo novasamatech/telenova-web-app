@@ -1,4 +1,4 @@
-import { type FC, useEffect } from 'react';
+import { type FC } from 'react';
 import { QRCode } from 'react-qrcode-logo';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,7 +9,6 @@ import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { pickAsset, shareQrAddress } from '@/common/utils';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/components';
 
@@ -21,14 +20,9 @@ const Page: FC = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { hideMainButton } = useMainButton();
   const { assets } = useGlobalContext();
 
   const selectedAsset = pickAsset({ assets, chainId, assetId });
-
-  useEffect(() => {
-    hideMainButton();
-  }, []);
 
   if (!selectedAsset || !selectedAsset.asset) {
     return null;

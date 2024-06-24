@@ -7,7 +7,6 @@ import { $path } from 'remix-routes';
 import { useBalances } from '@/common/balances';
 import { type Chain, useChainRegistry } from '@/common/chainRegistry';
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { getPrice, getTotalBalance, mapAssetAccountsFromChains, updateAssetsBalance } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
@@ -30,8 +29,7 @@ const Page: FC = () => {
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance, unsubscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
-  const { user, BackButton } = useTelegram();
-  const { hideMainButton } = useMainButton();
+  const { user } = useTelegram();
 
   const [chains, setChains] = useState<Chain[]>([]);
 
@@ -39,12 +37,6 @@ const Page: FC = () => {
     resetWallet(clearLocal);
     navigate($path('/onboarding'));
   }
-
-  // Managing telegram buttons
-  useEffect(() => {
-    hideMainButton();
-    BackButton?.hide();
-  }, []);
 
   // Fetching chains
   useEffect(() => {

@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { type Gift } from '@/common/types';
 import { getGifts } from '@/common/utils';
 import { useGifts } from '@/common/utils/hooks';
@@ -12,7 +11,6 @@ import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/componen
 
 const Page: FC = () => {
   const navigate = useNavigate();
-  const { hideMainButton } = useMainButton();
 
   const { getGiftsState } = useGifts();
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
@@ -20,8 +18,6 @@ const Page: FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    hideMainButton();
-
     const mapGifts = getGifts();
     if (!mapGifts) {
       return;

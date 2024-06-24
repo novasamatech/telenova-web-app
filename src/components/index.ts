@@ -31,6 +31,8 @@ import {
   TitleText,
 } from './Typography';
 
+export { CreatePasswordForm } from './CreatePasswordForm/CreatePasswordForm';
+
 export {
   TextBase,
   BodyText,

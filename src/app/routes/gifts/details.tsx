@@ -12,7 +12,6 @@ import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton.tsx';
 import { type TgLink } from '@/common/telegram/types.ts';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { GiftDetails, Icon } from '@/components';
 
 export type SearchParams = {
@@ -34,13 +33,10 @@ const Page: FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { webApp } = useTelegram();
-  const { mainButton } = useMainButton();
 
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
-    mainButton.show();
-
     setLink(
       createTgLink({
         secret: searchParams.get('seed') as string,

@@ -1,6 +1,8 @@
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
+import { type AnimationItem } from 'lottie-web';
 
 import { useChainRegistry } from '@/common/chainRegistry';
 import { type ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types';
@@ -10,10 +12,7 @@ import { useQueryService } from '@/common/queryService/QueryService';
 import { AssetType, type PublicKey } from '@/common/types';
 import { formatAmount, formatBalance, getGiftInfo } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
-import { BigTitle, Icon, Shimmering } from '@/components';
-
-// TODO replace with LottiePlayer
-const LazyLottie = lazy(() => import('react-lottie-player'));
+import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/components';
 
 enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -37,14 +36,12 @@ export default function GiftModal() {
   const { getAssetBySymbol, connectionStates } = useChainRegistry();
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
-
   const [isOpen, setIsOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [giftSymbol, setGiftSymbol] = useState('');
   const [giftBalance, setGiftBalance] = useState('');
   const [giftStatus, setGiftStatus] = useState<GIFT_STATUS | null>(null);
-
-  const lottieRef = useRef();
+  const [lottie, setLottie] = useState<AnimationItem | null>(null);
 
   const getGiftBalance = async (chain: ChainAsset, giftAddress: string) => {
     const timerID = setTimeout(() => {
@@ -109,9 +106,9 @@ export default function GiftModal() {
       return;
     }
     clearTimeout(timeoutId);
-    if (lottieRef.current) {
-      // @ts-expect-error no types
-      lottieRef.current.play();
+
+    if (lottie) {
+      lottie.play();
     }
 
     const { chainAddress, chain, keyring } = await getGiftInfo(
@@ -134,24 +131,27 @@ export default function GiftModal() {
       })
       .finally(() => {
         setIsGiftClaimed(true);
-        // @ts-expect-error no types
-        if (lottieRef.current && lottieRef.current.totalFrames - 1 === lottieRef.current.currentFrame) {
+        if (lottie && lottie.totalFrames - 1 === lottie.currentFrame) {
           setIsOpen(false);
         }
       });
   };
 
-  const handleFrame = () => {
-    // @ts-expect-error no types
-    if (lottieRef.current && lottieRef.current.currentFrame === 0) {
-      // @ts-expect-error no types
-      timeoutId = setTimeout(() => lottieRef.current && lottieRef.current.pause(), 3015);
-    }
-  };
+  const handlePlayerEvent = (e: PlayerEvent) => {
+    if (lottie) {
+      switch (e) {
+        case 'frame':
+          if (lottie.currentFrame === 0) {
+            timeoutId = setTimeout(() => lottie && lottie.pause(), lottie.getDuration());
+          }
+          break;
 
-  const handleComplete = () => {
-    if (lottieRef.current && isGiftClaimed) {
-      setIsOpen(false);
+        case 'complete':
+          if (isGiftClaimed) {
+            setIsOpen(false);
+          }
+          break;
+      }
     }
   };
 
@@ -178,17 +178,14 @@ export default function GiftModal() {
               </ModalHeader>
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
-                  <Suspense>
-                    <LazyLottie
-                      path={`/gifs/Gift_claim_${giftSymbol}.json`}
-                      play
-                      className="w-[248px] h-[248px] m-auto"
-                      ref={lottieRef}
-                      loop={false}
-                      onEnterFrame={handleFrame}
-                      onComplete={handleComplete}
-                    />
-                  </Suspense>
+                  <LottiePlayer
+                    className="w-[248px] h-[248px] m-auto"
+                    src={`/gifs/Gift_claim_${giftSymbol}.json`}
+                    autoplay
+                    loop={false}
+                    lottieRef={setLottie}
+                    onEvent={handlePlayerEvent}
+                  />
                 ) : (
                   <Icon name="GiftClaimed" className="w-[248px] h-[248px] m-auto" />
                 )}

@@ -1,10 +1,9 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
-import { useMainButton } from '@/common/telegram/useMainButton';
+import { MainButton } from '@/common/telegram/MainButton.tsx';
 import Icon from '@/components/Icon/Icon';
 import { type IconNames } from '@/components/Icon/types';
 import { BodyText, MediumTitle, TitleText } from '@/components/Typography';
@@ -29,21 +28,7 @@ const welcomeData = [
 
 export const OnboardingStartPage = () => {
   const navigate = useNavigate();
-  const { mainButton, addMainButton, reset } = useMainButton();
   const { user, startParam } = useTelegram();
-
-  useEffect(() => {
-    mainButton.enable();
-    addMainButton(() => {
-      navigate($path('/onboarding/password'));
-      mainButton.showProgress(false);
-    });
-
-    return () => {
-      reset();
-      mainButton.disable();
-    };
-  }, []);
 
   const headerText = startParam
     ? `Hey ${user?.first_name || 'friend'}!\nYou have received a gift!`
@@ -51,26 +36,31 @@ export const OnboardingStartPage = () => {
 
   return (
     <>
-      <Icon name="Welcome" size={128} className="mx-auto" />
-      <pre>
-        <TitleText className="mt-4 mb-2">{headerText}</TitleText>
-      </pre>
-      {startParam && (
-        <BodyText className="text-text-hint px-4 mb-2">To claim it, let’s create a wallet. It’s super quick.</BodyText>
-      )}
-      {welcomeData.map(({ title, text, icon }) => (
-        <div key={title} className="flex gap-4 px-4 mt-6">
-          <span>
-            <Icon name={icon as IconNames} size={48} />
-          </span>
-          <div>
-            <MediumTitle>{title}</MediumTitle>
-            <BodyText className="text-text-hint mt-1" align="left">
-              {text}
-            </BodyText>
+      <MainButton onClick={() => navigate($path('/onboarding/password'))} />
+      <div className="flex flex-col items-center text-center">
+        <Icon name="Welcome" size={128} className="mx-auto" />
+        <pre>
+          <TitleText className="mt-4 mb-2">{headerText}</TitleText>
+        </pre>
+        {startParam && (
+          <BodyText className="text-text-hint px-4 mb-2">
+            To claim it, let’s create a wallet. It’s super quick.
+          </BodyText>
+        )}
+        {welcomeData.map(({ title, text, icon }) => (
+          <div key={title} className="flex gap-4 px-4 mt-6">
+            <span>
+              <Icon name={icon as IconNames} size={48} />
+            </span>
+            <div>
+              <MediumTitle>{title}</MediumTitle>
+              <BodyText className="text-text-hint mt-1" align="left">
+                {text}
+              </BodyText>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
 };

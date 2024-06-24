@@ -9,7 +9,7 @@ import { $path } from 'remix-routes';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
+import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { handleWidget } from '@/common/utils';
 import { MediumTitle } from '@/components';
 
@@ -29,7 +29,6 @@ const Page: FC = () => {
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
   const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
   const [done, setDone] = useState(false);
-  const { hideMainButton, addMainButton } = useMainButton();
 
   useEffect(() => {
     if (!selectedAsset || isOpenInWeb(webApp!.platform) || !root) {
@@ -46,25 +45,6 @@ const Page: FC = () => {
       handleSell,
     });
   }, [root]);
-  useEffect(() => {
-    if (isSendBtnVisible && selectedAsset) {
-      addMainButton(() => {
-        if (selectedAsset.address && selectedAsset.chainId && selectedAsset.asset?.assetId) {
-          navigate(
-            $path('/transfer/direct/:chainId/:assetId/:address/amount', {
-              assetId: selectedAsset.asset.assetId,
-              chainId: selectedAsset.chainId,
-              address: selectedAsset.address,
-            }),
-          );
-        }
-      }, `Send ${selectedAsset.asset?.symbol} to sell`);
-    }
-
-    return () => {
-      hideMainButton();
-    };
-  }, [isSendBtnVisible]);
 
   const handleStatus = (data: any) => {
     if (data.status === 'paid' || data.status === 'new') {
@@ -79,6 +59,21 @@ const Page: FC = () => {
 
   return (
     <>
+      <MainButton
+        text={`Send ${selectedAsset?.asset?.symbol} to sell`}
+        hidden={!isSendBtnVisible}
+        onClick={() => {
+          if (selectedAsset && selectedAsset.address && selectedAsset.chainId && selectedAsset.asset?.assetId) {
+            navigate(
+              $path('/transfer/direct/:chainId/:assetId/:address/amount', {
+                assetId: selectedAsset.asset.assetId,
+                chainId: selectedAsset.chainId,
+                address: selectedAsset.address,
+              }),
+            );
+          }
+        }}
+      />
       <BackButton onClick={() => (done ? navigate($path('/dashboard')) : navigate($path('/exchange/select')))} />
       <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
         {isOpenInWeb(webApp?.platform) && (

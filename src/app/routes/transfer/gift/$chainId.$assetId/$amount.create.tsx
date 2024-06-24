@@ -12,7 +12,6 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types.ts';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { type TrasferAsset } from '@/common/types';
 import { backupGifts, pickAsset } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
@@ -36,7 +35,6 @@ const Page: FC = () => {
   const { botUrl, appName, chainId, assetId, amount } = useLoaderData<typeof clientLoader>();
 
   const { webApp } = useTelegram();
-  const { hideMainButton } = useMainButton();
   const { handleSendGift } = useExtrinsic();
   const { assets } = useGlobalContext();
   const [loading, setLoading] = useState(true);
@@ -49,8 +47,6 @@ const Page: FC = () => {
     if (!selectedAsset) {
       return;
     }
-
-    hideMainButton();
 
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
     (async function () {
@@ -78,38 +74,40 @@ const Page: FC = () => {
   };
 
   return (
-    <div className="grid items-end justify-center h-[93vh]">
-      <LottiePlayer
-        className="mb-3"
-        src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
-        autoplay
-        keepLastFrame
-        onEvent={handleLottieEvent}
-      />
-      {loading || !link ? (
-        <>
-          <div className="h-[100px] mb-auto">
-            <div className="opacity-0 animate-text mt-3">
-              <HeadlineText className="text-text-hint" align="center">
-                Adding tokens...
-              </HeadlineText>
+    <>
+      <div className="grid items-end justify-center h-[93vh]">
+        <LottiePlayer
+          className="mb-3"
+          src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
+          autoplay
+          keepLastFrame
+          onEvent={handleLottieEvent}
+        />
+        {loading || !link ? (
+          <>
+            <div className="h-[100px] mb-auto">
+              <div className="opacity-0 animate-text mt-3">
+                <HeadlineText className="text-text-hint" align="center">
+                  Adding tokens...
+                </HeadlineText>
+              </div>
+              <div className="mt-5 opacity-0 delay-1">
+                <HeadlineText className="text-text-hint delay-1" align="center">
+                  Sprinkling confetti
+                </HeadlineText>
+              </div>
+              <div className="opacity-0 delay-2 m-[-10px]">
+                <HeadlineText className="text-text-hint delay-2" align="center">
+                  Wrapping up the gift box
+                </HeadlineText>
+              </div>
             </div>
-            <div className="mt-5 opacity-0 delay-1">
-              <HeadlineText className="text-text-hint delay-1" align="center">
-                Sprinkling confetti
-              </HeadlineText>
-            </div>
-            <div className="opacity-0 delay-2 m-[-10px]">
-              <HeadlineText className="text-text-hint delay-2" align="center">
-                Wrapping up the gift box
-              </HeadlineText>
-            </div>
-          </div>
-        </>
-      ) : (
-        <GiftDetails link={link} webApp={webApp as WebApp} />
-      )}
-    </div>
+          </>
+        ) : (
+          <GiftDetails link={link} webApp={webApp as WebApp} />
+        )}
+      </div>
+    </>
   );
 };
 

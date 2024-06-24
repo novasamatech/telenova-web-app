@@ -4,13 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { useMainButton } from '@/common/telegram/useMainButton.ts';
 import { BACKUP_DATE } from '@/common/utils';
 import { getStoreName } from '@/common/wallet';
 import { BodyText, LinkCard, TitleText } from '@/components';
 
 const Page: FC = () => {
-  const { hideMainButton } = useMainButton();
   const navigate = useNavigate();
   const [backupDate, setBackupDate] = useState('');
 
@@ -18,7 +16,6 @@ const Page: FC = () => {
     const storeDate = localStorage.getItem(getStoreName(BACKUP_DATE));
     const date = storeDate ? new Date(+storeDate).toUTCString() : '';
     setBackupDate(date);
-    hideMainButton();
   }, []);
 
   return (
@@ -31,7 +28,7 @@ const Page: FC = () => {
           it!) and never share it with anyone!
         </BodyText>
         <LinkCard
-          href={$path('/settings/password/change')}
+          href={$path('/settings/password/current')}
           className="grid-cols-[1fr,auto]"
           text="Change Password"
           showArrow
