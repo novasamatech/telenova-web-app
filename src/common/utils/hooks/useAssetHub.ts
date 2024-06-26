@@ -1,12 +1,12 @@
+import type { GetAssetHubGiftFee, GetTransferFee } from './types';
+
 import { formatBalance } from '../balance';
 import { ZERO_BALANCE } from '../constants';
 
-import { type Asset } from '@/common/chainRegistry/types';
+import type { Asset } from '@/common/chainRegistry/types';
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { type ChainId } from '@/common/types';
-
-import { type GetAssetHubGiftFee, type GetTransferFee } from './types';
+import type { ChainId } from '@/common/types';
 
 const DOT_ASSET_ID = '0';
 
@@ -39,9 +39,9 @@ export const useAssetHub = () => {
     });
 
     // Add more fee if it's a gift
-    const giftDotFee = totalDotFee + transferDotFee + dotED;
-
-    return { totalDotFee: giftDotFee };
+    return {
+      totalDotFee: totalDotFee + transferDotFee + dotED,
+    };
   };
 
   const getAssetHubFee = async (
@@ -50,17 +50,15 @@ export const useAssetHub = () => {
     transferAmmount: string,
     address?: string,
     isGift?: boolean,
-  ) => {
+  ): Promise<number> => {
     const { totalDotFee } = isGift
       ? await getGiftFee({ chainId, assetId, transferAmmount, address })
       : await getTransferFee({ chainId, assetId, transferAmmount, address });
 
-    const totalConvertedFee = await assetConversion(chainId, totalDotFee, assetId);
-
-    return totalConvertedFee;
+    return assetConversion(chainId, totalDotFee, assetId);
   };
 
-  const getGiftBalanceStatemine = async (chainId: ChainId, asset: Asset, address: string) => {
+  const getGiftBalanceStatemine = async (chainId: ChainId, asset: Asset, address: string): Promise<string> => {
     const assetId = asset.typeExtras!.assetId;
 
     const giftBalance = await getFreeBalanceStatemine(address, chainId, assetId);
@@ -74,9 +72,7 @@ export const useAssetHub = () => {
       return ZERO_BALANCE;
     }
 
-    const formattedBalance = formatBalance(rawBalance.toString(), asset.precision).formattedValue;
-
-    return formattedBalance;
+    return formatBalance(rawBalance.toString(), asset.precision).formattedValue;
   };
 
   return { getAssetHubFee, getGiftBalanceStatemine };

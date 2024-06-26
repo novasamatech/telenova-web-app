@@ -38,18 +38,18 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     touched && !transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit,
   );
 
-  const handleAmountFee = async (selectedAsset: TrasferAsset, transferAmmount: string) => {
-    const fee = isStatemineAsset(selectedAsset.asset.type)
-      ? await getAssetHubFee(
-          selectedAsset.chainId,
-          selectedAsset.asset.typeExtras!.assetId,
-          transferAmmount,
-          selectedAsset.address,
-          selectedAsset?.isGift,
-        )
-      : await handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmmount);
+  const handleAmountFee = (selectedAsset: TrasferAsset, transferAmmount: string): Promise<number> => {
+    if (isStatemineAsset(selectedAsset.asset.type)) {
+      return getAssetHubFee(
+        selectedAsset.chainId,
+        selectedAsset.asset.typeExtras!.assetId,
+        transferAmmount,
+        selectedAsset.address,
+        selectedAsset?.isGift,
+      );
+    }
 
-    return fee;
+    return handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmmount);
   };
 
   const getMaxAmount = async (selectedAsset: TrasferAsset) => {

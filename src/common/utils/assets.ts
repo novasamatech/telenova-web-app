@@ -12,11 +12,7 @@ export const getAssetId = (asset: Asset): string => {
   return asset.assetId.toString();
 };
 
-export const isStatemineAsset = (type?: string) => {
-  if (!type) {
-    return false;
-  }
-
+export const isStatemineAsset = (type?: string): boolean => {
   return type === AssetType.STATEMINE;
 };
 
