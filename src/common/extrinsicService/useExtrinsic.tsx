@@ -11,7 +11,7 @@ type SendTransaction = {
   destinationAddress: string;
   chainId: ChainId;
   asset: Asset;
-  transferAmmount?: string;
+  transferAmount?: string;
   transferAll?: boolean;
   keyring?: KeyringPair;
 };
@@ -26,41 +26,39 @@ export function useExtrinsic() {
   async function sendTransaction({
     destinationAddress,
     chainId,
-    transferAmmount,
+    transferAmount,
     asset,
     transferAll,
     keyring,
   }: SendTransaction) {
     const address = decodeAddress(destinationAddress);
     const assetId = getAssetId(asset);
-    const args = {
-      dest: address,
-      value: transferAmmount,
-      asset: assetId,
-    };
     let signOptions;
     let transactionType = TransactionType.TRANSFER;
 
     if (transferAll) {
       transactionType = TransactionType.TRANSFER_ALL;
     }
-    if (asset?.type === AssetType.STATEMINE) {
+    if (asset.type === AssetType.STATEMINE) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
     }
 
-    return await submitExtrinsic({
-      chainId: chainId,
-      transaction: {
-        type: transactionType,
-        args,
-      },
+    return submitExtrinsic({
+      chainId,
       signOptions,
       keyring,
+      transaction: {
+        type: transactionType,
+        args: {
+          dest: address,
+          value: transferAmount,
+          asset: assetId,
+        },
+      },
     }).then(hash => {
-      if (!hash) {
-        throw Error('Something went wrong');
-      }
+      if (!hash) throw Error('Something went wrong');
+
       console.log('Success, Hash:', hash?.toString());
     });
   }
@@ -69,29 +67,29 @@ export function useExtrinsic() {
     { chainId, amount, transferAll, asset, fee }: TrasferAsset,
     giftTransferAddress: string,
   ): Promise<void> {
-    const transferAmmount = formatAmount(amount as string, asset.precision);
+    const transferAmount = formatAmount(amount as string, asset.precision);
 
-    if (isStatemineAsset(asset?.type)) {
+    if (isStatemineAsset(asset.type)) {
       // Fee is 2x the transfer fee - we add 1 fee to the transfer amount
-      const giftAmount = Math.ceil(+transferAmmount + fee! / 2).toString();
+      const giftAmount = Math.ceil(+transferAmount + fee! / 2).toString();
 
       return sendTransaction({
         chainId,
         asset,
         destinationAddress: giftTransferAddress,
-        transferAmmount: giftAmount,
+        transferAmount: giftAmount,
       });
     }
 
     const trasferAllFee = await handleFee(chainId, TransactionType.TRANSFER_ALL);
-    const giftAmount = (+transferAmmount + trasferAllFee).toString();
+    const giftAmount = (+transferAmount + trasferAllFee).toString();
 
     return sendTransaction({
       chainId,
       asset,
       transferAll,
       destinationAddress: giftTransferAddress,
-      transferAmmount: giftAmount,
+      transferAmount: giftAmount,
     });
   }
 

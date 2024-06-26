@@ -38,37 +38,36 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     touched && !transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit,
   );
 
-  const handleAmountFee = (selectedAsset: TrasferAsset, transferAmmount: string): Promise<number> => {
+  const handleAmountFee = (selectedAsset: TrasferAsset, transferAmount: string): Promise<number> => {
     if (isStatemineAsset(selectedAsset.asset.type)) {
       return getAssetHubFee(
         selectedAsset.chainId,
         selectedAsset.asset.typeExtras!.assetId,
-        transferAmmount,
+        transferAmount,
         selectedAsset.address,
         selectedAsset?.isGift,
       );
     }
 
-    return handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmmount);
+    return handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmount);
   };
 
   const getMaxAmount = async (selectedAsset: TrasferAsset) => {
     const amount = selectedAsset.transferableBalance || '0';
     const fee = await handleAmountFee(selectedAsset, amount);
     const max = Math.max(+amount - fee, 0).toString();
-    const formattedMax = Number(formatBalance(max, selectedAsset.asset.precision).formattedValue).toFixed(5);
 
-    return formattedMax;
+    return Number(formatBalance(max, selectedAsset.asset.precision).formattedValue).toFixed(5);
   };
 
   async function getTransferDetails(selectedAsset: TrasferAsset, amount: string) {
-    const transferAmmount = formatAmount(amount || '0', selectedAsset.asset?.precision);
+    const transferAmount = formatAmount(amount || '0', selectedAsset.asset?.precision);
 
     const deposit = isStatemineAsset(selectedAsset.asset.type)
       ? await getExistentialDepositStatemine(selectedAsset.chainId, selectedAsset.asset.typeExtras!.assetId)
       : await getExistentialDeposit(selectedAsset.chainId);
 
-    const fee = await handleAmountFee(selectedAsset, transferAmmount);
+    const fee = await handleAmountFee(selectedAsset, transferAmount);
 
     return {
       fee,
@@ -141,9 +140,8 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
   }, [amount, isAmountValid, maxAmountToSend, isPending, isAccountTerminate]);
 
   const handleMaxSend = () => {
-    if (maxAmountToSend === '') {
-      return;
-    }
+    if (maxAmountToSend === '') return;
+
     setTransferAll(true);
     setTouched(true);
     setAmount(String(maxAmountToSend));

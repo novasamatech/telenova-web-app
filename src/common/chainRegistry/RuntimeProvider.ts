@@ -10,7 +10,7 @@ export const useRuntimeProvider = (): IRuntimeProviderService => {
   const metadataStorage = useRepository<ChainId, RuntimeMetadata>();
 
   const getMetadata = async (chainId: ChainId): Promise<RuntimeMetadata | undefined> => {
-    return await metadataStorage.fetch(chainId);
+    return metadataStorage.fetch(chainId);
   };
 
   const subscribeMetadata = (api: ApiPromise): UnsubscribePromise => {

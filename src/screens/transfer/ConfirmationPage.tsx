@@ -38,7 +38,7 @@ export default function ConfirmationPage() {
         destinationAddress: selectedAsset.destinationAddress!,
         chainId: selectedAsset.chainId!,
         transferAll: selectedAsset.transferAll,
-        transferAmmount: formatAmount(selectedAsset.amount!, selectedAsset.asset!.precision),
+        transferAmount: formatAmount(selectedAsset.amount!, selectedAsset.asset!.precision),
         asset: selectedAsset.asset!,
       })
         .then(() => {

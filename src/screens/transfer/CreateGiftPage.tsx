@@ -26,7 +26,7 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
-  // TODO refactor
+  // TODO: refactor
   useEffect(() => {
     if (!selectedAsset) {
       return;
@@ -36,22 +36,21 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
     hideMainButton();
 
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
-    (async function () {
-      await handleSendGift(selectedAsset as TrasferAsset, wallet.address)
-        .then(() => {
-          backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
-          setLink(
-            createTgLink({
-              botUrl,
-              appName,
-              secret: wallet.secret,
-              symbol: selectedAsset?.asset?.symbol as string,
-              amount: selectedAsset?.amount as string,
-            }),
-          );
-        })
-        .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
-    })();
+
+    handleSendGift(selectedAsset as TrasferAsset, wallet.address)
+      .then(() => {
+        backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
+        const tgLink = createTgLink({
+          botUrl,
+          appName,
+          secret: wallet.secret,
+          symbol: selectedAsset?.asset?.symbol as string,
+          amount: selectedAsset?.amount as string,
+        });
+
+        setLink(tgLink);
+      })
+      .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
 
     return () => {
       setSelectedAsset(null);
@@ -71,7 +70,7 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
         keepLastFrame
         autoplay
         className="mb-3 w-[256px] h-[256px]"
-        onEvent={event => handleOnEvent(event)}
+        onEvent={handleOnEvent}
       />
       {loading || !link ? (
         <>
