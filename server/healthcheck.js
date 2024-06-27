@@ -23,7 +23,7 @@ export const setupHealthcheckController = app => {
       });
     }
 
-    // TODO use zod schema instead
+    // TODO: use zod schema instead
     const requiredEnvVars = [
       'PUBLIC_WIDGET_SECRET',
       'PUBLIC_WIDGET_ID',

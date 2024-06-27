@@ -3,7 +3,7 @@ import { type ChainId } from '@/common/types';
 import { assetHub, kusama, polkadot, westend } from './knownChains';
 import { type Asset, type Chain, type ChainAsset, type IChainProviderService } from './types';
 
-// TODO change to chain.json
+// TODO: change to chain.json
 const chains = [polkadot, kusama, westend, assetHub];
 
 export const useChains = (): IChainProviderService => {

@@ -84,7 +84,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
         onDisconnected: chainId => {
           console.info('🔶 disconnected ==> ', chainId);
         },
-        getMetadata: async (chainId): Promise<RuntimeMetadata | undefined> => {
+        getMetadata: (chainId): Promise<RuntimeMetadata | undefined> => {
           return getMetadata(chainId);
         },
       };

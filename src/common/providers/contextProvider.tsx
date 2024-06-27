@@ -27,7 +27,7 @@ export const GlobalContext = createContext<IContext>({
   setAssetsPrices: () => {},
 });
 
-// TODO refactor this
+// TODO: refactor this
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [publicKey, setPublicKey] = useState<HexString>();
   const [assets, setAssets] = useState<AssetAccount[]>([]);
