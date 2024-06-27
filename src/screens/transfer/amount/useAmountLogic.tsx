@@ -5,7 +5,7 @@ import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { type TrasferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 
@@ -38,20 +38,20 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     touched && !transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit,
   );
 
-  const getFeeAmount = (selectedAsset: TrasferAsset, transferAmount: string): Promise<number> => {
+  const getFeeAmount = (selectedAsset: TransferAsset, transferAmount: string): Promise<number> => {
     if (isStatemineAsset(selectedAsset.asset.type)) {
       return getAssetHubFee(
         selectedAsset.chainId,
         selectedAsset.asset.typeExtras!.assetId,
         transferAmount,
-        selectedAsset.address,
+        selectedAsset.isGift,
       );
     }
 
     return getTransactionFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmount);
   };
 
-  const getMaxAmount = async (selectedAsset: TrasferAsset): Promise<string> => {
+  const getMaxAmount = async (selectedAsset: TransferAsset): Promise<string> => {
     const amount = selectedAsset.transferableBalance || '0';
     const fee = await getFeeAmount(selectedAsset, amount);
     const max = Math.max(+amount - fee, 0).toString();
@@ -59,7 +59,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     return Number(formatBalance(max, selectedAsset.asset.precision).formattedValue).toFixed(5);
   };
 
-  async function getTransferDetails(selectedAsset: TrasferAsset, amount: string) {
+  async function getTransferDetails(selectedAsset: TransferAsset, amount: string) {
     const transferAmount = formatAmount(amount || '0', selectedAsset.asset?.precision);
 
     const deposit = isStatemineAsset(selectedAsset.asset.type)
@@ -97,7 +97,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
 
   useEffect(() => {
     setPending(true);
-    getTransferDetails(selectedAsset as TrasferAsset, amount).then(({ fee, formattedDeposit }) => {
+    getTransferDetails(selectedAsset as TransferAsset, amount).then(({ fee, formattedDeposit }) => {
       setPending(false);
       setDeposit(formattedDeposit);
       setSelectedAsset(prev => ({ ...prev, fee }));
@@ -106,7 +106,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
 
   useEffect(() => {
     if (selectedAsset) {
-      getMaxAmount(selectedAsset as TrasferAsset).then(setMaxAmountToSend);
+      getMaxAmount(selectedAsset as TransferAsset).then(setMaxAmountToSend);
     }
   }, [selectedAsset]);
 

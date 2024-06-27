@@ -2,12 +2,12 @@ import { type KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 
 import { type ChainAsset } from '../chainRegistry/types';
-import { type ChainId, type PersistentGift, type PublicKey, type TrasferAsset } from '../types';
+import { type ChainId, type PersistentGift, type PublicKey, type TransferAsset } from '../types';
 import { getKeyringPairFromSeed, getStoreName } from '../wallet';
 
 import { GIFT_STORE } from './constants';
 
-export const backupGifts = (address: string, secret: string, selectedAsset: TrasferAsset) => {
+export const backupGifts = (address: string, secret: string, selectedAsset: TransferAsset) => {
   const gift = {
     timestamp: Date.now(),
     address,

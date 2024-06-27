@@ -1,4 +1,4 @@
-import type { GetTransferFee } from './types';
+import type { AssetHubFeeParam, AssetHubGiftFeeParam } from './types';
 
 import { formatBalance } from '../balance';
 import { ZERO_BALANCE } from '../constants';
@@ -8,37 +8,31 @@ import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
 import type { ChainId } from '@/common/types';
 
-const DOT_ASSET_ID = '0';
-
 export const useAssetHub = () => {
   const { getTransactionFee } = useExtrinsic();
-  const { assetConversion, getExistentialDeposit, getFreeBalanceStatemine } = useQueryService();
+  const { assetConversion, getFreeBalanceStatemine } = useQueryService();
 
-  const getTransferFee: GetTransferFee = async ({ chainId, assetId, transferAmount, address }) => {
-    const transferDotFee = await getTransactionFee(
-      chainId as ChainId,
-      TransactionType.TRANSFER_STATEMINE,
-      transferAmount,
-      assetId,
-    );
-    // TODO: Delete it after PR for asset hub is merged
-    const dotED = Number(await getExistentialDeposit(chainId));
-    const dotAHBalance = address ? await getFreeBalanceStatemine(address, chainId, DOT_ASSET_ID) : ZERO_BALANCE;
+  const getTransferFee = ({ chainId, assetId, transferAmount }: AssetHubFeeParam): Promise<number> => {
+    return getTransactionFee(chainId, TransactionType.TRANSFER_STATEMINE, transferAmount, assetId);
+  };
 
-    const totalDotFee = +dotAHBalance < dotED ? transferDotFee + dotED : transferDotFee;
+  const getGiftFee = async ({ chainId, assetId, transferAmount }: AssetHubGiftFeeParam): Promise<number> => {
+    const transferDotFee = await getTransferFee({ chainId, assetId, transferAmount });
 
-    return { transferDotFee, dotED, totalDotFee };
+    return transferDotFee * 2;
   };
 
   const getAssetHubFee = async (
     chainId: ChainId,
     assetId: string,
     transferAmount: string,
-    address?: string,
+    isGift = false,
   ): Promise<number> => {
-    const { totalDotFee } = await getTransferFee({ chainId, assetId, transferAmount, address });
+    const transferDotFee = isGift
+      ? await getGiftFee({ chainId, assetId, transferAmount })
+      : await getTransferFee({ chainId, assetId, transferAmount });
 
-    return assetConversion(chainId, totalDotFee, assetId);
+    return assetConversion(chainId, transferDotFee, assetId);
   };
 
   const getGiftBalanceStatemine = async (chainId: ChainId, asset: Asset, address: string): Promise<string> => {
@@ -49,7 +43,7 @@ export const useAssetHub = () => {
       return ZERO_BALANCE;
     }
 
-    const fee = await getAssetHubFee(chainId, assetId, giftBalance, address);
+    const fee = await getAssetHubFee(chainId, assetId, giftBalance, true);
     const rawBalance = +giftBalance - fee;
     if (rawBalance <= 0) {
       return ZERO_BALANCE;

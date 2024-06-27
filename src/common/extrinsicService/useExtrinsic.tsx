@@ -5,7 +5,7 @@ import { type Asset } from '../chainRegistry';
 import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId } from '../utils';
 
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
-import { AssetType, type ChainId, type TrasferAsset } from '@/common/types';
+import { AssetType, type ChainId, type TransferAsset } from '@/common/types';
 
 type SendTransaction = {
   destinationAddress: string;
@@ -64,7 +64,7 @@ export function useExtrinsic() {
   }
 
   async function sendGift(
-    { chainId, amount, transferAll, asset }: TrasferAsset,
+    { chainId, amount, transferAll, asset }: TransferAsset,
     giftTransferAddress: string,
   ): Promise<void> {
     const transferAmount = Number(formatAmount(amount!, asset.precision));

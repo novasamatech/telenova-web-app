@@ -1,11 +1,11 @@
 import { Input } from '@nextui-org/react';
 
-import { type TrasferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
 import { type IconNames } from '@/components/Icon/types';
 
 type Props = {
-  selectedAsset?: Partial<TrasferAsset | null>;
+  selectedAsset?: Partial<TransferAsset | null>;
   amount: string;
   isAmountValid: boolean;
   maxAmountToSend: string;

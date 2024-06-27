@@ -8,7 +8,7 @@ import { useGlobalContext, useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { type TrasferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { backupGifts } from '@/common/utils/gift';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
@@ -36,9 +36,9 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
 
     const giftWallet = createGiftWallet(selectedAsset.addressPrefix as number);
 
-    sendGift(selectedAsset as TrasferAsset, giftWallet.address)
+    sendGift(selectedAsset as TransferAsset, giftWallet.address)
       .then(() => {
-        backupGifts(giftWallet.address, giftWallet.secret, selectedAsset as TrasferAsset);
+        backupGifts(giftWallet.address, giftWallet.secret, selectedAsset as TransferAsset);
 
         const tgLink = createTgLink({
           botUrl,
