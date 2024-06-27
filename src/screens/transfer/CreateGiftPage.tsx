@@ -21,33 +21,32 @@ type Props = {
 export default function CreateGiftPage({ botUrl, appName }: Props) {
   const { BackButton, webApp } = useTelegram();
   const { hideMainButton } = useMainButton();
-  const { handleSendGift } = useExtrinsic();
+  const { sendGift } = useExtrinsic();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
+
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
   // TODO: refactor
   useEffect(() => {
-    if (!selectedAsset) {
-      return;
-    }
+    if (!selectedAsset) return;
 
     BackButton?.hide();
     hideMainButton();
 
-    const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
+    const giftWallet = createGiftWallet(selectedAsset.addressPrefix as number);
 
-    handleSendGift(selectedAsset as TrasferAsset, wallet.address)
+    sendGift(selectedAsset as TrasferAsset, giftWallet.address)
       .then(() => {
-        backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
+        backupGifts(giftWallet.address, giftWallet.secret, selectedAsset as TrasferAsset);
+
         const tgLink = createTgLink({
           botUrl,
           appName,
-          secret: wallet.secret,
+          secret: giftWallet.secret,
           symbol: selectedAsset?.asset?.symbol as string,
           amount: selectedAsset?.amount as string,
         });
-
         setLink(tgLink);
       })
       .catch(error => alert(`Error: ${error.message}\nTry to relaod`));

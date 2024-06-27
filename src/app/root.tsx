@@ -64,9 +64,7 @@ const DataContext: FC<PropsWithChildren> = ({ children }) => {
     cryptoWaitReady().then(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return null;
-  }
+  if (loading) return null;
 
   return (
     <GlobalStateProvider>

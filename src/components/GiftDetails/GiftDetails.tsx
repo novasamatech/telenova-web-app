@@ -7,20 +7,17 @@ import { type TgLink } from '@/common/telegram/types';
 import { useMainButton } from '@/common/telegram/useMainButton';
 import { BodyText, TitleText } from '@/components';
 
-type GiftDetailsProps = {
-  link: TgLink | null;
+type Props = {
+  link: TgLink;
   webApp: WebApp;
 };
 
-export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
+const GiftDetails = ({ link, webApp }: Props) => {
   const { addMainButton } = useMainButton();
-  if (!link) {
-    return;
-  }
 
   useEffect(() => {
     addMainButton(() => navigateTranferById(webApp, link), 'Send to contact');
-  }, [webApp, link]);
+  }, []);
 
   return (
     <>
@@ -30,4 +27,6 @@ export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
       </BodyText>
     </>
   );
-}
+};
+
+export default GiftDetails;

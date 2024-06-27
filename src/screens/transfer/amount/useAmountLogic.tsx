@@ -18,7 +18,7 @@ type AmountPageLogic = {
 
 export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountChange = () => {} }: AmountPageLogic) {
   const navigate = useNavigate();
-  const { handleFee } = useExtrinsic();
+  const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
 
   const { BackButton } = useTelegram();
@@ -38,23 +38,22 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     touched && !transferAll && maxAmountToSend && amount && +maxAmountToSend - +amount < deposit,
   );
 
-  const handleAmountFee = (selectedAsset: TrasferAsset, transferAmount: string): Promise<number> => {
+  const getFeeAmount = (selectedAsset: TrasferAsset, transferAmount: string): Promise<number> => {
     if (isStatemineAsset(selectedAsset.asset.type)) {
       return getAssetHubFee(
         selectedAsset.chainId,
         selectedAsset.asset.typeExtras!.assetId,
         transferAmount,
         selectedAsset.address,
-        selectedAsset?.isGift,
       );
     }
 
-    return handleFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmount);
+    return getTransactionFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmount);
   };
 
-  const getMaxAmount = async (selectedAsset: TrasferAsset) => {
+  const getMaxAmount = async (selectedAsset: TrasferAsset): Promise<string> => {
     const amount = selectedAsset.transferableBalance || '0';
-    const fee = await handleAmountFee(selectedAsset, amount);
+    const fee = await getFeeAmount(selectedAsset, amount);
     const max = Math.max(+amount - fee, 0).toString();
 
     return Number(formatBalance(max, selectedAsset.asset.precision).formattedValue).toFixed(5);
@@ -67,7 +66,7 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
       ? await getExistentialDepositStatemine(selectedAsset.chainId, selectedAsset.asset.typeExtras!.assetId)
       : await getExistentialDeposit(selectedAsset.chainId);
 
-    const fee = await handleAmountFee(selectedAsset, transferAmount);
+    const fee = await getFeeAmount(selectedAsset, transferAmount);
 
     return {
       fee,

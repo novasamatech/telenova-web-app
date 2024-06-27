@@ -34,13 +34,11 @@ export default function GiftPage() {
       return;
     }
 
-    (async function () {
-      await getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
-        setUnclaimedGifts(unclaimed);
-        setClaimedGifts(claimed);
-        setLoading(false);
-      });
-    })();
+    getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
+      setUnclaimedGifts(unclaimed);
+      setClaimedGifts(claimed);
+      setLoading(false);
+    });
 
     return () => {
       BackButton?.hide();
@@ -61,11 +59,11 @@ export default function GiftPage() {
       ) : unclaimedGifts.length ? (
         unclaimedGifts.map(gift => (
           <Link
+            key={gift.timestamp}
             to={{
               pathname: $path('/gifts/details'),
               search: `?seed=${gift.secret}&symbol=${gift.chainAsset?.symbol}&balance=${gift.balance}`,
             }}
-            key={gift.timestamp}
           >
             <GiftPlate gift={gift} isClaimed={false} />
           </Link>

@@ -7,7 +7,7 @@ import { getKeyringPairFromSeed, getStoreName } from '../wallet';
 
 import { GIFT_STORE } from './constants';
 
-export const backupGifts = (address: string, secret: string, selectedAsset: TrasferAsset): void => {
+export const backupGifts = (address: string, secret: string, selectedAsset: TrasferAsset) => {
   const gift = {
     timestamp: Date.now(),
     address,

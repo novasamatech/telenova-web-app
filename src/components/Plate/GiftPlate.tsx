@@ -2,7 +2,12 @@ import { type Gift, GiftStatus } from '@/common/types';
 import { cnTw } from '@/common/utils';
 import { HelpText, Icon, MediumTitle, Plate } from '@/components';
 
-const GiftPlate = ({ gift, isClaimed }: { gift: Gift; isClaimed: boolean }) => {
+type Props = {
+  gift: Gift;
+  isClaimed: boolean;
+};
+
+const GiftPlate = ({ gift, isClaimed }: Props) => {
   const date = new Date(gift.timestamp).toLocaleString();
 
   return (

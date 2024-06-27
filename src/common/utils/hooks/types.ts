@@ -12,7 +12,3 @@ export type GetTransferFee = (params: GetAssetHubFeeParam) => Promise<{
   dotED: number;
   totalDotFee: number;
 }>;
-
-export type GetAssetHubGiftFee = (params: GetAssetHubFeeParam) => Promise<{ totalDotFee: number }>;
-
-export type GetAssetHubFee = (params: GetAssetHubFeeParam & { isGift?: boolean }) => Promise<number>;

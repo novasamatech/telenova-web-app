@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { type WebApp } from '@twa-dev/types';
 import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
@@ -31,15 +30,6 @@ export default function GiftDetailsPage({ botUrl, appName }: Props) {
       navigate($path('/gifts'));
     };
     BackButton?.onClick(callback);
-    setLink(
-      createTgLink({
-        secret: searchParams.get('seed') as string,
-        symbol: searchParams.get('symbol') as string,
-        amount: searchParams.get('balance') as string,
-        botUrl,
-        appName,
-      }),
-    );
 
     return () => {
       BackButton?.hide();
@@ -47,10 +37,23 @@ export default function GiftDetailsPage({ botUrl, appName }: Props) {
     };
   }, []);
 
+  useEffect(() => {
+    const tgLink = createTgLink({
+      secret: searchParams.get('seed') as string,
+      symbol: searchParams.get('symbol') as string,
+      amount: searchParams.get('balance') as string,
+      botUrl,
+      appName,
+    });
+    setLink(tgLink);
+  }, []);
+
+  const canShowGifDetails = Boolean(link) && Boolean(webApp);
+
   return (
     <div className="grid items-center justify-center h-[93vh]">
       <Icon name="Present" size={250} className="justify-self-center mt-auto" />
-      <GiftDetails link={link} webApp={webApp as WebApp} />
+      {canShowGifDetails && <GiftDetails link={link!} webApp={webApp!} />}
     </div>
   );
 }

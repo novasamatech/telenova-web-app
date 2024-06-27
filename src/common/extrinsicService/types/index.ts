@@ -8,14 +8,12 @@ import { type ChainId } from '@/common/types';
 
 export interface ExtrinsicBuilder {
   api: ApiPromise;
-
-  addCall(call: SubmittableExtrinsic<any>): void;
-
-  build(options?: Partial<ExtrinsicBuildingOptions>): SubmittableExtrinsic<'promise'>;
+  addCall: (call: SubmittableExtrinsic<any>) => void;
+  build: (options?: Partial<ExtrinsicBuildingOptions>) => SubmittableExtrinsic<'promise'>;
 }
 
 export type ExtrinsicTransaction = {
-  args: Record<string, any>;
+  args: Record<string, unknown>;
   type: TransactionType;
 };
 
