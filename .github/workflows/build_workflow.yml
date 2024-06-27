@@ -49,14 +49,14 @@ jobs:
 
       - name: Build
         uses: docker/build-push-action@v5
-        env:
-          WEB_APP_VERSION: ${{ env.WEB_APP_VERSION }}
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: .docker/Dockerfile
+          build-args: |
+            WEB_APP_VERSION=${{ env.WEB_APP_VERSION }}
 
   notify-dev:
     runs-on: ubuntu-latest
