@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { RecoveryPage } from '@/screens/settings';
 
-const Page: FC = () => {
+const Page = () => {
   return <RecoveryPage />;
 };
 

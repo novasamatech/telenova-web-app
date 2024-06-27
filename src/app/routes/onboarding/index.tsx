@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { OnboardingPage } from '@/screens/onboarding';
 
-const Page: FC = () => {
+const Page = () => {
   return <OnboardingPage />;
 };
 

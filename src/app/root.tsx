@@ -1,4 +1,4 @@
-import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type MetaFunction } from '@remix-run/node';
@@ -31,13 +31,13 @@ export const meta: MetaFunction = () => [
   },
 ];
 
-export const ErrorBoundary: FC = () => {
+export const ErrorBoundary = () => {
   const error = useRouteError();
 
   return <ErrorScreen error={error?.toString?.()} />;
 };
 
-export const Layout: FC<PropsWithChildren> = ({ children }) => (
+export const Layout = ({ children }: PropsWithChildren) => (
   <html lang="en">
     <head>
       <Meta />
@@ -58,7 +58,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => (
   </html>
 );
 
-const DataContext: FC<PropsWithChildren> = ({ children }) => {
+const DataContext = ({ children }: PropsWithChildren) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     cryptoWaitReady().then(() => setLoading(false));

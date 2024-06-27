@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { PasswordConfirmationPage } from '@/screens/settings';
 
-const Page: FC = () => {
+const Page = () => {
   return <PasswordConfirmationPage />;
 };
 

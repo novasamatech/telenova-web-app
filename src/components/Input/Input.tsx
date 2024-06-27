@@ -1,9 +1,7 @@
-import { type FC } from 'react';
-
 // import { type InputProps } from '@nextui-org/input';
 import { type InputProps, Input as NextUiInput } from '@nextui-org/react';
 
-export const Input: FC<Omit<InputProps, 'classNames'>> = props => {
+export const Input = (props: Omit<InputProps, 'classNames'>) => {
   return (
     <NextUiInput
       {...props}

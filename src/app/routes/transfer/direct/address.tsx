@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { AddressPage } from '@/screens/transfer';
 
-const Page: FC = () => {
+const Page = () => {
   return <AddressPage />;
 };
 

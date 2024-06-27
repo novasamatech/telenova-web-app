@@ -8,7 +8,11 @@ import { useTelegram } from '@/common/providers/telegramProvider';
 import { openLink } from '@/common/telegram';
 import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/components';
 
-export default function SettingsPage() {
+type Props = {
+  version: string;
+};
+
+const SettingsPage = ({ version }: Props) => {
   const { BackButton, webApp } = useTelegram();
   const navigate = useNavigate();
   const [isPopoverCurrencyOpen, setIsPopoverCurrencyOpen] = useState(false);
@@ -128,10 +132,13 @@ export default function SettingsPage() {
           onClick={() => openLink('https://novasama.io/telenova/terms', webApp!)}
         />
       </Plate>
-      <div className="mt-auto grid gap-4 justify-items-center">
-        <HelpText className="text-icon-neutral text-[10px]">Developed with love by</HelpText>
+      <div className="mt-auto flex flex-col items-center">
+        <HelpText className="text-icon-neutral text-[10px] mb-2">Telenova v{version}</HelpText>
+        <HelpText className="text-icon-neutral text-[10px] mb-4">Developed with love by</HelpText>
         <Icon name="Novasama" className="w-[66px] h-[50px]" />
       </div>
     </div>
   );
-}
+};
+
+export default SettingsPage;
