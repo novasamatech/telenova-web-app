@@ -30,7 +30,6 @@ export const setupHealthcheckController = app => {
       'PUBLIC_BOT_ADDRESS',
       'PUBLIC_WEB_APP_ADDRESS',
       'PUBLIC_BOT_API_URL',
-      'PUBLIC_APP_VERSION',
     ];
     const unsetEnvVars = requiredEnvVars.filter(envVar => typeof process.env[envVar] === 'undefined');
 
