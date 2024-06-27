@@ -44,8 +44,13 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - name: Get app version
+        run: echo "WEB_APP_VERSION=$(pnpm pkg get version | tr -d '\"')" >> $GITHUB_ENV
+
       - name: Build
         uses: docker/build-push-action@v5
+        env:
+          WEB_APP_VERSION: ${{ env.WEB_APP_VERSION }}
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
