@@ -39,15 +39,12 @@ export const useAssetHub = () => {
     const assetId = asset.typeExtras!.assetId;
 
     const giftBalance = await getFreeBalanceStatemine(address, chainId, assetId);
-    if (giftBalance === ZERO_BALANCE) {
-      return ZERO_BALANCE;
-    }
+    if (giftBalance === ZERO_BALANCE) return ZERO_BALANCE;
 
-    const fee = await getAssetHubFee(chainId, assetId, giftBalance, true);
+    const fee = await getAssetHubFee(chainId, assetId, giftBalance);
     const rawBalance = +giftBalance - fee;
-    if (rawBalance <= 0) {
-      return ZERO_BALANCE;
-    }
+
+    if (rawBalance <= 0) return ZERO_BALANCE;
 
     return formatBalance(rawBalance.toString(), asset.precision).formattedValue;
   };

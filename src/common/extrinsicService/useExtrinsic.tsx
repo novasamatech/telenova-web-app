@@ -2,7 +2,7 @@ import { type KeyringPair } from '@polkadot/keyring/types';
 import { decodeAddress } from '@polkadot/util-crypto';
 
 import { type Asset } from '../chainRegistry';
-import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId } from '../utils';
+import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
 
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
 import { AssetType, type ChainId, type TransferAsset } from '@/common/types';
@@ -64,12 +64,24 @@ export function useExtrinsic() {
   }
 
   async function sendGift(
-    { chainId, amount, transferAll, asset }: TransferAsset,
+    { chainId, amount, transferAll, asset, fee }: TransferAsset,
     giftTransferAddress: string,
   ): Promise<void> {
-    const transferAmount = Number(formatAmount(amount!, asset.precision));
+    const transferAmount = formatAmount(amount!, asset.precision);
+
+    if (isStatemineAsset(asset?.type)) {
+      const giftAmount = Math.ceil(+transferAmount + fee! / 2).toString();
+
+      return sendTransaction({
+        destinationAddress: giftTransferAddress,
+        chainId,
+        transferAmount: giftAmount,
+        asset,
+      });
+    }
+
     const trasferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
-    const giftAmount = (transferAmount + trasferAllFee).toString();
+    const giftAmount = (+transferAmount + trasferAllFee).toString();
 
     return sendTransaction({
       chainId,

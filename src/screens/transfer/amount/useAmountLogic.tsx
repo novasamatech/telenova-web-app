@@ -59,7 +59,10 @@ export function useAmountLogic({ prevPage, nextPage, mainButtonText, onAmountCha
     return Number(formatBalance(max, selectedAsset.asset.precision).formattedValue).toFixed(5);
   };
 
-  async function getTransferDetails(selectedAsset: TransferAsset, amount: string) {
+  async function getTransferDetails(
+    selectedAsset: TransferAsset,
+    amount: string,
+  ): Promise<{ fee: number; formattedDeposit: number }> {
     const transferAmount = formatAmount(amount || '0', selectedAsset.asset?.precision);
 
     const deposit = isStatemineAsset(selectedAsset.asset.type)
