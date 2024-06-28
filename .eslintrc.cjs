@@ -1,11 +1,7 @@
 const fs = require('node:fs');
-const path = require('node:path');
 
 const prettierConfig = fs.readFileSync('./.prettierrc', 'utf8');
 const prettierOptions = JSON.parse(prettierConfig);
-const checkI18n = process.env.I18N === 'true';
-const localesDir = './src/common/utils/locales';
-const enLocalePath = path.resolve(localesDir, 'en.json');
 
 /**
  * @type {import('eslint').Linter.Config}
@@ -56,32 +52,6 @@ module.exports = {
     {
       files: ['**/*.json'],
       plugins: ['json'],
-    },
-    {
-      files: [`${localesDir}/*.json`],
-      plugins: ['plugin:i18n-json/recommended'],
-      extends: ['plugin:i18next/recommended'],
-      rules: {
-        'i18n-json/identical-keys': ['error', { filePath: enLocalePath }],
-        'i18n-json/identical-placeholders': ['error', { filePath: enLocalePath }],
-        'i18next/no-literal-string': [
-          checkI18n ? 'error' : 'off',
-          {
-            mode: 'jsx-text-only',
-            'should-validate-template': true,
-            'jsx-attributes': {
-              include: ['alt', 'aria-label', 'title', 'placeholder', 'label', 'description'],
-              exclude: ['data-testid', 'className'],
-            },
-            callees: {
-              exclude: ['Error', 'log', 'warn'],
-            },
-            words: {
-              exclude: ['[0-9!-/:-@[-`{-~]+', '[A-Z_-]+'],
-            },
-          },
-        ],
-      },
     },
   ],
   rules: {

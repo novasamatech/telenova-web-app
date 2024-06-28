@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { ExchangePage } from '@/screens/exchange';
 
-const Page: FC = () => {
+const Page = () => {
   return <ExchangePage />;
 };
 

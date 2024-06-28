@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { ReceiveTokenPage } from '@/screens/receive';
 
-const Page: FC = () => {
+const Page = () => {
   return <ReceiveTokenPage />;
 };
 

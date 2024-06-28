@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { DashboardMain } from '@/screens/dashboard';
 
-const Page: FC = () => {
+const Page = () => {
   return <DashboardMain />;
 };
 

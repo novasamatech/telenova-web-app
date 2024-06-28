@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { GiftPage } from '@/screens/gifts';
 
-const Page: FC = () => {
+const Page = () => {
   return <GiftPage />;
 };
 

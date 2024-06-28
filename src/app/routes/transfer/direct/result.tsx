@@ -1,8 +1,6 @@
-import { type FC } from 'react';
-
 import { ResultPage } from '@/screens/transfer';
 
-const Page: FC = () => {
+const Page = () => {
   return <ResultPage />;
 };
 
