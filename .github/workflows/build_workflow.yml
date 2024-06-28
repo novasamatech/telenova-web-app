@@ -51,11 +51,11 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: .docker/Dockerfile
-          build_args: |
+          build-args: |
             PUBLIC_APP_VERSION=${{ env.PUBLIC_APP_VERSION }}
 
   notify-dev:
