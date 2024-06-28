@@ -1,11 +1,11 @@
 import { Input } from '@nextui-org/react';
 
-import { type TrasferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
 import { type IconNames } from '@/components/Icon/types';
 
-type AmountDetailsProps = {
-  selectedAsset?: Partial<TrasferAsset | null>;
+type Props = {
+  selectedAsset?: Partial<TransferAsset | null>;
   amount: string;
   isAmountValid: boolean;
   maxAmountToSend: string;
@@ -17,7 +17,7 @@ type AmountDetailsProps = {
 };
 //TODO: change layout mobile text
 
-export default function AmountDetails({
+const AmountDetails = ({
   selectedAsset,
   amount,
   isAmountValid,
@@ -27,7 +27,7 @@ export default function AmountDetails({
   isAccountTerminate,
   handleChange,
   children,
-}: AmountDetailsProps) {
+}: Props) => {
   const shouldShowPrice = !isNaN(+amount) && isAmountValid && !isPending;
 
   return (
@@ -76,4 +76,6 @@ export default function AmountDetails({
       )}
     </>
   );
-}
+};
+
+export default AmountDetails;

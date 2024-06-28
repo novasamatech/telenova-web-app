@@ -1,16 +1,16 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { type AssetAccount, type AssetPrice, type HexString, type TrasferAsset } from '../types';
+import { type AssetAccount, type AssetPrice, type HexString, type TransferAsset } from '../types';
 
 export interface IContext {
   assets: AssetAccount[] | [];
   isGiftClaimed: boolean;
   publicKey?: HexString;
-  selectedAsset?: Partial<TrasferAsset | null>;
+  selectedAsset?: Partial<TransferAsset | null>;
   assetsPrices: AssetPrice | null;
   setPublicKey: React.Dispatch<React.SetStateAction<HexString | undefined>>;
   setAssets: React.Dispatch<React.SetStateAction<AssetAccount[]>>;
-  setSelectedAsset: React.Dispatch<React.SetStateAction<Partial<TrasferAsset | null>>>;
+  setSelectedAsset: React.Dispatch<React.SetStateAction<Partial<TransferAsset | null>>>;
   setIsGiftClaimed: React.Dispatch<React.SetStateAction<boolean>>;
   setAssetsPrices: React.Dispatch<React.SetStateAction<AssetPrice | null>>;
 }
@@ -27,11 +27,11 @@ export const GlobalContext = createContext<IContext>({
   setAssetsPrices: () => {},
 });
 
-// TODO refactor this
+// TODO: refactor this
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [publicKey, setPublicKey] = useState<HexString>();
   const [assets, setAssets] = useState<AssetAccount[]>([]);
-  const [selectedAsset, setSelectedAsset] = useState<Partial<TrasferAsset | null>>(null);
+  const [selectedAsset, setSelectedAsset] = useState<Partial<TransferAsset | null>>(null);
   const [assetsPrices, setAssetsPrices] = useState<AssetPrice | null>(null);
   const [isGiftClaimed, setIsGiftClaimed] = useState(false);
 

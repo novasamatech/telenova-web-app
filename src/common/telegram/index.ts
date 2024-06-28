@@ -36,7 +36,7 @@ export const createTgLink = ({ secret, symbol, amount, botUrl, appName }: Create
   return { url: url.toString(), text };
 };
 
-export const navigateTranferById = (webApp: WebApp, link: TgLink): void => {
+export const navigateTranferById = (webApp: WebApp, link: TgLink) => {
   webApp.openTelegramLink(
     `http://t.me/share/url?url=${encodeURIComponent(link.url)}&text=${encodeURIComponent(link.text)}`,
   );
@@ -49,11 +49,7 @@ export const openLink = (link: string, webApp: WebApp) => {
 };
 
 export const isOpenInWeb = (platform?: string): boolean => {
-  if (!platform) {
-    return true;
-  }
-  const webPlatforms = ['web', 'weba', 'webk'];
-  const isWebPlatform = webPlatforms.includes(platform);
+  if (!platform) return true;
 
-  return isWebPlatform;
+  return ['web', 'weba', 'webk'].includes(platform);
 };

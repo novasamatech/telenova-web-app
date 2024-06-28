@@ -8,7 +8,7 @@ import { useGlobalContext, useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
 import { useMainButton } from '@/common/telegram/useMainButton';
-import { type TrasferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { backupGifts } from '@/common/utils/gift';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
@@ -21,37 +21,35 @@ type Props = {
 export default function CreateGiftPage({ botUrl, appName }: Props) {
   const { BackButton, webApp } = useTelegram();
   const { hideMainButton } = useMainButton();
-  const { handleSendGift } = useExtrinsic();
+  const { sendGift } = useExtrinsic();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
+
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
-  // TODO refactor
+  // TODO: refactor
   useEffect(() => {
-    if (!selectedAsset) {
-      return;
-    }
+    if (!selectedAsset) return;
 
     BackButton?.hide();
     hideMainButton();
 
-    const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
-    (async function () {
-      await handleSendGift(selectedAsset as TrasferAsset, wallet.address)
-        .then(() => {
-          backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
-          setLink(
-            createTgLink({
-              botUrl,
-              appName,
-              secret: wallet.secret,
-              symbol: selectedAsset?.asset?.symbol as string,
-              amount: selectedAsset?.amount as string,
-            }),
-          );
-        })
-        .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
-    })();
+    const giftWallet = createGiftWallet(selectedAsset.addressPrefix as number);
+
+    sendGift(selectedAsset as TransferAsset, giftWallet.address)
+      .then(() => {
+        backupGifts(giftWallet.address, giftWallet.secret, selectedAsset as TransferAsset);
+
+        const tgLink = createTgLink({
+          botUrl,
+          appName,
+          secret: giftWallet.secret,
+          symbol: selectedAsset?.asset?.symbol as string,
+          amount: selectedAsset?.amount as string,
+        });
+        setLink(tgLink);
+      })
+      .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
 
     return () => {
       setSelectedAsset(null);
@@ -71,7 +69,7 @@ export default function CreateGiftPage({ botUrl, appName }: Props) {
         keepLastFrame
         autoplay
         className="mb-3 w-[256px] h-[256px]"
-        onEvent={event => handleOnEvent(event)}
+        onEvent={handleOnEvent}
       />
       {loading || !link ? (
         <>

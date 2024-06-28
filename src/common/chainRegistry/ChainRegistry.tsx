@@ -67,7 +67,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
   const getReadyConnection = async (chainId: ChainId): Promise<Connection> => {
     await isReady();
 
-    return await getConnection(chainId);
+    return getConnection(chainId);
   };
 
   const setupConnections = async () => {
@@ -84,8 +84,8 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
         onDisconnected: chainId => {
           console.info('🔶 disconnected ==> ', chainId);
         },
-        getMetadata: async (chainId): Promise<RuntimeMetadata | undefined> => {
-          return await getMetadata(chainId);
+        getMetadata: (chainId): Promise<RuntimeMetadata | undefined> => {
+          return getMetadata(chainId);
         },
       };
     });

@@ -22,7 +22,6 @@ type InternalStateResolution = StateResolution<Connection>;
 type InternalConnectionState = {
   request: ConnectionRequest;
   activeNodeIndex?: number;
-  timeoutId?: any;
   connection?: Connection;
   connectionPromises: InternalStateResolution[];
 };
@@ -175,7 +174,7 @@ export const useConnections = (): IChainConnectionService => {
     internalStates.current[chainId]?.request.onDisconnected(chainId);
   };
 
-  const decideConnectionPromises = (chainId: ChainId): void => {
+  const decideConnectionPromises = (chainId: ChainId) => {
     const state = internalStates.current[chainId];
 
     if (!state) {

@@ -31,18 +31,19 @@ export default function AmountPage() {
           Send to
           <TruncateAddress address={selectedAsset?.destinationAddress} className="max-w-[120px]" />
         </HeadlineText>
-        <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
-          <HeadlineText className="flex items-center text-text-link">
-            Max:{' '}
-            {maxAmountToSend || (
-              <div className="shrink-0 w-[7ch]">
-                <Progress size="md" isIndeterminate />
-              </div>
-            )}{' '}
-            {selectedAsset?.asset?.symbol}
-          </HeadlineText>
+        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxSend}>
+          <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
+          {maxAmountToSend ? (
+            <HeadlineText className="flex items-center text-text-link">{maxAmountToSend}</HeadlineText>
+          ) : (
+            <div className="shrink-0 w-[7ch]">
+              <Progress size="md" isIndeterminate />
+            </div>
+          )}
+          <HeadlineText className="flex items-center text-text-link">{selectedAsset?.asset?.symbol}</HeadlineText>
         </Button>
       </div>
+
       <AmountDetails
         selectedAsset={selectedAsset}
         amount={amount}

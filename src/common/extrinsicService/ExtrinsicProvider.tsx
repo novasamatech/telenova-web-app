@@ -36,14 +36,12 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
     const extrinsic = await prepareExtrinsic<'promise'>(chainId, transaction, options);
 
     const keyringPair = keyring || getKeyringPair();
-    if (!keyringPair) {
-      return;
-    }
+    if (!keyringPair) return;
 
     await extrinsic.signAsync(keyringPair, signOptions);
     keyringPair.lock();
 
-    return await extrinsic.send();
+    return extrinsic.send();
   }
 
   return (

@@ -12,7 +12,7 @@ import { formatAmount, formatBalance, getGiftInfo } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
 import { BigTitle, Icon, Shimmering } from '@/components';
 
-// TODO replace with LottiePlayer
+// TODO: replace with LottiePlayer
 const LazyLottie = lazy(() => import('react-lottie-player'));
 
 enum GIFT_STATUS {
@@ -33,7 +33,7 @@ let timeoutId: ReturnType<typeof setTimeout>;
 export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
-  const { sendTransaction, handleFee } = useExtrinsic();
+  const { sendTransaction, getTransactionFee } = useExtrinsic();
   const { getAssetBySymbol, connectionStates } = useChainRegistry();
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
@@ -57,12 +57,11 @@ export default function GiftModal() {
 
       return '0';
     }
-    const fee = await handleFee(chain.chain.chainId, TransactionType.TRANSFER_ALL);
+    const fee = await getTransactionFee(chain.chain.chainId, TransactionType.TRANSFER_ALL);
     clearTimeout(timerID);
     const rawBalance = +giftBalance - fee;
-    const formattedBalance = formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
 
-    return formattedBalance;
+    return formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
   };
 
   useEffect(() => {
@@ -123,7 +122,7 @@ export default function GiftModal() {
     sendTransaction({
       destinationAddress: chainAddress,
       chainId: chain.chain.chainId,
-      transferAmmount: formatAmount(giftBalance, chain.asset.precision),
+      transferAmount: formatAmount(giftBalance, chain.asset.precision),
       asset: chain.asset,
       keyring,
       transferAll: true,
