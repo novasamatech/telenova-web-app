@@ -2,7 +2,6 @@ import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-
 import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';

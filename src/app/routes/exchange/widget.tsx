@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-
 import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
@@ -27,6 +26,7 @@ const Page: FC = () => {
   const { webApp } = useTelegram();
   const navigate = useNavigate();
   const { selectedAsset, setSelectedAsset } = useGlobalContext();
+
   const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
   const [done, setDone] = useState(false);
 

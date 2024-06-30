@@ -5,7 +5,6 @@ import { type FC, useEffect, useState } from 'react';
 
 import { type LoaderFunction, json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-
 import { $params } from 'remix-routes';
 
 import { useExtrinsic } from '@/common/extrinsicService';
@@ -37,6 +36,7 @@ const Page: FC = () => {
   const { webApp } = useTelegram();
   const { handleSendGift } = useExtrinsic();
   const { assets } = useGlobalContext();
+
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 

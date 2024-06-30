@@ -1,9 +1,8 @@
 import { type FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-
 import { Button } from '@nextui-org/react';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers';

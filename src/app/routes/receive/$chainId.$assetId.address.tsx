@@ -2,9 +2,8 @@ import { type FC } from 'react';
 import { QRCode } from 'react-qrcode-logo';
 import { useNavigate } from 'react-router-dom';
 
-import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';

@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type MetaFunction } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
+import { $path } from 'remix-routes';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-
-import { $path } from 'remix-routes';
 
 import { BalanceProvider } from '@/common/balances';
 import { ChainRegistry } from '@/common/chainRegistry';

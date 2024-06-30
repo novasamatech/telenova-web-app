@@ -12,6 +12,7 @@ import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/compon
 const Page: FC = () => {
   const navigate = useNavigate();
   const { webApp } = useTelegram();
+
   const [isPopoverCurrencyOpen, setIsPopoverCurrencyOpen] = useState(false);
   const [isPopoverLanguageOpen, setIsPopoverLanguageOpen] = useState(false);
 

@@ -12,6 +12,7 @@ import { CreatePasswordForm, TitleText } from '@/components';
 
 const Page: FC = () => {
   const navigate = useNavigate();
+
   const [password, setPassword] = useState('');
   const [valid, setValid] = useState(false);
 

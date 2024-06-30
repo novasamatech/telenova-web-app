@@ -1,5 +1,8 @@
 import secureLocalStorage from 'react-secure-storage';
 
+import CryptoJS from 'crypto-js';
+import scryptJS from 'scrypt-js';
+
 import Keyring from '@polkadot/keyring';
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { hexToU8a, u8aToHex } from '@polkadot/util';
@@ -10,9 +13,6 @@ import {
   randomAsHex,
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
-
-import CryptoJS from 'crypto-js';
-import scryptJS from 'scrypt-js';
 
 import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
 

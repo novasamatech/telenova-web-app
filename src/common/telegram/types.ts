@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { type Telegram } from '@twa-dev/types';
 
 import { type HexString } from '@/common/types';

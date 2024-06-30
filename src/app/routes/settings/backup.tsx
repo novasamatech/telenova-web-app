@@ -10,6 +10,7 @@ import { BodyText, LinkCard, TitleText } from '@/components';
 
 const Page: FC = () => {
   const navigate = useNavigate();
+
   const [backupDate, setBackupDate] = useState('');
 
   useEffect(() => {

@@ -1,9 +1,8 @@
 import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-
 import { Divider } from '@nextui-org/react';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useExtrinsic } from '@/common/extrinsicService';

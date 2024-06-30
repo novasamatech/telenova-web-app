@@ -13,6 +13,7 @@ const Page: FC = () => {
   const navigate = useNavigate();
   const { user, startParam } = useTelegram();
   const { setPublicKey } = useGlobalContext();
+
   const [password, setPassword] = useState('');
   const [valid, setValid] = useState(false);
 

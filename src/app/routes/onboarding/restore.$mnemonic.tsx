@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button } from '@nextui-org/react';
-import { $path } from 'remix-routes';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton.tsx';
@@ -10,13 +11,14 @@ import { BACKUP_DATE } from '@/common/utils';
 import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
 
-type Props = {
-  mnemonic: string;
-};
+export const clientLoader = (({ params }) => {
+  return $params('/onboarding/restore/:mnemonic', params);
+}) satisfies ClientLoaderFunction;
 
-export const RestoreWalletPage = ({ mnemonic }: Props) => {
+const Page = () => {
   const navigate = useNavigate();
   const { user } = useTelegram();
+  const { mnemonic } = useLoaderData<typeof clientLoader>();
   const { setPublicKey } = useGlobalContext();
 
   const [password, setPassword] = useState('');
@@ -88,3 +90,5 @@ export const RestoreWalletPage = ({ mnemonic }: Props) => {
     </>
   );
 };
+
+export default Page;

@@ -5,7 +5,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-
 import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers';

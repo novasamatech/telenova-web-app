@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-
 import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
@@ -25,6 +24,7 @@ const Page: FC = () => {
   const navigate = useNavigate();
   const { webApp } = useTelegram();
   const { publicKey } = useGlobalContext();
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

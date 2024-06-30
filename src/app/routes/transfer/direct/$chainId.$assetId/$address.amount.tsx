@@ -1,9 +1,8 @@
 import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-
 import { Button, Progress } from '@nextui-org/react';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic.tsx';
