@@ -127,7 +127,7 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
   return { publicKey };
 };
 
-export const backupMnemonic = (mnemonic: string, password: string): void => {
+export const backupMnemonic = (mnemonic: string, password: string) => {
   const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
   const date = Date.now().toString();
   window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
@@ -194,5 +194,8 @@ export const createGiftWallet = (addressPrefix: number): GiftWallet => {
   const seed = generateGiftSecret();
   const account = getKeyringPairFromSeed(seed);
 
-  return { address: encodeAddress(account.publicKey, addressPrefix), secret: seed };
+  return {
+    address: encodeAddress(account.publicKey, addressPrefix),
+    secret: seed,
+  };
 };

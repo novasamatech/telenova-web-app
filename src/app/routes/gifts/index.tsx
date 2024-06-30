@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
@@ -9,7 +9,7 @@ import { getGifts } from '@/common/utils';
 import { useGifts } from '@/common/utils/hooks';
 import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
 
   const { getGiftsState } = useGifts();

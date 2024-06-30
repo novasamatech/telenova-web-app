@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
@@ -19,7 +19,7 @@ export const loader = () => {
   });
 };
 
-const Page: FC = () => {
+const Page = () => {
   const { mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof loader>();
 
   const [root, setRoot] = useState<HTMLElement | null>(null);

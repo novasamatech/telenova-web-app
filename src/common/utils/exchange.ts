@@ -1,13 +1,13 @@
 import CryptoJS from 'crypto-js';
 
-import { type TrasferAsset } from '../types';
+import { type TransferAsset } from '../types';
 
 type Params = {
   root: HTMLElement;
   widgetId: string;
   returnPage: string;
   secret: string;
-  selectedAsset: Partial<TrasferAsset | null>;
+  selectedAsset: Partial<TransferAsset | null>;
   handleStatus: (data: any) => void;
   handleSell: (data: any) => void;
 };

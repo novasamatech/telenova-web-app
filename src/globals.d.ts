@@ -7,6 +7,7 @@ declare namespace NodeJS {
     readonly PUBLIC_BOT_ADDRESS: string;
     readonly PUBLIC_BOT_API_URL: string;
     readonly PUBLIC_WEB_APP_ADDRESS: string;
+    readonly PUBLIC_APP_VERSION: string;
   }
 }
 
@@ -47,7 +48,7 @@ declare module '*.mp4' {
 
 declare module '*.svg' {
   import type React from 'react';
-  const content: React.FC<React.SVGProps<SVGSVGElement>>;
+  const content: React.SVGProps<SVGSVGElement>;
   export default content;
 }
 

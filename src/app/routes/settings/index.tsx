@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Divider, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
@@ -9,7 +9,7 @@ import { openLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
   const { webApp } = useTelegram();
 

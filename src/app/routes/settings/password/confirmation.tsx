@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
@@ -6,7 +5,7 @@ import { $path } from 'remix-routes';
 import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { Icon, TitleText } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
 
   return (

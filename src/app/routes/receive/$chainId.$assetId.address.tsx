@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import { QRCode } from 'react-qrcode-logo';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +14,7 @@ export const clientLoader = (({ params }) => {
   return $params('/receive/:chainId/:assetId/address', params);
 }) satisfies ClientLoaderFunction;
 
-const Page: FC = () => {
+const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();

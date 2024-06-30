@@ -32,5 +32,4 @@ npm run dev
 3) Run yarn dev
 5) Put your variables into the backend repo env file (BOT_API_KEY, BOT_ALIAS, NOVA_APP_HOST)
 6) Run docker (`docker compose up`)
-7) Optional - connect web app domain to the local bot (via BotFather) to open gifts locally 
-
+7) Optional - connect web app domain to the local bot (via BotFather) to open gifts locally

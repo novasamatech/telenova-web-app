@@ -35,7 +35,7 @@ export type AssetAccount = ChainAssetAccount & {
   transferableBalance?: string;
 };
 
-export type TrasferAsset = AssetAccount & {
+export type TransferAsset = AssetAccount & {
   destinationAddress?: string;
   amount?: string;
   fee?: number;

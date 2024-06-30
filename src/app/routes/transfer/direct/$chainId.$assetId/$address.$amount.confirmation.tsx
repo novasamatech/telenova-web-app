@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Divider } from '@nextui-org/react';
@@ -28,7 +28,7 @@ export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/:address/:amount/confirmation', params);
 }) satisfies ClientLoaderFunction;
 
-const Page: FC = () => {
+const Page = () => {
   const { chainId, assetId, amount, address } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ const Page: FC = () => {
   const selectedAsset = pickAsset({ assets, chainId, assetId });
 
   useEffect(() => {
-    getAssetHubFee(chainId as ChainId, assetId, amount, address).then(setFee);
+    getAssetHubFee(chainId as ChainId, assetId, amount).then(setFee);
   }, []);
 
   const mainCallback = () => {

@@ -11,7 +11,7 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types.ts';
-import { type TrasferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { backupGifts, pickAsset } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
@@ -34,7 +34,7 @@ const Page: FC = () => {
   const { botUrl, appName, chainId, assetId, amount } = useLoaderData<typeof clientLoader>();
 
   const { webApp } = useTelegram();
-  const { handleSendGift } = useExtrinsic();
+  const { sendGift } = useExtrinsic();
   const { assets } = useGlobalContext();
 
   const [loading, setLoading] = useState(true);
@@ -50,9 +50,9 @@ const Page: FC = () => {
 
     const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
     (async function () {
-      await handleSendGift(selectedAsset as TrasferAsset, wallet.address)
+      await sendGift(selectedAsset, wallet.address)
         .then(() => {
-          backupGifts(wallet.address, wallet.secret, selectedAsset as TrasferAsset);
+          backupGifts(wallet.address, wallet.secret, selectedAsset as TransferAsset);
           setLink(
             createTgLink({
               botUrl,

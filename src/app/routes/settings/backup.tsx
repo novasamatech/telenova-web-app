@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
@@ -8,7 +8,7 @@ import { BACKUP_DATE } from '@/common/utils';
 import { getStoreName } from '@/common/wallet';
 import { BodyText, LinkCard, TitleText } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
 
   const [backupDate, setBackupDate] = useState('');

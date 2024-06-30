@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar } from '@nextui-org/react';
@@ -9,7 +9,7 @@ import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { backupMnemonic, createWallet, generateWalletMnemonic } from '@/common/wallet';
 import { BodyText, CreatePasswordForm, TitleText } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
   const { user, startParam } = useTelegram();
   const { setPublicKey } = useGlobalContext();

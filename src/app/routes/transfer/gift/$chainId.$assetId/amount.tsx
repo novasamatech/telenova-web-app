@@ -36,9 +36,9 @@ const Page: FC = () => {
     isAmountValid,
   } = useAmountLogic({
     selectedAsset,
-    onAmountChange: () => {
-      setIsAmountValid(prev => prev && !!deposit && +amount >= deposit);
-    },
+    // onAmountChange: () => {
+    //   setIsAmountValid(prev => prev && !!deposit && +amount >= deposit);
+    // },
   });
 
   const handleMaxGiftSend = () => {
@@ -66,18 +66,19 @@ const Page: FC = () => {
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
         <Icon name="Gift" className="w-8 h-8 text-bg-icon-accent-primary" />
         <HeadlineText>Preparing Gift</HeadlineText>
-        <Button variant="light" size="md" className="p-2" onClick={handleMaxGiftSend}>
-          <HeadlineText className="flex items-center text-text-link">
-            Max:{' '}
-            {maxAmountToSend || (
-              <div className="shrink-0 w-[7ch]">
-                <Progress size="md" isIndeterminate />
-              </div>
-            )}{' '}
-            {selectedAsset?.asset?.symbol}
-          </HeadlineText>
+        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxGiftSend}>
+          <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
+          {maxAmountToSend ? (
+            <HeadlineText className="flex items-center text-text-link">{maxAmountToSend}</HeadlineText>
+          ) : (
+            <div className="shrink-0 w-[7ch]">
+              <Progress size="md" isIndeterminate />
+            </div>
+          )}
+          <HeadlineText className="flex items-center text-text-link">{selectedAsset?.asset?.symbol}</HeadlineText>
         </Button>
       </div>
+
       <AmountDetails
         selectedAsset={selectedAsset}
         amount={amount}

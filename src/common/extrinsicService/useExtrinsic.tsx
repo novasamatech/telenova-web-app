@@ -1,12 +1,11 @@
 import { type KeyringPair } from '@polkadot/keyring/types';
-import { type Balance } from '@polkadot/types/interfaces';
 import { decodeAddress } from '@polkadot/util-crypto';
 
 import { type Asset } from '../chainRegistry';
 import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
 
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
-import { AssetType, type ChainId, type TrasferAsset } from '@/common/types';
+import { AssetType, type ChainId, type TransferAsset } from '@/common/types';
 
 type SendTransaction = {
   destinationAddress: string;
@@ -25,58 +24,55 @@ export function useExtrinsic() {
   const { submitExtrinsic, estimateFee } = useExtrinsicProvider();
 
   async function sendTransaction({
-    destinationAddress,
     chainId,
-    transferAmount,
     asset,
-    transferAll,
     keyring,
+    destinationAddress,
+    transferAmount,
+    transferAll,
   }: SendTransaction) {
     const address = decodeAddress(destinationAddress);
     const assetId = getAssetId(asset);
-    const args = {
-      dest: address,
-      value: transferAmount,
-      asset: assetId,
-    };
     let signOptions;
     let transactionType = TransactionType.TRANSFER;
 
     if (transferAll) {
       transactionType = TransactionType.TRANSFER_ALL;
     }
-    if (asset?.type === AssetType.STATEMINE) {
+    if (asset.type === AssetType.STATEMINE) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
     }
 
-    return await submitExtrinsic({
-      chainId: chainId,
-      transaction: {
-        type: transactionType,
-        args,
-      },
+    return submitExtrinsic({
+      chainId,
       signOptions,
       keyring,
+      transaction: {
+        type: transactionType,
+        args: {
+          dest: address,
+          value: transferAmount,
+          asset: assetId,
+        },
+      },
     }).then(hash => {
-      if (!hash) {
-        throw Error('Something went wrong');
-      }
+      if (!hash) throw Error('Something went wrong');
+
       console.log('Success, Hash:', hash?.toString());
     });
   }
 
-  async function handleSendGift(
-    { chainId, amount, transferAll, asset, fee }: TrasferAsset,
+  async function sendGift(
+    { chainId, amount, transferAll, asset, fee }: TransferAsset,
     giftTransferAddress: string,
-  ) {
-    const transferAmmount = formatAmount(amount as string, asset.precision);
+  ): Promise<void> {
+    const transferAmount = formatAmount(amount!, asset.precision);
 
     if (isStatemineAsset(asset?.type)) {
-      // Fee is 2x the transfer fee - we add 1 fee to the transfer amount
-      const giftAmount = Math.ceil(+transferAmmount + fee! / 2).toString();
+      const giftAmount = Math.ceil(+transferAmount + fee! / 2).toString();
 
-      return await sendTransaction({
+      return sendTransaction({
         destinationAddress: giftTransferAddress,
         chainId,
         transferAmount: giftAmount,
@@ -84,41 +80,39 @@ export function useExtrinsic() {
       });
     }
 
-    const trasferAllFee = await handleFee(chainId, TransactionType.TRANSFER_ALL);
-    const giftAmount = (+transferAmmount + trasferAllFee).toString();
+    const trasferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
+    const giftAmount = (+transferAmount + trasferAllFee).toString();
 
-    return await sendTransaction({
-      destinationAddress: giftTransferAddress,
+    return sendTransaction({
       chainId,
-      transferAmount: giftAmount,
-      transferAll,
       asset,
+      transferAll,
+      destinationAddress: giftTransferAddress,
+      transferAmount: giftAmount,
     });
   }
 
-  async function handleFee(
+  async function getTransactionFee(
     chainId: ChainId,
-    transactionType: TransactionType = TransactionType.TRANSFER,
+    transactionType = TransactionType.TRANSFER,
     amount?: string,
     assetId?: string,
   ): Promise<number> {
-    const args = {
-      dest: decodeAddress(FAKE_ACCOUNT_ID),
-      value: amount,
-      asset: assetId,
-    };
-
-    return await estimateFee({
+    const fee = await estimateFee({
       chainId,
+      signOptions: assetId ? getAssetIdSignOption(assetId) : undefined,
       transaction: {
         type: transactionType,
-        args,
+        args: {
+          dest: decodeAddress(FAKE_ACCOUNT_ID),
+          value: amount,
+          asset: assetId,
+        },
       },
-      signOptions: assetId ? getAssetIdSignOption(assetId) : undefined,
-    }).then((fee: Balance) => {
-      return Number(fee);
     });
+
+    return fee.toNumber();
   }
 
-  return { sendTransaction, handleFee, handleSendGift };
+  return { sendTransaction, getTransactionFee, sendGift };
 }

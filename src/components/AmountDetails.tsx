@@ -1,13 +1,13 @@
-import { type FC, type PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 
 import { Input } from '@nextui-org/react';
 
-import { type TrasferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
 import { type IconNames } from '@/components/Icon/types';
 
-type AmountDetailsProps = PropsWithChildren<{
-  selectedAsset?: Partial<TrasferAsset | null>;
+type Props = {
+  selectedAsset?: Partial<TransferAsset | null>;
   amount: string;
   isAmountValid: boolean;
   maxAmountToSend: string;
@@ -15,10 +15,11 @@ type AmountDetailsProps = PropsWithChildren<{
   deposit: number;
   isAccountTerminate: boolean;
   handleChange: (value: string) => void;
-}>;
+};
 
 //TODO: change layout mobile text
-export const AmountDetails: FC<AmountDetailsProps> = ({
+
+export const AmountDetails = ({
   selectedAsset,
   amount,
   isAmountValid,
@@ -28,7 +29,7 @@ export const AmountDetails: FC<AmountDetailsProps> = ({
   isAccountTerminate,
   handleChange,
   children,
-}) => {
+}: PropsWithChildren<Props>) => {
   const shouldShowPrice = !isNaN(+amount) && isAmountValid && !isPending;
 
   return (

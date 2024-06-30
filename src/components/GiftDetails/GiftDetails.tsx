@@ -5,16 +5,12 @@ import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { type TgLink } from '@/common/telegram/types';
 import { BodyText, TitleText } from '@/components';
 
-type GiftDetailsProps = {
-  link: TgLink | null;
+type Props = {
+  link: TgLink;
   webApp: WebApp;
 };
 
-export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
-  if (!link) {
-    return;
-  }
-
+const GiftDetails = ({ link, webApp }: Props) => {
   return (
     <>
       <MainButton text="Send to contact" onClick={() => navigateTranferById(webApp, link)} />
@@ -24,4 +20,6 @@ export default function GiftDetails({ link, webApp }: GiftDetailsProps) {
       </BodyText>
     </>
   );
-}
+};
+
+export default GiftDetails;

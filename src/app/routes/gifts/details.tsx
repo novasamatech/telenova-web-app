@@ -1,6 +1,4 @@
-import type { WebApp } from '@twa-dev/types';
-
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
@@ -26,7 +24,7 @@ export const loader = () => {
   });
 };
 
-const Page: FC = () => {
+const Page = () => {
   const { botUrl, appName } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
@@ -47,12 +45,14 @@ const Page: FC = () => {
     );
   }, []);
 
+  const canShowGifDetails = Boolean(link) && Boolean(webApp);
+
   return (
     <>
       <BackButton onClick={() => navigate($path('/gifts'))} />
       <div className="grid items-center justify-center h-[93vh]">
         <Icon name="Present" size={250} className="justify-self-center mt-auto" />
-        <GiftDetails link={link} webApp={webApp as WebApp} />
+        {canShowGifDetails && <GiftDetails link={link!} webApp={webApp!} />}
       </div>
     </>
   );

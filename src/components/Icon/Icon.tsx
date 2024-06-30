@@ -1,4 +1,4 @@
-import { type ComponentType, type FC, type SVGAttributes } from 'react';
+import { type ComponentType, type SVGAttributes } from 'react';
 
 import AllIcons, { type IconNames } from './types';
 
@@ -9,7 +9,7 @@ type Props = {
   alt?: string;
 };
 
-const Icon: FC<Props> = ({ name, size = 24, className }) => {
+const Icon = ({ name, size = 24, className }: Props) => {
   const IconComponent = AllIcons[name] as unknown as ComponentType<SVGAttributes<unknown>>;
 
   if (!IconComponent) {

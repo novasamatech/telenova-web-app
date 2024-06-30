@@ -9,8 +9,8 @@ import { type IRuntimeProviderService, type RuntimeMetadata } from './types';
 export const useRuntimeProvider = (): IRuntimeProviderService => {
   const metadataStorage = useRepository<ChainId, RuntimeMetadata>();
 
-  const getMetadata = async (chainId: ChainId): Promise<RuntimeMetadata | undefined> => {
-    return await metadataStorage.fetch(chainId);
+  const getMetadata = (chainId: ChainId): Promise<RuntimeMetadata | undefined> => {
+    return metadataStorage.fetch(chainId);
   };
 
   const subscribeMetadata = (api: ApiPromise): UnsubscribePromise => {

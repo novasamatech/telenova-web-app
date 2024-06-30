@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import secureLocalStorage from 'react-secure-storage';
 
@@ -10,7 +10,7 @@ import { MNEMONIC_STORE } from '@/common/utils';
 import { backupMnemonic, getStoreName } from '@/common/wallet';
 import { CreatePasswordForm, TitleText } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
 
   const [password, setPassword] = useState('');

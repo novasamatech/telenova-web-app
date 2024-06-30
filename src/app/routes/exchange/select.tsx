@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
@@ -9,7 +8,7 @@ import { AssetBalance, TitleText } from '@/components';
 
 const skippedBuyAssets = ['WND', 'USDT'];
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
   const { assets, selectedAsset, setSelectedAsset } = useGlobalContext();
 

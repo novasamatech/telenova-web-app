@@ -1,6 +1,6 @@
 import type { PlayerEvent } from '@lottiefiles/react-lottie-player';
 
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
@@ -18,7 +18,7 @@ export const loader = () => {
   });
 };
 
-const Page: FC = () => {
+const Page = () => {
   const { botApiUrl } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();

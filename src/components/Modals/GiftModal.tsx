@@ -32,7 +32,7 @@ let timeoutId: ReturnType<typeof setTimeout>;
 export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
-  const { sendTransaction, handleFee } = useExtrinsic();
+  const { sendTransaction, getTransactionFee } = useExtrinsic();
   const { getAssetBySymbol, connectionStates } = useChainRegistry();
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
@@ -55,12 +55,11 @@ export default function GiftModal() {
 
       return '0';
     }
-    const fee = await handleFee(chain.chain.chainId, TransactionType.TRANSFER_ALL);
+    const fee = await getTransactionFee(chain.chain.chainId, TransactionType.TRANSFER_ALL);
     clearTimeout(timerID);
     const rawBalance = +giftBalance - fee;
-    const formattedBalance = formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
 
-    return formattedBalance;
+    return formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
   };
 
   useEffect(() => {
