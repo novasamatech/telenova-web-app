@@ -26,7 +26,6 @@ runs:
           🖥️ PR was merged!
 
           PR: ${{ github.event.pull_request.html_url }}
-          commit: ${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
           updated_bot: @${{ inputs.DEPLOYED_BOT }}
           
           Launch app: ${{ inputs.APP_LINK }}
