@@ -110,7 +110,6 @@ a:hover {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background-color: var(--scroll-background-default);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: padding-box;
