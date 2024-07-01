@@ -20,7 +20,7 @@ const isPolkadotOrUSDT = (symbol: string): boolean => {
   return symbol === 'USDT' || symbol === 'DOT';
 };
 
-export const sortingAssets = (first: Asset, second: Asset) => {
+export const sortingAssets = (first: Asset, second: Asset): number => {
   const isFirstPolkadotOrUSDT = isPolkadotOrUSDT(first.symbol);
   const isSecondPolkadotOrUSDT = isPolkadotOrUSDT(second.symbol);
 
@@ -34,8 +34,8 @@ export const sortingAssets = (first: Asset, second: Asset) => {
   return first.symbol.localeCompare(second.symbol);
 };
 
-export const mapAssetAccountsFromChains = (chains: Chain[], publicKey: PublicKey): AssetAccount[] =>
-  chains
+export const mapAssetAccountsFromChains = (chains: Chain[], publicKey: PublicKey): AssetAccount[] => {
+  return chains
     .flatMap(chain =>
       chain.assets.map(asset => ({
         chainId: chain.chainId,
@@ -47,15 +47,13 @@ export const mapAssetAccountsFromChains = (chains: Chain[], publicKey: PublicKey
       })),
     )
     .sort((a, b) => sortingAssets(a.asset, b.asset));
+};
 
-export const pickAsset = ({
-  chainId,
-  assetId,
-  assets,
-}: {
-  chainId: string;
-  assetId: string;
-  assets: AssetAccount[];
-}) => {
-  return assets.find(asset => asset.chainId === chainId && asset.asset.assetId.toString() === assetId);
+export const pickAsset = (chainId: string, assetId: string, assets: AssetAccount[]): AssetAccount | undefined => {
+  return assets.find(asset => {
+    const isChainIdMatch = asset.chainId === chainId;
+    const isAssetIdMatch = asset.asset.assetId.toString() === assetId;
+
+    return isChainIdMatch && isAssetIdMatch;
+  });
 };

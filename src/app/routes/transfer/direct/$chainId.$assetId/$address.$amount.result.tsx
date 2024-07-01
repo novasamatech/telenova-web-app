@@ -18,7 +18,7 @@ const Page: FC = () => {
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
 
-  const selectedAsset = pickAsset({ chainId, assetId, assets });
+  const selectedAsset = pickAsset(chainId, assetId, assets);
 
   return (
     <>

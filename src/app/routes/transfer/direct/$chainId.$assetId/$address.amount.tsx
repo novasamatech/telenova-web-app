@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { type FC, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, Progress } from '@nextui-org/react';
@@ -13,15 +13,25 @@ import { pickAsset } from '@/common/utils';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { AmountDetails } from '@/components/AmountDetails';
 
-export const clientLoader = (({ params }) => {
-  return $params('/transfer/direct/:chainId/:assetId/:address/amount', params);
+export type SearchParams = {
+  amount: string;
+};
+
+export const clientLoader = (({ params, request }) => {
+  const url = new URL(request.url);
+
+  return {
+    amount: url.searchParams.get('amount') || '0',
+    ...$params('/transfer/direct/:chainId/:assetId/:address/amount', params),
+  };
 }) satisfies ClientLoaderFunction;
 
 const Page: FC = () => {
-  const { chainId, assetId, address } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
-  const selectedAsset = pickAsset({ assets, chainId, assetId });
+  const { chainId, assetId, address, amount: transferAmount } = useLoaderData<typeof clientLoader>();
+
+  const selectedAsset = pickAsset(chainId, assetId, assets);
 
   const {
     handleMaxSend,
@@ -34,6 +44,11 @@ const Page: FC = () => {
     maxAmountToSend,
     isAmountValid,
   } = useAmountLogic({ selectedAsset });
+
+  // Set amount from query params (Mercurio page does this)
+  useEffect(() => {
+    handleChange(transferAmount);
+  }, [transferAmount]);
 
   return (
     <>

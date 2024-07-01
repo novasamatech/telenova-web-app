@@ -21,7 +21,8 @@ const Page: FC = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
   const { assets } = useGlobalContext();
   const navigate = useNavigate();
-  const selectedAsset = pickAsset({ chainId, assetId, assets });
+
+  const selectedAsset = pickAsset(chainId, assetId, assets);
 
   const {
     handleMaxSend,

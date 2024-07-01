@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { type AssetAccount, type AssetPrice, type HexString, type TransferAsset } from '../types';
 
 export interface IContext {
-  assets: AssetAccount[] | [];
+  assets: AssetAccount[];
   isGiftClaimed: boolean;
   publicKey?: HexString;
   selectedAsset?: Partial<TransferAsset | null>;
@@ -27,7 +27,7 @@ export const GlobalContext = createContext<IContext>({
   setAssetsPrices: () => {},
 });
 
-// TODO: refactor this
+// TODO: Get rid of GlobalContext
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [publicKey, setPublicKey] = useState<HexString>();
   const [assets, setAssets] = useState<AssetAccount[]>([]);

@@ -36,7 +36,10 @@ const Page = () => {
       <TitleText className="mt-6 mb-10">Select a token {type ? `to ${type}` : ''}</TitleText>
       <div className="flex flex-col gap-2 mt-4">
         {exchangeAssets.map(asset => (
-          <Link key={asset.chainId} to={$path('/exchange/widget/:asset', { asset: asset.asset.assetId })}>
+          <Link
+            key={asset.chainId}
+            to={$path('/exchange/widget/:chainId/:assetId', { chainId: asset.chainId, assetId: asset.asset.assetId })}
+          >
             <AssetBalance
               asset={asset.asset}
               balance={asset.totalBalance}

@@ -40,31 +40,28 @@ const Page: FC = () => {
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
-  const selectedAsset = pickAsset({ assets, chainId, assetId });
+  const selectedAsset = pickAsset(chainId, assetId, assets);
 
   // TODO refactor
   useEffect(() => {
-    if (!selectedAsset) {
-      return;
-    }
+    if (!selectedAsset) return;
 
-    const wallet = createGiftWallet(selectedAsset.addressPrefix as number);
-    (async function () {
-      await sendGift(selectedAsset, wallet.address)
-        .then(() => {
-          backupGifts(wallet.address, wallet.secret, selectedAsset as TransferAsset);
-          setLink(
-            createTgLink({
-              botUrl,
-              appName,
-              secret: wallet.secret,
-              symbol: selectedAsset?.asset?.symbol as string,
-              amount: amount,
-            }),
-          );
-        })
-        .catch(error => alert(`Error: ${error.message}\nTry to reload`));
-    })();
+    const giftWallet = createGiftWallet(selectedAsset.addressPrefix as number);
+
+    sendGift(selectedAsset, giftWallet.address)
+      .then(() => {
+        backupGifts(giftWallet.address, giftWallet.secret, selectedAsset as TransferAsset);
+        const tgLink = createTgLink({
+          botUrl,
+          appName,
+          amount,
+          secret: giftWallet.secret,
+          symbol: selectedAsset?.asset?.symbol as string,
+        });
+
+        setLink(tgLink);
+      })
+      .catch(error => alert(`Error: ${error.message}\nTry to reload`));
   }, []);
 
   const handleLottieEvent = (event: PlayerEvent) => {

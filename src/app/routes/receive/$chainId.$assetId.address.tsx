@@ -20,7 +20,7 @@ const Page = () => {
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
 
-  const selectedAsset = pickAsset({ assets, chainId, assetId });
+  const selectedAsset = pickAsset(chainId, assetId, assets);
 
   if (!selectedAsset || !selectedAsset.asset) {
     return null;

@@ -38,7 +38,7 @@ const Page = () => {
 
   const [fee, setFee] = useState<number>(0);
 
-  const selectedAsset = pickAsset({ assets, chainId, assetId });
+  const selectedAsset = pickAsset(chainId, assetId, assets);
 
   useEffect(() => {
     getAssetHubFee(chainId as ChainId, assetId, amount).then(setFee);
