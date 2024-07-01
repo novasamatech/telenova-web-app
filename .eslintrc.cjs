@@ -63,8 +63,7 @@ module.exports = {
         'newlines-between': 'always',
         pathGroups: [
           { group: 'external', pattern: 'react**', position: 'before' },
-          { group: 'external', pattern: '@remix-run/**', position: 'before' },
-          { group: 'external', pattern: '@polkadot/**', position: 'before' },
+          { group: 'external', pattern: '@polkadot/**', position: 'after' },
           { group: 'sibling', pattern: '@/**', position: 'before' },
         ],
         pathGroupsExcludedImportTypes: [],

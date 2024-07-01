@@ -21,6 +21,7 @@ type Props = {
 
 export default function ResetPasswordModal({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
+
   const [step, setStep] = useState(Step.INIT);
 
   if (!isOpen) {

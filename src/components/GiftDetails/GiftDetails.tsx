@@ -1,10 +1,8 @@
-import { useEffect } from 'react';
-
 import { type WebApp } from '@twa-dev/types';
 
 import { navigateTranferById } from '@/common/telegram';
+import { MainButton } from '@/common/telegram/MainButton';
 import { type TgLink } from '@/common/telegram/types';
-import { useMainButton } from '@/common/telegram/useMainButton';
 import { BodyText, TitleText } from '@/components';
 
 type Props = {
@@ -13,14 +11,9 @@ type Props = {
 };
 
 const GiftDetails = ({ link, webApp }: Props) => {
-  const { addMainButton } = useMainButton();
-
-  useEffect(() => {
-    addMainButton(() => navigateTranferById(webApp, link), 'Send to contact');
-  }, []);
-
   return (
     <>
+      <MainButton text="Send to contact" onClick={() => navigateTranferById(webApp, link)} />
       <TitleText className="mb-auto">The gift has been prepared!</TitleText>
       <BodyText className="text-text-hint mt-auto" align="center">
         Your gifts can be managed on Main screen

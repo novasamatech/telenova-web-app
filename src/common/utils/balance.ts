@@ -1,6 +1,6 @@
-import { BN, BN_TEN } from '@polkadot/util';
-
 import BigNumber from 'bignumber.js';
+
+import { BN, BN_TEN } from '@polkadot/util';
 
 import { type IAssetBalance } from '../balances/types';
 import { type AssetAccount, type AssetPrice, type ChainAssetAccount, type ChainAssetId } from '../types';

@@ -9,6 +9,7 @@ import RecoveryModal from './RecoveryModal';
 const RecoveryPhrase = () => {
   const [isBlur, setIsBlur] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const mnemonic = getMnemonic();
 
   const handleClick = () => {

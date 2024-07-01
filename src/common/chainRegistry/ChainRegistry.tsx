@@ -28,9 +28,10 @@ const ChainRegistryContext = createContext<ChainRegistryContextProps>({} as Chai
 
 export const ChainRegistry = ({ children }: PropsWithChildren) => {
   const { getAllChains, getAssetBySymbol, getChain, getAssetByChainId } = useChains();
-  const [isRegistryReady, setIsRegistryReady] = useState(false);
   const { connectionStates, createConnections, getConnection } = useConnections();
   const { getMetadata, subscribeMetadata } = useRuntimeProvider();
+
+  const [isRegistryReady, setIsRegistryReady] = useState(false);
 
   const setupWaiters = useRef<StateResolution<void>[]>([]);
 

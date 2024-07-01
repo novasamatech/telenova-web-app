@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cnTw } from '@/common/utils/twMerge';
 import { BodyText, Input } from '@/components';
@@ -12,53 +12,42 @@ const VariantStyles: Record<Variants, string> = {
 };
 
 type Props = {
-  onSubmit: (password: string) => void;
+  password: string;
+  onStatusChange: (completed: boolean) => void;
+  onChange: (password: string) => void;
 };
 
-export default function PasswordForm({ onSubmit }: Props) {
-  const [password, setPassword] = useState('');
+export const CreatePasswordForm = ({ password, onStatusChange, onChange }: Props) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
-  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
-  const [isDirty, setIsDirty] = useState(false);
-  const [hintColor, setHintColor] = useState<Variants>('default');
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
-    if (password.length === 0 || !isPasswordValid || password !== confirmPassword) {
-      return;
-    }
-    onSubmit(password);
-  }, [password, confirmPassword, isPasswordValid, isConfirmPasswordValid]);
+    const completed = password.length > 0 && isPasswordValid && password == confirmPassword;
+
+    onStatusChange(completed);
+  }, [password, confirmPassword, isPasswordValid, onStatusChange]);
 
   const validatePassword = (value: string) => {
     // Password validation logic
     const regex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
-    const hasValidFormat = regex.test(value);
-
-    if (confirmPassword.length !== 0) {
-      setIsConfirmPasswordValid(confirmPassword === value);
-    }
-    setHintColor(hasValidFormat ? 'success' : 'error');
-    setIsPasswordValid(hasValidFormat);
+    setIsPasswordValid(regex.test(value));
   };
 
   const validateOnChange = (value: string) => {
-    setPassword(value);
-    if (isDirty) {
+    onChange(value);
+    if (touched) {
       validatePassword(value);
     }
   };
 
-  const validateConfirmPassword = (value: string) => {
-    setIsConfirmPasswordValid(value === password);
-    setConfirmPassword(value);
-  };
-
   const validateOnBlur = () => {
-    setIsDirty(true);
+    setTouched(true);
     validatePassword(password);
   };
-  // TODO: return btn on keyboard
+
+  const isConfirmInvalid = confirmPassword.length > 0 && confirmPassword !== password;
+  const hintColor = touched ? (isPasswordValid ? 'success' : 'error') : 'default';
 
   return (
     <form className="flex flex-col mt-8 gap-4 w-full items-center">
@@ -73,7 +62,7 @@ export default function PasswordForm({ onSubmit }: Props) {
         errorMessage={!isPasswordValid && 'Enter correct password here'}
         onBlur={validateOnBlur}
         onValueChange={validateOnChange}
-        onClear={() => setPassword('')}
+        onClear={() => onChange('')}
       />
       <Input
         isClearable
@@ -82,9 +71,9 @@ export default function PasswordForm({ onSubmit }: Props) {
         type="password"
         className="max-w-sm text-left"
         value={confirmPassword}
-        isInvalid={!isConfirmPasswordValid}
-        errorMessage={!isConfirmPasswordValid && 'Passwords did not match'}
-        onValueChange={validateConfirmPassword}
+        isInvalid={isConfirmInvalid}
+        errorMessage={isConfirmInvalid && 'Passwords did not match'}
+        onValueChange={setConfirmPassword}
         onClear={() => setConfirmPassword('')}
       />
       <BodyText align="left" as="span" className={cnTw('self-start mt-4', VariantStyles[hintColor])}>
@@ -99,4 +88,4 @@ export default function PasswordForm({ onSubmit }: Props) {
       </BodyText>
     </form>
   );
-}
+};

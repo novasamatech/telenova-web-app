@@ -1,7 +1,21 @@
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { $path } from 'remix-routes';
 
-import { GiftDetailsPage } from '@/screens/gifts';
+import { useTelegram } from '@/common/providers';
+import { createTgLink } from '@/common/telegram';
+import { BackButton } from '@/common/telegram/BackButton';
+import { type TgLink } from '@/common/telegram/types.ts';
+import { GiftDetails, Icon } from '@/components';
+
+export type SearchParams = {
+  seed: string;
+  symbol: string;
+  balance: string;
+};
 
 export const loader = () => {
   return json({
@@ -11,9 +25,37 @@ export const loader = () => {
 };
 
 const Page = () => {
-  const data = useLoaderData<typeof loader>();
+  const { botUrl, appName } = useLoaderData<typeof loader>();
 
-  return <GiftDetailsPage botUrl={data.botUrl} appName={data.appName} />;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { webApp } = useTelegram();
+
+  const [link, setLink] = useState<TgLink | null>(null);
+
+  useEffect(() => {
+    setLink(
+      createTgLink({
+        secret: searchParams.get('seed') as string,
+        symbol: searchParams.get('symbol') as string,
+        amount: searchParams.get('balance') as string,
+        botUrl,
+        appName,
+      }),
+    );
+  }, []);
+
+  const canShowGifDetails = Boolean(link) && Boolean(webApp);
+
+  return (
+    <>
+      <BackButton onClick={() => navigate($path('/gifts'))} />
+      <div className="grid items-center justify-center h-[93vh]">
+        <Icon name="Present" size={250} className="justify-self-center mt-auto" />
+        {canShowGifDetails && <GiftDetails link={link!} webApp={webApp!} />}
+      </div>
+    </>
+  );
 };
 
 export default Page;

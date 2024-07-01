@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js';
 
 import { type TransferAsset } from '../types';
 
-type Params = {
+type WidgetParams = {
   root: HTMLElement;
   widgetId: string;
   returnPage: string;
@@ -12,7 +12,7 @@ type Params = {
   handleSell: (data: any) => void;
 };
 
-export const handleWidget = ({
+export const runMercuryoWidget = ({
   root,
   secret,
   widgetId,
@@ -20,25 +20,23 @@ export const handleWidget = ({
   selectedAsset,
   handleStatus,
   handleSell,
-}: Params) => {
-  if (!selectedAsset || !selectedAsset.address) {
-    return;
-  }
+}: WidgetParams) => {
+  if (!selectedAsset || !selectedAsset.address) return;
 
   const signature = CryptoJS.SHA512(selectedAsset.address + secret).toString();
   const returnUrl = new URL(returnPage, window.location.origin).toString();
 
   window.mercuryoWidget.run({
     widgetId,
-    host: root,
-    returnUrl: returnUrl,
-    type: selectedAsset.operationType,
+    returnUrl,
     signature,
+    host: root,
     fixCurrency: true,
-    onStatusChange: handleStatus,
-    onSellTransferEnabled: handleSell,
+    type: selectedAsset.operationType,
     refundAddress: selectedAsset.address,
     address: selectedAsset.address,
     currency: selectedAsset.asset?.symbol,
+    onStatusChange: handleStatus,
+    onSellTransferEnabled: handleSell,
   });
 };

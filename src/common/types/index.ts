@@ -1,4 +1,4 @@
-import { type Asset } from './../chainRegistry/types/index';
+import type { Asset } from '@/common/chainRegistry';
 
 export type HexString = `0x${string}`;
 
@@ -19,7 +19,6 @@ export type PriceItem = {
   change?: number;
 };
 export type AssetPrice = Record<Currency, PriceItem>;
-export type PriceObject = Record<string, AssetPrice>;
 
 export type ChainAssetAccount = {
   chainId: ChainId;
