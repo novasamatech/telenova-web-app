@@ -7,7 +7,7 @@ import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
-import { BackButton } from '@/common/telegram/BackButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
 import { type TgLink } from '@/common/telegram/types.ts';
 import { GiftDetails, Icon } from '@/components';
 

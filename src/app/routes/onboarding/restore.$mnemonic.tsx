@@ -6,7 +6,7 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { MainButton } from '@/common/telegram/MainButton';
 import { BACKUP_DATE } from '@/common/utils';
 import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';

@@ -9,7 +9,7 @@ import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { completeOnboarding } from '@/common/telegram';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { MainButton } from '@/common/telegram/MainButton';
 import { BodyText, HeadlineText, LottiePlayer, TitleText } from '@/components';
 
 export const loader = () => {

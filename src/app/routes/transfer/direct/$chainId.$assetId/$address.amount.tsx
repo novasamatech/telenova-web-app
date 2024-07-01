@@ -5,13 +5,13 @@ import { Button, Progress } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
-import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic.tsx';
+import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
 import { useGlobalContext } from '@/common/providers';
-import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
+import { MainButton } from '@/common/telegram/MainButton';
 import { pickAsset } from '@/common/utils';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
-import { AmountDetails } from '@/components/AmountDetails.tsx';
+import { AmountDetails } from '@/components/AmountDetails';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/:address/amount', params);

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
 import { BACKUP_DATE } from '@/common/utils';
 import { getStoreName } from '@/common/wallet';
 import { BodyText, LinkCard, TitleText } from '@/components';

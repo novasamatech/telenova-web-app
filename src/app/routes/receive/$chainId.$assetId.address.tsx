@@ -6,7 +6,7 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';
-import { BackButton } from '@/common/telegram/BackButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
 import { pickAsset, shareQrAddress } from '@/common/utils';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/components';
 

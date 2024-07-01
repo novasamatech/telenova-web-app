@@ -10,8 +10,8 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { BalanceProvider } from '@/common/balances';
 import { ChainRegistry } from '@/common/chainRegistry';
 import { ExtrinsicProvider } from '@/common/extrinsicService';
-import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider.tsx';
-import { TelegramProvider } from '@/common/providers/telegramProvider.tsx';
+import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider';
+import { TelegramProvider } from '@/common/providers/telegramProvider';
 import { getWallet } from '@/common/wallet';
 import { ErrorScreen } from '@/components';
 
@@ -24,6 +24,7 @@ export const links: LinksFunction = () => [
 
 export const meta: MetaFunction = () => [
   { charSet: 'utf-8' },
+  { title: 'Telenova' },
   {
     name: 'viewport',
     content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
@@ -62,6 +63,7 @@ export const Layout = ({ children }: PropsWithChildren) => (
 
 const DataContext = ({ children }: PropsWithChildren) => {
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     cryptoWaitReady().then(() => setLoading(false));
   }, []);
@@ -81,7 +83,7 @@ const DataContext = ({ children }: PropsWithChildren) => {
   );
 };
 
-export default function App() {
+const App = () => {
   const [error, setError] = useState<string | null>(null);
   const { setPublicKey } = useGlobalContext();
   const navigate = useNavigate();
@@ -109,4 +111,6 @@ export default function App() {
       </div>
     </main>
   );
-}
+};
+
+export default App;

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';
-import { BackButton } from '@/common/telegram/BackButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
 import { AssetsList, TitleText } from '@/components';
 
 const Page: FC = () => {

@@ -5,7 +5,7 @@ import { Avatar } from '@nextui-org/react';
 import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { MainButton } from '@/common/telegram/MainButton';
 import { backupMnemonic, createWallet, generateWalletMnemonic } from '@/common/wallet';
 import { BodyText, CreatePasswordForm, TitleText } from '@/components';
 

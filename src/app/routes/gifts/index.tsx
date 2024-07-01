@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
 import { type Gift } from '@/common/types';
 import { getGifts } from '@/common/utils';
 import { useGifts } from '@/common/utils/hooks';
@@ -11,8 +11,8 @@ import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/componen
 
 const Page = () => {
   const navigate = useNavigate();
-
   const { getGiftsState } = useGifts();
+
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
   const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
   const [loading, setLoading] = useState(true);

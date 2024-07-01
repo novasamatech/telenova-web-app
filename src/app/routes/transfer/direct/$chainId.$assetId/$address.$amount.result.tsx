@@ -5,7 +5,7 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { MainButton } from '@/common/telegram/MainButton';
 import { pickAsset } from '@/common/utils';
 import { Icon, MediumTitle, TitleText } from '@/components';
 

@@ -1,7 +1,7 @@
 import { type WebApp } from '@twa-dev/types';
 
 import { navigateTranferById } from '@/common/telegram';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { MainButton } from '@/common/telegram/MainButton';
 import { type TgLink } from '@/common/telegram/types';
 import { BodyText, TitleText } from '@/components';
 

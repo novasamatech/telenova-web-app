@@ -1,4 +1,4 @@
-import { Input } from '@/components/Input/Input.tsx';
+import { Input } from '@/components/Input/Input';
 
 import TruncateAddress from './Address/TruncateAddress';
 import AssetBalance from './Assets/AssetBalance';

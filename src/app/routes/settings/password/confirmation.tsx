@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { MainButton } from '@/common/telegram/MainButton';
 import { Icon, TitleText } from '@/components';
 
 const Page = () => {
@@ -13,7 +13,7 @@ const Page = () => {
       <MainButton onClick={() => navigate($path('/dashboard'), { replace: true })} />
       <div className="flex flex-col justify-center items-center h-[95vh]">
         <Icon name="Success" size={250} />
-        <TitleText className="m-3">Password changed sussessfully!</TitleText>
+        <TitleText className="m-3">Password changed successfully!</TitleText>
       </div>
     </>
   );

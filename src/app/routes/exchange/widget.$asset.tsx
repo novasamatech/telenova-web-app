@@ -7,8 +7,8 @@ import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
-import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
+import { MainButton } from '@/common/telegram/MainButton';
 import { handleWidget } from '@/common/utils';
 import { MediumTitle } from '@/components';
 
@@ -20,15 +20,14 @@ export const loader = () => {
 };
 
 const Page = () => {
+  const navigate = useNavigate();
+  const { webApp } = useTelegram();
+  const { selectedAsset, setSelectedAsset } = useGlobalContext();
   const { mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof loader>();
 
   const [root, setRoot] = useState<HTMLElement | null>(null);
-  const { webApp } = useTelegram();
-  const navigate = useNavigate();
-  const { selectedAsset, setSelectedAsset } = useGlobalContext();
-
-  const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
   const [done, setDone] = useState(false);
+  const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
 
   useEffect(() => {
     if (!selectedAsset || isOpenInWeb(webApp!.platform) || !root) {
