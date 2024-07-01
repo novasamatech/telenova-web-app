@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
@@ -10,7 +10,7 @@ import { MNEMONIC_STORE } from '@/common/utils';
 import { initializeWalletFromCloud } from '@/common/wallet';
 import { Input, TitleText } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const { webApp } = useTelegram();
   const navigate = useNavigate();
 

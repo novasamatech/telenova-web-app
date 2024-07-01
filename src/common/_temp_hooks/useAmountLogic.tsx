@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
-import { useGlobalContext } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService.ts';
 import { type TransferAsset } from '@/common/types';
 import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
@@ -14,9 +13,7 @@ type AmountPageLogic = {
 export function useAmountLogic({ selectedAsset }: AmountPageLogic) {
   const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
-
   const { getAssetHubFee } = useAssetHub();
-  const { setSelectedAsset } = useGlobalContext();
 
   const [amount, setAmount] = useState<string>(selectedAsset?.amount || '');
   const [fee, setFee] = useState<number>();
@@ -72,12 +69,15 @@ export function useAmountLogic({ selectedAsset }: AmountPageLogic) {
 
   useEffect(() => {
     setPending(true);
-    getTransferDetails(selectedAsset as TransferAsset, fee?.toString() ?? '0').then(({ fee, formattedDeposit }) => {
-      setPending(false);
-      setFee(fee);
-      setDeposit(formattedDeposit);
-      setSelectedAsset(prev => ({ ...prev, fee }));
-    });
+    getTransferDetails(selectedAsset as TransferAsset, fee?.toString() ?? '0')
+      .then(({ fee, formattedDeposit }) => {
+        setFee(fee);
+        setDeposit(formattedDeposit);
+        // setSelectedAsset(prev => ({ ...prev, fee }));
+      })
+      .finally(() => {
+        setPending(false);
+      });
   }, [fee]);
 
   useEffect(() => {
@@ -87,10 +87,10 @@ export function useAmountLogic({ selectedAsset }: AmountPageLogic) {
   }, [selectedAsset]);
 
   useEffect(() => {
-    if (touched) {
-      const checkBalanceDeposit = !transferAll && +maxAmountToSend - (fee || 0) < deposit;
-      setIsAmountValid(!!Number(fee) && (fee || 0) <= +maxAmountToSend && !checkBalanceDeposit);
-    }
+    if (!touched) return;
+
+    const checkBalanceDeposit = !transferAll && +maxAmountToSend - (fee || 0) < deposit;
+    setIsAmountValid(!!Number(fee) && (fee || 0) <= +maxAmountToSend && !checkBalanceDeposit);
   }, [transferAll, maxAmountToSend, fee, deposit, touched]);
 
   const handleMaxSend = () => {

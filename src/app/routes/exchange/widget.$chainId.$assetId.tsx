@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { type LoaderFunction, json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
@@ -12,19 +12,25 @@ import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { pickAsset, runMercuryoWidget } from '@/common/utils';
 import { MediumTitle } from '@/components';
 
-export const loader = (({ params }) => {
+export const loader = (() => {
   return json({
     mercuryoSecret: process.env.PUBLIC_WIDGET_SECRET,
     mercuryoWidgetId: process.env.PUBLIC_WIDGET_ID,
-    ...$params('/exchange/widget/:chainId/:assetId', params),
   });
 }) satisfies LoaderFunction;
+
+export const clientLoader = (async ({ params, serverLoader }) => {
+  const serverData = await serverLoader<typeof loader>();
+  const data = $params('/exchange/widget/:chainId/:assetId', params);
+
+  return { ...serverData, ...data };
+}) satisfies ClientLoaderFunction;
 
 const Page = () => {
   const navigate = useNavigate();
   const { webApp } = useTelegram();
   const { assets } = useGlobalContext();
-  const { chainId, assetId, mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof loader>();
+  const { chainId, assetId, mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof clientLoader>();
 
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const [done, setDone] = useState(false);

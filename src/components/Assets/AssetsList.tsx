@@ -1,4 +1,4 @@
-import { type ComponentProps, type FC } from 'react';
+import { type ComponentProps } from 'react';
 
 import { type AssetAccount } from '@/common/types';
 import { cnTw } from '@/common/utils';
@@ -10,7 +10,7 @@ type Props = Pick<ComponentProps<typeof AssetBalance>, 'animate' | 'showArrow' |
   onClick?(asset: AssetAccount): unknown;
 };
 
-const AssetsList: FC<Props> = ({ assets, className, onClick, ...props }) => {
+const AssetsList = ({ assets, className, onClick, ...props }: Props) => {
   return assets.map(asset => {
     if (onClick) {
       return (

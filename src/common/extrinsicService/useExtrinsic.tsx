@@ -80,8 +80,8 @@ export function useExtrinsic() {
       });
     }
 
-    const trasferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
-    const giftAmount = (+transferAmount + trasferAllFee).toString();
+    const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
+    const giftAmount = (+transferAmount + transferAllFee).toString();
 
     return sendTransaction({
       chainId,

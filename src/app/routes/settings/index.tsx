@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Divider, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import { json } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers';
@@ -9,15 +11,23 @@ import { openLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/components';
 
+export const loader = () => {
+  return json({
+    version: process.env.PUBLIC_APP_VERSION,
+  });
+};
+
 const Page = () => {
   const navigate = useNavigate();
   const { webApp } = useTelegram();
+  const { version } = useLoaderData<typeof loader>();
 
   const [isPopoverCurrencyOpen, setIsPopoverCurrencyOpen] = useState(false);
   const [isPopoverLanguageOpen, setIsPopoverLanguageOpen] = useState(false);
 
   const handleOpenChange = (stateFunc: (state: boolean) => void) => {
     stateFunc(true);
+
     setTimeout(() => {
       stateFunc(false);
     }, 1000);
@@ -122,8 +132,9 @@ const Page = () => {
             onClick={() => openLink('https://novasama.io/telenova/terms', webApp!)}
           />
         </Plate>
-        <div className="mt-auto grid gap-4 justify-items-center">
-          <HelpText className="text-icon-neutral text-[10px]">Developed with love by</HelpText>
+        <div className="mt-auto flex flex-col items-center">
+          <HelpText className="text-icon-neutral text-[10px] mb-2">Telenova v{version}</HelpText>
+          <HelpText className="text-icon-neutral text-[10px] mb-4">Developed with love by</HelpText>
           <Icon name="Novasama" className="w-[66px] h-[50px]" />
         </div>
       </div>

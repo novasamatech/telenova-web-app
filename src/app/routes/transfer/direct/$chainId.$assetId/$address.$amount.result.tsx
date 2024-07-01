@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
@@ -13,7 +12,7 @@ export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/:address/:amount/result', params);
 }) satisfies ClientLoaderFunction;
 
-const Page: FC = () => {
+const Page = () => {
   const { address, amount, assetId, chainId } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
   const { assets } = useGlobalContext();

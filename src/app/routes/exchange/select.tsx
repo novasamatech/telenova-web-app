@@ -15,7 +15,7 @@ export type SearchParams = {
 
 const skippedBuyAssets = ['WND', 'USDT'];
 
-export const loader = (({ request }) => {
+export const clientLoader = (({ request }) => {
   const url = new URL(request.url);
 
   return json({
@@ -26,7 +26,7 @@ export const loader = (({ request }) => {
 const Page = () => {
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
-  const { type } = useLoaderData<typeof loader>();
+  const { type } = useLoaderData<typeof clientLoader>();
 
   const exchangeAssets = assets.filter(i => !skippedBuyAssets.includes(i.asset.symbol));
 

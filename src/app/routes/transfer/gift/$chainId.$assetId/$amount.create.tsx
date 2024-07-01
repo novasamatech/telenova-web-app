@@ -1,7 +1,7 @@
 import type { PlayerEvent } from '@lottiefiles/react-lottie-player';
 import type { WebApp } from '@twa-dev/types';
 
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { type LoaderFunction, json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
@@ -30,23 +30,22 @@ export const clientLoader = (async ({ params, serverLoader }) => {
   return { ...serverData, ...data };
 }) satisfies ClientLoaderFunction;
 
-const Page: FC = () => {
-  const { botUrl, appName, chainId, assetId, amount } = useLoaderData<typeof clientLoader>();
-
+const Page = () => {
   const { webApp } = useTelegram();
   const { sendGift } = useExtrinsic();
   const { assets } = useGlobalContext();
+  const { botUrl, appName, chainId, assetId, amount } = useLoaderData<typeof clientLoader>();
 
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
   const selectedAsset = pickAsset(chainId, assetId, assets);
 
-  // TODO refactor
+  // TODO: refactor
   useEffect(() => {
     if (!selectedAsset) return;
 
-    const giftWallet = createGiftWallet(selectedAsset.addressPrefix as number);
+    const giftWallet = createGiftWallet(selectedAsset.addressPrefix);
 
     sendGift(selectedAsset, giftWallet.address)
       .then(() => {

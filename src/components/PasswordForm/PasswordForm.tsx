@@ -3,18 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { cnTw } from '@/common/utils/twMerge';
 import { BodyText, Input } from '@/components';
 
-interface PasswordFormProps {
-  onSubmit: (password: string) => void;
-}
-
 type Variants = 'error' | 'success' | 'default';
+
 const VariantStyles: Record<Variants, string> = {
   success: 'text-text-positive',
   error: 'text-text-danger',
   default: 'text-text-hint',
 };
 
-export default function PasswordForm({ onSubmit }: PasswordFormProps) {
+type Props = {
+  onSubmit: (password: string) => void;
+};
+
+export default function PasswordForm({ onSubmit }: Props) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);

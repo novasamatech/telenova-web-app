@@ -1,4 +1,4 @@
-import { type FC, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { useTelegram } from '@/common/providers';
 
@@ -14,7 +14,7 @@ type Props = {
 
 let hideButtonTimeout: ReturnType<typeof setTimeout> | null = null;
 
-export const MainButton: FC<Props> = ({ disabled, progress, hidden, color, textColor, text = 'Continue', onClick }) => {
+export const MainButton = ({ disabled, progress, hidden, color, textColor, text = 'Continue', onClick }: Props) => {
   const { webApp } = useTelegram();
 
   const cbRef = useRef(onClick);

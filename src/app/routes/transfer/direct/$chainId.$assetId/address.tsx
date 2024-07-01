@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@nextui-org/react';
@@ -15,7 +15,7 @@ export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/address', params);
 }) satisfies ClientLoaderFunction;
 
-const Page: FC = () => {
+const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();

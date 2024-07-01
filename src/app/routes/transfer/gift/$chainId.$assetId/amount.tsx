@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, Progress } from '@nextui-org/react';
@@ -17,7 +16,7 @@ export const clientLoader = (({ params }) => {
   return $params('/transfer/gift/:chainId/:assetId/amount', params);
 }) satisfies ClientLoaderFunction;
 
-const Page: FC = () => {
+const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
   const { assets } = useGlobalContext();
   const navigate = useNavigate();
@@ -53,15 +52,7 @@ const Page: FC = () => {
         text="Create gift"
         disabled={!isAmountValid || !Number(fee) || isAccountTerminate}
         progress={isPending}
-        onClick={() => {
-          navigate(
-            $path('/transfer/gift/:chainId/:assetId/:amount/create', {
-              chainId,
-              assetId,
-              amount,
-            }),
-          );
-        }}
+        onClick={() => navigate($path('/transfer/gift/:chainId/:assetId/:amount/create', { chainId, assetId, amount }))}
       />
       <BackButton onClick={() => navigate($path('/transfer/gift/token-select'))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">

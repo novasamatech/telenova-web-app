@@ -1,4 +1,4 @@
-import { type FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, Progress } from '@nextui-org/react';
@@ -19,14 +19,13 @@ export type SearchParams = {
 
 export const clientLoader = (({ params, request }) => {
   const url = new URL(request.url);
+  const amount = url.searchParams.get('amount') || '0';
+  const data = $params('/transfer/direct/:chainId/:assetId/:address/amount', params);
 
-  return {
-    amount: url.searchParams.get('amount') || '0',
-    ...$params('/transfer/direct/:chainId/:assetId/:address/amount', params),
-  };
+  return { amount, ...data };
 }) satisfies ClientLoaderFunction;
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
   const { chainId, assetId, address, amount: transferAmount } = useLoaderData<typeof clientLoader>();
@@ -72,16 +71,16 @@ const Page: FC = () => {
           Send to
           <TruncateAddress address={address} className="max-w-[120px]" />
         </HeadlineText>
-        <Button variant="light" size="md" className="p-2" onClick={handleMaxSend}>
-          <HeadlineText className="flex items-center text-text-link">
-            Max:{' '}
-            {maxAmountToSend || (
-              <div className="shrink-0 w-[7ch]">
-                <Progress size="md" isIndeterminate />
-              </div>
-            )}{' '}
-            {selectedAsset?.asset?.symbol}
-          </HeadlineText>
+        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxSend}>
+          <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
+          {maxAmountToSend ? (
+            <HeadlineText className="flex items-center text-text-link">{maxAmountToSend}</HeadlineText>
+          ) : (
+            <div className="shrink-0 w-[7ch]">
+              <Progress size="md" isIndeterminate />
+            </div>
+          )}
+          <HeadlineText className="flex items-center text-text-link">{selectedAsset?.asset?.symbol}</HeadlineText>
         </Button>
       </div>
       <AmountDetails

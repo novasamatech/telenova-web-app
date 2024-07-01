@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { type BackButton as BackButtonType } from '@twa-dev/types';
 
@@ -9,7 +9,7 @@ type Props = {
 const defaultCallback = () => window.history.back();
 let hideButtonTimeout: ReturnType<typeof setTimeout> | null = null;
 
-export const BackButton: FC<Props> = ({ onClick = defaultCallback }) => {
+export const BackButton = ({ onClick = defaultCallback }: Props) => {
   const backButtonEvent = useRef<VoidFunction | null>(null);
 
   const ref = useRef<BackButtonType | null>(window?.Telegram?.WebApp?.BackButton ?? null);

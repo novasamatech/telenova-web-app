@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button, Divider } from '@nextui-org/react';
@@ -24,7 +24,7 @@ import {
   TitleText,
 } from '@/components';
 
-const Page: FC = () => {
+const Page = () => {
   const navigate = useNavigate();
   const { getAllChains } = useChainRegistry();
   const { subscribeBalance, unsubscribeBalance } = useBalances();

@@ -1,22 +1,23 @@
-import React, { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cnTw } from '@/common/utils/twMerge';
 import { BodyText, Input } from '@/components';
 
-interface PasswordFormProps {
-  password: string;
-  onStatusChange: (completed: boolean) => void;
-  onChange: (password: string) => void;
-}
-
 type Variants = 'error' | 'success' | 'default';
+
 const VariantStyles: Record<Variants, string> = {
   success: 'text-text-positive',
   error: 'text-text-danger',
   default: 'text-text-hint',
 };
 
-export const CreatePasswordForm: FC<PasswordFormProps> = ({ password, onStatusChange, onChange }) => {
+type Props = {
+  password: string;
+  onStatusChange: (completed: boolean) => void;
+  onChange: (password: string) => void;
+};
+
+export const CreatePasswordForm = ({ password, onStatusChange, onChange }: Props) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [touched, setTouched] = useState(false);
@@ -30,9 +31,7 @@ export const CreatePasswordForm: FC<PasswordFormProps> = ({ password, onStatusCh
   const validatePassword = (value: string) => {
     // Password validation logic
     const regex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
-    const hasValidFormat = regex.test(value);
-
-    setIsPasswordValid(hasValidFormat);
+    setIsPasswordValid(regex.test(value));
   };
 
   const validateOnChange = (value: string) => {

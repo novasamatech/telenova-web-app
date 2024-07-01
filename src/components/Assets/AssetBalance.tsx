@@ -1,5 +1,3 @@
-import { type FC } from 'react';
-
 import { type IconNames } from '../Icon/types';
 
 import { type Asset } from '@/common/chainRegistry/types';
@@ -18,7 +16,7 @@ type Props = {
   animate?: boolean;
 };
 
-const AssetBalance: FC<Props> = ({ balance, asset, name, className, showPrice, showArrow, animate }) => {
+const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow, animate }: Props) => {
   const { precision, symbol, priceId } = asset;
 
   return (
