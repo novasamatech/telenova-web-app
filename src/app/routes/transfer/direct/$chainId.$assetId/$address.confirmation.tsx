@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Divider } from '@nextui-org/react';
@@ -11,7 +10,6 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { type ChainId } from '@/common/types';
 import { formatAmount, formatBalance, pickAsset } from '@/common/utils';
-import { useAssetHub } from '@/common/utils/hooks';
 import {
   BodyText,
   HeadlineText,
@@ -27,31 +25,26 @@ import type { IconNames } from '@/components/Icon/types.ts';
 // Query params for /transfer/direct/:chainId/:assetId/confirmation?amount=__value__
 export type SearchParams = {
   amount: string;
+  fee: string;
 };
 
 export const clientLoader = (({ params, request }) => {
   const url = new URL(request.url);
-  const amount = url.searchParams.get('amount') || '';
+  const amount = url.searchParams.get('amount') || '0';
+  const fee = url.searchParams.get('fee') || '0';
   const data = $params('/transfer/direct/:chainId/:assetId/:address/confirmation', params);
 
-  return { amount, ...data };
+  return { amount, fee, ...data };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
-  const { chainId, assetId, amount, address } = useLoaderData<typeof clientLoader>();
+  const { chainId, assetId, address, amount, fee } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
   const { sendTransfer } = useExtrinsic();
-  const { getAssetHubFee } = useAssetHub();
   const { assets } = useGlobalContext();
 
-  const [fee, setFee] = useState<number>(0);
-
   const selectedAsset = pickAsset(chainId, assetId, assets);
-
-  useEffect(() => {
-    getAssetHubFee(chainId as ChainId, assetId, amount).then(setFee);
-  }, []);
 
   const mainCallback = () => {
     if (!selectedAsset) return;
@@ -73,7 +66,9 @@ const Page = () => {
   };
 
   const symbol = selectedAsset?.asset?.symbol;
-  const calculatedFee = formatBalance(fee.toString(), selectedAsset?.asset?.precision)?.formattedValue;
+  const formattedFee = formatBalance(fee, selectedAsset?.asset?.precision);
+  const formattedTotal = (Number(amount) + Number(formattedFee.formattedValue)).toFixed(5);
+
   const details = [
     {
       title: 'Recipients address',
@@ -81,11 +76,11 @@ const Page = () => {
     },
     {
       title: 'Fee',
-      value: `${calculatedFee} ${symbol}`,
+      value: `${formattedFee.formattedValue} ${symbol}`,
     },
     {
       title: 'Total amount',
-      value: `${(Number(amount) + fee).toFixed(5)} ${symbol}`,
+      value: `${formattedTotal} ${symbol}`,
     },
     {
       title: 'Network',

@@ -28,7 +28,7 @@ const Page = () => {
     handleMaxSend,
     handleChange,
     setIsAmountValid,
-    isAccountTerminate,
+    getIsAccountToBeReaped,
     isPending,
     deposit,
     amount,
@@ -58,7 +58,7 @@ const Page = () => {
     <>
       <MainButton
         text="Create gift"
-        disabled={!isAmountValid || !Number(fee) || isAccountTerminate}
+        disabled={!isAmountValid || !Number(fee) || getIsAccountToBeReaped()}
         progress={isPending}
         onClick={navigateToCreate}
       />
@@ -86,7 +86,7 @@ const Page = () => {
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
-        isAccountTerminate={isAccountTerminate}
+        isAccountTerminate={getIsAccountToBeReaped()}
         handleChange={handleChange}
       >
         {!!deposit && +amount < deposit && (

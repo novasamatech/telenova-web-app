@@ -10,6 +10,7 @@ type AmountLogicParams = {
   selectedAsset?: TransferAsset;
 };
 
+// TODO: Use BN to operate with amount and fee
 export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
   const { getAssetHubFee } = useAssetHub();
   const { getTransactionFee } = useExtrinsic();
@@ -23,10 +24,6 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('');
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [deposit, setDeposit] = useState(0);
-
-  const isAccountTerminate = Boolean(
-    touched && !transferAll && maxAmountToSend && fee && +maxAmountToSend - +fee < deposit,
-  );
 
   const getFeeAmount = (selectedAsset: TransferAsset, transferAmount: string): Promise<number> => {
     if (isStatemineAsset(selectedAsset.asset.type)) {
@@ -67,6 +64,14 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
     };
   }
 
+  const getIsAccountToBeReaped = (): boolean => {
+    if (!touched || transferAll || !maxAmountToSend || !fee) return false;
+
+    // We don't add fee to the amount because maxAmountToSend is already subtracted by fee
+    // getMaxAmount is responsible for that
+    return Number(maxAmountToSend) - Number(amount) < deposit;
+  };
+
   useEffect(() => {
     setPending(true);
     getTransferDetails(selectedAsset as TransferAsset, fee?.toString() ?? '0')
@@ -80,17 +85,17 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
   }, [fee]);
 
   useEffect(() => {
-    if (selectedAsset) {
-      getMaxAmount(selectedAsset as TransferAsset).then(setMaxAmountToSend);
-    }
+    if (!selectedAsset) return;
+
+    getMaxAmount(selectedAsset).then(setMaxAmountToSend);
   }, [selectedAsset]);
 
   useEffect(() => {
     if (!touched) return;
 
-    const checkBalanceDeposit = !transferAll && +maxAmountToSend - (fee || 0) < deposit;
-    setIsAmountValid(!!Number(fee) && (fee || 0) <= +maxAmountToSend && !checkBalanceDeposit);
-  }, [transferAll, maxAmountToSend, fee, deposit, touched]);
+    const checkBalanceDeposit = !transferAll && +maxAmountToSend - (+amount || 0) < deposit;
+    setIsAmountValid(!!Number(+amount) && (+amount || 0) <= +maxAmountToSend && !checkBalanceDeposit);
+  }, [transferAll, maxAmountToSend, amount, deposit, touched]);
 
   const handleMaxSend = () => {
     if (maxAmountToSend === '') return;
@@ -116,7 +121,7 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
     handleMaxSend,
     handleChange,
     setIsAmountValid,
-    isAccountTerminate,
+    getIsAccountToBeReaped,
     isPending,
     deposit,
     selectedAsset,

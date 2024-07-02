@@ -26,14 +26,14 @@ export const TelegramProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const value = useMemo(() => {
-    return webApp
-      ? {
-          webApp,
-          BackButton: webApp.BackButton,
-          user: webApp.initDataUnsafe.user,
-          startParam: webApp.initDataUnsafe.start_param,
-        }
-      : {};
+    if (!webApp) return {};
+
+    return {
+      webApp,
+      BackButton: webApp.BackButton,
+      user: webApp.initDataUnsafe.user,
+      startParam: webApp.initDataUnsafe.start_param,
+    };
   }, [webApp]);
 
   return <TelegramContext.Provider value={value}>{children}</TelegramContext.Provider>;

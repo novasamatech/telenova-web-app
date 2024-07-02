@@ -37,7 +37,7 @@ const Page = () => {
   const {
     handleMaxSend,
     handleChange,
-    isAccountTerminate,
+    getIsAccountToBeReaped,
     isPending,
     deposit,
     amount,
@@ -54,8 +54,10 @@ const Page = () => {
   }, [transferAmount]);
 
   const navigateToConfirm = () => {
+    if (!selectedAsset) return;
+
     const params = { chainId, assetId, address };
-    const query = { amount };
+    const query = { amount, fee: (fee || '0').toString() };
 
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
@@ -63,7 +65,7 @@ const Page = () => {
   return (
     <>
       <MainButton
-        disabled={!isAmountValid || !Number(fee) || isAccountTerminate || isPending}
+        disabled={!isAmountValid || !Number(fee) || getIsAccountToBeReaped() || isPending}
         onClick={navigateToConfirm}
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
@@ -92,7 +94,7 @@ const Page = () => {
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
-        isAccountTerminate={isAccountTerminate}
+        isAccountTerminate={getIsAccountToBeReaped()}
         handleChange={handleChange}
       />
     </>

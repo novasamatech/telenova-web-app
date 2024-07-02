@@ -34,7 +34,7 @@ export function chainAssetAccountIdToString(value: ChainAssetAccount): string {
   return `${partial} - ${value.publicKey}`;
 }
 
-// format balance from spektr
+// Format balance from spektr
 export const formatBalance = (balance = '0', precision = 0): FormattedBalance => {
   const BNWithConfig = BigNumber.clone();
   BNWithConfig.config({
@@ -93,9 +93,7 @@ export const updateAssetsBalance = (prevAssets: AssetAccount[], chainId: string,
 };
 
 export const formatAmount = (rawAmount: string, precision: number): string => {
-  if (!rawAmount) {
-    return ZERO_BALANCE;
-  }
+  if (!rawAmount) return ZERO_BALANCE;
 
   const amount = (+rawAmount).toString();
   const isDecimalValue = amount.match(/^(\d+)\.(\d+)$/);
