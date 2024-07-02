@@ -18,6 +18,7 @@ export const clientLoader = (({ params }) => {
 
 const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
+
   const { assets } = useGlobalContext();
   const navigate = useNavigate();
 
@@ -46,13 +47,20 @@ const Page = () => {
     setIsAmountValid(Boolean(maxAmountToSend) && +maxAmountToSend >= deposit);
   };
 
+  const navigateToCreate = () => {
+    const params = { chainId, assetId };
+    const query = { amount, fee: (fee || '0').toString() };
+
+    navigate($path('/transfer/gift/:chainId/:assetId/create', params, query));
+  };
+
   return (
     <>
       <MainButton
         text="Create gift"
         disabled={!isAmountValid || !Number(fee) || isAccountTerminate}
         progress={isPending}
-        onClick={() => navigate($path('/transfer/gift/:chainId/:assetId/:amount/create', { chainId, assetId, amount }))}
+        onClick={navigateToCreate}
       />
       <BackButton onClick={() => navigate($path('/transfer/gift/token-select'))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">

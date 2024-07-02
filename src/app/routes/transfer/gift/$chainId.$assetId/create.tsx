@@ -16,6 +16,12 @@ import { backupGifts, pickAsset } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 
+// Query params for /transfer/gift/:chainId/:assetId/create?amount=__value__&fee=__value__
+export type SearchParams = {
+  amount: string;
+  fee: string;
+};
+
 export const loader = (() => {
   return json({
     botUrl: process.env.PUBLIC_BOT_ADDRESS,
@@ -23,18 +29,25 @@ export const loader = (() => {
   });
 }) satisfies LoaderFunction;
 
-export const clientLoader = (async ({ params, serverLoader }) => {
+export const clientLoader = (async ({ request, params, serverLoader }) => {
   const serverData = await serverLoader<typeof loader>();
-  const data = $params('/transfer/gift/:chainId/:assetId/:amount/create', params);
+
+  const url = new URL(request.url);
+  const data = {
+    ...$params('/transfer/gift/:chainId/:assetId/create', params),
+    amount: url.searchParams.get('amount') || '0',
+    fee: Number(url.searchParams.get('fee') || 0),
+  };
 
   return { ...serverData, ...data };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
+  const { botUrl, appName, chainId, assetId, amount, fee } = useLoaderData<typeof clientLoader>();
+
   const { webApp } = useTelegram();
   const { sendGift } = useExtrinsic();
   const { assets } = useGlobalContext();
-  const { botUrl, appName, chainId, assetId, amount } = useLoaderData<typeof clientLoader>();
 
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
@@ -47,7 +60,7 @@ const Page = () => {
 
     const giftWallet = createGiftWallet(selectedAsset.addressPrefix);
 
-    sendGift(selectedAsset, giftWallet.address)
+    sendGift({ ...selectedAsset, amount, fee }, giftWallet.address)
       .then(() => {
         backupGifts(giftWallet.address, giftWallet.secret, selectedAsset as TransferAsset);
         const tgLink = createTgLink({
@@ -55,7 +68,7 @@ const Page = () => {
           appName,
           amount,
           secret: giftWallet.secret,
-          symbol: selectedAsset?.asset?.symbol as string,
+          symbol: selectedAsset.asset.symbol,
         });
 
         setLink(tgLink);

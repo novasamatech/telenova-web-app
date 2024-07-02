@@ -20,10 +20,10 @@ const getAssetIdSignOption = (assetId: string) => ({
   assetId: ASSET_LOCATION[assetId],
 });
 
-export function useExtrinsic() {
+export const useExtrinsic = () => {
   const { submitExtrinsic, estimateFee } = useExtrinsicProvider();
 
-  async function sendTransaction({
+  async function sendTransfer({
     chainId,
     asset,
     keyring,
@@ -72,18 +72,18 @@ export function useExtrinsic() {
     if (isStatemineAsset(asset?.type)) {
       const giftAmount = Math.ceil(+transferAmount + fee! / 2).toString();
 
-      return sendTransaction({
-        destinationAddress: giftTransferAddress,
+      return sendTransfer({
         chainId,
-        transferAmount: giftAmount,
         asset,
+        destinationAddress: giftTransferAddress,
+        transferAmount: giftAmount,
       });
     }
 
     const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
     const giftAmount = (+transferAmount + transferAllFee).toString();
 
-    return sendTransaction({
+    return sendTransfer({
       chainId,
       asset,
       transferAll,
@@ -114,5 +114,5 @@ export function useExtrinsic() {
     return fee.toNumber();
   }
 
-  return { sendTransaction, getTransactionFee, sendGift };
-}
+  return { getTransactionFee, sendTransfer, sendGift };
+};

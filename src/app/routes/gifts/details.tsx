@@ -11,6 +11,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { type TgLink } from '@/common/telegram/types.ts';
 import { GiftDetails, Icon } from '@/components';
 
+// Query params for /gifts/details?seed=__value__&symbol=__value&balance=__value__
 export type SearchParams = {
   seed: string;
   symbol: string;
@@ -28,21 +29,21 @@ const Page = () => {
   const { botUrl, appName } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { webApp } = useTelegram();
+  const [searchParams] = useSearchParams();
 
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
-    setLink(
-      createTgLink({
-        secret: searchParams.get('seed') as string,
-        symbol: searchParams.get('symbol') as string,
-        amount: searchParams.get('balance') as string,
-        botUrl,
-        appName,
-      }),
-    );
+    const tgLink = createTgLink({
+      secret: searchParams.get('seed') as string,
+      symbol: searchParams.get('symbol') as string,
+      amount: searchParams.get('balance') as string,
+      botUrl,
+      appName,
+    });
+
+    setLink(tgLink);
   }, []);
 
   const canShowGifDetails = Boolean(link) && Boolean(webApp);

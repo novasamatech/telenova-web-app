@@ -9,10 +9,10 @@ export type Asset = {
   precision: number;
   priceId?: string;
   type?: string;
+  name?: string;
   typeExtras?: {
     assetId: string;
   };
-  name?: string;
 };
 
 export type Chain = {

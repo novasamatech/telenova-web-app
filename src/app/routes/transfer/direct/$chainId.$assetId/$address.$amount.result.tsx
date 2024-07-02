@@ -14,6 +14,7 @@ export const clientLoader = (({ params }) => {
 
 const Page = () => {
   const { address, amount, assetId, chainId } = useLoaderData<typeof clientLoader>();
+
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
 

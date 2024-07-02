@@ -16,9 +16,10 @@ export const clientLoader = (({ params }) => {
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
+  const { mnemonic } = useLoaderData<typeof clientLoader>();
+
   const navigate = useNavigate();
   const { user } = useTelegram();
-  const { mnemonic } = useLoaderData<typeof clientLoader>();
   const { setPublicKey } = useGlobalContext();
 
   const [password, setPassword] = useState('');

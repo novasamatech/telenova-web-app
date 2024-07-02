@@ -6,14 +6,14 @@ import { type TransferAsset } from '@/common/types';
 import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub.ts';
 
-type AmountPageLogic = {
+type AmountLogicParams = {
   selectedAsset?: TransferAsset;
 };
 
-export function useAmountLogic({ selectedAsset }: AmountPageLogic) {
+export function useAmountLogic({ selectedAsset }: AmountLogicParams) {
+  const { getAssetHubFee } = useAssetHub();
   const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
-  const { getAssetHubFee } = useAssetHub();
 
   const [amount, setAmount] = useState<string>(selectedAsset?.amount || '');
   const [fee, setFee] = useState<number>();
@@ -73,7 +73,6 @@ export function useAmountLogic({ selectedAsset }: AmountPageLogic) {
       .then(({ fee, formattedDeposit }) => {
         setFee(fee);
         setDeposit(formattedDeposit);
-        // setSelectedAsset(prev => ({ ...prev, fee }));
       })
       .finally(() => {
         setPending(false);

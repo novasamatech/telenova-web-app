@@ -27,10 +27,11 @@ export const clientLoader = (async ({ params, serverLoader }) => {
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
+  const { chainId, assetId, mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof clientLoader>();
+
   const navigate = useNavigate();
   const { webApp } = useTelegram();
   const { assets } = useGlobalContext();
-  const { chainId, assetId, mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof clientLoader>();
 
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const [done, setDone] = useState(false);

@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 
-import { type LoaderFunction, json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
 import { useGlobalContext } from '@/common/providers';
@@ -18,15 +17,14 @@ const skippedBuyAssets = ['WND', 'USDT'];
 export const clientLoader = (({ request }) => {
   const url = new URL(request.url);
 
-  return json({
-    type: url.searchParams.get('type') || '',
-  });
-}) satisfies LoaderFunction;
+  return { type: url.searchParams.get('type') || '' };
+}) satisfies ClientLoaderFunction;
 
 const Page = () => {
+  const { type } = useLoaderData<typeof clientLoader>();
+
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
-  const { type } = useLoaderData<typeof clientLoader>();
 
   const exchangeAssets = assets.filter(i => !skippedBuyAssets.includes(i.asset.symbol));
 

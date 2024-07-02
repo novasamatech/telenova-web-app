@@ -32,7 +32,7 @@ const Page = () => {
   const { chainId, assetId, amount, address } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { sendTransaction } = useExtrinsic();
+  const { sendTransfer } = useExtrinsic();
   const { getAssetHubFee } = useAssetHub();
   const { assets } = useGlobalContext();
 
@@ -45,11 +45,9 @@ const Page = () => {
   }, []);
 
   const mainCallback = () => {
-    if (!selectedAsset) {
-      return;
-    }
+    if (!selectedAsset) return;
 
-    sendTransaction({
+    sendTransfer({
       destinationAddress: address,
       chainId: chainId as ChainId,
       transferAll: false,
@@ -57,11 +55,10 @@ const Page = () => {
       asset: selectedAsset.asset,
     })
       .then(() => {
-        navigate(
-          $path('/transfer/direct/:chainId/:assetId/:address/:amount/result', { chainId, assetId, amount, address }),
-        );
+        const params = { chainId, assetId, amount, address };
+        navigate($path('/transfer/direct/:chainId/:assetId/:address/:amount/result', params));
       })
-      .catch(error => alert(`Error: ${error.message}\nTry to relaod`));
+      .catch(error => alert(`Error: ${error.message}\nTry to reload`));
   };
 
   const symbol = selectedAsset?.asset?.symbol;

@@ -13,6 +13,7 @@ import { pickAsset } from '@/common/utils';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { AmountDetails } from '@/components/AmountDetails';
 
+// Query params for /transfer/direct/:chainId/:assetId/amount?amount=__value__
 export type SearchParams = {
   amount: string;
 };
@@ -26,9 +27,10 @@ export const clientLoader = (({ params, request }) => {
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
+  const { chainId, assetId, address, amount: transferAmount } = useLoaderData<typeof clientLoader>();
+
   const navigate = useNavigate();
   const { assets } = useGlobalContext();
-  const { chainId, assetId, address, amount: transferAmount } = useLoaderData<typeof clientLoader>();
 
   const selectedAsset = pickAsset(chainId, assetId, assets);
 
@@ -44,25 +46,21 @@ const Page = () => {
     isAmountValid,
   } = useAmountLogic({ selectedAsset });
 
-  // Set amount from query params (Mercurio page does this)
+  // Set amount from query params (/exchange/widget Mercurio page does this)
   useEffect(() => {
     handleChange(transferAmount);
   }, [transferAmount]);
+
+  const navigateToConfirm = () => {
+    const params = { chainId, assetId, address, amount };
+    navigate($path('/transfer/direct/:chainId/:assetId/:address/:amount/confirmation', params));
+  };
 
   return (
     <>
       <MainButton
         disabled={!isAmountValid || !Number(fee) || isAccountTerminate || isPending}
-        onClick={() => {
-          navigate(
-            $path('/transfer/direct/:chainId/:assetId/:address/:amount/confirmation', {
-              chainId,
-              assetId,
-              address,
-              amount,
-            }),
-          );
-        }}
+        onClick={navigateToConfirm}
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">

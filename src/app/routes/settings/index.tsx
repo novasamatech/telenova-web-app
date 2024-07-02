@@ -18,9 +18,10 @@ export const loader = () => {
 };
 
 const Page = () => {
+  const { version } = useLoaderData<typeof loader>();
+
   const navigate = useNavigate();
   const { webApp } = useTelegram();
-  const { version } = useLoaderData<typeof loader>();
 
   const [isPopoverCurrencyOpen, setIsPopoverCurrencyOpen] = useState(false);
   const [isPopoverLanguageOpen, setIsPopoverLanguageOpen] = useState(false);
