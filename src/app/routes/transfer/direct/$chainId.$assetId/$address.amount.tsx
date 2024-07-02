@@ -20,7 +20,7 @@ export type SearchParams = {
 
 export const clientLoader = (({ params, request }) => {
   const url = new URL(request.url);
-  const amount = url.searchParams.get('amount') || '0';
+  const amount = url.searchParams.get('amount') || '';
   const data = $params('/transfer/direct/:chainId/:assetId/:address/amount', params);
 
   return { amount, ...data };
@@ -48,12 +48,16 @@ const Page = () => {
 
   // Set amount from query params (/exchange/widget Mercurio page does this)
   useEffect(() => {
+    if (!transferAmount) return;
+
     handleChange(transferAmount);
   }, [transferAmount]);
 
   const navigateToConfirm = () => {
-    const params = { chainId, assetId, address, amount };
-    navigate($path('/transfer/direct/:chainId/:assetId/:address/:amount/confirmation', params));
+    const params = { chainId, assetId, address };
+    const query = { amount };
+
+    navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
 
   return (

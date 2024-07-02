@@ -24,8 +24,17 @@ import {
 } from '@/components';
 import type { IconNames } from '@/components/Icon/types.ts';
 
-export const clientLoader = (({ params }) => {
-  return $params('/transfer/direct/:chainId/:assetId/:address/:amount/confirmation', params);
+// Query params for /transfer/direct/:chainId/:assetId/confirmation?amount=__value__
+export type SearchParams = {
+  amount: string;
+};
+
+export const clientLoader = (({ params, request }) => {
+  const url = new URL(request.url);
+  const amount = url.searchParams.get('amount') || '';
+  const data = $params('/transfer/direct/:chainId/:assetId/:address/confirmation', params);
+
+  return { amount, ...data };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
@@ -55,8 +64,10 @@ const Page = () => {
       asset: selectedAsset.asset,
     })
       .then(() => {
-        const params = { chainId, assetId, amount, address };
-        navigate($path('/transfer/direct/:chainId/:assetId/:address/:amount/result', params));
+        const params = { chainId, assetId, address };
+        const query = { amount };
+
+        navigate($path('/transfer/direct/:chainId/:assetId/:address/result', params, query));
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
   };

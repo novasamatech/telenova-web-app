@@ -6,6 +6,7 @@ import { type TransferAsset } from '@/common/types';
 import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
 import { type IconNames } from '@/components/Icon/types';
 
+//TODO: Change layout mobile text
 type Props = {
   selectedAsset?: Partial<TransferAsset | null>;
   amount: string;
@@ -16,8 +17,6 @@ type Props = {
   isAccountTerminate: boolean;
   handleChange: (value: string) => void;
 };
-
-//TODO: change layout mobile text
 
 export const AmountDetails = ({
   selectedAsset,

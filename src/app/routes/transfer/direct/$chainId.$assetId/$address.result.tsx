@@ -8,8 +8,17 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { pickAsset } from '@/common/utils';
 import { Icon, MediumTitle, TitleText } from '@/components';
 
-export const clientLoader = (({ params }) => {
-  return $params('/transfer/direct/:chainId/:assetId/:address/:amount/result', params);
+// Query params for /transfer/direct/:chainId/:assetId/result?amount=__value__
+export type SearchParams = {
+  amount: string;
+};
+
+export const clientLoader = (({ params, request }) => {
+  const url = new URL(request.url);
+  const amount = url.searchParams.get('amount') || '';
+  const data = $params('/transfer/direct/:chainId/:assetId/:address/result', params);
+
+  return { amount, ...data };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {

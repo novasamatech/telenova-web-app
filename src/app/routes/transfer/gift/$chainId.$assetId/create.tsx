@@ -35,7 +35,7 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
   const url = new URL(request.url);
   const data = {
     ...$params('/transfer/gift/:chainId/:assetId/create', params),
-    amount: url.searchParams.get('amount') || '0',
+    amount: url.searchParams.get('amount') || '',
     fee: Number(url.searchParams.get('fee') || 0),
   };
 
@@ -74,7 +74,7 @@ const Page = () => {
         setLink(tgLink);
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
-  }, []);
+  }, [selectedAsset]);
 
   const handleLottieEvent = (event: PlayerEvent) => {
     if (event === 'complete') {

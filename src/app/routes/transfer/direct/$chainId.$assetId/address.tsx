@@ -64,7 +64,7 @@ const Page = () => {
               <BodyText> {address}</BodyText>
             </div>
           ) : (
-            <HelpText className="text-text-hint">Invalid address, enter a correct one</HelpText>
+            <HelpText className="text-text-hint mt-1">Invalid address, enter a correct one</HelpText>
           ))}
         {!address && (
           <Button variant="light" className="text-text-link mt-4 gap-0 self-start" onClick={handleQrCode}>

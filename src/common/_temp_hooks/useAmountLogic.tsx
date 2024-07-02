@@ -10,7 +10,7 @@ type AmountLogicParams = {
   selectedAsset?: TransferAsset;
 };
 
-export function useAmountLogic({ selectedAsset }: AmountLogicParams) {
+export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
   const { getAssetHubFee } = useAssetHub();
   const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
@@ -125,4 +125,4 @@ export function useAmountLogic({ selectedAsset }: AmountLogicParams) {
     maxAmountToSend,
     isAmountValid,
   };
-}
+};
