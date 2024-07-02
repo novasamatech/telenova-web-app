@@ -9,12 +9,12 @@ import { type ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types'
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { AssetType, type PublicKey } from '@/common/types';
-import { formatAmount, formatBalance, getGiftInfo } from '@/common/utils';
+import { type PublicKey } from '@/common/types';
+import { formatAmount, formatBalance, getGiftInfo, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/components';
 
-enum GIFT_STATUS {
+const enum GIFT_STATUS {
   NOT_CLAIMED,
   CLAIMED,
 }
@@ -63,21 +63,16 @@ export default function GiftModal() {
   };
 
   useEffect(() => {
-    if (isGiftClaimed || !startParam || !publicKey) {
-      return;
-    }
+    if (isGiftClaimed || !startParam || !publicKey) return;
     setIsOpen(true);
 
     (async () => {
       const { giftAddress, chain, symbol } = await getGiftInfo(publicKey, startParam, getAssetBySymbol);
-      if (connectionStates[chain.chain.chainId].connectionStatus === ConnectionStatus.NONE) {
-        return;
-      }
+      if (connectionStates[chain.chain.chainId].connectionStatus === ConnectionStatus.NONE) return;
 
-      const balance =
-        chain.asset?.type === AssetType.STATEMINE
-          ? await getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress)
-          : await getGiftBalance(chain, giftAddress);
+      const balance = isStatemineAsset(chain.asset?.type)
+        ? await getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress)
+        : await getGiftBalance(chain, giftAddress);
 
       setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
       setGiftSymbol(balance === '0' ? '' : symbol);
@@ -122,8 +117,8 @@ export default function GiftModal() {
       chainId: chain.chain.chainId,
       transferAmount: formatAmount(giftBalance, chain.asset.precision),
       asset: chain.asset,
-      keyring,
       transferAll: true,
+      keyring,
     })
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');

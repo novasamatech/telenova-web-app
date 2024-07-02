@@ -11,7 +11,6 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types.ts';
-import { type TransferAsset } from '@/common/types';
 import { backupGifts, pickAsset } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
@@ -62,7 +61,13 @@ const Page = () => {
 
     sendGift({ ...selectedAsset, amount, fee }, giftWallet.address)
       .then(() => {
-        backupGifts(giftWallet.address, giftWallet.secret, selectedAsset as TransferAsset);
+        backupGifts({
+          chainId: selectedAsset.chainId,
+          assetId: selectedAsset.asset.assetId,
+          address: giftWallet.address,
+          secret: giftWallet.secret,
+          balance: amount,
+        });
         const tgLink = createTgLink({
           botUrl,
           appName,

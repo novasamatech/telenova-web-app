@@ -36,10 +36,7 @@ export const ChainRegistry = ({ children }: PropsWithChildren) => {
   const setupWaiters = useRef<StateResolution<void>[]>([]);
 
   useEffect(() => {
-    (async () => {
-      await setupConnections();
-      setIsRegistryReady(true);
-    })();
+    setupConnections().then(() => setIsRegistryReady(true));
   }, []);
 
   useEffect(() => {

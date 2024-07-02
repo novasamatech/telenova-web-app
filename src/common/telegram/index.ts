@@ -36,10 +36,10 @@ export const createTgLink = ({ secret, symbol, amount, botUrl, appName }: Create
   return { url: url.toString(), text };
 };
 
-export const navigateTranferById = (webApp: WebApp, link: TgLink) => {
-  webApp.openTelegramLink(
-    `http://t.me/share/url?url=${encodeURIComponent(link.url)}&text=${encodeURIComponent(link.text)}`,
-  );
+export const navigateTransferById = (webApp: WebApp, link: TgLink) => {
+  const tgLink = `https://t.me/share/url?url=${encodeURIComponent(link.url)}&text=${encodeURIComponent(link.text)}`;
+
+  webApp.openTelegramLink(tgLink);
   webApp.close();
 };
 

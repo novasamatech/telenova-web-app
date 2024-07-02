@@ -12,13 +12,7 @@ const GiftPlate = ({ gift, isClaimed }: Props) => {
 
   return (
     <Plate className="mb-2 grid grid-cols-[40px,1fr,auto] items-center gap-x-3">
-      <Icon
-        name="Gift"
-        className={cnTw(`w-10 h-10`, {
-          'text-bg-icon-accent-primary': isClaimed,
-          'text-text-hint': !isClaimed,
-        })}
-      />
+      <Icon name="Gift" className={cnTw(`w-10 h-10`, isClaimed ? 'text-bg-icon-accent-primary' : 'text-text-hint')} />
       <div>
         <MediumTitle>
           {gift.balance} {gift.chainAsset?.symbol}

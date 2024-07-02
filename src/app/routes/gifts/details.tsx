@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers';
@@ -25,23 +25,29 @@ export const loader = () => {
   });
 };
 
+export const clientLoader = (async ({ request, serverLoader }) => {
+  const serverData = await serverLoader<typeof loader>();
+
+  const url = new URL(request.url);
+  const data = {
+    secret: url.searchParams.get('seed') || '',
+    symbol: url.searchParams.get('symbol') || '',
+    amount: url.searchParams.get('balance') || '',
+  };
+
+  return { ...data, ...serverData };
+}) satisfies ClientLoaderFunction;
+
 const Page = () => {
-  const { botUrl, appName } = useLoaderData<typeof loader>();
+  const { botUrl, appName, secret, symbol, amount } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
   const { webApp } = useTelegram();
-  const [searchParams] = useSearchParams();
 
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
-    const tgLink = createTgLink({
-      secret: searchParams.get('seed') as string,
-      symbol: searchParams.get('symbol') as string,
-      amount: searchParams.get('balance') as string,
-      botUrl,
-      appName,
-    });
+    const tgLink = createTgLink({ symbol, secret, amount, botUrl, appName });
 
     setLink(tgLink);
   }, []);

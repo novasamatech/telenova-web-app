@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type LoaderFunction, json } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
@@ -12,12 +12,12 @@ import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { pickAsset, runMercuryoWidget } from '@/common/utils';
 import { MediumTitle } from '@/components';
 
-export const loader = (() => {
+export const loader = () => {
   return json({
     mercuryoSecret: process.env.PUBLIC_WIDGET_SECRET,
     mercuryoWidgetId: process.env.PUBLIC_WIDGET_ID,
   });
-}) satisfies LoaderFunction;
+};
 
 export const clientLoader = (async ({ params, serverLoader }) => {
   const serverData = await serverLoader<typeof loader>();

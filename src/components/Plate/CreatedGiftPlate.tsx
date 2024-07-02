@@ -11,25 +11,20 @@ import { getStoreName } from '@/common/wallet';
 import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/components';
 
 const CreatedGiftPlate = () => {
-  const { connectionStates } = useChainRegistry();
   const { getGiftsState } = useGifts();
-  const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
+  const { connectionStates } = useChainRegistry();
+
   const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
 
+  const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
+
   useEffect(() => {
-    if (!gifts) {
-      return;
-    }
-    const mapGifts = getGifts();
-    (async () => {
-      const [unclaimed] = await getGiftsState(mapGifts!);
-      setUnclaimed(unclaimed);
-    })();
+    if (!gifts) return;
+
+    getGiftsState(getGifts()!).then(([unclaimed]) => setUnclaimed(unclaimed));
   }, [connectionStates]);
 
-  if (!gifts) {
-    return;
-  }
+  if (!gifts) return null;
 
   return (
     <Plate className="w-full h-[90px] rounded-3xl mt-4 active:bg-bg-item-pressed">
