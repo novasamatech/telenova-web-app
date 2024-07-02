@@ -16,7 +16,7 @@ export const BackButton = ({ onClick = defaultCallback }: Props) => {
   const backButton = ref.current;
 
   useEffect(() => {
-    ref.current = window?.Telegram?.WebApp?.BackButton;
+    ref.current = window?.Telegram?.WebApp?.BackButton || null;
   }, [window?.Telegram]);
 
   const addBackButton = useCallback(

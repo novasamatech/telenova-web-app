@@ -1,8 +1,7 @@
-import { useExtrinsicService } from '../extrinsicService/ExtrinsicService';
+import type { GetExistentialDeposit, GetExistentialDepositStatemine } from './types';
 
+import { useExtrinsicService } from '@/common/extrinsicService';
 import { type Address, type ChainId } from '@/common/types';
-
-import { type GetExistentialDeposit, type GetExistentialDepositStatemine } from './types';
 
 interface ExtrinsicService {
   getExistentialDeposit: GetExistentialDeposit;
@@ -12,7 +11,7 @@ interface ExtrinsicService {
   getFreeBalanceStatemine: (address: Address, chainId: ChainId, assetId: string) => Promise<string>;
 }
 
-export function useQueryService(): ExtrinsicService {
+export const useQueryService = (): ExtrinsicService => {
   const { prepareApi } = useExtrinsicService();
 
   async function getExistentialDeposit(chainId: ChainId): Promise<string> {
@@ -77,4 +76,4 @@ export function useQueryService(): ExtrinsicService {
     getFreeBalance,
     getFreeBalanceStatemine,
   };
-}
+};

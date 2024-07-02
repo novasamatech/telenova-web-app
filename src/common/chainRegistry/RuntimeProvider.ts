@@ -19,12 +19,7 @@ export const useRuntimeProvider = (): IRuntimeProviderService => {
       const oldMetadata = await getMetadata(chainId);
 
       if (!oldMetadata || version.specVersion.toNumber() > oldMetadata.version) {
-        await metadataStorage.save(
-          {
-            version: version.specVersion.toNumber(),
-          },
-          chainId,
-        );
+        await metadataStorage.save({ version: version.specVersion.toNumber() }, chainId);
 
         syncMetadata(api);
       }
@@ -40,7 +35,6 @@ export const useRuntimeProvider = (): IRuntimeProviderService => {
     };
 
     const chainId = api.genesisHash.toHex();
-
     await metadataStorage.save(metadata, chainId);
 
     console.info(`🟢 Synced metadata v${newMetadata.version} ==> ${chainId}`);

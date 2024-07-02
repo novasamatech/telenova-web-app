@@ -20,8 +20,5 @@ export const useRepository = <K extends string, V>(): IRepositoryService<K, V> =
     });
   }
 
-  return {
-    fetch,
-    save,
-  };
+  return { fetch, save };
 };

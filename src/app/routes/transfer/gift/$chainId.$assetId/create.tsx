@@ -3,7 +3,7 @@ import type { WebApp } from '@twa-dev/types';
 
 import { useEffect, useState } from 'react';
 
-import { type LoaderFunction, json } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params } from 'remix-routes';
 
@@ -21,12 +21,12 @@ export type SearchParams = {
   fee: string;
 };
 
-export const loader = (() => {
+export const loader = () => {
   return json({
     botUrl: process.env.PUBLIC_BOT_ADDRESS,
     appName: process.env.PUBLIC_WEB_APP_ADDRESS,
   });
-}) satisfies LoaderFunction;
+};
 
 export const clientLoader = (async ({ request, params, serverLoader }) => {
   const serverData = await serverLoader<typeof loader>();

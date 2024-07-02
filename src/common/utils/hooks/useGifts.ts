@@ -6,8 +6,8 @@ import { type ChainId, type Gift, GiftStatus, type PersistentGift } from '@/comm
 import { useAssetHub } from './useAssetHub';
 
 export const useGifts = () => {
-  const { getConnection, getChain, getAssetByChainId, connectionStates } = useChainRegistry();
   const { getAssetHubFee } = useAssetHub();
+  const { getConnection, getChain, getAssetByChainId, connectionStates } = useChainRegistry();
 
   async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
     const unclaimed = [] as Gift[];

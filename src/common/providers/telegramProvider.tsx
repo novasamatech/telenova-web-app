@@ -16,6 +16,7 @@ export const TelegramProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const app = window.Telegram?.WebApp;
+
     if (app) {
       app.ready();
       setWebApp(app);

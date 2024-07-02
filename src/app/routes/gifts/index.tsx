@@ -41,7 +41,7 @@ const Page = () => {
             Unclaimed <span className="text-text-on-button-disabled">{unclaimedGifts.length || 0}</span>
           </BodyText>
           {loading ? (
-            <Shimmering width={350} height={92} />
+            <Shimmering height={92} className="rounded-lg" />
           ) : unclaimedGifts.length ? (
             unclaimedGifts.map(gift => (
               <Link
@@ -56,7 +56,7 @@ const Page = () => {
               </Link>
             ))
           ) : (
-            <div className="w-full bg-bg-input h-[92px] rounded-2xl flex justify-center items-center">
+            <div className="w-full bg-bg-input h-[92px] rounded-lg flex justify-center items-center">
               <HelpText className="text-text-hint">All Gifts are claimed</HelpText>
             </div>
           )}
@@ -67,7 +67,7 @@ const Page = () => {
             Claimed <span className="text-text-on-button-disabled">{claimedGifts.length || 0}</span>
           </BodyText>
           {loading ? (
-            <Shimmering width={350} height={92} />
+            <Shimmering height={92} className="rounded-lg" />
           ) : claimedGifts.length ? (
             claimedGifts.map(gift => <GiftPlate gift={gift} key={gift.timestamp} isClaimed />)
           ) : (

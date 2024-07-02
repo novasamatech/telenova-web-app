@@ -8,8 +8,8 @@ type WidgetParams = {
   returnPage: string;
   secret: string;
   selectedAsset: Partial<TransferAsset | null>;
-  handleStatus: (data: any) => void;
-  handleSell: (data: any) => void;
+  handleStatus: (data: { status: 'paid' | 'new' }) => void;
+  handleSell: (data: { address: string; amount: string }) => void;
 };
 
 export const runMercuryoWidget = ({

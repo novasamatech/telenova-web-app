@@ -25,9 +25,8 @@ export const useChains = (): IChainProviderService => {
 
   const getAssetByChainId = (assetId: string, chainId: ChainId): Asset | undefined => {
     const chain = chains.find(chain => chain.chainId == chainId);
-    const asset = chain?.assets.find(asset => asset.assetId == +assetId);
 
-    return asset;
+    return chain?.assets.find(asset => asset.assetId == +assetId);
   };
 
   const getChain = (chainId: ChainId): Promise<Chain | undefined> => {

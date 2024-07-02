@@ -51,5 +51,3 @@ declare module '*.svg' {
   const content: React.SVGProps<SVGSVGElement>;
   export default content;
 }
-
-declare module 'units-css';

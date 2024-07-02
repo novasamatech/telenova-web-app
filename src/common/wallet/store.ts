@@ -14,9 +14,8 @@ import {
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
 
-import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '../utils/constants';
-
 import { type HexString } from '@/common/types';
+import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/common/utils';
 
 import { type GiftWallet, type Wallet } from './types';
 
@@ -84,15 +83,15 @@ export const getCloudStorageItem = (store: string): Promise<string | undefined> 
   const cloudStorage = window.Telegram?.WebApp?.CloudStorage;
 
   return new Promise((resolve, reject) => {
-    if (!cloudStorage) reject('CloudStorage is not available');
+    if (cloudStorage) {
+      cloudStorage.getItem(store, (err, value) => {
+        if (err) reject(err);
 
-    cloudStorage.getItem(store, (err, value) => {
-      if (err) {
-        reject(err);
-      }
+        resolve(value);
+      });
+    }
 
-      resolve(value);
-    });
+    reject('CloudStorage is not available');
   });
 };
 
@@ -130,8 +129,8 @@ export const createWallet = (mnemonic: string | null): Wallet | null => {
 export const backupMnemonic = (mnemonic: string, password: string) => {
   const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
   const date = Date.now().toString();
-  window.Telegram.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
-  window.Telegram.WebApp.CloudStorage.setItem(BACKUP_DATE, date);
+  window.Telegram?.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
+  window.Telegram?.WebApp.CloudStorage.setItem(BACKUP_DATE, date);
   localStorage.setItem(getStoreName(BACKUP_DATE), date);
 };
 
@@ -142,15 +141,11 @@ export const getMnemonic = (): string | null => {
 /**
  * Returns decrypted keyring pair for user's wallet
  * Make sure to call lock() after pair was used to clean up secret!
- * @param password
  */
 export const getKeyringPair = (): KeyringPair | undefined => {
   try {
     const mnemonic = getMnemonic();
-
-    if (mnemonic === null) {
-      return;
-    }
+    if (mnemonic === null) return;
 
     return keyring.createFromUri(mnemonic);
   } catch (e) {
@@ -168,7 +163,7 @@ export const resetWallet = (clearLocal: boolean = false) => {
   localStorage.clear();
   secureLocalStorage.clear();
   if (!clearLocal) {
-    window.Telegram.WebApp.CloudStorage.removeItems([MNEMONIC_STORE, BACKUP_DATE]);
+    window.Telegram?.WebApp.CloudStorage.removeItems([MNEMONIC_STORE, BACKUP_DATE]);
   }
 };
 
