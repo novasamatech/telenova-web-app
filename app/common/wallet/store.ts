@@ -89,9 +89,9 @@ export const getCloudStorageItem = (store: string): Promise<string | undefined> 
 
         resolve(value);
       });
+    } else {
+      reject('CloudStorage is not available');
     }
-
-    reject('CloudStorage is not available');
   });
 };
 

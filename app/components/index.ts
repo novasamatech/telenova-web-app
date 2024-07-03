@@ -1,5 +1,3 @@
-import { Input } from '@/components/Input/Input';
-
 import TruncateAddress from './Address/TruncateAddress';
 import AssetBalance from './Assets/AssetBalance';
 import AssetsList from './Assets/AssetsList';
@@ -8,6 +6,7 @@ import { ErrorScreen } from './ErrorScreen/ErrorScreen';
 import GiftDetails from './GiftDetails/GiftDetails';
 import { Icon, IconButton } from './Icon';
 import Identicon from './Identicon/Identicon';
+import { Input } from './Input/Input';
 import LinkCard from './LinkCard/LinkCard';
 import { LoadingScreen } from './LoadingScreen/LoadingScreen';
 import { LottiePlayer } from './LottiePlayer/LottiePlayer';

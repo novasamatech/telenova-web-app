@@ -31,7 +31,7 @@
     "tsBuildInfoFile": "./node_modules/.cache/cache.tsbuildinfo",
     "paths": {
       "@/*": [
-        "./src/*"
+        "./app/*"
       ]
     },
     "plugins": [

@@ -79,5 +79,5 @@ module.exports = {
     'react/jsx-sort-props': ['error', { callbacksLast: true, noSortAlphabetically: true }],
     'react/function-component-definition': 'off',
   },
-  ignorePatterns: ['.vscode', '.idea', 'coverage', 'node_modules', 'package.json'],
+  ignorePatterns: ['.vscode', '.idea', 'coverage', 'node_modules', 'package.json', 'remix-routes.d.ts'],
 };

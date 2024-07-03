@@ -26,10 +26,17 @@ To start the project in dev mode:
 npm run dev
 ```
 
+## Generate types for `$path`
+`remix-routes.d.ts` is responsible for defining types for the existing routes in the project.
+
+If some route needs to be added, run `npm run build` in order to `remix-routes` regenerate types and save them in
+`app/types/remix-routes.d.ts`.
+
+This file should not be ignored via `.gitignore` otherwise GitHub CI will fail on `Type checking` job. 
+
 ### Start the application locally:
 1) Create a new bot in tg via @BotFather
-2) Create a external domain for your local host (`localTunnel/ngrok` - `lt -p 3000 -s your-domain-name` or `ngrok http --domain=your-domain`)
-3) Run yarn dev
-5) Put your variables into the backend repo env file (BOT_API_KEY, BOT_ALIAS, NOVA_APP_HOST)
-6) Run docker (`docker compose up`)
-7) Optional - connect web app domain to the local bot (via BotFather) to open gifts locally
+2) Create an external domain for your local host (`localTunnel` or `ngrok` - `lt -p 3000 -s your-domain-name` or `ngrok http --domain=your-domain`)
+3) Start dev server with `npm run dev`
+4) Put your variables into `.env` file like described in `.env.example`
+5) Optional - connect web app domain to the local bot (via BotFather) to open gifts locally

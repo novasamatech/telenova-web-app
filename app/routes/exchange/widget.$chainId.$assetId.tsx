@@ -92,7 +92,7 @@ const Page = () => {
         {isOpenInWeb(webApp?.platform) && (
           <div>
             <MediumTitle align="center">
-              Sorry, the $chainId.$assetId is not supported in the web version. Proceed with the application.
+              Sorry, the widget is not supported in the web version. Proceed with the application.
             </MediumTitle>
           </div>
         )}
