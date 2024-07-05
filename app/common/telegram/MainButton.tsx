@@ -33,9 +33,7 @@ export const MainButton = ({ disabled, progress, hidden, color, textColor, text 
     webApp?.MainButton.onClick(clickHandler);
 
     return () => {
-      hideButtonTimeout = setTimeout(() => {
-        webApp?.MainButton.hide();
-      }, 50);
+      hideButtonTimeout = setTimeout(() => webApp?.MainButton.hide(), 50);
 
       webApp?.MainButton.offClick(clickHandler);
       webApp?.MainButton.enable();
@@ -50,17 +48,14 @@ export const MainButton = ({ disabled, progress, hidden, color, textColor, text 
       webApp?.MainButton.hideProgress();
 
       return;
-    } else {
-      webApp?.MainButton.show();
     }
+    webApp?.MainButton.show();
 
     if (progress) {
       webApp?.MainButton.showProgress();
       webApp?.MainButton.disable();
-    } else {
-      if (webApp?.MainButton.isProgressVisible) {
-        webApp?.MainButton.hideProgress();
-      }
+    } else if (webApp?.MainButton.isProgressVisible) {
+      webApp?.MainButton.hideProgress();
     }
 
     if (disabled) {

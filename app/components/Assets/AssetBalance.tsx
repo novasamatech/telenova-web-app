@@ -27,7 +27,7 @@ const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow, a
         <Balance balance={balance} precision={precision} animate={animate} />
         {showArrow && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
       </MediumTitle>
-      {showPrice && <TokenPrice priceId={priceId} precision={precision} />}
+      {showPrice && <TokenPrice className="col-span-2" priceId={priceId} precision={precision} />}
     </div>
   );
 };

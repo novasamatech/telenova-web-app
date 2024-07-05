@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button } from '@nextui-org/react';
-import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-import { $params, $path } from 'remix-routes';
+import { useLocation } from '@remix-run/react';
+import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
@@ -11,24 +11,19 @@ import { BACKUP_DATE } from '@/common/utils';
 import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
 
-export const clientLoader = (({ params }) => {
-  return $params('/onboarding/restore/:mnemonic', params);
-}) satisfies ClientLoaderFunction;
-
 const Page = () => {
-  const { mnemonic } = useLoaderData<typeof clientLoader>();
-
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useTelegram();
   const { setPublicKey } = useGlobalContext();
 
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [pending, setPending] = useState(false);
+  const [isPending, setIsPending] = useState(false);
 
   const toggleModal = () => {
-    setIsModalOpen(x => !x);
+    setIsModalOpen(isOpen => !isOpen);
   };
 
   const submit = () => {
@@ -38,15 +33,15 @@ const Page = () => {
       return;
     }
 
-    const decryptedMnemonic = initializeWalletFromCloud(password, mnemonic);
+    const decryptedMnemonic = initializeWalletFromCloud(password, location.state.mnemonic);
     const wallet = createWallet(decryptedMnemonic);
     setIsPasswordValid(Boolean(wallet));
     if (wallet) {
-      setPending(true);
+      setIsPending(true);
       getCloudStorageItem(BACKUP_DATE).then(value => {
         value && localStorage.setItem(getStoreName(BACKUP_DATE), value);
         setPublicKey(wallet?.publicKey);
-        setPending(false);
+        setIsPending(false);
         navigate($path('/dashboard'));
       });
     }
@@ -54,7 +49,7 @@ const Page = () => {
 
   return (
     <>
-      <MainButton progress={pending} disabled={password.length === 0 || isModalOpen} onClick={submit} />
+      <MainButton progress={isPending} disabled={password.length === 0 || isModalOpen} onClick={submit} />
       <div className="flex flex-col items-center text-center">
         <Avatar
           src={user?.photo_url}

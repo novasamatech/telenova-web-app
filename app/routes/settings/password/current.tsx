@@ -14,21 +14,18 @@ const Page = () => {
   const { webApp } = useTelegram();
   const navigate = useNavigate();
 
-  const [pending, setPending] = useState(false);
   const [password, setPassword] = useState('');
-  const [hadChecked, setHadChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [isValidMnemonic, setIsValidMnemonic] = useState(false);
 
   const isPasswordValid = password.length > 0;
 
   const submit = () => {
-    console.log('submit');
-    if (!isPasswordValid) {
-      return;
-    }
+    if (!isPasswordValid) return;
 
     setIsValidMnemonic(true);
-    setPending(true);
+    setIsPending(true);
 
     webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
       const decryptedMnemonic = initializeWalletFromCloud(password, value);
@@ -36,17 +33,17 @@ const Page = () => {
         navigate($path('/settings/password/new'));
       } else {
         setIsValidMnemonic(false);
-        setPending(false);
-        setHadChecked(true);
+        setIsPending(false);
+        setIsChecked(true);
       }
     });
   };
 
-  const shouldShowError = hadChecked && !isValidMnemonic;
+  const shouldShowError = isChecked && !isValidMnemonic;
 
   return (
     <>
-      <MainButton progress={pending} disabled={!isPasswordValid} onClick={submit} />
+      <MainButton progress={isPending} disabled={!isPasswordValid} onClick={submit} />
       <BackButton onClick={() => navigate($path('/settings/backup'))} />
       <div className="flex flex-col items-center pt-14">
         <TitleText>Enter your current password</TitleText>

@@ -35,12 +35,8 @@ const Page = () => {
     fee,
     maxAmountToSend,
     isAmountValid,
-  } = useAmountLogic({
-    selectedAsset,
-    // onAmountChange: () => {
-    //   setIsAmountValid(prev => prev && !!deposit && +amount >= deposit);
-    // },
-  });
+    touched,
+  } = useAmountLogic({ selectedAsset });
 
   const handleMaxGiftSend = () => {
     handleMaxSend();
@@ -54,11 +50,13 @@ const Page = () => {
     navigate($path('/transfer/gift/:chainId/:assetId/create', params, query));
   };
 
+  const isAboveDeposit = Boolean(deposit) && +amount >= deposit;
+
   return (
     <>
       <MainButton
         text="Create gift"
-        disabled={!isAmountValid || !Number(fee) || getIsAccountToBeReaped()}
+        disabled={!isAmountValid || !isAboveDeposit || !Number(fee) || getIsAccountToBeReaped()}
         progress={isPending}
         onClick={navigateToCreate}
       />
@@ -82,14 +80,14 @@ const Page = () => {
       <AmountDetails
         selectedAsset={selectedAsset}
         amount={amount}
-        isAmountValid={isAmountValid}
+        isAmountValid={!touched || (isAmountValid && isAboveDeposit)}
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
         isAccountTerminate={getIsAccountToBeReaped()}
         handleChange={handleChange}
       >
-        {!!deposit && +amount < deposit && (
+        {touched && !isAboveDeposit && (
           <BodyText as="span" className="text-text-danger">
             Your gift should remain above the minimal network deposit {deposit} {selectedAsset?.asset?.symbol}
           </BodyText>

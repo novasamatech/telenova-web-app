@@ -39,7 +39,7 @@ export const AmountDetails = ({
         <Input
           fullWidth={false}
           variant="underlined"
-          className="mt-[-10px] font-manrope h-full"
+          className="mt-2.5 font-manrope h-full"
           classNames={{ input: ['text-right !text-large-title max-w-[7ch]'] }}
           value={amount}
           isInvalid={!isAmountValid}
@@ -49,23 +49,21 @@ export const AmountDetails = ({
           onValueChange={handleChange}
         />
       </div>
-      <div className="grid grid-cols-[auto,1fr]">
-        {shouldShowPrice && (
-          <TokenPrice
-            priceId={selectedAsset?.asset?.priceId}
-            balance={amount || '0'}
-            showBalance={!isNaN(+amount) && isAmountValid && !isPending}
-          />
-        )}
-        {!isAmountValid && (
-          <>
-            <BodyText align="right" className="text-text-danger">
-              {+amount > +maxAmountToSend ? 'Insufficient balance' : 'Invalid amount'} <br />
-              {children}
-            </BodyText>
-          </>
-        )}
-      </div>
+
+      {shouldShowPrice && (
+        <TokenPrice
+          className="col-span-2"
+          priceId={selectedAsset?.asset?.priceId}
+          balance={amount || '0'}
+          showBalance={!isNaN(+amount) && isAmountValid && !isPending}
+        />
+      )}
+      {!isAmountValid && (
+        <BodyText align="right" className="text-text-danger">
+          {+amount > +maxAmountToSend ? 'Insufficient balance' : 'Invalid amount'} <br />
+          {children}
+        </BodyText>
+      )}
       {isAccountTerminate && (
         <div className="mt-4 p-4 bg-[#FFE2E0] border border-border-danger rounded-lg grid grid-cols-[auto,1fr]">
           <Icon name="ExclamationMark" size={28} />

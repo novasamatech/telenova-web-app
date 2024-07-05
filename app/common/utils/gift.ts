@@ -31,9 +31,7 @@ export const backupGifts = ({ chainId, assetId, address, secret, balance }: Back
 
 export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
   const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
-  if (!gifts) {
-    return null;
-  }
+  if (!gifts) return null;
 
   const map = new Map();
   gifts.forEach((gift: PersistentGift) => {

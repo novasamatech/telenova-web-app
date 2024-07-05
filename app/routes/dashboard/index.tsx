@@ -87,7 +87,7 @@ const Page = () => {
     if (chains.length) {
       const abortController = new AbortController();
       getPrice({
-        ids: chains.flatMap(i => i.assets.map(a => a.priceId)).filter(x => x !== undefined),
+        ids: chains.flatMap(chain => chain.assets.map(a => a.priceId)).filter(priceId => priceId !== undefined),
         abortSignal: abortController.signal,
       }).then(setAssetsPrices);
 

@@ -93,8 +93,10 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
   useEffect(() => {
     if (!touched) return;
 
-    const checkBalanceDeposit = !transferAll && +maxAmountToSend - (+amount || 0) < deposit;
-    setIsAmountValid(!!Number(+amount) && (+amount || 0) <= +maxAmountToSend && !checkBalanceDeposit);
+    const lessThanMax = (+amount || 0) <= +maxAmountToSend;
+    const greaterThanDeposit = +maxAmountToSend - (+amount || 0) >= deposit;
+
+    setIsAmountValid(lessThanMax && (transferAll || greaterThanDeposit));
   }, [transferAll, maxAmountToSend, amount, deposit, touched]);
 
   const handleMaxSend = () => {
@@ -129,5 +131,6 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
     fee,
     maxAmountToSend,
     isAmountValid,
+    touched,
   };
 };

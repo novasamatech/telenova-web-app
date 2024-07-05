@@ -19,6 +19,8 @@ const enum GIFT_STATUS {
   CLAIMED,
 }
 
+const PAUSE_DURATION = 3015;
+
 type GiftStatusType = {
   [key in GIFT_STATUS]: { text: string; btnText: string };
 };
@@ -27,6 +29,7 @@ const GIFTS: GiftStatusType = {
   [GIFT_STATUS.NOT_CLAIMED]: { text: 'Claim your gift', btnText: 'Claim' },
   [GIFT_STATUS.CLAIMED]: { text: 'Gift was claimed', btnText: 'Okay' },
 };
+
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export default function GiftModal() {
@@ -132,21 +135,21 @@ export default function GiftModal() {
       });
   };
 
-  const handlePlayerEvent = (e: PlayerEvent) => {
-    if (lottie) {
-      switch (e) {
-        case 'frame':
-          if (lottie.currentFrame === 0) {
-            timeoutId = setTimeout(() => lottie && lottie.pause(), lottie.getDuration());
-          }
-          break;
+  const handlePlayerEvent = (event: PlayerEvent) => {
+    if (!lottie) return;
 
-        case 'complete':
-          if (isGiftClaimed) {
-            setIsOpen(false);
-          }
-          break;
-      }
+    switch (event) {
+      case 'frame':
+        if (!timeoutId) {
+          timeoutId = setTimeout(() => lottie.pause(), PAUSE_DURATION);
+        }
+        break;
+
+      case 'complete':
+        if (isGiftClaimed) {
+          setIsOpen(false);
+        }
+        break;
     }
   };
 
@@ -174,10 +177,10 @@ export default function GiftModal() {
               <ModalBody>
                 {giftStatus === GIFT_STATUS.NOT_CLAIMED ? (
                   <LottiePlayer
-                    className="w-[248px] h-[248px] m-auto"
-                    src={`/gifs/Gift_claim_${giftSymbol}.json`}
                     autoplay
                     loop={false}
+                    className="w-[248px] h-[248px] m-auto"
+                    src={`/gifs/Gift_claim_${giftSymbol}.json`}
                     lottieRef={setLottie}
                     onEvent={handlePlayerEvent}
                   />

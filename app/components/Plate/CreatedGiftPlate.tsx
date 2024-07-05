@@ -21,7 +21,8 @@ const CreatedGiftPlate = () => {
   useEffect(() => {
     if (!gifts) return;
 
-    getGiftsState(getGifts()!).then(([unclaimed]) => setUnclaimed(unclaimed));
+    const localStorageGifts = getGifts();
+    getGiftsState(localStorageGifts!).then(([unclaimed]) => setUnclaimed(unclaimed));
   }, [connectionStates]);
 
   if (!gifts) return null;
@@ -34,7 +35,7 @@ const CreatedGiftPlate = () => {
           <BigTitle align="left">Created Gifts</BigTitle>
           {unclaimed ? (
             <BodyText align="left" className="text-text-hint">
-              {unclaimed.length ? `Unclamed: ${unclaimed.length}` : 'All your gifts were claimed'}
+              {unclaimed.length ? `Unclaimed: ${unclaimed.length}` : 'All your gifts were claimed'}
             </BodyText>
           ) : (
             <Shimmering width={100} height={20} />

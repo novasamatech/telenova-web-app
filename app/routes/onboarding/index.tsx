@@ -16,11 +16,11 @@ const Page = () => {
 
   useEffect(() => {
     let mounted = true;
-    Promise.all([getCloudStorageItem(MNEMONIC_STORE), delay(1000)]).then(([value]) => {
+    Promise.all([getCloudStorageItem(MNEMONIC_STORE), delay(1000)]).then(([mnemonic]) => {
       if (!mounted) return;
 
-      if (value) {
-        navigate($path('/onboarding/restore/:mnemonic', { mnemonic: value }), { replace: true });
+      if (mnemonic) {
+        navigate($path('/onboarding/restore'), { replace: true, state: { mnemonic } });
       } else {
         navigate($path('/onboarding/start'), { replace: true });
       }

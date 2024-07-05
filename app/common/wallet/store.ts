@@ -81,17 +81,14 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
 
 export const getCloudStorageItem = (store: string): Promise<string | undefined> => {
   const cloudStorage = window.Telegram?.WebApp?.CloudStorage;
+  if (!cloudStorage) return Promise.resolve('CloudStorage is not available');
 
   return new Promise((resolve, reject) => {
-    if (cloudStorage) {
-      cloudStorage.getItem(store, (err, value) => {
-        if (err) reject(err);
+    cloudStorage.getItem(store, (err, value) => {
+      if (err) reject(err);
 
-        resolve(value);
-      });
-    } else {
-      reject('CloudStorage is not available');
-    }
+      resolve(value);
+    });
   });
 };
 

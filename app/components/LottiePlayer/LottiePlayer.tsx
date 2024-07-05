@@ -5,7 +5,9 @@ import { CircularProgress } from '@nextui-org/react';
 
 import { cnTw } from '@/common/utils';
 
-const LazyPlayer = lazy(() => import('@lottiefiles/react-lottie-player').then(x => ({ default: x.Player })));
+const LazyPlayer = lazy(() => {
+  return import('@lottiefiles/react-lottie-player').then(lottie => ({ default: lottie.Player }));
+});
 
 type Props = {
   className?: string;

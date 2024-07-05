@@ -60,11 +60,9 @@ declare module "remix-routes" {
       query: ExportedQuery<import('../routes/onboarding/password').SearchParams>,
     };
   
-    "/onboarding/restore/:mnemonic": {
-      params: {
-        mnemonic: string | number;
-      } ,
-      query: ExportedQuery<import('../routes/onboarding/restore.$mnemonic').SearchParams>,
+    "/onboarding/restore": {
+      params: never,
+      query: ExportedQuery<import('../routes/onboarding/restore').SearchParams>,
     };
   
     "/onboarding/start": {
@@ -195,7 +193,7 @@ declare module "remix-routes" {
     | 'routes/onboarding/create-wallet'
     | 'routes/onboarding/index'
     | 'routes/onboarding/password'
-    | 'routes/onboarding/restore.$mnemonic'
+    | 'routes/onboarding/restore'
     | 'routes/onboarding/start'
     | 'routes/receive/$chainId.$assetId.address'
     | 'routes/receive/token-select'
