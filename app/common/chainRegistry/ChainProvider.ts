@@ -1,5 +1,3 @@
-import { type ChainId } from '@/common/types';
-
 import { assetHub, kusama, polkadot, westend } from './knownChains';
 import { type Asset, type Chain, type ChainAsset, type IChainProviderService } from './types';
 

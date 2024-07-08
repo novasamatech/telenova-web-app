@@ -6,7 +6,6 @@ import { ZERO_BALANCE } from '../constants';
 import type { Asset } from '@/common/chainRegistry/types';
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
-import type { ChainId } from '@/common/types';
 
 export const useAssetHub = () => {
   const { getTransactionFee } = useExtrinsic();

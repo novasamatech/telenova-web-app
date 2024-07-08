@@ -1,7 +1,5 @@
 import { type WebApp } from '@twa-dev/types';
 
-import { type HexString } from '@/common/types';
-
 import { type ITelegramMessageFactory } from './types';
 
 export const getMessageFactory = (webApp: WebApp): ITelegramMessageFactory => {

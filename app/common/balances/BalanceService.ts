@@ -1,7 +1,6 @@
 import { BN } from '@polkadot/util';
 
 import { type Asset, type Connection } from '@/common/chainRegistry/types';
-import { type Address } from '@/common/types';
 
 import { type IAssetBalance } from './types';
 

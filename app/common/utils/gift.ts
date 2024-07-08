@@ -2,7 +2,7 @@ import { type KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 
 import { type ChainAsset } from '../chainRegistry/types';
-import { type ChainId, type PersistentGift, type PublicKey } from '../types';
+import { type PersistentGift } from '../types';
 import { getKeyringPairFromSeed, getStoreName } from '../wallet';
 
 import { GIFT_STORE } from './constants';

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { type ProviderInterface } from '@polkadot/rpc-provider/types';
 
-import { type ChainId, type StateResolution } from '@/common/types';
+import { type StateResolution } from '@/common/types';
 
 import { createCachedProvider } from './CachedMetadataConnection';
 import {

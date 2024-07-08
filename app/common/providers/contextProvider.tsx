@@ -1,4 +1,4 @@
-import type { AssetAccount, AssetPrice, HexString } from '../types';
+import type { AssetAccount, AssetPrice } from '../types';
 
 import React, { createContext, useContext, useState } from 'react';
 

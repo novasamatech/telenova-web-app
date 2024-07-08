@@ -3,7 +3,6 @@ import { type ApiPromise } from '@polkadot/api';
 import { type SubmittableExtrinsic, type SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 
 import { useChainRegistry } from '@/common/chainRegistry';
-import { type ChainId } from '@/common/types';
 
 import { BatchMode, type ExtrinsicBuilder, type ExtrinsicBuilderFactory, type ExtrinsicBuildingOptions } from './types';
 

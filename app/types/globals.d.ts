@@ -7,6 +7,7 @@ declare namespace NodeJS {
     readonly PUBLIC_BOT_ADDRESS: string;
     readonly PUBLIC_BOT_API_URL: string;
     readonly PUBLIC_WEB_APP_ADDRESS: string;
+    readonly PUBLIC_CHAINS_FILE: string;
     readonly PUBLIC_APP_VERSION: string;
   }
 }

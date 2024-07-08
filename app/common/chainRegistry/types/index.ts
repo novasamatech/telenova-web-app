@@ -1,8 +1,6 @@
 import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
 
-import { type ChainId, type HexString } from '@/common/types';
-
 export type Asset = {
   assetId: number;
   symbol: string;

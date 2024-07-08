@@ -9,7 +9,6 @@ import { type ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types'
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { type PublicKey } from '@/common/types';
 import { formatAmount, formatBalance, getGiftInfo, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/components';

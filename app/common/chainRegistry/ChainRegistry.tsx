@@ -1,6 +1,6 @@
 import { type PropsWithChildren, createContext, useContext, useEffect, useRef, useState } from 'react';
 
-import { type ChainId, type StateResolution } from '@/common/types';
+import { type StateResolution } from '@/common/types';
 
 import { useChains } from './ChainProvider';
 import { useConnections } from './ConnectionProvider';

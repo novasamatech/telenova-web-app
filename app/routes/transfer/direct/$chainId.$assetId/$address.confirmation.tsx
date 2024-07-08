@@ -8,7 +8,6 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { type ChainId } from '@/common/types';
 import { formatAmount, formatBalance, pickAsset } from '@/common/utils';
 import {
   BodyText,

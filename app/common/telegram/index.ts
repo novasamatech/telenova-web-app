@@ -1,7 +1,5 @@
 import { type WebApp } from '@twa-dev/types';
 
-import { type HexString } from '@/common/types';
-
 import { getTelegramBotApi } from './bot-api';
 import { type TgLink } from './types';
 

@@ -5,7 +5,7 @@ import { type Asset } from '../chainRegistry';
 import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
 
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
-import { AssetType, type ChainId, type TransferAsset } from '@/common/types';
+import { AssetType, type TransferAsset } from '@/common/types';
 
 type SendTransaction = {
   destinationAddress: string;

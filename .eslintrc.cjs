@@ -71,6 +71,16 @@ module.exports = {
     ],
     'sort-imports': ['error', { ignoreDeclarationSort: true }],
 
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+
     'newline-before-return': 'error',
     'prettier/prettier': ['error', prettierOptions],
     'react/no-array-index-key': 'warn',

@@ -1,13 +1,13 @@
 import type { Asset } from '@/common/chainRegistry';
 
-export type HexString = `0x${string}`;
+// export type HexString = `0x${string}`;
 
-export type ChainId = HexString;
-export type AssetId = number;
-export type Address = string;
-export type AccountId = HexString;
-export type PublicKey = HexString;
-export type Currency = string;
+// export type ChainId = HexString;
+// export type AssetId = number;
+// export type Address = string;
+// export type AccountId = HexString;
+// export type PublicKey = HexString;
+// export type Currency = string;
 
 export type ChainAssetId = {
   chainId: ChainId;

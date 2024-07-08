@@ -1,7 +1,7 @@
 import { isStatemineAsset } from '../assets';
 
 import { ConnectionStatus, useChainRegistry } from '@/common/chainRegistry';
-import { type ChainId, type Gift, GiftStatus, type PersistentGift } from '@/common/types';
+import { type Gift, GiftStatus, type PersistentGift } from '@/common/types';
 
 import { useAssetHub } from './useAssetHub';
 

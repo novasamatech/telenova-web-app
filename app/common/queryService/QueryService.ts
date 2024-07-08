@@ -1,7 +1,6 @@
 import type { GetExistentialDeposit, GetExistentialDepositStatemine } from './types';
 
 import { useExtrinsicService } from '@/common/extrinsicService';
-import { type Address, type ChainId } from '@/common/types';
 
 interface ExtrinsicService {
   getExistentialDeposit: GetExistentialDeposit;

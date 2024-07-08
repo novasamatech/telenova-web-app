@@ -1,7 +1,5 @@
 import { type ProviderInterface } from '@polkadot/rpc-provider/types';
 
-import { type ChainId } from '@/common/types';
-
 import { type RuntimeMetadata } from './types';
 
 export const GET_METADATA_METHOD = 'state_getMetadata';

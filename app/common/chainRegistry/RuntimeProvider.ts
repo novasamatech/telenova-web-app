@@ -2,7 +2,6 @@ import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
 
 import { useRepository } from '@/common/repository/Repository';
-import { type ChainId } from '@/common/types';
 
 import { type IRuntimeProviderService, type RuntimeMetadata } from './types';
 

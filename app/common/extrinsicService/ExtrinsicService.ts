@@ -2,8 +2,6 @@ import { type ApiPromise } from '@polkadot/api';
 import { type SubmittableExtrinsic } from '@polkadot/api-base/types';
 import { type ApiTypes } from '@polkadot/api-base/types/base';
 
-import { type ChainId } from '@/common/types';
-
 import { useExtrinsicBuilderFactory } from './ExtrinsicBuilder';
 import { type ExtrinsicBuildingOptions, type ExtrinsicTransaction, TransactionType } from './types';
 
