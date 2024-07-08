@@ -2,6 +2,7 @@ import { createRequestHandler } from '@remix-run/express';
 
 /**
  * @param {import('express').Application} app
+ * @param {boolean} production
  */
 export const setupStaticController = async (app, production) => {
   const viteDevServer = production

@@ -28,11 +28,17 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/cache.tsbuildinfo",
     "paths": {
       "@/*": [
-        "./src/*"
+        "./app/*"
       ]
-    }
+    },
+    "plugins": [
+      {
+        "name": "typescript-remix-routes-plugin"
+      }
+    ]
   },
   "include": [
     "**/*"

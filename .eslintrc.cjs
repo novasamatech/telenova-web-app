@@ -63,8 +63,7 @@ module.exports = {
         'newlines-between': 'always',
         pathGroups: [
           { group: 'external', pattern: 'react**', position: 'before' },
-          { group: 'external', pattern: '@remix-run/**', position: 'before' },
-          { group: 'external', pattern: '@polkadot/**', position: 'before' },
+          { group: 'external', pattern: '@polkadot/**', position: 'after' },
           { group: 'sibling', pattern: '@/**', position: 'before' },
         ],
         pathGroupsExcludedImportTypes: [],
@@ -80,5 +79,5 @@ module.exports = {
     'react/jsx-sort-props': ['error', { callbacksLast: true, noSortAlphabetically: true }],
     'react/function-component-definition': 'off',
   },
-  ignorePatterns: ['.vscode', '.idea', 'coverage', 'node_modules', 'package.json'],
+  ignorePatterns: ['.vscode', '.idea', 'coverage', 'node_modules', 'package.json', 'remix-routes.d.ts'],
 };
