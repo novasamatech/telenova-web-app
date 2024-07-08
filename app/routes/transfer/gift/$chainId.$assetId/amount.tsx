@@ -36,7 +36,7 @@ const Page = () => {
     maxAmountToSend,
     isAmountValid,
     touched,
-  } = useAmountLogic({ selectedAsset });
+  } = useAmountLogic({ selectedAsset, isGift: true });
 
   const handleMaxGiftSend = () => {
     handleMaxSend();

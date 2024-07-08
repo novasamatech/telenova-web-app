@@ -8,10 +8,11 @@ import { useAssetHub } from '@/common/utils/hooks/useAssetHub.ts';
 
 type AmountLogicParams = {
   selectedAsset?: TransferAsset;
+  isGift: boolean;
 };
 
 // TODO: Use BN to operate with amount and fee
-export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
+export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => {
   const { getAssetHubFee } = useAssetHub();
   const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
@@ -27,12 +28,7 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
 
   const getFeeAmount = (selectedAsset: TransferAsset, transferAmount: string): Promise<number> => {
     if (isStatemineAsset(selectedAsset.asset.type)) {
-      return getAssetHubFee(
-        selectedAsset.chainId,
-        selectedAsset.asset.typeExtras!.assetId,
-        transferAmount,
-        selectedAsset.isGift,
-      );
+      return getAssetHubFee(selectedAsset.chainId, selectedAsset.asset.typeExtras!.assetId, transferAmount, isGift);
     }
 
     return getTransactionFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmount);
@@ -74,7 +70,7 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
 
   useEffect(() => {
     setPending(true);
-    getTransferDetails(selectedAsset as TransferAsset, fee?.toString() ?? '0')
+    getTransferDetails(selectedAsset as TransferAsset, amount || '0')
       .then(({ fee, formattedDeposit }) => {
         setFee(fee);
         setDeposit(formattedDeposit);
@@ -82,7 +78,7 @@ export const useAmountLogic = ({ selectedAsset }: AmountLogicParams) => {
       .finally(() => {
         setPending(false);
       });
-  }, [fee]);
+  }, [amount]);
 
   useEffect(() => {
     if (!selectedAsset) return;
