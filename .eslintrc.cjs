@@ -21,9 +21,10 @@ module.exports = {
     'plugin:import/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
+    'plugin:effector/recommended',
     'prettier',
   ],
-  plugins: ['prettier', 'import'],
+  plugins: ['effector', 'prettier', 'import'],
   parserOptions: { ecmaVersion: 2022 },
   settings: {
     react: { version: 'detect' },

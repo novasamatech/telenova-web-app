@@ -2,6 +2,7 @@ import { type Asset } from './asset.ts';
 
 export type Chain = {
   chainId: ChainId;
+  chainIndex: ChainIndex;
   parentId?: HexString;
   specName: string;
   name: string;

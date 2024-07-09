@@ -1,8 +1,8 @@
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type LinksFunction, type MetaFunction } from '@remix-run/node';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
+import { type LinksFunction, type LoaderFunction, type MetaFunction, json } from '@remix-run/node';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
@@ -10,6 +10,7 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { BalanceProvider } from '@/common/balances';
 import { ChainRegistry } from '@/common/chainRegistry';
 import { ExtrinsicProvider } from '@/common/extrinsicService';
+import { networkModel } from '@/common/network/network-model.ts';
 import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider';
 import { TelegramProvider } from '@/common/providers/telegramProvider';
 import { getWallet } from '@/common/wallet';
@@ -63,13 +64,13 @@ export const Layout = ({ children }: PropsWithChildren) => (
 );
 
 const DataContext = ({ children }: PropsWithChildren) => {
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    cryptoWaitReady().then(() => setLoading(false));
+    cryptoWaitReady().then(() => setIsLoading(false));
   }, []);
 
-  if (loading) return null;
+  if (isLoading) return null;
 
   return (
     <GlobalStateProvider>
@@ -84,10 +85,25 @@ const DataContext = ({ children }: PropsWithChildren) => {
   );
 };
 
+export const loader = (() => {
+  return json({
+    file: process.env.PUBLIC_CHAINS_FILE,
+  });
+}) satisfies LoaderFunction;
+
 const App = () => {
-  const [error, setError] = useState<string | null>(null);
-  const { setPublicKey } = useGlobalContext();
+  const { file } = useLoaderData<typeof loader>();
+
   const navigate = useNavigate();
+  const { setPublicKey } = useGlobalContext();
+
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    networkModel.input.networkStarted(file);
+
+    navigate($path('/onboarding'), { replace: true });
+  }, []);
 
   useEffect(() => {
     getWallet()

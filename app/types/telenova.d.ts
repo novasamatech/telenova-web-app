@@ -4,6 +4,7 @@ declare global {
   export type HexString = `0x${string}`;
 
   export type ChainId = HexString;
+  export type ChainIndex = string;
   export type AssetId = number;
 
   export type Address = string;

@@ -1,8 +1,10 @@
 import { createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
-import { keyBy } from 'lodash';
+import { keyBy } from 'lodash-es';
+import { combineEvents } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
+import { DEFAULT_CHAINS } from '@/common/utils/chains.ts';
 import { chainsService, metadataService } from '@/services';
 import { networkService } from '@/services/network/network-service';
 import { type Chain, type ChainMetadata } from '@/types/substrate';
@@ -10,7 +12,7 @@ import { type Chain, type ChainMetadata } from '@/types/substrate';
 import { networkUtils } from './network-utils';
 import { type Connection, ConnectionStatus, type ProviderWithMetadata } from './types';
 
-const networkStarted = createEvent();
+const networkStarted = createEvent<'chains_dev' | 'chains_prod'>();
 const chainConnected = createEvent<ChainId>();
 const chainDisconnected = createEvent<ChainId>();
 const connectionStatusChanged = createEvent<{ chainId: ChainId; status: ConnectionStatus }>();
@@ -25,25 +27,32 @@ const $connections = createStore<Record<ChainId, Connection>>({});
 const $metadata = createStore<ChainMetadata[]>([]);
 const $metadataSubscriptions = createStore<Record<ChainId, VoidFunction>>({});
 
-const populateChainsFx = createEffect((): Record<ChainId, Chain> => {
-  const chains = chainsService.getChainsData({ sort: true });
+const populateChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'): Promise<Record<ChainId, Chain>> => {
+  const chains = await chainsService.getChainsData({ file, sort: true });
 
   return keyBy(chains, 'chainId');
 });
 
-const populateConnectionsFx = createEffect((): Promise<Connection[]> => {
-  // Read from CloudStorage
-  return Promise.resolve([]);
-  // return storageService.connections.readAll();
-});
+const getConnectedChainIndicesFx = createEffect((): Promise<ChainIndex[]> => {
+  const cloud = '3_0,2,3;19_0,2,3;'; // Karura & unknown chain
+  const chainIndices = cloud.match(/(\d+)_/g)?.map(match => match[0]);
 
-// const getDefaultStatusesFx = createEffect((chains: Record<ChainId, Chain>): Record<ChainId, ConnectionStatus> => {
-//   return Object.values(chains).reduce<Record<ChainId, ConnectionStatus>>((acc, chain) => {
-//     acc[chain.chainId] = ConnectionStatus.DISCONNECTED;
-//
-//     return acc;
-//   }, {});
-// });
+  return Promise.resolve(chainIndices || []);
+
+  // const webApp = window.Telegram?.WebApp;
+  //
+  // if (!webApp) return Promise.resolve([]);
+  //
+  // return new Promise(resolve => {
+  //   // connections format is chainIndex_assetId1,...,assetIdn;
+  //   webApp.CloudStorage.getItem(CONNECTIONS_STORE, (error, connections) => {
+  //     if (error || !connections) resolve([]);
+  //
+  //     const chainIndices = (connections as string).match(/(\d)_/g)?.map(match => match[0]);
+  //     resolve(chainIndices || []);
+  //   });
+  // });
+});
 
 type MetadataSubResult = {
   chainId: ChainId;
@@ -71,38 +80,41 @@ const updateProviderMetadataFx = createEffect(({ provider, metadata }: ProviderM
   provider.updateMetadata(metadata);
 });
 
-const initConnectionsFx = createEffect((chains: Record<ChainId, Chain>) => {
-  Object.keys(chains).forEach(chainId => chainConnected(chainId as ChainId));
+const initConnectionsFx = createEffect((chainIds: ChainId[]) => {
+  chainIds.forEach(chainConnected);
 });
 
 type CreateProviderParams = {
+  name: string;
   chainId: ChainId;
   nodes: string[];
   metadata?: ChainMetadata;
 };
-const createProviderFx = createEffect(({ chainId, nodes, metadata }: CreateProviderParams): ProviderWithMetadata => {
-  const boundConnected = scopeBind(connected, { safe: true });
-  const boundDisconnected = scopeBind(disconnected, { safe: true });
-  const boundFailed = scopeBind(failed, { safe: true });
+const createProviderFx = createEffect(
+  ({ name, chainId, nodes, metadata }: CreateProviderParams): ProviderWithMetadata => {
+    const boundConnected = scopeBind(connected, { safe: true });
+    const boundDisconnected = scopeBind(disconnected, { safe: true });
+    const boundFailed = scopeBind(failed, { safe: true });
 
-  return networkService.createProvider(
-    { nodes, metadata: metadata?.metadata },
-    {
-      onConnected: () => {
-        console.info('🟢 Provider connected ==> ', chainId);
-        boundConnected(chainId);
+    return networkService.createProvider(
+      { nodes, metadata: metadata?.metadata },
+      {
+        onConnected: () => {
+          console.info('🟢 Provider connected ==> ', name);
+          boundConnected(chainId);
+        },
+        onDisconnected: () => {
+          console.info('🟠 Provider disconnected ==> ', name);
+          boundDisconnected(chainId);
+        },
+        onError: () => {
+          console.info('🔴 Provider error ==> ', name);
+          boundFailed(chainId);
+        },
       },
-      onDisconnected: () => {
-        console.info('🟠 Provider disconnected ==> ', chainId);
-        boundDisconnected(chainId);
-      },
-      onError: () => {
-        console.info('🔴 Provider error ==> ', chainId);
-        boundFailed(chainId);
-      },
-    },
-  );
-});
+    );
+  },
+);
 
 const createApiFx = createEffect((provider: ProviderWithMetadata): Promise<ApiPromise> => {
   return networkService.createApi(provider);
@@ -126,7 +138,7 @@ const disconnectFx = createEffect(async ({ provider, api }: DisconnectParams): P
 
 sample({
   clock: networkStarted,
-  target: [populateChainsFx, populateConnectionsFx],
+  target: [populateChainsFx, getConnectedChainIndicesFx],
 });
 
 sample({
@@ -169,10 +181,18 @@ sample({
 //   target: $connections,
 // });
 
-// TODO: start only DOT KSM AH_usdt WND (dev) and CloudStorage chains
 sample({
-  clock: populateConnectionsFx.doneData,
-  source: $chains,
+  clock: combineEvents([populateChainsFx.doneData, getConnectedChainIndicesFx.doneData]),
+  fn: ([chains, chainIndices]) => {
+    const mapper = <T extends string, K extends Record<T, true>>(acc: K, value: T) => ({ ...acc, [value]: true });
+
+    const defaultChainsMap = Object.values(DEFAULT_CHAINS).reduce<Record<ChainId, true>>(mapper, {});
+    const activeChainIndices = chainIndices.reduce<Record<ChainIndex, true>>(mapper, {});
+
+    return Object.values(chains)
+      .filter(({ chainId, chainIndex }) => defaultChainsMap[chainId] || activeChainIndices[chainIndex])
+      .map(chain => chain.chainId);
+  },
   target: initConnectionsFx,
 });
 
@@ -184,10 +204,11 @@ sample({
     metadata: $metadata,
   },
   fn: ({ chains, metadata }, chainId) => {
+    const name = chains[chainId].name;
     const nodes = chains[chainId].nodes.map(node => node.url);
     const newMetadata = networkUtils.getNewestMetadata(metadata)[chainId];
 
-    return { chainId, nodes, metadata: newMetadata };
+    return { name, chainId, nodes, metadata: newMetadata };
   },
   target: createProviderFx,
 });

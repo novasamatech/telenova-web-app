@@ -1,24 +1,21 @@
-import { concat, sortBy } from 'lodash';
+import { concat, sortBy } from 'lodash-es';
 
 import { nonNullable } from '@/common/utils';
-import DEVELOPMENT_CHAINS from '@/config/chains/chains_dev.json';
-import PRODUCTION_CHAINS from '@/config/chains/chains_prod.json';
 import { type Chain } from '@/types/substrate';
-
-const CHAINS: Record<string, Chain[]> = {
-  chains_prod: PRODUCTION_CHAINS as Chain[],
-  chains_dev: DEVELOPMENT_CHAINS as Chain[],
-};
 
 export const chainsService = {
   getChainsData,
   sortChains,
 };
 
-function getChainsData(params = { sort: false }): Chain[] {
-  const chains = CHAINS[process.env.PUBLIC_CHAINS_FILE || 'chains_prod'];
+type DataParams = {
+  file: 'chains_dev' | 'chains_prod';
+  sort?: boolean;
+};
+async function getChainsData({ file, sort }: DataParams): Promise<Chain[]> {
+  const chains = (await import(`../../config/chains/${file}.json`)).default;
 
-  return params.sort ? sortChains(chains) : chains;
+  return sort ? sortChains(chains) : chains;
 }
 
 function sortChains(chains: Chain[]): Chain[] {
