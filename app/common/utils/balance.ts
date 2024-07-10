@@ -36,6 +36,7 @@ export function chainAssetAccountIdToString(value: ChainAssetAccount): string {
 
 // Format balance from spektr
 export const formatBalance = (balance = '0', precision = 0): FormattedBalance => {
+  console.log('=== precision', precision);
   const BNWithConfig = BigNumber.clone();
   BNWithConfig.config({
     // HOOK: for divide with decimal part

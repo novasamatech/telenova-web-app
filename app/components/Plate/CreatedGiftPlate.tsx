@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useChainRegistry } from '@/common/chainRegistry';
+import { networkModel } from '@/common/network/network-model.ts';
 import { type Gift } from '@/common/types';
 import { GIFT_STORE, getGifts } from '@/common/utils';
 import { useGifts } from '@/common/utils/hooks';
@@ -12,7 +13,8 @@ import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/components';
 
 const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();
-  const { connectionStates } = useChainRegistry();
+
+  const connections = useUnit(networkModel.$connections);
 
   const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
 
@@ -23,7 +25,7 @@ const CreatedGiftPlate = () => {
 
     const localStorageGifts = getGifts();
     getGiftsState(localStorageGifts!).then(([unclaimed]) => setUnclaimed(unclaimed));
-  }, [connectionStates]);
+  }, [connections]);
 
   if (!gifts) return null;
 

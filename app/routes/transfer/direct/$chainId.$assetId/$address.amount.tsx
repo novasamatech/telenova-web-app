@@ -5,7 +5,7 @@ import { Button, Progress } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
-import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
+import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic.ts';
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';

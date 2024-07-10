@@ -11,8 +11,6 @@ interface ExtrinsicService {
     transaction: ExtrinsicTransaction,
     options?: Partial<ExtrinsicBuildingOptions>,
   ): Promise<SubmittableExtrinsic<ApiType>>;
-
-  prepareApi(chainId: ChainId): Promise<ApiPromise>;
 }
 
 export function useExtrinsicService(): ExtrinsicService {
@@ -42,14 +40,5 @@ export function useExtrinsicService(): ExtrinsicService {
     return extrinsicBuilder.build(options);
   };
 
-  const prepareApi = async (chainId: ChainId): Promise<ApiPromise> => {
-    const extrinsicBuilder = await extrinsicBuilderFactory.forChain(chainId);
-
-    return extrinsicBuilder.api;
-  };
-
-  return {
-    prepareExtrinsic,
-    prepareApi,
-  };
+  return { prepareExtrinsic };
 }

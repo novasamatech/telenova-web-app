@@ -1,8 +1,8 @@
 import { type IconNames } from '../Icon/types';
 
-import { type Asset } from '@/common/chainRegistry/types';
 import { cnTw } from '@/common/utils/twMerge';
 import { Icon, MediumTitle, TokenPrice } from '@/components';
+import { type Asset } from '@/types/substrate';
 
 import Balance from './Balance';
 

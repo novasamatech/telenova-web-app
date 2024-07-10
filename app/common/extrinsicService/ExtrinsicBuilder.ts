@@ -1,18 +1,20 @@
 import '@polkadot/api-augment';
+import { useUnit } from 'effector-react';
+
 import { type ApiPromise } from '@polkadot/api';
 import { type SubmittableExtrinsic, type SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 
-import { useChainRegistry } from '@/common/chainRegistry';
+import { networkModel } from '@/common/network/network-model.ts';
 
 import { BatchMode, type ExtrinsicBuilder, type ExtrinsicBuilderFactory, type ExtrinsicBuildingOptions } from './types';
 
 export function useExtrinsicBuilderFactory(): ExtrinsicBuilderFactory {
-  const { getConnection } = useChainRegistry();
+  const connections = useUnit(networkModel.$connections);
 
   async function forChain(chainId: ChainId): Promise<ExtrinsicBuilder> {
-    const connection = await getConnection(chainId);
+    const connection = connections[chainId];
 
-    return createExtrinsicBuilder(connection.api);
+    return createExtrinsicBuilder(connection.api!);
   }
 
   return {
@@ -44,11 +46,7 @@ function createExtrinsicBuilder(api: ApiPromise): ExtrinsicBuilder {
     }
   };
 
-  return {
-    api,
-    addCall,
-    build,
-  };
+  return { api, addCall, build };
 }
 
 function getBatchCall(api: ApiPromise, mode: BatchMode): SubmittableExtrinsicFunction<any> {

@@ -4,6 +4,7 @@ import { type ProviderInterface, type ProviderInterfaceEmitCb } from '@polkadot/
 import { type ProviderWithMetadata } from '@/common/network/types.ts';
 
 const GET_METADATA_METHOD = 'state_getMetadata';
+const RETRY_DELAY = 2000;
 
 export const networkService = {
   createProvider,
@@ -40,7 +41,7 @@ function createProvider(params: ProviderParams, listeners: ProviderListeners): P
 function createWebsocketProvider({ nodes, metadata }: ProviderParams): ProviderWithMetadata {
   const CachedWsProvider = createCachedProvider(WsProvider, metadata);
 
-  return new CachedWsProvider(nodes, 2000);
+  return new CachedWsProvider(nodes, RETRY_DELAY);
 }
 
 function createCachedProvider(Provider: new (...args: any[]) => ProviderInterface, metadata?: HexString) {

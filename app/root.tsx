@@ -8,7 +8,6 @@ import { $path } from 'remix-routes';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import { BalanceProvider } from '@/common/balances';
-import { ChainRegistry } from '@/common/chainRegistry';
 import { ExtrinsicProvider } from '@/common/extrinsicService';
 import { networkModel } from '@/common/network/network-model.ts';
 import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider';
@@ -75,11 +74,9 @@ const DataContext = ({ children }: PropsWithChildren) => {
   return (
     <GlobalStateProvider>
       <TelegramProvider>
-        <ChainRegistry>
-          <ExtrinsicProvider>
-            <BalanceProvider>{children}</BalanceProvider>
-          </ExtrinsicProvider>
-        </ChainRegistry>
+        <ExtrinsicProvider>
+          <BalanceProvider>{children}</BalanceProvider>
+        </ExtrinsicProvider>
       </TelegramProvider>
     </GlobalStateProvider>
   );

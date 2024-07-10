@@ -1,8 +1,10 @@
 import { type PropsWithChildren, createContext, useCallback, useContext, useRef } from 'react';
 
+import { useUnit } from 'effector-react';
+
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { useChainRegistry } from '@/common/chainRegistry';
+import { networkModel } from '@/common/network/network-model.ts';
 import { AssetType, type ChainAssetAccount } from '@/common/types';
 import { chainAssetAccountIdToString } from '@/common/utils';
 import { useNumId } from '@/common/utils/hooks/useNumId';
@@ -23,7 +25,9 @@ const BalanceProviderContext = createContext<BalanceProviderContextProps>({} as 
 
 export const BalanceProvider = ({ children }: PropsWithChildren) => {
   const { nextId } = useNumId();
-  const { getConnection, getChain } = useChainRegistry();
+  const chains = useUnit(networkModel.$chains);
+  const connections = useUnit(networkModel.$connections);
+
   const unsubscribeToAccount = useRef<Record<number, ChainAssetAccount>>({});
   const accountToState = useRef<StateStore>({});
 
@@ -89,7 +93,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
   ): Promise<void> {
     setupSubscriptionState(account, unsubscribeId, onUpdate);
 
-    const chain = await getChain(account.chainId);
+    const chain = chains[account.chainId];
 
     if (!chain) {
       throw `No chain found ${account.chainId}`;
@@ -97,11 +101,11 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
 
     const address = encodeAddress(account.publicKey, chain.addressPrefix);
 
-    const connection = await getConnection(account.chainId);
+    const api = connections[account.chainId].api;
 
     unsubscribeToAccount.current[unsubscribeId] = account;
 
-    const service = createBalanceService(connection);
+    const service = createBalanceService(api!);
 
     const handleUpdate = (balance: IAssetBalance) => {
       console.log(`New balance: ${balance.total().toString()}`);

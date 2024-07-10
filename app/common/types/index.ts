@@ -1,13 +1,10 @@
-import type { Asset } from '@/common/chainRegistry';
+import { type Asset, type Chain } from '@/types/substrate';
 
-// export type HexString = `0x${string}`;
-
-// export type ChainId = HexString;
-// export type AssetId = number;
-// export type Address = string;
-// export type AccountId = HexString;
-// export type PublicKey = HexString;
-// export type Currency = string;
+// TODO: seems odd, remove in future
+export type ChainAsset = {
+  chain: Chain;
+  asset: Asset;
+};
 
 export type ChainAssetId = {
   chainId: ChainId;

@@ -3,9 +3,9 @@ import type { AssetHubFeeParam, AssetHubGiftFeeParam } from './types';
 import { formatBalance } from '../balance';
 import { ZERO_BALANCE } from '../constants';
 
-import type { Asset } from '@/common/chainRegistry/types';
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
+import { type Asset } from '@/types/substrate';
 
 export const useAssetHub = () => {
   const { getTransactionFee } = useExtrinsic();

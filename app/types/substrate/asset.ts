@@ -6,7 +6,8 @@ export type Asset = {
   priceId?: string;
   icon: string;
   type?: AssetType;
-  typeExtras?: StatemineExtras | OrmlExtras;
+  typeExtras?: StatemineExtras;
+  // typeExtras?: StatemineExtras | OrmlExtras;
 };
 
 export type AssetType = 'orml' | 'statemine';
