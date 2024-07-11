@@ -4,7 +4,7 @@ import { useUnit } from 'effector-react';
 
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { networkModel } from '@/common/network/network-model.ts';
+import { networkModel } from '@/common/network/network-model';
 import { AssetType, type ChainAssetAccount } from '@/common/types';
 import { chainAssetAccountIdToString } from '@/common/utils';
 import { useNumId } from '@/common/utils/hooks/useNumId';

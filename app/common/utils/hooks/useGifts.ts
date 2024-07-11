@@ -2,8 +2,8 @@ import { useUnit } from 'effector-react';
 
 import { isStatemineAsset } from '../assets';
 
-import { networkModel } from '@/common/network/network-model.ts';
-import { ConnectionStatus } from '@/common/network/types.ts';
+import { networkModel } from '@/common/network/network-model';
+import { ConnectionStatus } from '@/common/network/types';
 import { type Gift, GiftStatus, type PersistentGift } from '@/common/types';
 
 import { useAssetHub } from './useAssetHub';

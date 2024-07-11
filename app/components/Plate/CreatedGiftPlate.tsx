@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { networkModel } from '@/common/network/network-model.ts';
+import { networkModel } from '@/common/network/network-model';
 import { type Gift } from '@/common/types';
 import { GIFT_STORE, getGifts } from '@/common/utils';
 import { useGifts } from '@/common/utils/hooks';

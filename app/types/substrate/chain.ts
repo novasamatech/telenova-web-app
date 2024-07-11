@@ -1,4 +1,4 @@
-import { type Asset } from './asset.ts';
+import { type Asset } from './asset';
 
 export type Chain = {
   chainId: ChainId;

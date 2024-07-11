@@ -10,7 +10,7 @@ import { $params } from 'remix-routes';
 import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
-import { type TgLink } from '@/common/telegram/types.ts';
+import { type TgLink } from '@/common/telegram/types';
 import { backupGifts, pickAsset } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';

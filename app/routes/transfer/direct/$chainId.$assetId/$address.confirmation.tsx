@@ -19,7 +19,7 @@ import {
   Plate,
   TruncateAddress,
 } from '@/components';
-import type { IconNames } from '@/components/Icon/types.ts';
+import type { IconNames } from '@/components/Icon/types';
 
 // Query params for /transfer/direct/:chainId/:assetId/confirmation?amount=__value__
 export type SearchParams = {

@@ -6,8 +6,8 @@ import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
-import { networkModel } from '@/common/network/network-model.ts';
-import { ConnectionStatus } from '@/common/network/types.ts';
+import { networkModel } from '@/common/network/network-model';
+import { ConnectionStatus } from '@/common/network/types';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { type ChainAsset } from '@/common/types';

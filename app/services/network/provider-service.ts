@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { type ProviderInterface, type ProviderInterfaceEmitCb } from '@polkadot/rpc-provider/types';
 
-import { type ProviderWithMetadata } from '@/common/network/types.ts';
+import { type ProviderWithMetadata } from '@/common/network/types';
 
 const GET_METADATA_METHOD = 'state_getMetadata';
 const RETRY_DELAY = 2000;

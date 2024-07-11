@@ -7,8 +7,8 @@ import { $params, $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
-import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { BackButton } from '@/common/telegram/BackButton';
+import { MainButton } from '@/common/telegram/MainButton';
 import { pickAsset, runMercuryoWidget } from '@/common/utils';
 import { MediumTitle } from '@/components';
 

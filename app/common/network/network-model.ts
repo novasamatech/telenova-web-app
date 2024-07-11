@@ -4,9 +4,9 @@ import { combineEvents } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
-import { DEFAULT_CHAINS } from '@/common/utils/chains.ts';
+import { DEFAULT_CHAINS } from '@/common/utils/chains';
 import { chainsService, metadataService } from '@/services';
-import { providerService } from '@/services/network/provider-service.ts';
+import { providerService } from '@/services/network/provider-service';
 import { type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkUtils } from './network-utils';
@@ -39,6 +39,7 @@ const getConnectedChainIndicesFx = createEffect((): Promise<ChainIndex[]> => {
 
   return Promise.resolve(chainIndices || []);
 
+  // TODO: uncomment during task - https://app.clickup.com/t/869502m30
   // const webApp = window.Telegram?.WebApp;
   //
   // if (!webApp) return Promise.resolve([]);
@@ -175,7 +176,7 @@ sample({
   target: initConnectionsFx,
 });
 
-// TODO: save new connection in CloudStorage
+// TODO: save new connection in CloudStorage - https://app.clickup.com/t/869502m30
 sample({
   clock: chainConnected,
   source: {
@@ -226,10 +227,7 @@ sample({
 
 sample({
   clock: createApiFx.doneData,
-  fn: api => ({
-    chainId: api.genesisHash.toHex(),
-    status: ConnectionStatus.CONNECTED,
-  }),
+  fn: api => ({ chainId: api.genesisHash.toHex(), status: ConnectionStatus.CONNECTED }),
   target: connectionStatusChanged,
 });
 

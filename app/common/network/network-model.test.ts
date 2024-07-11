@@ -10,7 +10,7 @@
 // } from '@shared/core';
 // import { allSettled, fork } from 'effector';
 //
-// import { networkModel } from './network-model.ts';
+// import { networkModel } from './network-model';
 //
 import { describe, expect, test } from 'vitest';
 
