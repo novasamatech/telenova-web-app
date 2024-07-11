@@ -1,3 +1,3 @@
-export { networkService } from './network/network-service';
+export { providerService } from './network/provider-service';
 export { metadataService } from './network/metadata-service';
 export { chainsService } from './network/chain-service';

@@ -1,7 +1,5 @@
-import { type IconNames } from '../Icon/types';
-
 import { cnTw } from '@/common/utils/twMerge';
-import { Icon, MediumTitle, TokenPrice } from '@/components';
+import { AssetIcon, Icon, MediumTitle, TokenPrice } from '@/components';
 import { type Asset } from '@/types/substrate';
 
 import Balance from './Balance';
@@ -16,12 +14,12 @@ type Props = {
   animate?: boolean;
 };
 
-const AssetBalance = ({ balance, asset, name, className, showPrice, showArrow, animate }: Props) => {
+const AssetBalance = ({ balance, asset, className, showPrice, showArrow, animate }: Props) => {
   const { precision, symbol, priceId } = asset;
 
   return (
     <div className={cnTw('grid grid-cols-[40px,1fr,auto] items-center gap-x-3 grid-rows-[1fr,auto]', className)}>
-      <Icon name={symbol as IconNames} size={40} alt={name} className="row-span-2" />
+      <AssetIcon src={asset.icon} size={40} className="row-span-2" />
       <MediumTitle>{symbol}</MediumTitle>
       <MediumTitle className="flex items-center justify-self-end">
         <Balance balance={balance} precision={precision} animate={animate} />

@@ -188,7 +188,7 @@
         "name": "USD Tether",
         "assetId": "1",
         "symbol": "USDT",
-        "precision": "6",
+        "precision": 6,
         "type": "statemine",
         "priceId": "tether",
         "typeExtras": {

@@ -62,10 +62,20 @@ export const Layout = ({ children }: PropsWithChildren) => (
   </html>
 );
 
+export const loader = (() => {
+  return json({
+    file: process.env.PUBLIC_CHAINS_FILE,
+  });
+}) satisfies LoaderFunction;
+
 const DataContext = ({ children }: PropsWithChildren) => {
+  const { file } = useLoaderData<typeof loader>();
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    networkModel.input.networkStarted(file);
+
     cryptoWaitReady().then(() => setIsLoading(false));
   }, []);
 
@@ -82,23 +92,13 @@ const DataContext = ({ children }: PropsWithChildren) => {
   );
 };
 
-export const loader = (() => {
-  return json({
-    file: process.env.PUBLIC_CHAINS_FILE,
-  });
-}) satisfies LoaderFunction;
-
 const App = () => {
-  const { file } = useLoaderData<typeof loader>();
-
   const navigate = useNavigate();
   const { setPublicKey } = useGlobalContext();
 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    networkModel.input.networkStarted(file);
-
     navigate($path('/onboarding'), { replace: true });
   }, []);
 

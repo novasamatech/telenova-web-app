@@ -6,7 +6,7 @@ import { type ApiPromise } from '@polkadot/api';
 
 import { DEFAULT_CHAINS } from '@/common/utils/chains.ts';
 import { chainsService, metadataService } from '@/services';
-import { networkService } from '@/services/network/network-service';
+import { providerService } from '@/services/network/provider-service.ts';
 import { type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkUtils } from './network-utils';
@@ -96,7 +96,7 @@ const createProviderFx = createEffect(
     const boundDisconnected = scopeBind(disconnected, { safe: true });
     const boundFailed = scopeBind(failed, { safe: true });
 
-    return networkService.createProvider(
+    return providerService.createProvider(
       { nodes, metadata: metadata?.metadata },
       {
         onConnected: () => {
@@ -117,7 +117,7 @@ const createProviderFx = createEffect(
 );
 
 const createApiFx = createEffect((provider: ProviderWithMetadata): Promise<ApiPromise> => {
-  return networkService.createApi(provider);
+  return providerService.createApi(provider);
 });
 
 type DisconnectParams = {
@@ -159,27 +159,6 @@ sample({
   },
   target: $connections,
 });
-
-// sample({
-//   clock: getDefaultStatusesFx.doneData,
-//   target: $statuses,
-// });
-
-// sample({
-//   clock: populateConnectionsFx.doneData,
-//   source: $chains,
-//   fn: (chains, connections) => {
-//     const connectionsMap = dictionary(connections, 'chainId');
-//
-//     return Object.keys(chains).reduce<Record<ChainId, Connection>>((acc, key) => {
-//       const chainId = key as ChainId;
-//       acc[chainId] = connectionsMap[chainId] || { chainId, connectionType: 'disabled' };
-//
-//       return acc;
-//     }, {});
-//   },
-//   target: $connections,
-// });
 
 sample({
   clock: combineEvents([populateChainsFx.doneData, getConnectedChainIndicesFx.doneData]),

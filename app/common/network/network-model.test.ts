@@ -1,4 +1,4 @@
-// import { ProviderType, type ProviderWithMetadata, chainsService, networkService } from '@shared/api/network';
+// import { ProviderType, type ProviderWithMetadata, chainsService, providerService } from '@shared/api/network';
 // import { storageService } from '@shared/api/storage';
 // import {
 //   type Chain,
@@ -92,7 +92,7 @@ describe('entities/network/model/network-model', () => {
 //     const scope = fork();
 //
 //     const spyCreateProvider = jest
-//       .spyOn(networkService, 'createProvider')
+//       .spyOn(providerService, 'createProvider')
 //       .mockReturnValue({ isConnected: true } as ProviderWithMetadata);
 //
 //     await allSettled(networkModel.events.networkStarted, { scope });
@@ -125,7 +125,7 @@ describe('entities/network/model/network-model', () => {
 //
 //     const connectMock = jest.fn();
 //     const spyCreateProvider = jest
-//       .spyOn(networkService, 'createProvider')
+//       .spyOn(providerService, 'createProvider')
 //       .mockReturnValue({ connect: connectMock, isConnected: true } as unknown as ProviderWithMetadata);
 //
 //     await allSettled(networkModel.events.networkStarted, { scope });

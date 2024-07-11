@@ -33,19 +33,10 @@ export const createBalanceService = (api: ApiPromise): IBalanceService => {
       const total = free.add(reserved);
       const transferable = free.gt(frozen) ? free.sub(frozen) : new BN(0);
 
-      const totalString = total.toString();
-      const transferableString = transferable.toString();
-
-      const assetBalance: IAssetBalance = {
-        total: () => {
-          return totalString;
-        },
-        transferable: () => {
-          return transferableString;
-        },
-      };
-
-      onUpdate(assetBalance);
+      onUpdate({
+        total: () => total.toString(),
+        transferable: () => transferable.toString(),
+      });
     });
   }
 
@@ -58,16 +49,10 @@ export const createBalanceService = (api: ApiPromise): IBalanceService => {
       const balance = data[0].isNone ? '0' : data[0].unwrap().balance.toString();
 
       // No frozen and lock for statemine
-      const assetBalance: IAssetBalance = {
-        total: () => {
-          return balance;
-        },
-        transferable: () => {
-          return balance;
-        },
-      };
-
-      onUpdate(assetBalance);
+      onUpdate({
+        total: () => balance,
+        transferable: () => balance,
+      });
     });
   }
 

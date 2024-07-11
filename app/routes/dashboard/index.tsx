@@ -32,6 +32,7 @@ const Page = () => {
   const { user } = useTelegram();
 
   const chains = useUnit(networkModel.$chains);
+  const connections = useUnit(networkModel.$connections);
 
   function clearWallet(clearLocal?: boolean) {
     resetWallet(clearLocal);
@@ -54,7 +55,7 @@ const Page = () => {
 
   // Subscribing balances
   useEffect(() => {
-    if (!publicKey) return undefined;
+    if (!publicKey) return;
 
     const assets = mapAssetAccountsFromChains(Object.values(chains), publicKey);
     const unsubscribeIds = assets.map(asset =>
@@ -66,11 +67,11 @@ const Page = () => {
     return () => {
       unsubscribeIds.forEach(unsubscribeBalance);
     };
-  }, [chains, publicKey]);
+  }, [connections, chains, publicKey]);
 
   // Fetching prices
   useEffect(() => {
-    if (Object.keys(chains).length === 0) return undefined;
+    if (Object.keys(chains).length === 0) return;
 
     const abortController = new AbortController();
     getPrice({

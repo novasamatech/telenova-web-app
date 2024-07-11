@@ -36,9 +36,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     const key = chainAssetAccountIdToString(account);
     const currentState = accountToState.current[key];
 
-    if (!currentState) {
-      registerNewSubscription(account, onUpdate, unsubscribeId);
-    } else {
+    if (currentState?.current) {
       const currentBalance = currentState.current;
 
       currentState.updaters[unsubscribeId] = onUpdate;
@@ -49,6 +47,8 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
       if (currentBalance) {
         onUpdate(currentBalance);
       }
+    } else {
+      registerNewSubscription(account, onUpdate, unsubscribeId).catch(error => console.error(error));
     }
 
     return unsubscribeId;
@@ -58,9 +58,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     const account = unsubscribeToAccount.current[unsubscribeId];
     delete unsubscribeToAccount.current[unsubscribeId];
 
-    if (!account) {
-      return;
-    }
+    if (!account) return;
 
     const stateKey = chainAssetAccountIdToString(account);
     const state = accountToState.current[stateKey];
@@ -94,18 +92,20 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     setupSubscriptionState(account, unsubscribeId, onUpdate);
 
     const chain = chains[account.chainId];
+    const api = connections[account.chainId].api;
 
     if (!chain) {
       throw `No chain found ${account.chainId}`;
     }
 
-    const address = encodeAddress(account.publicKey, chain.addressPrefix);
-
-    const api = connections[account.chainId].api;
+    if (!api || !api.isConnected) {
+      throw `No ApiPromise or it's not connected for ${account.chainId}`;
+    }
 
     unsubscribeToAccount.current[unsubscribeId] = account;
 
-    const service = createBalanceService(api!);
+    const address = encodeAddress(account.publicKey, chain.addressPrefix);
+    const service = createBalanceService(api);
 
     const handleUpdate = (balance: IAssetBalance) => {
       console.log(`New balance: ${balance.total().toString()}`);
@@ -136,9 +136,9 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
       accountToState.current[stateKey] = state;
 
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   }
 
   function updateBalance(account: ChainAssetAccount, newBalance: IAssetBalance) {
