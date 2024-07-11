@@ -44,7 +44,7 @@ const Page = () => {
     fee,
     maxAmountToSend,
     isAmountValid,
-  } = useAmountLogic({ selectedAsset });
+  } = useAmountLogic({ selectedAsset, isGift: false });
 
   // Set amount from query params (/exchange/widget Mercurio page does this)
   useEffect(() => {

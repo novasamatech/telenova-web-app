@@ -5,7 +5,7 @@ concurrency:
 on:
   workflow_dispatch:
   pull_request:
-    types: [closed, synchronize]
+    types: [closed, synchronize, opened]
     branches:
       - 'main'
       - 'dev'
@@ -16,6 +16,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+
+permissions:
+  packages: write
 
 jobs:
   build-docker:

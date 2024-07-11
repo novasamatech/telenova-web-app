@@ -7,6 +7,10 @@ concurrency:
 on:
   pull_request:
 
+permissions:
+  pull-requests: write
+  checks: write
+
 jobs:
   run-test:
     runs-on: ubuntu-latest
