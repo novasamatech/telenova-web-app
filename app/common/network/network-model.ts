@@ -229,7 +229,11 @@ sample({
   clock: chainDisconnected,
   source: $connections,
   filter: (connections, chainId) => {
-    return Boolean(connections[chainId].provider) && Boolean(connections[chainId].api);
+    return (
+      Boolean(connections[chainId].provider) &&
+      Boolean(connections[chainId].api) &&
+      connections[chainId].status === ConnectionStatus.CONNECTED
+    );
   },
   fn: (connections, chainId) => {
     const { api, provider } = connections[chainId];
@@ -348,9 +352,15 @@ export const networkModel = {
   },
 
   /* Internal API (tests only) */
-  _effects: {
+  _internal: {
+    $metadata,
+    $metadataSubscriptions,
+
     populateChainsFx,
     getConnectedChainIndicesFx,
     createProviderFx,
+    disconnectFx,
+    subscribeMetadataFx,
+    requestMetadataFx,
   },
 };

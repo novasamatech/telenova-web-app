@@ -1,11 +1,11 @@
 import { allSettled, fork } from 'effector';
-import { keyBy } from 'lodash-es';
+import { keyBy, noop } from 'lodash-es';
 import { describe, expect, test, vi } from 'vitest';
 
 import { type ApiPromise } from '@polkadot/api';
 
 import { ConnectionStatus, type ProviderWithMetadata } from '@/common/network/types.ts';
-import { type Chain } from '@/types/substrate';
+import { type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkModel } from './network-model';
 
@@ -32,28 +32,63 @@ describe('@/common/network/network-model', () => {
   ] as unknown as Chain[];
   const mockedChainsMap = keyBy(mockedChains, 'chainId');
 
+  const mockProvider = () => {
+    networkModel._internal.getConnectedChainIndicesFx.use(() => Promise.resolve([]));
+    networkModel._internal.createProviderFx.use(({ chainId }) => {
+      const mockedProvider = {} as ProviderWithMetadata;
+      const mockedApi = { genesisHash: { toHex: () => chainId } } as ApiPromise;
+
+      return Promise.resolve({ provider: mockedProvider, api: mockedApi });
+    });
+  };
+
   test('should populate $chains on networkStarted event', async () => {
     const fakePopulateFx = vi.fn().mockResolvedValue(mockedChainsMap);
-
     const scope = fork();
-    networkModel._effects.populateChainsFx.use(fakePopulateFx);
+
+    networkModel._internal.populateChainsFx.use(fakePopulateFx);
 
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
     expect(fakePopulateFx).toHaveBeenCalledOnce();
     expect(scope.getState(networkModel.$chains)).toEqual(mockedChainsMap);
   });
 
+  test('should add metadata subscription after createProviderFx effect', async () => {
+    const chain = mockedChains[0];
+    const scope = fork();
+
+    mockProvider();
+    networkModel._internal.populateChainsFx.use(() => {
+      return Promise.resolve({ [chain.chainId]: chain });
+    });
+    networkModel._internal.subscribeMetadataFx.use(() => {
+      return Promise.resolve({ chainId: chain.chainId, unsubscribe: noop });
+    });
+
+    await allSettled(networkModel.input.networkStarted, { scope, params: mockedChains[0].chainId });
+
+    expect(scope.getState(networkModel._internal.$metadataSubscriptions)).toEqual({ [chain.chainId]: noop });
+  });
+
+  test('should update $metadata after requestMetadataFx effect', async () => {
+    const chain = mockedChains[0];
+    const mockMetadata: ChainMetadata = { chainId: chain.chainId, version: 1, metadata: '0x0000' };
+    const scope = fork({
+      values: new Map().set(networkModel.$chains, chain),
+    });
+
+    networkModel._internal.requestMetadataFx.use(() => Promise.resolve(mockMetadata));
+
+    await allSettled(networkModel._internal.requestMetadataFx, { scope, params: {} as ApiPromise });
+
+    expect(scope.getState(networkModel._internal.$metadata)).toEqual([mockMetadata]);
+  });
+
   test('should connect to default_chains on networkStarted event', async () => {
     const scope = fork();
 
-    networkModel._effects.populateChainsFx.use(() => mockedChainsMap);
-    networkModel._effects.getConnectedChainIndicesFx.use(() => Promise.resolve([]));
-    networkModel._effects.createProviderFx.use(({ chainId }) => {
-      const mockedProvider = {} as ProviderWithMetadata;
-      const mockedApi = { genesisHash: { toHex: () => chainId } } as ApiPromise;
-
-      return Promise.resolve({ provider: mockedProvider, api: mockedApi });
-    });
+    mockProvider();
+    networkModel._internal.populateChainsFx.use(() => mockedChainsMap);
 
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
 
@@ -65,134 +100,42 @@ describe('@/common/network/network-model', () => {
     });
   });
 
-  // test('should connect to specific chain on chainConnected event', () => {
-  //   expect(1).toEqual(1);
-  // });
-  //
-  // test('should disconnect from a specific chain on chainDisconnected event', () => {
-  //   expect(1).toEqual(1);
-  // });
+  test('should connect to Karura on chainConnected event', async () => {
+    const scope = fork({
+      values: new Map().set(networkModel.$chains, mockedChainsMap).set(networkModel.$connections, {
+        [mockedChains[0].chainId]: { status: ConnectionStatus.CONNECTED }, // Polkadot
+        [mockedChains[1].chainId]: { status: ConnectionStatus.CONNECTED }, // Kusama
+        [mockedChains[2].chainId]: { status: ConnectionStatus.DISCONNECTED }, // Karura
+      }),
+    });
+
+    mockProvider();
+
+    await allSettled(networkModel.input.chainConnected, { scope, params: mockedChains[2].chainId });
+
+    const connection = { provider: expect.any(Object), api: expect.any(Object) };
+    expect(scope.getState(networkModel.$connections)).toEqual({
+      [mockedChains[0].chainId]: { status: ConnectionStatus.CONNECTED }, // Polkadot
+      [mockedChains[1].chainId]: { status: ConnectionStatus.CONNECTED }, // Kusama
+      [mockedChains[2].chainId]: { ...connection, status: ConnectionStatus.CONNECTED }, // Karura
+    });
+  });
+
+  test('should disconnect from Polkadot on chainDisconnected event', async () => {
+    const scope = fork({
+      values: new Map().set(networkModel.$chains, mockedChainsMap).set(networkModel.$connections, {
+        [mockedChains[0].chainId]: { provider: {}, api: {}, status: ConnectionStatus.CONNECTED }, // Polkadot
+        [mockedChains[1].chainId]: { status: ConnectionStatus.DISCONNECTED }, // Kusama
+      }),
+    });
+
+    networkModel._internal.disconnectFx.use(() => Promise.resolve(mockedChains[0].chainId));
+
+    await allSettled(networkModel.input.chainDisconnected, { scope, params: mockedChains[0].chainId });
+
+    expect(scope.getState(networkModel.$connections)).toEqual({
+      [mockedChains[0].chainId]: { status: ConnectionStatus.DISCONNECTED }, // Polkadot
+      [mockedChains[1].chainId]: { status: ConnectionStatus.DISCONNECTED }, // Kusama
+    });
+  });
 });
-//   const mockChainMap = {
-//     '0x01': {
-//       name: 'Polkadot',
-//       chainId: '0x01',
-//     } as unknown as Chain,
-//   };
-//
-//   const mockConnection: Connection = {
-//     id: 1,
-//     chainId: '0x01',
-//     customNodes: [],
-//     connectionType: ConnectionType.RPC_NODE,
-//     activeNode: { name: 'My node', url: 'http://localhost:8080' },
-//   };
-//
-//   const mockMetadata: ChainMetadata = {
-//     id: 1,
-//     version: 1,
-//     chainId: '0x01',
-//     metadata: '0x123',
-//   };
-//
-//   type StorageParams = {
-//     chains?: Record<ChainId, Chain>;
-//     connections?: Connection[];
-//     metadata?: ChainMetadata[];
-//   };
-//   const mockStorage = ({ chains, connections, metadata }: StorageParams) => {
-//     jest.spyOn(chainsService, 'getChainsMap').mockReturnValue(chains || {});
-//     jest.spyOn(storageService.connections, 'readAll').mockResolvedValue(connections || []);
-//     jest.spyOn(storageService.connections, 'update').mockResolvedValue(1);
-//     jest.spyOn(storageService.metadata, 'readAll').mockResolvedValue(metadata || []);
-//   };
-//
-//   beforeEach(() => {
-//     jest.restoreAllMocks();
-//   });
-//
-//   test('should populate $chains on networkStarted', async () => {
-//     mockStorage({ chains: mockChainMap });
-//     const scope = fork();
-//
-//     await allSettled(networkModel.events.networkStarted, { scope });
-//     expect(scope.getState(networkModel.$chains)).toEqual(mockChainMap);
-//   });
-//
-//   test('should set default $connectionStatuses on networkStarted', async () => {
-//     mockStorage({ chains: mockChainMap });
-//     const scope = fork();
-//
-//     await allSettled(networkModel.events.networkStarted, { scope });
-//     expect(scope.getState(networkModel.$connectionStatuses)).toEqual({ '0x01': ConnectionStatus.DISCONNECTED });
-//   });
-//
-//   test('should set $connections on networkStarted', async () => {
-//     mockStorage({ chains: mockChainMap, connections: [mockConnection] });
-//
-//     const scope = fork();
-//
-//     await allSettled(networkModel.events.networkStarted, { scope });
-//     expect(scope.getState(networkModel.$connections)).toEqual({ '0x01': mockConnection });
-//   });
-//
-//   test('should set $providers on networkStarted', async () => {
-//     mockStorage({
-//       chains: mockChainMap,
-//       connections: [mockConnection],
-//       metadata: [mockMetadata],
-//     });
-//
-//     const scope = fork();
-//
-//     const spyCreateProvider = jest
-//       .spyOn(providerService, 'createProvider')
-//       .mockReturnValue({ isConnected: true } as ProviderWithMetadata);
-//
-//     await allSettled(networkModel.events.networkStarted, { scope });
-//
-//     expect(spyCreateProvider).toHaveBeenCalledWith(
-//       mockChainMap['0x01'].chainId,
-//       ProviderType.WEB_SOCKET,
-//       { metadata: mockMetadata.metadata, nodes: ['http://localhost:8080'] },
-//       { onConnected: expect.any(Function), onDisconnected: expect.any(Function), onError: expect.any(Function) },
-//     );
-//     expect(scope.getState(networkModel._$providers)).toEqual({
-//       '0x01': { isConnected: true },
-//     });
-//   });
-//
-//   test('should set Light Client in $providers on networkStarted', async () => {
-//     mockStorage({
-//       chains: mockChainMap,
-//       connections: [
-//         {
-//           ...mockConnection,
-//           connectionType: ConnectionType.LIGHT_CLIENT,
-//           activeNode: undefined,
-//         },
-//       ],
-//       metadata: [mockMetadata],
-//     });
-//
-//     const scope = fork();
-//
-//     const connectMock = jest.fn();
-//     const spyCreateProvider = jest
-//       .spyOn(providerService, 'createProvider')
-//       .mockReturnValue({ connect: connectMock, isConnected: true } as unknown as ProviderWithMetadata);
-//
-//     await allSettled(networkModel.events.networkStarted, { scope });
-//
-//     expect(connectMock).toHaveBeenCalled();
-//     expect(spyCreateProvider).toHaveBeenCalledWith(
-//       mockChainMap['0x01'].chainId,
-//       ProviderType.LIGHT_CLIENT,
-//       { metadata: mockMetadata.metadata, nodes: [''] },
-//       { onConnected: expect.any(Function), onDisconnected: expect.any(Function), onError: expect.any(Function) },
-//     );
-//     expect(scope.getState(networkModel._$providers)).toEqual({
-//       '0x01': { connect: connectMock, isConnected: true },
-//     });
-//   });
-// });

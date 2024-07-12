@@ -54,6 +54,12 @@ module.exports = {
       files: ['**/*.json'],
       plugins: ['json'],
     },
+    {
+      files: ['**/*.test.ts'],
+      rules: {
+        'no-restricted-properties': 'off',
+      },
+    },
   ],
   rules: {
     'import/order': [
@@ -79,6 +85,14 @@ module.exports = {
         "argsIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+
+    "no-restricted-properties": [
+      "error",
+      {
+        "property": "_internal",
+        "message": "It's a hidden API for unit testing",
       }
     ],
 
