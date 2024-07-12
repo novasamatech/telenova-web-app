@@ -7,9 +7,18 @@ const GET_METADATA_METHOD = 'state_getMetadata';
 const RETRY_DELAY = 2000;
 
 export const providerService = {
-  createProvider,
-  createApi,
+  createConnector,
 };
+
+async function createConnector(
+  params: ProviderParams,
+  listeners: ProviderListeners,
+): Promise<{ provider: ProviderWithMetadata; api: ApiPromise }> {
+  const provider = createProvider(params, listeners);
+  const api = await createApi(provider);
+
+  return { provider, api };
+}
 
 function createApi(provider: ProviderInterface): Promise<ApiPromise> {
   return ApiPromise.create({ provider, throwOnConnect: true, throwOnUnknown: true });
@@ -26,10 +35,6 @@ type ProviderListeners = {
 };
 function createProvider(params: ProviderParams, listeners: ProviderListeners): ProviderWithMetadata | never {
   const provider = createWebsocketProvider(params);
-
-  if (!provider) {
-    throw new Error('Provider not found');
-  }
 
   provider.on('connected', listeners.onConnected);
   provider.on('disconnected', listeners.onDisconnected);

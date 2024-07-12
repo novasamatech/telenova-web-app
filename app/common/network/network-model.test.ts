@@ -1,23 +1,77 @@
-// import { ProviderType, type ProviderWithMetadata, chainsService, providerService } from '@shared/api/network';
-// import { storageService } from '@shared/api/storage';
-// import {
-//   type Chain,
-//   type ChainId,
-//   type ChainMetadata,
-//   type Connection,
-//   ConnectionStatus,
-//   ConnectionType,
-// } from '@shared/core';
-// import { allSettled, fork } from 'effector';
-//
-// import { networkModel } from './network-model';
-//
-import { describe, expect, test } from 'vitest';
+import { allSettled, fork } from 'effector';
+import { keyBy } from 'lodash-es';
+import { describe, expect, test, vi } from 'vitest';
 
-describe('entities/network/model/network-model', () => {
-  test('should be defined', () => {
-    expect(1).toEqual(1);
+import { type ApiPromise } from '@polkadot/api';
+
+import { ConnectionStatus, type ProviderWithMetadata } from '@/common/network/types.ts';
+import { type Chain } from '@/types/substrate';
+
+import { networkModel } from './network-model';
+
+describe('@/common/network/network-model', () => {
+  const mockedChains = [
+    {
+      name: 'Polkadot',
+      chainIndex: '0',
+      chainId: '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3',
+      nodes: [],
+    },
+    {
+      name: 'Kusama',
+      chainIndex: '1',
+      chainId: '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe',
+      nodes: [],
+    },
+    {
+      name: 'Karura',
+      chainIndex: '3',
+      chainId: '0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b',
+      nodes: [],
+    },
+  ] as unknown as Chain[];
+  const mockedChainsMap = keyBy(mockedChains, 'chainId');
+
+  test('should populate $chains on networkStarted event', async () => {
+    const fakePopulateFx = vi.fn().mockResolvedValue(mockedChainsMap);
+
+    const scope = fork();
+    networkModel._effects.populateChainsFx.use(fakePopulateFx);
+
+    await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
+    expect(fakePopulateFx).toHaveBeenCalledOnce();
+    expect(scope.getState(networkModel.$chains)).toEqual(mockedChainsMap);
   });
+
+  test('should connect to default_chains on networkStarted event', async () => {
+    const scope = fork();
+
+    networkModel._effects.populateChainsFx.use(() => mockedChainsMap);
+    networkModel._effects.getConnectedChainIndicesFx.use(() => Promise.resolve([]));
+    networkModel._effects.createProviderFx.use(({ chainId }) => {
+      const mockedProvider = {} as ProviderWithMetadata;
+      const mockedApi = { genesisHash: { toHex: () => chainId } } as ApiPromise;
+
+      return Promise.resolve({ provider: mockedProvider, api: mockedApi });
+    });
+
+    await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
+
+    const connection = { provider: expect.any(Object), api: expect.any(Object) };
+    expect(scope.getState(networkModel.$connections)).toEqual({
+      [mockedChains[0].chainId]: { ...connection, status: ConnectionStatus.CONNECTED }, // Polkadot
+      [mockedChains[1].chainId]: { ...connection, status: ConnectionStatus.CONNECTED }, // Kusama
+      [mockedChains[2].chainId]: { status: ConnectionStatus.DISCONNECTED }, // Karura
+    });
+  });
+
+  // test('should connect to specific chain on chainConnected event', () => {
+  //   expect(1).toEqual(1);
+  // });
+  //
+  // test('should disconnect from a specific chain on chainDisconnected event', () => {
+  //   expect(1).toEqual(1);
+  // });
 });
 //   const mockChainMap = {
 //     '0x01': {
