@@ -128,5 +128,6 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
     maxAmountToSend,
     isAmountValid,
     touched,
+    transferAll,
   };
 };

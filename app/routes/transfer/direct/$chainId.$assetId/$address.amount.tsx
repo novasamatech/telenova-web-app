@@ -44,6 +44,7 @@ const Page = () => {
     maxAmountToSend,
     isAmountValid,
     touched,
+    transferAll,
   } = useAmountLogic({ selectedAsset, isGift: false });
 
   // Set amount from query params (/exchange/widget Mercurio page does this)
@@ -57,7 +58,7 @@ const Page = () => {
     if (!selectedAsset) return;
 
     const params = { chainId, assetId, address };
-    const query = { amount, fee: (fee || '0').toString() };
+    const query = { amount, fee: (fee || '0').toString(), all: transferAll };
 
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };

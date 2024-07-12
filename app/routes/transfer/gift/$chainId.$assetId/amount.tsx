@@ -35,6 +35,7 @@ const Page = () => {
     maxAmountToSend,
     isAmountValid,
     touched,
+    transferAll,
   } = useAmountLogic({ selectedAsset, isGift: true });
 
   const handleMaxGiftSend = () => {
@@ -44,7 +45,7 @@ const Page = () => {
 
   const navigateToCreate = () => {
     const params = { chainId, assetId };
-    const query = { amount, fee: (fee || '0').toString() };
+    const query = { amount, fee: (fee || '0').toString(), all: transferAll };
 
     navigate($path('/transfer/gift/:chainId/:assetId/create', params, query));
   };

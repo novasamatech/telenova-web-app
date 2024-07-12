@@ -45,12 +45,7 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <ExtrinsicProviderContext.Provider
-      value={{
-        estimateFee,
-        submitExtrinsic,
-      }}
-    >
+    <ExtrinsicProviderContext.Provider value={{ estimateFee, submitExtrinsic }}>
       {children}
     </ExtrinsicProviderContext.Provider>
   );
