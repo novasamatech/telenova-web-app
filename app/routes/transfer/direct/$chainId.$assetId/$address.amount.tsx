@@ -10,8 +10,7 @@ import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { pickAsset } from '@/common/utils';
-import { HeadlineText, Identicon, TruncateAddress } from '@/components';
-import { AmountDetails } from '@/components/AmountDetails';
+import { AmountDetails, HeadlineText, Identicon, TruncateAddress } from '@/components';
 
 // Query params for /transfer/direct/:chainId/:assetId/amount?amount=__value__
 export type SearchParams = {
@@ -44,6 +43,7 @@ const Page = () => {
     fee,
     maxAmountToSend,
     isAmountValid,
+    touched,
   } = useAmountLogic({ selectedAsset, isGift: false });
 
   // Set amount from query params (/exchange/widget Mercurio page does this)
@@ -62,10 +62,12 @@ const Page = () => {
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
 
+  const isAboveDeposit = Boolean(deposit) && +amount >= deposit;
+
   return (
     <>
       <MainButton
-        disabled={!isAmountValid || !Number(fee) || getIsAccountToBeReaped() || isPending}
+        disabled={!isAmountValid || !isAboveDeposit || !Number(fee) || getIsAccountToBeReaped() || isPending}
         onClick={navigateToConfirm}
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
@@ -90,11 +92,11 @@ const Page = () => {
       <AmountDetails
         selectedAsset={selectedAsset}
         amount={amount}
-        isAmountValid={isAmountValid}
+        isAmountValid={!touched || (isAmountValid && isAboveDeposit)}
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
-        isAccountTerminate={getIsAccountToBeReaped()}
+        isAccountToBeReaped={getIsAccountToBeReaped()}
         handleChange={handleChange}
       />
     </>

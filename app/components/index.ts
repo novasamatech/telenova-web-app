@@ -1,4 +1,5 @@
 import TruncateAddress from './Address/TruncateAddress';
+import { AmountDetails } from './AmountDetails/AmountDetails';
 import AssetBalance from './Assets/AssetBalance';
 import AssetsList from './Assets/AssetsList';
 import Countdown from './Countdown/Countdown';
@@ -53,6 +54,7 @@ export {
   Identicon,
   GiftPlate,
   TokenPrice,
+  AmountDetails,
   TruncateAddress,
   LinkCard,
   GiftDetails,

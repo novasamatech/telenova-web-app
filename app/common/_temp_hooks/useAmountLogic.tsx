@@ -61,7 +61,7 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
   }
 
   const getIsAccountToBeReaped = (): boolean => {
-    if (!touched || transferAll || !maxAmountToSend || !fee) return false;
+    if (!amount || !parseFloat(amount) || !touched || transferAll || !maxAmountToSend || !fee) return false;
 
     // We don't add fee to the amount because maxAmountToSend is already subtracted by fee
     // getMaxAmount is responsible for that
@@ -101,7 +101,7 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
     setTransferAll(true);
     setTouched(true);
     setAmount(String(maxAmountToSend));
-    setIsAmountValid(Boolean(maxAmountToSend));
+    setIsAmountValid(Boolean(parseFloat(maxAmountToSend)));
   };
 
   const handleChange = (value: string) => {
