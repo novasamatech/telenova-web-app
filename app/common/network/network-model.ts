@@ -4,7 +4,7 @@ import { combineEvents, spread } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
-import { DEFAULT_CHAINS } from '@/common/utils/chains';
+import { DEFAULT_CHAINS } from '@/common/utils/constants';
 import { chainsService, metadataService } from '@/services';
 import { providerService } from '@/services/network/provider-service';
 import { type Chain, type ChainMetadata } from '@/types/substrate';
