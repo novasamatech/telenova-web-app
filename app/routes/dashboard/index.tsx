@@ -8,6 +8,7 @@ import { $path } from 'remix-routes';
 import { useBalances } from '@/common/balances';
 import { networkModel } from '@/common/network/network-model';
 import { useGlobalContext, useTelegram } from '@/common/providers';
+import { BackButton } from '@/common/telegram/BackButton';
 import { getPrice, getTotalBalance, mapAssetAccountsFromChains, updateAssetsBalance } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
@@ -87,59 +88,62 @@ const Page = () => {
   }, [chains]);
 
   return (
-    <div className="flex flex-col break-words">
-      <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6 items-center">
-        <Avatar
-          src={user?.photo_url}
-          className="w-10 h-10"
-          name={user?.first_name.charAt(0)}
-          classNames={{
-            base: 'bg-[--tg-theme-button-color]',
-            name: 'font-manrope font-black text-base text-white',
-          }}
-        />
-        <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
-        <Button
-          isIconOnly
-          className="bg-transparent overflow-visible drop-shadow-button"
-          onClick={() => navigate($path('/settings'))}
-        >
-          <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
-        </Button>
-      </div>
-      <div className="flex flex-col mt-4 items-center">
-        <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
-        <LargeTitleText>
-          <Price amount={getTotalBalance(assets, assetsPrices)} decimalSize={32} />
-        </LargeTitleText>
-        <div className="grid grid-cols-3 w-full mt-7 gap-2">
-          <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
-          <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
-          <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate($path('/exchange'))} />
+    <>
+      <BackButton hidden />
+      <div className="flex flex-col break-words">
+        <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6 items-center">
+          <Avatar
+            src={user?.photo_url}
+            className="w-10 h-10"
+            name={user?.first_name.charAt(0)}
+            classNames={{
+              base: 'bg-[--tg-theme-button-color]',
+              name: 'font-manrope font-black text-base text-white',
+            }}
+          />
+          <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
+          <Button
+            isIconOnly
+            className="bg-transparent overflow-visible drop-shadow-button"
+            onClick={() => navigate($path('/settings'))}
+          >
+            <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
+          </Button>
         </div>
-      </div>
-      <CreatedGiftPlate />
-      <Plate className="flex flex-col my-2 rounded-3xl">
-        <TitleText align="left">Assets</TitleText>
-        <div className="flex flex-col gap-6 mt-4">
-          <AssetsList className="m-1" assets={assets} showPrice animate />
+        <div className="flex flex-col mt-4 items-center">
+          <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
+          <LargeTitleText>
+            <Price amount={getTotalBalance(assets, assetsPrices)} decimalSize={32} />
+          </LargeTitleText>
+          <div className="grid grid-cols-3 w-full mt-7 gap-2">
+            <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
+            <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
+            <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate($path('/exchange'))} />
+          </div>
         </div>
-      </Plate>
-      <GiftModal />
+        <CreatedGiftPlate />
+        <Plate className="flex flex-col my-2 rounded-3xl">
+          <TitleText align="left">Assets</TitleText>
+          <div className="flex flex-col gap-6 mt-4">
+            <AssetsList className="m-1" assets={assets} showPrice animate />
+          </div>
+        </Plate>
+        <GiftModal />
 
-      {import.meta.env.DEV && (
-        <div className="p-4 flex flex-col gap-2 justify-center bg-warning rounded-lg">
-          <TextBase className="text-amber-50">DEV MODE</TextBase>
-          <Divider className="bg-amber-200" />
-          <Button variant="faded" onClick={() => clearWallet()}>
-            Reset Wallet
-          </Button>
-          <Button variant="faded" onClick={() => clearWallet(true)}>
-            Reset Wallet Local
-          </Button>
-        </div>
-      )}
-    </div>
+        {import.meta.env.DEV && (
+          <div className="p-4 flex flex-col gap-2 justify-center bg-warning rounded-lg">
+            <TextBase className="text-amber-50">DEV MODE</TextBase>
+            <Divider className="bg-amber-200" />
+            <Button variant="faded" onClick={() => clearWallet()}>
+              Reset Wallet
+            </Button>
+            <Button variant="faded" onClick={() => clearWallet(true)}>
+              Reset Wallet Local
+            </Button>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

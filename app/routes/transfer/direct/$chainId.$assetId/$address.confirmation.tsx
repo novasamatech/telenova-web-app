@@ -21,23 +21,26 @@ import {
 } from '@/components';
 import type { IconNames } from '@/components/Icon/types';
 
-// Query params for /transfer/direct/:chainId/:assetId/confirmation?amount=__value__
+// Query params for /transfer/direct/:chainId/:assetId/confirmation?amount=_&fee=_&all=_
 export type SearchParams = {
   amount: string;
   fee: string;
+  all: boolean;
 };
 
 export const clientLoader = (({ params, request }) => {
   const url = new URL(request.url);
-  const amount = url.searchParams.get('amount') || '0';
-  const fee = url.searchParams.get('fee') || '0';
-  const data = $params('/transfer/direct/:chainId/:assetId/:address/confirmation', params);
 
-  return { amount, fee, ...data };
+  return {
+    ...$params('/transfer/direct/:chainId/:assetId/:address/confirmation', params),
+    amount: url.searchParams.get('amount') || '0',
+    fee: url.searchParams.get('fee') || '0',
+    all: url.searchParams.get('all') === 'true',
+  };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
-  const { chainId, assetId, address, amount, fee } = useLoaderData<typeof clientLoader>();
+  const { chainId, assetId, address, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
   const { sendTransfer } = useExtrinsic();
@@ -51,7 +54,7 @@ const Page = () => {
     sendTransfer({
       destinationAddress: address,
       chainId: chainId as ChainId,
-      transferAll: false,
+      transferAll: all,
       transferAmount: formatAmount(amount, selectedAsset.asset!.precision),
       asset: selectedAsset.asset,
     })

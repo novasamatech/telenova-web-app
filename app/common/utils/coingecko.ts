@@ -27,7 +27,7 @@ export async function getPrice({
   }).toString();
 
   try {
-    const data = await fetch(url, { signal: abortSignal }).then(r => r.json());
+    const data = await fetch(url, { cache: 'default', signal: abortSignal }).then(r => r.json());
     const prices: AssetPrice = {};
 
     for (const assetId of ids) {

@@ -3,13 +3,14 @@ import { useCallback, useEffect, useRef } from 'react';
 import { type BackButton as BackButtonType } from '@twa-dev/types';
 
 type Props = {
+  hidden?: boolean;
   onClick?(): unknown;
 };
 
 const defaultCallback = () => window.history.back();
 let hideButtonTimeout: ReturnType<typeof setTimeout> | null = null;
 
-export const BackButton = ({ onClick = defaultCallback }: Props) => {
+export const BackButton = ({ hidden, onClick = defaultCallback }: Props) => {
   const backButtonEvent = useRef<VoidFunction | null>(null);
 
   const ref = useRef<BackButtonType | null>(window?.Telegram?.WebApp?.BackButton ?? null);
@@ -56,8 +57,12 @@ export const BackButton = ({ onClick = defaultCallback }: Props) => {
   useEffect(hideBackButton, [hideBackButton]);
 
   useEffect(() => {
-    addBackButton(onClick);
-  }, [onClick]);
+    if (hidden) {
+      backButton?.hide();
+    } else {
+      addBackButton(onClick);
+    }
+  }, [hidden, onClick]);
 
   return null;
 };
