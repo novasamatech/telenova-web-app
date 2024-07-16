@@ -10,6 +10,8 @@ export const BACKUP_DATE = 'backupDate';
 export const FAKE_ACCOUNT_ID = '0x' + '1'.repeat(64);
 export const ZERO_BALANCE = '0';
 
+export const SS58_DEFAULT_PREFIX = 42;
+
 // TODO: take json from nova-utils
 export const ASSET_LOCATION: Record<string, SignerOptions> = {
   1984: {

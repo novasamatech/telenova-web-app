@@ -5,12 +5,12 @@ export type Asset = {
   precision: number;
   priceId?: string;
   icon: string;
-  type?: AssetType;
+  type: AssetType;
   typeExtras?: StatemineExtras;
-  // typeExtras?: StatemineExtras | OrmlExtras;
 };
 
-export type AssetType = 'orml' | 'statemine';
+// Support 'orml' in future
+export type AssetType = 'native' | 'statemine';
 
 export type StatemineExtras = {
   assetId: string;

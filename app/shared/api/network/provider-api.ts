@@ -6,7 +6,7 @@ import { type ProviderWithMetadata } from '@/common/network/types';
 const GET_METADATA_METHOD = 'state_getMetadata';
 const RETRY_DELAY = 2000;
 
-export const providerService = {
+export const providerApi = {
   createConnector,
 };
 

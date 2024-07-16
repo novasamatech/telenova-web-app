@@ -5,8 +5,8 @@ import { combineEvents, spread } from 'patronum';
 import { type ApiPromise } from '@polkadot/api';
 
 import { DEFAULT_CHAINS } from '@/common/utils/chains';
-import { chainsService, metadataService } from '@/services';
-import { providerService } from '@/services/network/provider-service';
+import { chainsApi, metadataApi } from '@/shared/api';
+import { providerApi } from '@/shared/api/network/provider-api';
 import { type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkUtils } from './network-utils';
@@ -28,7 +28,7 @@ const $metadata = createStore<ChainMetadata[]>([]);
 const $metadataSubscriptions = createStore<Record<ChainId, VoidFunction>>({});
 
 const populateChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'): Promise<Record<ChainId, Chain>> => {
-  const chains = await chainsService.getChainsData({ file, sort: true });
+  const chains = await chainsApi.getChainsData({ file, sort: true });
 
   return keyBy(chains, 'chainId');
 });
@@ -60,13 +60,13 @@ type MetadataSubResult = {
   unsubscribe: VoidFunction;
 };
 const subscribeMetadataFx = createEffect(async (api: ApiPromise): Promise<MetadataSubResult> => {
-  const unsubscribe = await metadataService.subscribeMetadata(api, requestMetadataFx);
+  const unsubscribe = await metadataApi.subscribeMetadata(api, requestMetadataFx);
 
   return { chainId: api.genesisHash.toHex(), unsubscribe };
 });
 
 const requestMetadataFx = createEffect((api: ApiPromise): Promise<ChainMetadata> => {
-  return metadataService.requestMetadata(api);
+  return metadataApi.requestMetadata(api);
 });
 
 const unsubscribeMetadataFx = createEffect((unsubscribe: VoidFunction) => {
@@ -97,7 +97,7 @@ const createProviderFx = createEffect(
     const boundDisconnected = scopeBind(disconnected, { safe: true });
     const boundFailed = scopeBind(failed, { safe: true });
 
-    return providerService.createConnector(
+    return providerApi.createConnector(
       { nodes: params.nodes, metadata: params.metadata?.metadata },
       {
         onConnected: () => {

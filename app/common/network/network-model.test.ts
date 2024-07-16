@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from 'vitest';
 
 import { type ApiPromise } from '@polkadot/api';
 
-import { ConnectionStatus, type ProviderWithMetadata } from '@/common/network/types.ts';
+import { ConnectionStatus, type ProviderWithMetadata } from '@/common/network/types';
 import { type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkModel } from './network-model';

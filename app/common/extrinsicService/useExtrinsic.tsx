@@ -4,7 +4,7 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
 
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
-import { AssetType, type TransferAsset } from '@/common/types';
+import { type TransferAsset } from '@/common/types';
 import { type Asset } from '@/types/substrate';
 
 type SendTransaction = {
@@ -39,7 +39,7 @@ export const useExtrinsic = () => {
     if (transferAll) {
       transactionType = TransactionType.TRANSFER_ALL;
     }
-    if (asset.type === AssetType.STATEMINE) {
+    if (isStatemineAsset(asset.type)) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
     }

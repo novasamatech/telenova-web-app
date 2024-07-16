@@ -1,2 +1,2 @@
-export { type Asset } from './asset';
+export { type Asset, type AssetType } from './asset';
 export { type Chain, type ChainMetadata } from './chain';

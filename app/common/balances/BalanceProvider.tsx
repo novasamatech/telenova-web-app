@@ -5,7 +5,7 @@ import { useUnit } from 'effector-react';
 import { encodeAddress } from '@polkadot/util-crypto';
 
 import { networkModel } from '@/common/network/network-model';
-import { AssetType, type ChainAssetAccount } from '@/common/types';
+import { type ChainAssetAccount } from '@/common/types';
 import { chainAssetAccountIdToString } from '@/common/utils';
 import { useNumId } from '@/common/utils/hooks/useNumId';
 
@@ -115,7 +115,7 @@ export const BalanceProvider = ({ children }: PropsWithChildren) => {
     };
 
     const unsubscribe =
-      account.asset.type === AssetType.STATEMINE
+      account.asset.type === 'statemine'
         ? await service.subscribeStatemineAssets(address, account.asset, handleUpdate)
         : await service.subscribe(address, handleUpdate);
 

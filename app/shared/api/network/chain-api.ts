@@ -3,7 +3,7 @@ import { concat, sortBy } from 'lodash-es';
 import { nonNullable } from '@/common/utils';
 import { type Chain } from '@/types/substrate';
 
-export const chainsService = {
+export const chainsApi = {
   getChainsData,
   sortChains,
 };
