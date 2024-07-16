@@ -63,12 +63,10 @@ const Page = () => {
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
 
-  const isAboveDeposit = Boolean(deposit) && +amount >= deposit;
-
   return (
     <>
       <MainButton
-        disabled={!isAmountValid || !isAboveDeposit || !Number(fee) || getIsAccountToBeReaped() || isPending}
+        disabled={!isAmountValid || !Number(fee) || getIsAccountToBeReaped() || isPending}
         onClick={navigateToConfirm}
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
@@ -93,7 +91,7 @@ const Page = () => {
       <AmountDetails
         selectedAsset={selectedAsset}
         amount={amount}
-        isAmountValid={!touched || (isAmountValid && isAboveDeposit)}
+        isAmountValid={!touched || isAmountValid}
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
