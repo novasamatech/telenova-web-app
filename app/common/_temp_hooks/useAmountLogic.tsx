@@ -23,7 +23,7 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
   const [isPending, setPending] = useState(false);
   const [transferAll, setTransferAll] = useState(false);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('');
-  const [isAmountValid, setIsAmountValid] = useState(true);
+  const [isAmountValid, setIsAmountValid] = useState(false);
   const [deposit, setDeposit] = useState(0);
 
   const getFeeAmount = (selectedAsset: TransferAsset, transferAmount: string): Promise<number> => {
@@ -89,10 +89,11 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
   useEffect(() => {
     if (!touched) return;
 
+    const notZero = +amount !== 0;
     const lessThanMax = (+amount || 0) <= +maxAmountToSend;
     const greaterThanDeposit = +maxAmountToSend - (+amount || 0) >= deposit;
 
-    setIsAmountValid(lessThanMax && (transferAll || greaterThanDeposit));
+    setIsAmountValid(notZero && lessThanMax && (transferAll || greaterThanDeposit));
   }, [transferAll, maxAmountToSend, amount, deposit, touched]);
 
   const handleMaxSend = () => {
