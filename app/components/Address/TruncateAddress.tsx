@@ -19,4 +19,5 @@ const TruncateAddress = ({ address, className }: Props) => {
     </span>
   );
 };
+
 export default TruncateAddress;

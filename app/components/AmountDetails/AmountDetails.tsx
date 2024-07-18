@@ -1,9 +1,7 @@
 import { type PropsWithChildren } from 'react';
 
-import { Input } from '@nextui-org/react';
-
 import { type TransferAsset } from '@/common/types';
-import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
+import { AmountInput, BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
 import { type IconNames } from '@/components/Icon/types';
 
 //TODO: Change layout mobile text
@@ -33,21 +31,10 @@ export const AmountDetails = ({
 
   return (
     <>
-      <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">
-        <Icon name={selectedAsset?.asset?.symbol as IconNames} className="w-10 h-10" />
+      <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-x-2 items-center">
+        <Icon name={selectedAsset?.asset?.symbol as IconNames} size={40} />
         <LargeTitleText>{selectedAsset?.asset?.symbol}</LargeTitleText>
-        <Input
-          fullWidth={false}
-          variant="underlined"
-          className="mt-2.5 font-manrope h-full"
-          classNames={{ input: ['text-right !text-large-title max-w-[7ch]'] }}
-          value={amount}
-          isInvalid={!isAmountValid}
-          type="text"
-          inputMode="decimal"
-          placeholder="0.00"
-          onValueChange={handleChange}
-        />
+        <AmountInput inputClassName="max-w-[7ch]" value={amount} isValid={isAmountValid} onChange={handleChange} />
       </div>
 
       {shouldShowPrice && (
