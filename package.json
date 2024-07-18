@@ -36,6 +36,7 @@
     "react-countup": "6.5.3",
     "react-dom": "18.3.1",
     "react-error-boundary": "4.0.13",
+    "react-imask": "7.6.1",
     "react-middle-ellipsis": "1.2.2",
     "react-qrcode-logo": "3.0.0",
     "react-router-dom": "6.23.1",

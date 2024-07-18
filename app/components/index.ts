@@ -1,5 +1,6 @@
 import TruncateAddress from './Address/TruncateAddress';
 import { AmountDetails } from './AmountDetails/AmountDetails';
+import { AmountInput } from './AmountInput/AmountInput';
 import AssetBalance from './Assets/AssetBalance';
 import AssetsList from './Assets/AssetsList';
 import Countdown from './Countdown/Countdown';
@@ -66,5 +67,6 @@ export {
   LoadingScreen,
   ErrorScreen,
   Input,
+  AmountInput,
   LottiePlayer,
 };
