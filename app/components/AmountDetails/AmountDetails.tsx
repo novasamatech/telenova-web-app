@@ -34,7 +34,9 @@ export const AmountDetails = ({
       <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-x-2 items-center">
         <Icon name={selectedAsset?.asset?.symbol as IconNames} size={40} />
         <LargeTitleText>{selectedAsset?.asset?.symbol}</LargeTitleText>
-        <AmountInput inputClassName="max-w-[7ch]" value={amount} isValid={isAmountValid} onChange={handleChange} />
+        <div className="px-1">
+          <AmountInput className="max-w-[7ch]" value={amount} isValid={isAmountValid} onChange={handleChange} />
+        </div>
       </div>
 
       {shouldShowPrice && (

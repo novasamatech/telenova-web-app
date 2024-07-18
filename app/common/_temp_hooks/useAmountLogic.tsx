@@ -25,7 +25,6 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('');
   const [isAmountValid, setIsAmountValid] = useState(false);
   const [deposit, setDeposit] = useState(0);
-  const [skipChange, setSkipChange] = useState(false);
 
   const getFeeAmount = (selectedAsset: TransferAsset, transferAmount: string): Promise<number> => {
     if (isStatemineAsset(selectedAsset.asset.type)) {
@@ -102,19 +101,11 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
 
     setTransferAll(true);
     setTouched(true);
-    setSkipChange(true);
     setAmount(String(maxAmountToSend));
     setIsAmountValid(Boolean(parseFloat(maxAmountToSend)));
   };
 
   const handleChange = (value: string) => {
-    // Need to skip change_event from IMaskInput when we set value programmatically
-    if (skipChange) {
-      setSkipChange(false);
-
-      return;
-    }
-
     let formattedValue = value.trim().replace(/,/g, '.');
     if (formattedValue.charAt(0) === '.') {
       formattedValue = '0' + formattedValue;
