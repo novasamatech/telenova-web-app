@@ -6,7 +6,6 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { useBalances } from '@/common/balances';
-import { networkModel } from '@/common/network/network-model';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { getPrice, getTotalBalance, mapAssetAccountsFromChains, updateAssetsBalance } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
@@ -24,6 +23,7 @@ import {
   TextBase,
   TitleText,
 } from '@/components';
+import { networkModel } from '@/models';
 
 const Page = () => {
   const navigate = useNavigate();

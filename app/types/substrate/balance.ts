@@ -3,7 +3,7 @@ import { type BN } from '@polkadot/util';
 export type AccountBalance = {
   chainId: ChainId;
   accountId: AccountId;
-  assetId: string;
+  assetId: AssetId;
   balance: Balance;
 };
 

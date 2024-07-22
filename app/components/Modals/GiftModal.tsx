@@ -6,14 +6,13 @@ import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
-import { networkModel } from '@/common/network/network-model';
-import { ConnectionStatus } from '@/common/network/types';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { type ChainAsset } from '@/common/types';
 import { formatAmount, formatBalance, getGiftInfo, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/components';
+import { networkModel } from '@/models';
 
 const enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -73,7 +72,7 @@ export default function GiftModal() {
     setIsOpen(true);
 
     const { giftAddress, chain, symbol } = getGiftInfo(Object.values(chains), publicKey, startParam);
-    if (connections[chain.chain.chainId].status === ConnectionStatus.DISCONNECTED) return;
+    if (connections[chain.chain.chainId].status === 'disconnected') return;
 
     const balanceRequest = {
       statemine: () => getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress),

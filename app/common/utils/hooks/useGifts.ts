@@ -2,9 +2,8 @@ import { useUnit } from 'effector-react';
 
 import { isStatemineAsset } from '../assets';
 
-import { networkModel } from '@/common/network/network-model';
-import { ConnectionStatus } from '@/common/network/types';
 import { type Gift, GiftStatus, type PersistentGift } from '@/common/types';
+import { networkModel } from '@/models';
 
 import { useAssetHub } from './useAssetHub';
 
@@ -18,9 +17,8 @@ export const useGifts = () => {
     const claimed = [] as Gift[];
     await Promise.all(
       Array.from(mapGifts).map(async ([chainId, accounts]) => {
-        if (connections[chainId].status === ConnectionStatus.DISCONNECTED) {
-          return;
-        }
+        if (connections[chainId].status === 'disconnected') return;
+
         const api = connections[chainId].api!;
         const chain = chains[chainId];
         // To have a backward compatibility with old gifts

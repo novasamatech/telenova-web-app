@@ -4,10 +4,10 @@ import { useUnit } from 'effector-react';
 
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { networkModel } from '@/common/network/network-model';
 import { type ChainAssetAccount } from '@/common/types';
 import { chainAssetAccountIdToString } from '@/common/utils';
 import { useNumId } from '@/common/utils/hooks/useNumId';
+import { networkModel } from '@/models';
 
 import { createBalanceService } from './BalanceService';
 import { type IAssetBalance, type SubscriptionState } from './types';
