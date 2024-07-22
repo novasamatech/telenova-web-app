@@ -11,4 +11,9 @@ export const walletModel = {
   input: {
     accountChanged,
   },
+
+  /* Internal API (tests only) */
+  _internal: {
+    $account,
+  },
 };

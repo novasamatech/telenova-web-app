@@ -1,273 +1,266 @@
-import { describe, expect, test } from 'vitest';
+import { allSettled, fork } from 'effector';
+import noop from 'lodash/noop';
+import { describe, expect, test, vi } from 'vitest';
 
-describe('models/balances/balances-model', () => {
-  test('should be defined', () => {
-    expect(1).toEqual(1);
+import { BN_TEN } from '@polkadot/util';
+
+import { networkModel } from '../network/network-model';
+
+import { walletModel } from '@/models';
+import { balancesApi } from '@/shared/api';
+import { type Chain } from '@/types/substrate';
+
+import { balancesModel } from './balances-model';
+
+describe('features/balances/subscription/model/balance-sub-model', () => {
+  const mockedChains = {
+    '0x001': { name: 'Polkadot', chainId: '0x001', assets: [{ assetId: 0 }] },
+    '0x002': { name: 'Kusama', chainId: '0x002', assets: [{ assetId: 1 }] },
+    '0x003': { name: 'Karura', chainId: '0x003', assets: [{ assetId: 0 }, { assetId: 1 }, { assetId: 2 }] },
+  } as unknown as Record<ChainId, Chain>;
+
+  test('should update $balance on balanceUpdated', async () => {
+    const defaultBalance = {
+      chainId: '0x002',
+      accountId: '0x999',
+      balance: { total: BN_TEN, transferable: BN_TEN },
+    };
+
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$balances, {
+        '0x002': {
+          0: { ...defaultBalance, assetId: 0 },
+        },
+      }),
+    });
+
+    await allSettled(balancesModel._internal.balanceUpdated, {
+      scope,
+      params: { ...defaultBalance, assetId: 1 },
+    });
+
+    expect(scope.getState(balancesModel.$balances)).toEqual({
+      '0x002': {
+        0: { ...defaultBalance, assetId: 0 },
+        1: { ...defaultBalance, assetId: 1 },
+      },
+    });
+  });
+
+  test('should update $activeAssets on assetToUnsubSet', async () => {
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$activeAssets, { '0x001': { 0: true } }),
+    });
+
+    await allSettled(balancesModel.input.assetToUnsubSet, {
+      scope,
+      params: { chainId: '0x001', assetId: 0 },
+    });
+
+    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({ '0x001': undefined });
+  });
+
+  test('should update $subscriptions on assetToUnsubSet', async () => {
+    const mockedSubscriptions = { '0x001': { 0: Promise.resolve(noop), 1: Promise.resolve(noop) } };
+
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$subscriptions, mockedSubscriptions),
+    });
+
+    await allSettled(balancesModel.input.assetToUnsubSet, { scope, params: { chainId: '0x001', assetId: 1 } });
+
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 0: Promise.resolve(noop) } });
+  });
+
+  test('should remove asset from $activeAssets on networkModel.output.assetChanged', async () => {
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$activeAssets, { '0x001': { 0: true } }),
+    });
+
+    await allSettled(networkModel.output.assetChanged, {
+      scope,
+      params: { chainId: '0x001', assetId: 0, status: 'off' },
+    });
+
+    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({ '0x001': undefined });
+  });
+
+  test('should update $activeAssets on assetToSubSet', async () => {
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$activeAssets, { '0x001': { 0: true } }),
+    });
+
+    await allSettled(balancesModel.input.assetToSubSet, {
+      scope,
+      params: { chainId: '0x001', assetId: 1 },
+    });
+
+    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({
+      '0x001': { 0: true, 1: true },
+    });
+  });
+
+  test('should add asset to $activeAssets on networkModel.output.assetChanged', async () => {
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$activeAssets, { '0x001': { 0: true } }),
+    });
+
+    await allSettled(networkModel.output.assetChanged, {
+      scope,
+      params: { chainId: '0x001', assetId: 1, status: 'on' },
+    });
+
+    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({
+      '0x001': { 0: true, 1: true },
+    });
+  });
+
+  test('should unsub all $subscriptions for chainId if assetId is absent', async () => {
+    const mockedSubscriptions = { '0x001': { 0: Promise.resolve(noop), 1: Promise.resolve(noop) } };
+    const fakeUnsubscribeFx = vi.fn().mockReturnValue({ '0x001': undefined });
+
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$subscriptions, mockedSubscriptions),
+      handlers: new Map().set(balancesModel._internal.unsubscribeChainAssetsFx, fakeUnsubscribeFx),
+    });
+
+    await allSettled(balancesModel._internal.unsubscribeChainAssetsFx, {
+      scope,
+      params: { chainId: '0x001', assetId: 1, subscriptions: mockedSubscriptions },
+    });
+
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': undefined });
+  });
+
+  test('should update $subscriptions on subscribeChainsAssetsFx', async () => {
+    const mockedSubscriptions = { '0x001': undefined };
+    const fakeSubscribeFx = vi.fn().mockReturnValue({ '0x001': { 1: Promise.resolve(noop) } });
+
+    const scope = fork({
+      values: new Map().set(balancesModel._internal.$subscriptions, mockedSubscriptions),
+      handlers: new Map().set(balancesModel._internal.subscribeChainsAssetsFx, fakeSubscribeFx),
+    });
+
+    await allSettled(balancesModel._internal.subscribeChainsAssetsFx, {
+      scope,
+      params: { apis: {}, chains: [], assets: [], accountId: '0x999' },
+    });
+
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 1: Promise.resolve(noop) } });
+  });
+
+  test('should update $subscriptions on assetToUnsubSet', async () => {
+    const spyUnsub = vi.fn();
+
+    const scope = fork({
+      values: new Map()
+        .set(balancesModel._internal.$activeAssets, { '0x001': { 0: true } })
+        .set(balancesModel._internal.$subscriptions, { '0x001': { 0: Promise.resolve(spyUnsub) } }),
+    });
+
+    await allSettled(balancesModel.input.assetToUnsubSet, {
+      scope,
+      params: { chainId: '0x001', assetId: 0 },
+    });
+
+    expect(spyUnsub).toHaveBeenCalledOnce();
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': undefined });
+  });
+
+  test('should update $subscriptions on assetToSubSet', async () => {
+    const unsubPromise = Promise.resolve(noop);
+    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(unsubPromise);
+
+    const scope = fork({
+      values: new Map()
+        .set(balancesModel._internal.$activeAssets, { '0x003': { 0: true } })
+        .set(balancesModel._internal.$subscriptions, { '0x003': { 0: unsubPromise } })
+        .set(walletModel._internal.$account, '0x999')
+        .set(networkModel._internal.$chains, mockedChains)
+        .set(networkModel._internal.$connections, { '0x003': { api: {}, status: 'connected' } }),
+    });
+
+    await allSettled(balancesModel.input.assetToSubSet, {
+      scope,
+      params: { chainId: '0x003', assetId: 1 },
+    });
+
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
+      '0x003': { 0: unsubPromise, 1: unsubPromise },
+    });
+  });
+
+  test('should subscribe $activeAssets for chainId on networkModel.output.connectionChanged', async () => {
+    const unsubPromise = Promise.resolve(noop);
+    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(unsubPromise);
+
+    const scope = fork({
+      values: new Map()
+        .set(balancesModel._internal.$activeAssets, { '0x001': { 1: true }, '0x003': { 0: true, 1: true } })
+        .set(walletModel._internal.$account, '0x999')
+        .set(networkModel._internal.$chains, mockedChains)
+        .set(networkModel._internal.$connections, {
+          '0x001': { status: 'disconnected' },
+          '0x003': { api: {}, status: 'connected' },
+        }),
+    });
+
+    await allSettled(networkModel.output.connectionChanged, {
+      scope,
+      params: { chainId: '0x003', status: 'connected' },
+    });
+
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
+      '0x003': { 0: unsubPromise, 1: unsubPromise },
+    });
+  });
+
+  test('should unsubscribe $activeAssets for chainId on networkModel.output.connectionChanged', async () => {
+    const spyUnsub = vi.fn();
+    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(Promise.resolve(spyUnsub));
+
+    const scope = fork({
+      values: new Map()
+        .set(balancesModel._internal.$activeAssets, { '0x001': { 1: true }, '0x003': { 0: true, 1: true } })
+        .set(balancesModel._internal.$subscriptions, {
+          '0x001': { 1: Promise.resolve(spyUnsub) },
+          '0x003': { 0: Promise.resolve(spyUnsub), 1: Promise.resolve(spyUnsub) },
+        })
+        .set(walletModel._internal.$account, '0x999')
+        .set(networkModel._internal.$chains, mockedChains),
+    });
+
+    await allSettled(networkModel.output.connectionChanged, {
+      scope,
+      params: { chainId: '0x003', status: 'disconnected' },
+    });
+
+    expect(spyUnsub).toHaveBeenCalledTimes(2);
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
+      '0x001': { 1: Promise.resolve(spyUnsub) },
+      '0x003': undefined,
+    });
+  });
+
+  test('should update $subscriptions when walletModel.$account updates', async () => {
+    const unsubPromise = Promise.resolve(noop);
+    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(unsubPromise);
+
+    const scope = fork({
+      values: new Map()
+        .set(balancesModel._internal.$activeAssets, { '0x001': { 0: true }, '0x003': { 0: true, 1: true } })
+        .set(networkModel._internal.$chains, mockedChains)
+        .set(networkModel._internal.$connections, {
+          '0x001': { api: {}, status: 'connected' },
+          '0x003': { api: {}, status: 'connected' },
+        }),
+    });
+
+    await allSettled(walletModel._internal.$account, { scope, params: '0x999' });
+
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
+      '0x001': { 0: unsubPromise },
+      '0x003': { 0: unsubPromise, 1: unsubPromise },
+    });
   });
 });
-
-// import { fork, allSettled, Scope } from 'effector';
-//
-// import { ConnectionStatus, Balance } from '@shared/core';
-// import { storageService } from '@shared/api/storage';
-// import { walletModel } from '@entities/wallet';
-// import { networkModel } from '@entities/network';
-// import { balanceService } from '@shared/api/balances';
-// import { balanceModel } from '@entities/balance';
-// import { mock } from './mock.ts';
-// import { balancesModel } from './balances-model.ts';
-//
-// describe('features/balances/subscription/model/balance-sub-model', () => {
-//   const { wallets, newWallets, accounts } = mock;
-//
-//   const setupInitialState = async (scope: Scope) => {
-//     const { chains, wallets } = mock;
-//
-//     const actions = Promise.all([
-//       allSettled(networkModel.$chains, { scope, params: chains }),
-//       allSettled(walletModel.$wallets, { scope, params: wallets }),
-//     ]);
-//
-//     await jest.runAllTimersAsync();
-//     await actions;
-//   };
-//
-//   const balanceSpy = jest.fn();
-//   const lockSpy = jest.fn();
-//   const balanceSpyPromise = Promise.resolve(balanceSpy);
-//   const lockSpyPromise = Promise.resolve(lockSpy);
-//
-//   beforeAll(() => {
-//     jest.useFakeTimers();
-//   });
-//
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//     jest.restoreAllMocks();
-//
-//     jest.spyOn(storageService.balances, 'readAll').mockResolvedValue([]);
-//     jest.spyOn(storageService.balances, 'insertAll').mockResolvedValue([]);
-//
-//     jest.spyOn(balanceService, 'subscribeBalances').mockReturnValue([balanceSpyPromise]);
-//     jest.spyOn(balanceService, 'subscribeLockBalances').mockReturnValue([lockSpyPromise]);
-//   });
-//
-//   test('should set initial $subAccounts on $chains & $activeWallet first change', async () => {
-//     const scope = fork();
-//     await setupInitialState(scope);
-//
-//     expect(scope.getState(balancesModel.__$subAccounts)).toEqual({
-//       '0x01': { [wallets[0].id]: [accounts[0].accountId] },
-//       '0x02': { [wallets[0].id]: [accounts[0].accountId, accounts[1].accountId] },
-//     });
-//   });
-//
-//   test('should remove $subAccounts on walletToUnsubSet', async () => {
-//     const subAccounts = {
-//       '0x01': { [wallets[0].id]: [], [wallets[1].id]: [] },
-//       '0x02': { [wallets[0].id]: [], [wallets[1].id]: [] },
-//     };
-//
-//     const scope = fork({
-//       values: new Map().set(balancesModel.__$subAccounts, subAccounts),
-//     });
-//
-//     const action = allSettled(balancesModel.events.walletToUnsubSet, { scope, params: wallets[0] });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(scope.getState(balancesModel.__$subAccounts)).toEqual({
-//       '0x01': { [wallets[1].id]: [] },
-//       '0x02': { [wallets[1].id]: [] },
-//     });
-//   });
-//
-//   test('should update $subAccounts on $activeWallet & $previousWallet change', async () => {
-//     const scope = fork();
-//     await setupInitialState(scope);
-//
-//     const action = allSettled(walletModel.$wallets, { scope, params: newWallets });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(scope.getState(balancesModel.__$subAccounts)).toEqual({
-//       '0x01': { [wallets[1].id]: [accounts[2].accountId] },
-//       '0x02': { [wallets[1].id]: [accounts[2].accountId, accounts[3].accountId] },
-//     });
-//   });
-//
-//   test('should add $subAccounts on walletToSubSet', async () => {
-//     const scope = fork();
-//     await setupInitialState(scope);
-//
-//     expect(scope.getState(balancesModel.__$subAccounts)).toEqual({
-//       '0x01': { [wallets[0].id]: [accounts[0].accountId] },
-//       '0x02': { [wallets[0].id]: [accounts[0].accountId, accounts[1].accountId] },
-//     });
-//
-//     const action = allSettled(balancesModel.events.walletToSubSet, { scope, params: wallets[1] });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(scope.getState(balancesModel.__$subAccounts)).toEqual({
-//       '0x01': { [wallets[0].id]: [accounts[0].accountId], [wallets[1].id]: [accounts[2].accountId] },
-//       '0x02': {
-//         [wallets[0].id]: [accounts[0].accountId, accounts[1].accountId],
-//         [wallets[1].id]: [accounts[2].accountId, accounts[3].accountId],
-//       },
-//     });
-//   });
-//
-//   test('should update $subscriptions on walletToSubSet', async () => {
-//     const scope_1 = fork({
-//       values: new Map().set(networkModel.$connectionStatuses, {
-//         '0x01': ConnectionStatus.DISCONNECTED,
-//         '0x02': ConnectionStatus.CONNECTED,
-//       }),
-//     });
-//     await setupInitialState(scope_1);
-//
-//     expect(scope_1.getState(balancesModel.__$subscriptions)).toEqual({
-//       '0x01': undefined,
-//       '0x02': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//     });
-//
-//     const action = allSettled(balancesModel.events.walletToSubSet, { scope: scope_1, params: wallets[1] });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(balanceSpy).not.toHaveBeenCalled();
-//     expect(lockSpy).not.toHaveBeenCalled();
-//     expect(scope_1.getState(balancesModel.__$subscriptions)).toEqual({
-//       '0x01': undefined,
-//       '0x02': {
-//         [wallets[0].id]: [balanceSpyPromise, lockSpyPromise],
-//         [wallets[1].id]: [balanceSpyPromise, lockSpyPromise],
-//       },
-//     });
-//   });
-//
-//   test('should update $subscriptions on $activeWallet & $previousWallet change', async () => {
-//     const scope = fork({
-//       values: new Map().set(networkModel.$connectionStatuses, {
-//         '0x01': ConnectionStatus.CONNECTED,
-//         '0x02': ConnectionStatus.DISCONNECTED,
-//       }),
-//     });
-//     await setupInitialState(scope);
-//
-//     expect(balanceSpy).not.toHaveBeenCalled();
-//     expect(lockSpy).not.toHaveBeenCalled();
-//     expect(scope.getState(balancesModel.__$subscriptions)).toEqual({
-//       '0x01': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//       '0x02': undefined,
-//     });
-//
-//     const action = allSettled(walletModel.$wallets, { scope, params: newWallets });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(balanceSpy).toHaveBeenCalledTimes(1);
-//     expect(lockSpy).toHaveBeenCalledTimes(1);
-//     expect(scope.getState(balancesModel.__$subscriptions)).toEqual({
-//       '0x01': { [wallets[1].id]: [balanceSpyPromise, lockSpyPromise] },
-//       '0x02': undefined,
-//     });
-//   });
-//
-//   test('should remove $subscriptions on walletToUnsubSet', async () => {
-//     const scope = fork({
-//       values: new Map().set(networkModel.$connectionStatuses, {
-//         '0x01': ConnectionStatus.CONNECTED,
-//         '0x02': ConnectionStatus.CONNECTED,
-//       }),
-//     });
-//     await setupInitialState(scope);
-//
-//     expect(scope.getState(balancesModel.__$subscriptions)).toEqual({
-//       '0x01': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//       '0x02': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//     });
-//
-//     const action = allSettled(balancesModel.events.walletToUnsubSet, { scope, params: wallets[0] });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(balanceSpy).toHaveBeenCalledTimes(2);
-//     expect(lockSpy).toHaveBeenCalledTimes(2);
-//     expect(scope.getState(balancesModel.__$subscriptions)).toEqual({ '0x01': undefined, '0x02': undefined });
-//   });
-//
-//   test('should update $subscriptions on disconnected connectionStatusChanged', async () => {
-//     const scope = fork({
-//       values: new Map().set(balancesModel.__$subscriptions, {
-//         '0x01': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//         '0x02': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//       }),
-//     });
-//
-//     const action = allSettled(networkModel.output.connectionStatusChanged, {
-//       scope,
-//       params: { chainId: '0x01', status: ConnectionStatus.DISCONNECTED },
-//     });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(balanceSpy).toHaveBeenCalledTimes(1);
-//     expect(lockSpy).toHaveBeenCalledTimes(1);
-//     expect(scope.getState(balancesModel.__$subscriptions)).toEqual({
-//       '0x01': undefined,
-//       '0x02': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//     });
-//   });
-//
-//   test('should update $subscriptions to connected connectionStatusChanged ', async () => {
-//     const scope = fork();
-//     await setupInitialState(scope);
-//
-//     expect(scope.getState(balancesModel.__$subscriptions)).toEqual({});
-//
-//     const action = allSettled(networkModel.output.connectionStatusChanged, {
-//       scope,
-//       params: { chainId: '0x02', status: ConnectionStatus.CONNECTED },
-//     });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(scope.getState(balancesModel.__$subscriptions)).toEqual({
-//       '0x02': { [wallets[0].id]: [balanceSpyPromise, lockSpyPromise] },
-//     });
-//   });
-//
-//   test('should update $balancesBuffer on $subAccounts change ', async () => {
-//     const subAccounts = {
-//       '0x01': { [wallets[1].id]: [accounts[2].accountId] },
-//       '0x02': { [wallets[1].id]: [accounts[2].accountId, accounts[3].accountId] },
-//     };
-//
-//     const newBalances = [
-//       { id: 1, chainId: '0x01', accountId: accounts[2].accountId },
-//       { id: 2, chainId: '0x02', accountId: accounts[3].accountId },
-//       { id: 3, chainId: '0x02', accountId: accounts[0].accountId },
-//     ] as unknown as Balance[];
-//
-//     jest.spyOn(storageService.balances, 'readAll').mockResolvedValue(newBalances);
-//
-//     const scope = fork();
-//
-//     const action = allSettled(balancesModel.__$subAccounts, { scope, params: subAccounts });
-//
-//     await jest.runAllTimersAsync();
-//     await action;
-//
-//     expect(scope.getState(balanceModel.$balances)).toEqual([newBalances[0], newBalances[1]]);
-//   });
-// });

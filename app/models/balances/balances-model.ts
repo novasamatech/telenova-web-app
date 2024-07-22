@@ -28,23 +28,30 @@ type UnsubAssetParams = {
 };
 const unsubscribeChainAssetsFx = createEffect(
   ({ chainId, assetId, subscriptions }: UnsubAssetParams): Subscriptions => {
-    const { [chainId]: chainSubscription, ...restChains } = subscriptions;
-    if (!chainSubscription) return subscriptions;
+    const { [chainId]: chainSubscriptions, ...restChains } = subscriptions;
+    if (!chainSubscriptions) return restChains;
 
-    const newSubscriptions: Subscriptions = restChains;
+    const newSubscriptions = restChains;
 
-    for (const [subAssetId, unsubPromise] of Object.entries(chainSubscription)) {
-      // If assetId is absent then unsub all assets for existing chain
-      if (assetId && assetId !== Number(subAssetId)) continue;
+    for (const [subAssetId, unsubPromise] of Object.entries(chainSubscriptions)) {
+      // Save unsub function if assetId is absent or is not the one we're looking for
+      const isAssetToHold = assetId && assetId !== Number(subAssetId);
 
+      if (isAssetToHold && newSubscriptions[chainId]) {
+        newSubscriptions[chainId][Number(subAssetId)] = unsubPromise;
+        continue;
+      }
+      if (isAssetToHold && !newSubscriptions[chainId]) {
+        newSubscriptions[chainId] = { [subAssetId]: unsubPromise };
+        continue;
+      }
+
+      // If this is our assetId or all assets must be unsubscribed
       unsubPromise
         .then(unsub => unsub())
         .catch(error => {
           console.log(`Error while unsubscribing from balances for asset - ${assetId}`, error);
         });
-
-      const { [Number(subAssetId)]: _, ...restAssets } = chainSubscription;
-      newSubscriptions[chainId] = isEmpty(restAssets) ? undefined : restAssets;
     }
 
     return newSubscriptions;
@@ -95,21 +102,6 @@ sample({
   target: $subscriptions,
 });
 
-// Init $activeAssets with all chains and their assets
-// sample({
-//   clock: once(networkModel.$chains),
-//   fn: chains => {
-//     const activeAssets: ActiveAssets = {};
-//
-//     for (const { chainId, assets } of Object.values(chains)) {
-//       assets.forEach(asset => (activeAssets[chainId] = { [asset.assetId]: undefined }));
-//     }
-//
-//     return activeAssets;
-//   },
-//   target: $activeAssets,
-// });
-
 sample({
   clock: balanceUpdated,
   source: $balances,
@@ -128,12 +120,12 @@ sample({
   clock: assetToUnsubSet,
   source: $activeAssets,
   fn: (activeAssets, { chainId, assetId }) => {
-    const { [chainId]: assetsValues, ...restChains } = activeAssets;
-    if (!assetsValues) return restChains;
+    const { [chainId]: activeChainAssets, ...restChains } = activeAssets;
+    if (!activeChainAssets) return restChains;
 
-    const { [assetId]: _, ...restAssets } = assetsValues;
+    const { [assetId]: _, ...restAssets } = activeChainAssets;
 
-    return { ...restChains, [chainId]: restAssets };
+    return { ...restChains, [chainId]: isEmpty(restAssets) ? undefined : restChains };
   },
   target: $activeAssets,
 });
@@ -149,9 +141,9 @@ sample({
   clock: assetToSubSet,
   source: $activeAssets,
   fn: (activeAssets, { chainId, assetId }) => {
-    const { [chainId]: activeChain, ...rest } = activeAssets;
+    const { [chainId]: activeChainAssets, ...restChains } = activeAssets;
 
-    return { ...rest, [chainId]: { ...activeChain, [assetId]: true } };
+    return { ...restChains, [chainId]: { ...activeChainAssets, [assetId]: true } };
   },
   target: $activeAssets,
 });
@@ -165,8 +157,8 @@ sample({
   },
   filter: ({ account, connections, chains }, data) => {
     const isAccountExist = Boolean(account);
-    const isConnected = connections[data.chainId].status === 'connected';
-    const hasAsset = chains[data.chainId].assets.some(a => a.assetId === data.assetId);
+    const isConnected = connections[data.chainId]?.status === 'connected';
+    const hasAsset = chains[data.chainId]?.assets.some(a => a.assetId === data.assetId);
 
     return isAccountExist && isConnected && hasAsset;
   },
@@ -243,7 +235,7 @@ sample({
   },
   filter: ({ connections, activeAssets }, account) => {
     const isAccountExist = Boolean(account);
-    const isAnyToConnect = isEmpty(activeAssets);
+    const isAnyToConnect = !isEmpty(activeAssets);
     const isSomeConnected = Object.values(connections).some(({ status }) => status === 'connected');
 
     return isAccountExist && isAnyToConnect && isSomeConnected;
@@ -279,5 +271,11 @@ export const balancesModel = {
   _internal: {
     $subscriptions,
     $activeAssets,
+    $balances,
+
+    balanceUpdated,
+
+    subscribeChainsAssetsFx,
+    unsubscribeChainAssetsFx,
   },
 };

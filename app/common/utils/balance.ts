@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { type IAssetBalance } from '../balances/types';
 import { type AssetAccount, type AssetPrice, type ChainAssetAccount, type ChainAssetId } from '../types';
 
 import { ZERO_BALANCE } from './constants';
@@ -78,18 +77,6 @@ export const formatBalance = (balance = '0', precision = 0): FormattedBalance =>
     suffix,
     decimalPlaces,
   };
-};
-
-export const updateAssetsBalance = (prevAssets: AssetAccount[], chainId: string, balance: IAssetBalance) => {
-  return prevAssets.map(asset => {
-    if (asset.chainId !== chainId) return asset;
-
-    return {
-      ...asset,
-      totalBalance: balance.total().toString(),
-      transferableBalance: balance.transferable().toString(),
-    };
-  });
 };
 
 export const formatAmount = (rawAmount: string, precision: number): string => {

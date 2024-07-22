@@ -5,9 +5,8 @@ import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useBalances } from '@/common/balances';
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { getPrice, getTotalBalance, mapAssetAccountsFromChains, updateAssetsBalance } from '@/common/utils';
+import { getPrice, getTotalBalance, mapAssetAccountsFromChains } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
   AssetsList,
@@ -27,12 +26,10 @@ import { networkModel } from '@/models';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { subscribeBalance, unsubscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
   const { user } = useTelegram();
 
   const chains = useUnit(networkModel.$chains);
-  const connections = useUnit(networkModel.$connections);
 
   function clearWallet(clearLocal?: boolean) {
     resetWallet(clearLocal);
@@ -52,22 +49,6 @@ const Page = () => {
 
     setAssets(mapAssetAccountsFromChains(Object.values(chains), publicKey));
   }, [chains, publicKey]);
-
-  // Subscribing balances
-  useEffect(() => {
-    if (!publicKey) return;
-
-    const assets = mapAssetAccountsFromChains(Object.values(chains), publicKey);
-    const unsubscribeIds = assets.map(asset =>
-      subscribeBalance(asset, balance => {
-        setAssets(prevAssets => updateAssetsBalance(prevAssets, asset.chainId, balance));
-      }),
-    );
-
-    return () => {
-      unsubscribeIds.forEach(unsubscribeBalance);
-    };
-  }, [connections, chains, publicKey]);
 
   // Fetching prices
   useEffect(() => {
