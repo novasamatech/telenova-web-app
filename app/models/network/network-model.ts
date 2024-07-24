@@ -7,7 +7,7 @@ import { type ApiPromise } from '@polkadot/api';
 import { DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
 import { chainsApi, metadataApi } from '@/shared/api';
 import { type ProviderWithMetadata, providerApi } from '@/shared/api/network/provider-api';
-import { type Chain, type ChainMetadata } from '@/types/substrate';
+import { type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
 
 import { type Connection } from './types';
 
@@ -25,8 +25,9 @@ const connected = createEvent<ChainId>();
 const disconnected = createEvent<ChainId>();
 const failed = createEvent<ChainId>();
 
-const $chains = createStore<Record<ChainId, Chain>>({});
-const $assets = createStore<Record<ChainId, Record<AssetId, boolean>>>({});
+const $chains = createStore<ChainsMap>({});
+const $assets = createStore<AssetsMap>({});
+
 const $connections = createStore<Record<ChainId, Connection>>({});
 
 const $metadata = createStore<ChainMetadata[]>([]);
@@ -192,12 +193,18 @@ sample({
 sample({
   clock: assetConnected,
   source: {
+    chains: $chains,
     assets: $assets,
     connections: $connections,
   },
-  fn: ({ connections, assets }, { chainId, assetId }) => {
+  filter: ({ chains }, { chainId, assetId }) => {
+    return chains[chainId].assets.some(a => a.assetId === assetId);
+  },
+  fn: ({ chains, connections, assets }, { chainId, assetId }) => {
     const isDisconnected = connections[chainId].status === 'disconnected';
-    const newAssets = { ...assets, [chainId]: { ...assets[chainId], [assetId]: true } };
+
+    const asset = chains[chainId].assets.find(a => a.assetId === assetId);
+    const newAssets = { ...assets, [chainId]: { ...assets[chainId], [assetId]: asset! } };
 
     // If chain is disconnected then connect, notify with new asset, assets is updated anyway
     return {
@@ -219,10 +226,13 @@ sample({
     assets: $assets,
     connections: $connections,
   },
+  filter: ({ assets }, { chainId }) => Boolean(assets[chainId]),
   fn: ({ connections, assets }, { chainId, assetId }) => {
     const isConnected = connections[chainId].status !== 'disconnected';
-    const isLastAsset = Object.values(assets[chainId]).filter(isActive => isActive).length === 1;
-    const newAssets = { ...assets, [chainId]: { ...assets[chainId], [assetId]: false } };
+    const isLastAsset = Object.values(assets[chainId]!).filter(isActive => isActive).length === 1;
+
+    const { [assetId]: _, ...restAssets } = assets[chainId]!;
+    const newAssets = { ...assets, [chainId]: isLastAsset ? undefined : restAssets };
 
     // If chain is not disconnected then disconnect, notify with asset, assets is updated anyway
     return {
@@ -236,6 +246,16 @@ sample({
     notify: assetChanged,
     disconnect: chainDisconnected,
   }),
+});
+
+sample({
+  clock: chainConnected,
+  source: $connections,
+  fn: (connections, chainId) => ({
+    ...connections,
+    [chainId]: { ...connections[chainId], status: 'connecting' },
+  }),
+  target: $connections,
 });
 
 // TODO: save new connection in CloudStorage - https://app.clickup.com/t/869502m30
@@ -267,8 +287,8 @@ sample({
   source: $connections,
   fn: (connections, { provider, api }) => {
     const chainId = api.genesisHash.toHex();
-    const event = { chainId, status: 'connecting' as const };
-    const data = { ...connections, [chainId]: { provider, api, status: 'connecting' as const } };
+    const event = { chainId, status: 'connected' as const };
+    const data = { ...connections, [chainId]: { provider, api, status: 'connected' as const } };
 
     return { event, data };
   },
@@ -282,6 +302,11 @@ sample({
 sample({
   clock: connected,
   source: $connections,
+  filter: (connections, chainId) => {
+    // We don't rely on connected event when start chain for the first time
+    // createProviderFx.doneData is responsible for that
+    return connections[chainId].status !== 'connecting';
+  },
   fn: (connections, chainId) => {
     const event = { chainId, status: 'connected' as const };
     const data = { ...connections, [chainId]: { ...connections[chainId], status: 'connected' as const } };
@@ -407,8 +432,13 @@ sample({
 });
 
 export const networkModel = {
+  // All available chains
   $chains: readonly($chains),
+
+  // Selected assets
   $assets: readonly($assets),
+
+  // All available chains with connection statuses
   $connections: readonly($connections),
 
   input: {

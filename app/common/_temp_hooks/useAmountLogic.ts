@@ -2,22 +2,23 @@ import { useEffect, useState } from 'react';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { type TransferAsset } from '@/common/types';
 import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
+import { type Asset } from '@/types/substrate';
 
 type AmountLogicParams = {
-  selectedAsset?: TransferAsset;
+  chainId: ChainId;
+  asset: Asset;
   isGift: boolean;
 };
 
 // TODO: Use BN to operate with amount and fee
-export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => {
+export const useAmountLogic = ({ chainId, asset, isGift }: AmountLogicParams) => {
   const { getAssetHubFee } = useAssetHub();
   const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
 
-  const [amount, setAmount] = useState<string>(selectedAsset?.amount || '');
+  const [amount, setAmount] = useState<string>('0');
   const [fee, setFee] = useState<number>();
   const [touched, setTouched] = useState(false);
   const [isPending, setPending] = useState(false);
@@ -26,39 +27,39 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [deposit, setDeposit] = useState(0);
 
-  const getFeeAmount = (selectedAsset: TransferAsset, transferAmount: string): Promise<number> => {
-    if (isStatemineAsset(selectedAsset.asset.type)) {
-      return getAssetHubFee(selectedAsset.chainId, selectedAsset.asset.typeExtras!.assetId, transferAmount, isGift);
+  const getFeeAmount = (chainId: ChainId, asset: Asset, transferAmount: string): Promise<number> => {
+    if (isStatemineAsset(asset.type)) {
+      return getAssetHubFee(chainId, asset.typeExtras!.assetId, transferAmount, isGift);
     }
 
-    return getTransactionFee(selectedAsset.chainId, TransactionType.TRANSFER, transferAmount);
+    return getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount);
   };
 
-  const getMaxAmount = async (selectedAsset: TransferAsset): Promise<string> => {
-    const amount = selectedAsset.transferableBalance || '0';
-    const fee = await getFeeAmount(selectedAsset, amount);
-    const max = Math.max(+amount - fee, 0).toString();
+  const getMaxAmount = async (chainId: ChainId, asset: Asset, transferAmount = '0'): Promise<string> => {
+    const fee = await getFeeAmount(chainId, asset, transferAmount);
+    const max = Math.max(+transferAmount - fee, 0).toString();
 
-    return Number(formatBalance(max, selectedAsset.asset.precision).formattedValue).toFixed(5);
+    return Number(formatBalance(max, asset.precision).formattedValue).toFixed(5);
   };
 
-  async function getTransferDetails(
-    selectedAsset: TransferAsset,
+  const getTransferDetails = async (
+    chainId: ChainId,
+    asset: Asset,
     amount: string,
-  ): Promise<{ fee: number; formattedDeposit: number }> {
-    const transferAmount = formatAmount(amount || '0', selectedAsset.asset?.precision);
+  ): Promise<{ fee: number; formattedDeposit: number }> => {
+    const transferAmount = formatAmount(amount || '0', asset?.precision);
 
-    const deposit = isStatemineAsset(selectedAsset.asset.type)
-      ? await getExistentialDepositStatemine(selectedAsset.chainId, selectedAsset.asset.typeExtras!.assetId)
-      : await getExistentialDeposit(selectedAsset.chainId);
+    const deposit = isStatemineAsset(asset.type)
+      ? await getExistentialDepositStatemine(chainId, asset.typeExtras!.assetId)
+      : await getExistentialDeposit(chainId);
 
-    const fee = await getFeeAmount(selectedAsset, transferAmount);
+    const fee = await getFeeAmount(chainId, asset, transferAmount);
 
     return {
       fee,
-      formattedDeposit: Number(formatBalance(deposit, selectedAsset.asset.precision).formattedValue),
+      formattedDeposit: Number(formatBalance(deposit, asset.precision).formattedValue),
     };
-  }
+  };
 
   const getIsAccountToBeReaped = (): boolean => {
     if (!touched || transferAll || !maxAmountToSend || !fee) return false;
@@ -70,7 +71,7 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
 
   useEffect(() => {
     setPending(true);
-    getTransferDetails(selectedAsset as TransferAsset, amount || '0')
+    getTransferDetails(chainId, asset, amount || '0')
       .then(({ fee, formattedDeposit }) => {
         setFee(fee);
         setDeposit(formattedDeposit);
@@ -81,10 +82,10 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
   }, [amount]);
 
   useEffect(() => {
-    if (!selectedAsset) return;
+    if (!asset) return;
 
-    getMaxAmount(selectedAsset).then(setMaxAmountToSend);
-  }, [selectedAsset]);
+    getMaxAmount(chainId, asset, amount).then(setMaxAmountToSend);
+  }, [amount]);
 
   useEffect(() => {
     if (!touched) return;
@@ -122,7 +123,6 @@ export const useAmountLogic = ({ selectedAsset, isGift }: AmountLogicParams) => 
     getIsAccountToBeReaped,
     isPending,
     deposit,
-    selectedAsset,
     amount,
     fee,
     maxAmountToSend,

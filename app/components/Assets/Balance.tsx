@@ -14,7 +14,9 @@ const Balance = ({ balance, precision, animate }: Props) => {
   // to prevent CountUp loosing value bug
   const [key, setKey] = useState(0);
 
-  useEffect(() => setKey(key => key + 1), []);
+  useEffect(() => {
+    setKey(key => key + 1);
+  }, []);
 
   if (balance === undefined) {
     return <Shimmering width={100} height={20} />;

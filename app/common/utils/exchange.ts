@@ -1,13 +1,13 @@
 import CryptoJS from 'crypto-js';
 
-import { type TransferAsset } from '../types';
-
 type WidgetParams = {
   root: HTMLElement;
   widgetId: string;
   returnPage: string;
   secret: string;
-  selectedAsset: Partial<TransferAsset | null>;
+  address: Address;
+  operationType: 'buy' | 'sell';
+  symbol: string;
   handleStatus: (data: { status: 'paid' | 'new' }) => void;
   handleSell: (data: { address: string; amount: string }) => void;
 };
@@ -17,13 +17,13 @@ export const runMercuryoWidget = ({
   secret,
   widgetId,
   returnPage,
-  selectedAsset,
+  address,
+  operationType,
+  symbol,
   handleStatus,
   handleSell,
 }: WidgetParams) => {
-  if (!selectedAsset || !selectedAsset.address) return;
-
-  const signature = CryptoJS.SHA512(selectedAsset.address + secret).toString();
+  const signature = CryptoJS.SHA512(address + secret).toString();
   const returnUrl = new URL(returnPage, window.location.origin).toString();
 
   window.mercuryoWidget.run({
@@ -32,10 +32,10 @@ export const runMercuryoWidget = ({
     signature,
     host: root,
     fixCurrency: true,
-    type: selectedAsset.operationType,
-    refundAddress: selectedAsset.address,
-    address: selectedAsset.address,
-    currency: selectedAsset.asset?.symbol,
+    type: operationType,
+    refundAddress: address,
+    address: address,
+    currency: symbol,
     onStatusChange: handleStatus,
     onSellTransferEnabled: handleSell,
   });

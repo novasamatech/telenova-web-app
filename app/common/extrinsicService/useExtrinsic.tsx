@@ -4,7 +4,6 @@ import { decodeAddress } from '@polkadot/util-crypto';
 import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
 
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
-import { type TransferAsset } from '@/common/types';
 import { type Asset } from '@/types/substrate';
 
 type SendTransaction = {
@@ -63,9 +62,16 @@ export const useExtrinsic = () => {
     });
   }
 
+  type GiftParams = {
+    chainId: ChainId;
+    amount: string;
+    fee?: number;
+    asset: Asset;
+    transferAll?: boolean;
+  };
   async function sendGift(
-    { chainId, amount, transferAll, asset, fee }: TransferAsset,
-    giftTransferAddress: string,
+    transferAddress: Address,
+    { chainId, asset, amount, fee, transferAll }: GiftParams,
   ): Promise<void> {
     const transferAmount = formatAmount(amount!, asset.precision);
 
@@ -75,7 +81,7 @@ export const useExtrinsic = () => {
       return sendTransfer({
         chainId,
         asset,
-        destinationAddress: giftTransferAddress,
+        destinationAddress: transferAddress,
         transferAmount: giftAmount,
       });
     }
@@ -87,7 +93,7 @@ export const useExtrinsic = () => {
       chainId,
       asset,
       transferAll,
-      destinationAddress: giftTransferAddress,
+      destinationAddress: transferAddress,
       transferAmount: giftAmount,
     });
   }

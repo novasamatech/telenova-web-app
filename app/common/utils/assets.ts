@@ -2,10 +2,10 @@ import { encodeAddress } from '@polkadot/util-crypto';
 
 import { type AssetAccount } from '../types';
 
-import { type Asset, type AssetType, type Chain } from '@/types/substrate';
+import { type Asset, type Chain } from '@/types/substrate';
 
 export const getAssetId = (asset: Asset): string => {
-  const assetIds: Record<AssetType, string> = {
+  const assetIds: Record<Asset['type'], string> = {
     native: asset.assetId.toString(),
     statemine: asset.typeExtras!.assetId,
   };
@@ -13,11 +13,11 @@ export const getAssetId = (asset: Asset): string => {
   return assetIds[asset.type];
 };
 
-export const isNativeAsset = (type?: AssetType): boolean => {
+export const isNativeAsset = (type?: Asset['type']): boolean => {
   return type === 'native';
 };
 
-export const isStatemineAsset = (type?: AssetType): boolean => {
+export const isStatemineAsset = (type?: Asset['type']): boolean => {
   return type === 'statemine';
 };
 

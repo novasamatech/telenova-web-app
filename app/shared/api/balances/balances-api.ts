@@ -2,11 +2,11 @@ import noop from 'lodash/noop';
 
 import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
-import { BN, BN_ZERO } from '@polkadot/util';
+import { BN_ZERO } from '@polkadot/util';
 
 import { getAssetId, toAddress } from '@/common/utils';
-import { type Asset, type AssetType, type Chain } from '@/types/substrate';
-import { type AccountBalance } from '@/types/substrate/balance';
+import { type Asset, type Chain } from '@/types/substrate';
+import { type AssetBalance } from '@/types/substrate/balance';
 
 export const balancesApi = {
   subscribeBalance,
@@ -17,7 +17,7 @@ type ISubscribeBalance = (
   chain: Chain,
   asset: Asset | undefined,
   accountId: AccountId,
-  callback: (newBalance: AccountBalance) => void,
+  callback: (newBalance: AssetBalance) => void,
 ) => UnsubscribePromise;
 
 const subscribeNativeBalanceChange: ISubscribeBalance = (api, chain, asset, accountId, callback) => {
@@ -25,18 +25,10 @@ const subscribeNativeBalanceChange: ISubscribeBalance = (api, chain, asset, acco
 
   const address = toAddress(accountId, { prefix: chain.addressPrefix });
 
-  return api.query.system.account(address, (accountInfo: any) => {
+  return api.query.system.account(address, accountInfo => {
     const free = accountInfo.data.free.toBn();
     const reserved = accountInfo.data.reserved.toBn();
-    let frozen: BN;
-
-    if (accountInfo.data.miscFrozen || accountInfo.data.feeFrozen) {
-      const miscFrozen = new BN(accountInfo.data.miscFrozen);
-      const feeFrozen = new BN(accountInfo.data.feeFrozen);
-      frozen = miscFrozen.gt(feeFrozen) ? miscFrozen : feeFrozen;
-    } else {
-      frozen = new BN(accountInfo.data.frozen);
-    }
+    const frozen = accountInfo.data.frozen.toBn();
 
     callback({
       accountId,
@@ -47,8 +39,8 @@ const subscribeNativeBalanceChange: ISubscribeBalance = (api, chain, asset, acco
         frozen,
         reserved,
 
-        total: free.add(reserved),
-        transferable: free.gt(frozen) ? free.sub(frozen) : BN_ZERO,
+        total: free.add(reserved).toString(),
+        transferable: free.gt(frozen) ? free.sub(frozen).toString() : BN_ZERO.toString(),
       },
     });
   });
@@ -59,8 +51,8 @@ const subscribeStatemineAssetsChange: ISubscribeBalance = (api, chain, asset, ac
 
   const address = toAddress(accountId, { prefix: chain.addressPrefix });
 
-  return api.query.assets.account(getAssetId(asset), address, (accountInfo: any[]) => {
-    const free = accountInfo[0].isNone ? '0' : accountInfo[0].unwrap().balance.toString();
+  return api.query.assets.account(getAssetId(asset), address, accountInfo => {
+    const free = accountInfo.isNone ? BN_ZERO : accountInfo.unwrap().balance.toBn();
 
     callback({
       accountId,
@@ -71,8 +63,8 @@ const subscribeStatemineAssetsChange: ISubscribeBalance = (api, chain, asset, ac
         frozen: BN_ZERO,
         reserved: BN_ZERO,
 
-        total: free,
-        transferable: free,
+        total: free.toString(),
+        transferable: free.toString(),
       },
     });
   });
@@ -83,9 +75,9 @@ function subscribeBalance(
   chain: Chain,
   asset: Asset,
   accountId: AccountId,
-  callback: (newBalance: AccountBalance) => void,
+  callback: (newBalance: AssetBalance) => void,
 ): UnsubscribePromise {
-  const actions: Record<AssetType, ISubscribeBalance> = {
+  const actions: Record<Asset['type'], ISubscribeBalance> = {
     native: subscribeNativeBalanceChange,
     statemine: subscribeStatemineAssetsChange,
   };

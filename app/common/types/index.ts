@@ -11,12 +11,6 @@ export type ChainAssetId = {
   assetId: AssetId;
 };
 
-export type PriceItem = {
-  price: number;
-  change?: number;
-};
-export type AssetPrice = Record<Currency, PriceItem>;
-
 export type ChainAssetAccount = {
   chainId: ChainId;
   publicKey: PublicKey;
@@ -39,7 +33,6 @@ export type TransferAsset = AssetAccount & {
   isGift?: boolean;
   operationType?: 'buy' | 'sell';
 };
-export type StateResolution<T> = { resolve: (value: T) => void; reject: () => void };
 
 export const enum GiftStatus {
   CLAIMED = 'Claimed',

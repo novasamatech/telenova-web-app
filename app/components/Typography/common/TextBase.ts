@@ -22,6 +22,4 @@ const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyP
   );
 };
 
-export type TextBaseType = typeof TextBase;
-
 export default TextBase;

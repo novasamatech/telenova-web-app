@@ -2,13 +2,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { Divider } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { useExtrinsic } from '@/common/extrinsicService';
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { formatAmount, formatBalance, pickAsset } from '@/common/utils';
+import { formatAmount, formatBalance } from '@/common/utils';
 import {
   BodyText,
   HeadlineText,
@@ -20,6 +20,7 @@ import {
   TruncateAddress,
 } from '@/components';
 import type { IconNames } from '@/components/Icon/types';
+import { networkModel } from '@/models';
 
 // Query params for /transfer/direct/:chainId/:assetId/confirmation?amount=__value__
 export type SearchParams = {
@@ -41,19 +42,21 @@ const Page = () => {
 
   const navigate = useNavigate();
   const { sendTransfer } = useExtrinsic();
-  const { assets } = useGlobalContext();
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const chains = useUnit(networkModel.$chains);
+  const assets = useUnit(networkModel.$assets);
+
+  const selectedAsset = assets[chainId as ChainId]?.[Number(assetId) as AssetId];
+
+  if (!selectedAsset || chains[chainId as ChainId]) return null;
 
   const mainCallback = () => {
-    if (!selectedAsset) return;
-
     sendTransfer({
       destinationAddress: address,
       chainId: chainId as ChainId,
       transferAll: false,
-      transferAmount: formatAmount(amount, selectedAsset.asset!.precision),
-      asset: selectedAsset.asset,
+      transferAmount: formatAmount(amount, selectedAsset.precision),
+      asset: selectedAsset,
     })
       .then(() => {
         const params = { chainId, assetId, address };
@@ -64,8 +67,8 @@ const Page = () => {
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
   };
 
-  const symbol = selectedAsset?.asset?.symbol;
-  const formattedFee = formatBalance(fee, selectedAsset?.asset?.precision);
+  const symbol = selectedAsset.symbol;
+  const formattedFee = formatBalance(fee, selectedAsset.precision);
   const formattedTotal = (Number(amount) + Number(formattedFee.formattedValue)).toFixed(5);
 
   const details = [
@@ -83,7 +86,7 @@ const Page = () => {
     },
     {
       title: 'Network',
-      value: selectedAsset?.chainName,
+      value: chains[chainId as ChainId].name,
     },
   ];
 

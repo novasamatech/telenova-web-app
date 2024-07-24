@@ -1,14 +1,28 @@
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { AssetsList, TitleText } from '@/components';
+import { balancesModel, networkModel } from '@/models';
+import { type AssetBalance } from '@/types/substrate';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { assets } = useGlobalContext();
+
+  const chains = useUnit(networkModel.$chains);
+  const assets = useUnit(networkModel.$assets);
+  const balances = useUnit(balancesModel.$balances);
+
+  const navigateToAmount = (asset: AssetBalance) => {
+    navigate(
+      $path('/transfer/gift/:chainId/:assetId/amount', {
+        chainId: asset.chainId,
+        assetId: asset.assetId.toString(),
+      }),
+    );
+  };
 
   return (
     <>
@@ -17,16 +31,11 @@ const Page = () => {
       <div className="flex flex-col gap-2 mt-4">
         <AssetsList
           showArrow
+          chains={chains}
           assets={assets}
+          balances={balances}
           className="bg-white rounded-lg px-4 py-3 w-full hover:bg-bg-item-pressed active:bg-bg-item-pressed"
-          onClick={asset => {
-            navigate(
-              $path('/transfer/gift/:chainId/:assetId/amount', {
-                chainId: asset.chainId,
-                assetId: asset.asset.assetId.toString(),
-              }),
-            );
-          }}
+          onClick={navigateToAmount}
         />
       </div>
     </>

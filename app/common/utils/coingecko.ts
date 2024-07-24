@@ -1,4 +1,4 @@
-import { type AssetPrice } from '../types';
+import { type AssetPrice } from '@/types/substrate';
 
 type Params = {
   ids: string[];

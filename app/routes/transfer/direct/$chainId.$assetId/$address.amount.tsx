@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button, Progress } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { pickAsset } from '@/common/utils';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { AmountDetails } from '@/components/AmountDetails';
+import { networkModel } from '@/models';
 
 // Query params for /transfer/direct/:chainId/:assetId/amount?amount=__value__
 export type SearchParams = {
@@ -30,9 +30,11 @@ const Page = () => {
   const { chainId, assetId, address, amount: transferAmount } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { assets } = useGlobalContext();
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const typedChainId = chainId as ChainId;
+  const assets = useUnit(networkModel.$assets);
+
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   const {
     handleMaxSend,
@@ -44,7 +46,7 @@ const Page = () => {
     fee,
     maxAmountToSend,
     isAmountValid,
-  } = useAmountLogic({ selectedAsset, isGift: false });
+  } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: false });
 
   // Set amount from query params (/exchange/widget Mercurio page does this)
   useEffect(() => {
@@ -61,6 +63,8 @@ const Page = () => {
 
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
+
+  if (!selectedAsset) return null;
 
   return (
     <>
@@ -84,11 +88,11 @@ const Page = () => {
               <Progress size="md" isIndeterminate />
             </div>
           )}
-          <HeadlineText className="flex items-center text-text-link">{selectedAsset?.asset?.symbol}</HeadlineText>
+          <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
         </Button>
       </div>
       <AmountDetails
-        selectedAsset={selectedAsset}
+        asset={selectedAsset}
         amount={amount}
         isAmountValid={isAmountValid}
         maxAmountToSend={maxAmountToSend}

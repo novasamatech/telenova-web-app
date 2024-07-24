@@ -2,28 +2,26 @@ import { allSettled, fork } from 'effector';
 import noop from 'lodash/noop';
 import { describe, expect, test, vi } from 'vitest';
 
-import { BN_TEN } from '@polkadot/util';
-
 import { networkModel } from '../network/network-model';
+import { walletModel } from '../wallet/wallet-model';
 
-import { walletModel } from '@/models';
 import { balancesApi } from '@/shared/api';
-import { type Chain } from '@/types/substrate';
+import { type ChainsMap } from '@/types/substrate';
 
 import { balancesModel } from './balances-model';
 
-describe('features/balances/subscription/model/balance-sub-model', () => {
+describe('models/balances/balances-model', () => {
   const mockedChains = {
     '0x001': { name: 'Polkadot', chainId: '0x001', assets: [{ assetId: 0 }] },
     '0x002': { name: 'Kusama', chainId: '0x002', assets: [{ assetId: 1 }] },
     '0x003': { name: 'Karura', chainId: '0x003', assets: [{ assetId: 0 }, { assetId: 1 }, { assetId: 2 }] },
-  } as unknown as Record<ChainId, Chain>;
+  } as unknown as ChainsMap;
 
   test('should update $balance on balanceUpdated', async () => {
     const defaultBalance = {
       chainId: '0x002',
       accountId: '0x999',
-      balance: { total: BN_TEN, transferable: BN_TEN },
+      balance: { total: '10', transferable: '10' },
     };
 
     const scope = fork({

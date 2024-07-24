@@ -22,3 +22,5 @@ export type ChainMetadata = {
   version: number;
   metadata: Metadata;
 };
+
+export type ChainsMap = Record<ChainId, Chain>;

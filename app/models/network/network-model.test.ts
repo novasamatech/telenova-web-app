@@ -28,7 +28,7 @@ const mockedChains = [
     name: 'Karura',
     chainIndex: '3',
     chainId: '0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b',
-    assets: [{ assetId: 0 }],
+    assets: [{ assetId: 0 }, { assetId: 1 }, { assetId: 2 }],
     nodes: [],
   },
 ] as unknown as Chain[];
@@ -97,14 +97,14 @@ describe('@/common/network/network-model', () => {
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
 
     expect(scope.getState(networkModel.$assets)).toEqual({
-      [mockedChains[0].chainId]: { 0: true },
-      [mockedChains[1].chainId]: { 0: true },
+      [mockedChains[0].chainId]: { 0: { assetId: 0 } },
+      [mockedChains[1].chainId]: { 0: { assetId: 0 } },
     });
 
     const connection = { provider: expect.any(Object), api: expect.any(Object) };
     expect(scope.getState(networkModel.$connections)).toEqual({
-      [mockedChains[0].chainId]: { ...connection, status: 'connecting' }, // Polkadot
-      [mockedChains[1].chainId]: { ...connection, status: 'connecting' }, // Kusama
+      [mockedChains[0].chainId]: { ...connection, status: 'connected' }, // Polkadot
+      [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
       [mockedChains[2].chainId]: { status: 'disconnected' }, // Karura
     });
   });
@@ -119,16 +119,16 @@ describe('@/common/network/network-model', () => {
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
 
     expect(scope.getState(networkModel.$assets)).toEqual({
-      [mockedChains[0].chainId]: { 0: true },
-      [mockedChains[1].chainId]: { 0: true },
-      [mockedChains[2].chainId]: { 1: true, 2: true },
+      [mockedChains[0].chainId]: { 0: { assetId: 0 } },
+      [mockedChains[1].chainId]: { 0: { assetId: 0 } },
+      [mockedChains[2].chainId]: { 1: { assetId: 1 }, 2: { assetId: 2 } },
     });
 
     const connection = { provider: expect.any(Object), api: expect.any(Object) };
     expect(scope.getState(networkModel.$connections)).toEqual({
-      [mockedChains[0].chainId]: { ...connection, status: 'connecting' }, // Polkadot
-      [mockedChains[1].chainId]: { ...connection, status: 'connecting' }, // Kusama
-      [mockedChains[2].chainId]: { ...connection, status: 'connecting' }, // Karura
+      [mockedChains[0].chainId]: { ...connection, status: 'connected' }, // Polkadot
+      [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
+      [mockedChains[2].chainId]: { ...connection, status: 'connected' }, // Karura
     });
   });
 
@@ -148,7 +148,7 @@ describe('@/common/network/network-model', () => {
 
     const connection = { provider: expect.any(Object), api: expect.any(Object) };
     expect(scope.getState(networkModel.$connections)).toEqual({
-      [mockedChains[2].chainId]: { ...connection, status: 'connecting' }, // Karura
+      [mockedChains[2].chainId]: { ...connection, status: 'connected' }, // Karura
     });
   });
 

@@ -6,7 +6,7 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
-import { getPrice, getTotalBalance, mapAssetAccountsFromChains } from '@/common/utils';
+import { getPrice, getTotalBalance } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
   AssetsList,
@@ -22,19 +22,16 @@ import {
   TextBase,
   TitleText,
 } from '@/components';
-import { networkModel } from '@/models';
+import { balancesModel, networkModel } from '@/models';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
   const { user } = useTelegram();
+  const { assetsPrices, setAssetsPrices } = useGlobalContext();
 
   const chains = useUnit(networkModel.$chains);
-
-  function clearWallet(clearLocal?: boolean) {
-    resetWallet(clearLocal);
-    navigate($path('/onboarding'));
-  }
+  const assets = useUnit(networkModel.$assets);
+  const balances = useUnit(balancesModel.$balances);
 
   // Fetching chains
   useEffect(() => {
@@ -43,12 +40,10 @@ const Page = () => {
     clearWallet(true);
   }, []);
 
-  // Mapping assets
-  useEffect(() => {
-    if (!publicKey) return;
-
-    setAssets(mapAssetAccountsFromChains(Object.values(chains), publicKey));
-  }, [chains, publicKey]);
+  const clearWallet = (clearLocal?: boolean) => {
+    resetWallet(clearLocal);
+    navigate($path('/onboarding'));
+  };
 
   // Fetching prices
   useEffect(() => {
@@ -66,6 +61,8 @@ const Page = () => {
       abortController.abort();
     };
   }, [chains]);
+
+  const totalBalance = getTotalBalance(chains, balances, assetsPrices);
 
   return (
     <div className="flex flex-col break-words">
@@ -91,7 +88,7 @@ const Page = () => {
       <div className="flex flex-col mt-4 items-center">
         <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
         <LargeTitleText>
-          <Price amount={getTotalBalance(assets, assetsPrices)} decimalSize={32} />
+          <Price amount={totalBalance} decimalSize="lg" />
         </LargeTitleText>
         <div className="grid grid-cols-3 w-full mt-7 gap-2">
           <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
@@ -103,7 +100,7 @@ const Page = () => {
       <Plate className="flex flex-col my-2 rounded-3xl">
         <TitleText align="left">Assets</TitleText>
         <div className="flex flex-col gap-6 mt-4">
-          <AssetsList className="m-1" assets={assets} showPrice animate />
+          <AssetsList className="m-1" chains={chains} assets={assets} balances={balances} showPrice animate />
         </div>
       </Plate>
       <GiftModal />

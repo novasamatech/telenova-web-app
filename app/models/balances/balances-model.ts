@@ -8,15 +8,15 @@ import { networkModel } from '../network/network-model';
 import { walletModel } from '../wallet/wallet-model';
 
 import { balancesApi } from '@/shared/api';
-import { type AccountBalance, type Asset, type Chain } from '@/types/substrate';
+import { type Asset, type AssetBalance, type Chain, type ChainBalances } from '@/types/substrate';
 
 import { type ActiveAssets, type Subscriptions } from './types';
 
 const assetToUnsubSet = createEvent<{ chainId: ChainId; assetId: AssetId }>();
 const assetToSubSet = createEvent<{ chainId: ChainId; assetId: AssetId }>();
-const balanceUpdated = createEvent<AccountBalance>();
+const balanceUpdated = createEvent<AssetBalance>();
 
-const $balances = createStore<Record<ChainId, Record<AssetId, AccountBalance>>>({});
+const $balances = createStore<ChainBalances>({});
 
 const $subscriptions = createStore<Subscriptions>({});
 const $activeAssets = createStore<ActiveAssets>({});
