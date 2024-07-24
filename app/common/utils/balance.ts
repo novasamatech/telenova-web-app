@@ -3,8 +3,6 @@ import { isEmpty } from 'lodash-es';
 
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { type ChainAssetAccount, type ChainAssetId } from '../types';
-
 import { type AssetPrice, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
 import { ZERO_BALANCE } from './constants';
@@ -24,16 +22,6 @@ const enum Suffix {
 export const enum Decimal {
   SMALL_NUMBER = 5,
   BIG_NUMBER = 2,
-}
-
-export function chainAssetIdToString(value: ChainAssetId): string {
-  return `${value.chainId} - ${value.assetId}`;
-}
-
-export function chainAssetAccountIdToString(value: ChainAssetAccount): string {
-  const partial = chainAssetIdToString({ chainId: value.chainId, assetId: value.asset.assetId });
-
-  return `${partial} - ${value.publicKey}`;
 }
 
 // Format balance from spektr

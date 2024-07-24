@@ -6,34 +6,6 @@ export type ChainAsset = {
   asset: Asset;
 };
 
-export type ChainAssetId = {
-  chainId: ChainId;
-  assetId: AssetId;
-};
-
-export type ChainAssetAccount = {
-  chainId: ChainId;
-  publicKey: PublicKey;
-  chainName: string;
-  asset: Asset;
-  addressPrefix: number;
-};
-
-export type AssetAccount = ChainAssetAccount & {
-  address: Address;
-  totalBalance?: string;
-  transferableBalance?: string;
-};
-
-export type TransferAsset = AssetAccount & {
-  destinationAddress?: string;
-  amount?: string;
-  fee?: number;
-  transferAll?: boolean;
-  isGift?: boolean;
-  operationType?: 'buy' | 'sell';
-};
-
 export const enum GiftStatus {
   CLAIMED = 'Claimed',
   UNCLAIMED = 'Unclaimed',
