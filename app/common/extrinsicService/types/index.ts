@@ -4,8 +4,6 @@ import { type SubmittableExtrinsic } from '@polkadot/api-base/types';
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { type Balance, type Hash } from '@polkadot/types/interfaces';
 
-import { type ChainId } from '@/common/types';
-
 export interface ExtrinsicBuilder {
   api: ApiPromise;
   addCall: (call: SubmittableExtrinsic<any>) => void;

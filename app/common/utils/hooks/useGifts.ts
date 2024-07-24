@@ -1,29 +1,35 @@
+import { useUnit } from 'effector-react';
+
 import { isStatemineAsset } from '../assets';
 
-import { ConnectionStatus, useChainRegistry } from '@/common/chainRegistry';
-import { type ChainId, type Gift, GiftStatus, type PersistentGift } from '@/common/types';
+import { networkModel } from '@/common/network/network-model';
+import { ConnectionStatus } from '@/common/network/types';
+import { type Gift, GiftStatus, type PersistentGift } from '@/common/types';
 
 import { useAssetHub } from './useAssetHub';
 
 export const useGifts = () => {
   const { getAssetHubFee } = useAssetHub();
-  const { getConnection, getChain, getAssetByChainId, connectionStates } = useChainRegistry();
+  const chains = useUnit(networkModel.$chains);
+  const connections = useUnit(networkModel.$connections);
 
   async function getGiftsState(mapGifts: Map<ChainId, PersistentGift[]>): Promise<[Gift[], Gift[]]> {
     const unclaimed = [] as Gift[];
     const claimed = [] as Gift[];
     await Promise.all(
       Array.from(mapGifts).map(async ([chainId, accounts]) => {
-        if (connectionStates[chainId].connectionStatus === ConnectionStatus.NONE) {
+        if (connections[chainId].status === ConnectionStatus.DISCONNECTED) {
           return;
         }
-        const connection = await getConnection(chainId);
-        const chain = await getChain(chainId);
+        const api = connections[chainId].api!;
+        const chain = chains[chainId];
         // To have a backward compatibility with old gifts
-        const asset = accounts[0].assetId ? getAssetByChainId(accounts[0].assetId, chainId) : chain?.assets[0];
+        const asset = accounts[0].assetId
+          ? chain.assets.find(a => a.assetId === +accounts[0].assetId)
+          : chain?.assets[0];
 
         if (isStatemineAsset(asset?.type) && asset?.typeExtras?.assetId) {
-          const balances = await connection.api.query.assets.account.multi(
+          const balances = await api.query.assets.account.multi(
             accounts.map(i => [asset?.typeExtras?.assetId, i.address]),
           );
 
@@ -42,7 +48,7 @@ export const useGifts = () => {
               : unclaimed.push({ ...accounts[idx], chainAsset: asset, status: GiftStatus.UNCLAIMED });
           });
         } else {
-          const balances = await connection.api.query.system.account.multi(accounts.map(i => i.address));
+          const balances = await api.query.system.account.multi(accounts.map(i => i.address));
 
           balances.forEach((d, idx) =>
             d.data.free.isEmpty

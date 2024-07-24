@@ -1,5 +1,3 @@
-import { type ChainId } from '@/common/types';
-
 export type AssetHubFeeParam = {
   chainId: ChainId;
   assetId: string;

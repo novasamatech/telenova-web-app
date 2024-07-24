@@ -1,15 +1,15 @@
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type LinksFunction, type MetaFunction } from '@remix-run/node';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
+import { type LinksFunction, type LoaderFunction, type MetaFunction, json } from '@remix-run/node';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import { BalanceProvider } from '@/common/balances';
-import { ChainRegistry } from '@/common/chainRegistry';
 import { ExtrinsicProvider } from '@/common/extrinsicService';
+import { networkModel } from '@/common/network/network-model';
 import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider';
 import { TelegramProvider } from '@/common/providers/telegramProvider';
 import { getWallet } from '@/common/wallet';
@@ -62,32 +62,41 @@ export const Layout = ({ children }: PropsWithChildren) => (
   </html>
 );
 
+export const loader = (() => {
+  return json({
+    file: process.env.PUBLIC_CHAINS_FILE,
+  });
+}) satisfies LoaderFunction;
+
 const DataContext = ({ children }: PropsWithChildren) => {
-  const [loading, setLoading] = useState(true);
+  const { file } = useLoaderData<typeof loader>();
+
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    cryptoWaitReady().then(() => setLoading(false));
+    networkModel.input.networkStarted(file);
+
+    cryptoWaitReady().then(() => setIsLoading(false));
   }, []);
 
-  if (loading) return null;
+  if (isLoading) return null;
 
   return (
     <GlobalStateProvider>
       <TelegramProvider>
-        <ChainRegistry>
-          <ExtrinsicProvider>
-            <BalanceProvider>{children}</BalanceProvider>
-          </ExtrinsicProvider>
-        </ChainRegistry>
+        <ExtrinsicProvider>
+          <BalanceProvider>{children}</BalanceProvider>
+        </ExtrinsicProvider>
       </TelegramProvider>
     </GlobalStateProvider>
   );
 };
 
 const App = () => {
-  const [error, setError] = useState<string | null>(null);
-  const { setPublicKey } = useGlobalContext();
   const navigate = useNavigate();
+  const { setPublicKey } = useGlobalContext();
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getWallet()

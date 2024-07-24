@@ -1,8 +1,8 @@
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { type AssetAccount, AssetType, type PublicKey } from '../types';
+import { type AssetAccount, AssetType } from '../types';
 
-import { type Asset, type Chain } from '@/common/chainRegistry';
+import { type Asset, type Chain } from '@/types/substrate';
 
 export const getAssetId = (asset: Asset): string => {
   if (asset.type === AssetType.STATEMINE) {

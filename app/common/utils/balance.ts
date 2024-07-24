@@ -81,15 +81,15 @@ export const formatBalance = (balance = '0', precision = 0): FormattedBalance =>
 };
 
 export const updateAssetsBalance = (prevAssets: AssetAccount[], chainId: string, balance: IAssetBalance) => {
-  return prevAssets.map(asset =>
-    asset?.chainId === chainId
-      ? {
-          ...asset,
-          totalBalance: balance.total().toString(),
-          transferableBalance: balance.transferable().toString(),
-        }
-      : asset,
-  );
+  return prevAssets.map(asset => {
+    if (asset.chainId !== chainId) return asset;
+
+    return {
+      ...asset,
+      totalBalance: balance.total().toString(),
+      transferableBalance: balance.transferable().toString(),
+    };
+  });
 };
 
 export const formatAmount = (rawAmount: string, precision: number): string => {

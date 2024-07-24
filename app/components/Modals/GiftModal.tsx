@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 
 import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
+import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
 
-import { useChainRegistry } from '@/common/chainRegistry';
-import { type ChainAsset, ConnectionStatus } from '@/common/chainRegistry/types';
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
+import { networkModel } from '@/common/network/network-model';
+import { ConnectionStatus } from '@/common/network/types';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { type PublicKey } from '@/common/types';
+import { type ChainAsset } from '@/common/types';
 import { formatAmount, formatBalance, getGiftInfo, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/components';
@@ -36,9 +37,11 @@ export default function GiftModal() {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
   const { sendTransfer, getTransactionFee } = useExtrinsic();
-  const { getAssetBySymbol, connectionStates } = useChainRegistry();
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
+
+  const chains = useUnit(networkModel.$chains);
+  const connections = useUnit(networkModel.$connections);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -69,24 +72,24 @@ export default function GiftModal() {
     if (isGiftClaimed || !startParam || !publicKey) return;
     setIsOpen(true);
 
-    (async () => {
-      const { giftAddress, chain, symbol } = await getGiftInfo(publicKey, startParam, getAssetBySymbol);
-      if (connectionStates[chain.chain.chainId].connectionStatus === ConnectionStatus.NONE) return;
+    const { giftAddress, chain, symbol } = getGiftInfo(Object.values(chains), publicKey, startParam);
+    if (connections[chain.chain.chainId].status === ConnectionStatus.DISCONNECTED) return;
 
-      const balance = isStatemineAsset(chain.asset?.type)
-        ? await getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress)
-        : await getGiftBalance(chain, giftAddress);
+    const balanceRequest = {
+      statemine: () => getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress),
+      default: () => getGiftBalance(chain, giftAddress),
+    };
 
+    balanceRequest[isStatemineAsset(chain.asset?.type) ? 'statemine' : 'default']().then(balance => {
       setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
       setGiftSymbol(balance === '0' ? '' : symbol);
-
       setGiftBalance(balance);
-    })();
+    });
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [startParam, publicKey, isGiftClaimed, connectionStates]);
+  }, [startParam, publicKey, isGiftClaimed, connections]);
 
   const handleClose = () => {
     clearTimeout(timeoutId);
@@ -109,11 +112,7 @@ export default function GiftModal() {
       lottie.play();
     }
 
-    const { chainAddress, chain, keyring } = await getGiftInfo(
-      publicKey as PublicKey,
-      startParam as string,
-      getAssetBySymbol,
-    );
+    const { chainAddress, chain, keyring } = getGiftInfo(Object.values(chains), publicKey!, startParam!);
 
     sendTransfer({
       destinationAddress: chainAddress,

@@ -1,7 +1,8 @@
 import type { GetExistentialDeposit, GetExistentialDepositStatemine } from './types';
 
-import { useExtrinsicService } from '@/common/extrinsicService';
-import { type Address, type ChainId } from '@/common/types';
+import { useUnit } from 'effector-react';
+
+import { networkModel } from '@/common/network/network-model';
 
 interface ExtrinsicService {
   getExistentialDeposit: GetExistentialDeposit;
@@ -12,25 +13,25 @@ interface ExtrinsicService {
 }
 
 export const useQueryService = (): ExtrinsicService => {
-  const { prepareApi } = useExtrinsicService();
+  const connections = useUnit(networkModel.$connections);
 
   async function getExistentialDeposit(chainId: ChainId): Promise<string> {
-    const api = await prepareApi(chainId);
+    const api = connections[chainId].api;
 
-    return api.consts.balances.existentialDeposit.toString();
+    return api!.consts.balances.existentialDeposit.toString();
   }
 
   async function getExistentialDepositStatemine(chainId: ChainId, assetId: string): Promise<string> {
-    const api = await prepareApi(chainId);
-    const balance = await api.query.assets.asset(assetId);
+    const api = connections[chainId].api;
+    const balance = await api!.query.assets.asset(assetId);
 
     return balance.value.minBalance.toString();
   }
 
   async function assetConversion(chainId: ChainId, amount: number, assetId: string): Promise<number> {
-    const api = await prepareApi(chainId);
+    const api = connections[chainId].api;
 
-    const convertedFee = await api.call.assetConversionApi.quotePriceTokensForExactTokens(
+    const convertedFee = await api!.call.assetConversionApi.quotePriceTokensForExactTokens(
       {
         // Token MultiLocation
         // @ts-expect-error type error
@@ -55,16 +56,16 @@ export const useQueryService = (): ExtrinsicService => {
   }
 
   async function getFreeBalance(address: Address, chainId: ChainId): Promise<string> {
-    const api = await prepareApi(chainId);
+    const api = connections[chainId].api;
 
-    const balance = await api.query.system.account(address);
+    const balance = await api!.query.system.account(address);
 
     return balance.data.free.toString();
   }
 
   async function getFreeBalanceStatemine(address: Address, chainId: ChainId, assetId: string): Promise<string> {
-    const api = await prepareApi(chainId);
-    const balance = await api.query.assets.account(assetId, address);
+    const api = connections[chainId].api;
+    const balance = await api!.query.assets.account(assetId, address);
 
     return balance.isNone ? '0' : balance.unwrap().balance.toString();
   }

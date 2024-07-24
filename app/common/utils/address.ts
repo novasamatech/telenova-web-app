@@ -1,8 +1,6 @@
 import { isHex, isU8a, u8aToU8a } from '@polkadot/util';
 import { base58Decode, checkAddressChecksum } from '@polkadot/util-crypto';
 
-import { type AccountId, type Address } from '../types';
-
 const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
 const ACCOUNT_ID_LENGTH = 32;
 

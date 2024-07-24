@@ -2,8 +2,6 @@ import { type ApiPromise } from '@polkadot/api';
 import { type SubmittableExtrinsic } from '@polkadot/api-base/types';
 import { type ApiTypes } from '@polkadot/api-base/types/base';
 
-import { type ChainId } from '@/common/types';
-
 import { useExtrinsicBuilderFactory } from './ExtrinsicBuilder';
 import { type ExtrinsicBuildingOptions, type ExtrinsicTransaction, TransactionType } from './types';
 
@@ -13,8 +11,6 @@ interface ExtrinsicService {
     transaction: ExtrinsicTransaction,
     options?: Partial<ExtrinsicBuildingOptions>,
   ): Promise<SubmittableExtrinsic<ApiType>>;
-
-  prepareApi(chainId: ChainId): Promise<ApiPromise>;
 }
 
 export function useExtrinsicService(): ExtrinsicService {
@@ -44,14 +40,5 @@ export function useExtrinsicService(): ExtrinsicService {
     return extrinsicBuilder.build(options);
   };
 
-  const prepareApi = async (chainId: ChainId): Promise<ApiPromise> => {
-    const extrinsicBuilder = await extrinsicBuilderFactory.forChain(chainId);
-
-    return extrinsicBuilder.api;
-  };
-
-  return {
-    prepareExtrinsic,
-    prepareApi,
-  };
+  return { prepareExtrinsic };
 }

@@ -21,9 +21,10 @@ module.exports = {
     'plugin:import/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
+    'plugin:effector/recommended',
     'prettier',
   ],
-  plugins: ['prettier', 'import'],
+  plugins: ['effector', 'prettier', 'import'],
   parserOptions: { ecmaVersion: 2022 },
   settings: {
     react: { version: 'detect' },
@@ -53,6 +54,12 @@ module.exports = {
       files: ['**/*.json'],
       plugins: ['json'],
     },
+    {
+      files: ['**/*.test.ts'],
+      rules: {
+        'no-restricted-properties': 'off',
+      },
+    },
   ],
   rules: {
     'import/order': [
@@ -70,6 +77,24 @@ module.exports = {
       },
     ],
     'sort-imports': ['error', { ignoreDeclarationSort: true }],
+
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+
+    "no-restricted-properties": [
+      "error",
+      {
+        "property": "_internal",
+        "message": "It's a hidden API for unit testing",
+      }
+    ],
 
     'newline-before-return': 'error',
     'prettier/prettier': ['error', prettierOptions],

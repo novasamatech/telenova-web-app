@@ -7,7 +7,7 @@ import AssetBalance from './AssetBalance';
 
 type Props = Pick<ComponentProps<typeof AssetBalance>, 'animate' | 'showArrow' | 'showPrice' | 'className'> & {
   assets: AssetAccount[];
-  onClick?(asset: AssetAccount): unknown;
+  onClick?: (asset: AssetAccount) => unknown;
 };
 
 const AssetsList = ({ assets, className, onClick, ...props }: Props) => {

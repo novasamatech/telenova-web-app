@@ -8,7 +8,6 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { type ChainId } from '@/common/types';
 import { formatAmount, formatBalance, pickAsset } from '@/common/utils';
 import {
   BodyText,
@@ -20,7 +19,7 @@ import {
   Plate,
   TruncateAddress,
 } from '@/components';
-import type { IconNames } from '@/components/Icon/types.ts';
+import type { IconNames } from '@/components/Icon/types';
 
 // Query params for /transfer/direct/:chainId/:assetId/confirmation?amount=_&fee=_&all=_
 export type SearchParams = {

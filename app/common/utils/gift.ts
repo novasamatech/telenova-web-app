@@ -1,9 +1,10 @@
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { type ChainAsset } from '../chainRegistry/types';
-import { type ChainId, type PersistentGift, type PublicKey } from '../types';
+import { type ChainAsset, type PersistentGift } from '../types';
 import { getKeyringPairFromSeed, getStoreName } from '../wallet';
+
+import { type Chain } from '@/types/substrate';
 
 import { GIFT_STORE } from './constants';
 
@@ -41,17 +42,29 @@ export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
   return map;
 };
 
-export const getGiftInfo = async (
+export const getGiftInfo = (
+  chains: Chain[],
   publicKey: PublicKey,
   startParam: string,
-  getAssetBySymbol: (symbol: string) => Promise<ChainAsset>,
-): Promise<{ chainAddress: string; chain: ChainAsset; giftAddress: string; symbol: string; keyring: KeyringPair }> => {
-  const [seed, symbol] = (startParam as string).split('_');
+): { chainAddress: string; chain: ChainAsset; giftAddress: string; symbol: string; keyring: KeyringPair } => {
+  const [seed, symbol] = startParam.split('_');
 
-  const chain = await getAssetBySymbol(symbol);
-  const chainAddress = encodeAddress(publicKey as string, chain.chain.addressPrefix);
+  const chain = getAssetBySymbol(chains, symbol);
+  const chainAddress = encodeAddress(publicKey, chain!.chain.addressPrefix);
   const keyring = getKeyringPairFromSeed(seed);
-  const giftAddress = encodeAddress(keyring.publicKey, chain.chain.addressPrefix);
+  const giftAddress = encodeAddress(keyring.publicKey, chain!.chain.addressPrefix);
 
-  return { chainAddress, chain, giftAddress, symbol, keyring };
+  return { chainAddress, chain: chain!, giftAddress, symbol, keyring };
 };
+
+function getAssetBySymbol(chains: Chain[], symbol: string): ChainAsset | undefined {
+  for (const chain of chains) {
+    for (const asset of chain.assets) {
+      if (asset.symbol == symbol) {
+        return { chain, asset };
+      }
+    }
+  }
+
+  return undefined;
+}

@@ -1,6 +1,7 @@
 import TruncateAddress from './Address/TruncateAddress';
 import { AmountDetails } from './AmountDetails/AmountDetails';
 import AssetBalance from './Assets/AssetBalance';
+import AssetIcon from './Assets/AssetIcon';
 import AssetsList from './Assets/AssetsList';
 import Countdown from './Countdown/Countdown';
 import { ErrorScreen } from './ErrorScreen/ErrorScreen';
@@ -47,6 +48,7 @@ export {
   IconButton,
   Price,
   AssetsList,
+  AssetIcon,
   AssetBalance,
   Plate,
   PasswordForm,

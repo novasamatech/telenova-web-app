@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button, Divider } from '@nextui-org/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { useBalances } from '@/common/balances';
-import { type Chain, useChainRegistry } from '@/common/chainRegistry';
+import { networkModel } from '@/common/network/network-model';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { getPrice, getTotalBalance, mapAssetAccountsFromChains, updateAssetsBalance } from '@/common/utils';
@@ -27,12 +28,12 @@ import {
 
 const Page = () => {
   const navigate = useNavigate();
-  const { getAllChains } = useChainRegistry();
   const { subscribeBalance, unsubscribeBalance } = useBalances();
   const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
   const { user } = useTelegram();
 
-  const [chains, setChains] = useState<Chain[]>([]);
+  const chains = useUnit(networkModel.$chains);
+  const connections = useUnit(networkModel.$connections);
 
   function clearWallet(clearLocal?: boolean) {
     resetWallet(clearLocal);
@@ -41,55 +42,43 @@ const Page = () => {
 
   // Fetching chains
   useEffect(() => {
-    if (!getMnemonic()) {
-      clearWallet(true);
+    if (getMnemonic()) return;
 
-      return;
-    }
-
-    let mounted = true;
-    getAllChains().then(chains => {
-      if (mounted) {
-        console.info(`Found all ${chains.length} chains`);
-        setChains(chains);
-      }
-    });
-
-    return () => {
-      mounted = false;
-    };
+    clearWallet(true);
   }, []);
 
   // Mapping assets
   useEffect(() => {
-    if (publicKey) {
-      setAssets(mapAssetAccountsFromChains(chains, publicKey));
-    }
+    if (!publicKey) return;
+
+    setAssets(mapAssetAccountsFromChains(Object.values(chains), publicKey));
   }, [chains, publicKey]);
 
   // Subscribing balances
   useEffect(() => {
-    if (publicKey) {
-      const assets = mapAssetAccountsFromChains(chains, publicKey);
-      const unsubscribeIds = assets.map(asset =>
-        subscribeBalance(asset, balance => {
-          setAssets(prevAssets => updateAssetsBalance(prevAssets, asset.chainId, balance));
-        }),
-      );
+    if (!publicKey) return;
 
-      return () => unsubscribeIds.forEach(unsubscribeBalance);
-    }
+    const assets = mapAssetAccountsFromChains(Object.values(chains), publicKey);
+    const unsubscribeIds = assets.map(asset =>
+      subscribeBalance(asset, balance => {
+        setAssets(prevAssets => updateAssetsBalance(prevAssets, asset.chainId, balance));
+      }),
+    );
 
-    return undefined;
-  }, [chains, publicKey]);
+    return () => {
+      unsubscribeIds.forEach(unsubscribeBalance);
+    };
+  }, [connections, chains, publicKey]);
 
   // Fetching prices
   useEffect(() => {
-    if (!chains.length) return;
+    if (Object.keys(chains).length === 0) return;
 
     const abortController = new AbortController();
     getPrice({
-      ids: chains.flatMap(chain => chain.assets.map(a => a.priceId)).filter(priceId => priceId !== undefined),
+      ids: Object.values(chains)
+        .flatMap(chain => chain.assets.map(a => a.priceId))
+        .filter(priceId => priceId !== undefined),
       abortSignal: abortController.signal,
     }).then(setAssetsPrices);
 
