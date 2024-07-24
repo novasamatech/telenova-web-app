@@ -83,7 +83,7 @@ export async function shareQrAddress(symbol: string, address: string) {
   const canvasElement = document.getElementById(`qrcode_${symbol}`) as HTMLCanvasElement | null;
 
   if (!canvasElement || !('toDataURL' in canvasElement)) {
-    throw new Error(`Element qrcode_${symbol}  is not canvas element`);
+    throw new Error(`Element qrcode_${symbol} is not a canvas element`);
   }
 
   const dataUrl = canvasElement.toDataURL();

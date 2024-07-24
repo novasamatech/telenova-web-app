@@ -4,26 +4,27 @@ import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
-import { type Asset } from '@/types/substrate';
+import { type Asset, type Balance } from '@/types/substrate';
 
 type AmountLogicParams = {
   chainId: ChainId;
   asset: Asset;
+  balance?: Balance;
   isGift: boolean;
 };
 
 // TODO: Use BN to operate with amount and fee
-export const useAmountLogic = ({ chainId, asset, isGift }: AmountLogicParams) => {
+export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicParams) => {
   const { getAssetHubFee } = useAssetHub();
   const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
 
-  const [amount, setAmount] = useState<string>('0');
-  const [fee, setFee] = useState<number>();
+  const [amount, setAmount] = useState('');
+  const [fee, setFee] = useState(0);
   const [touched, setTouched] = useState(false);
   const [isPending, setPending] = useState(false);
   const [transferAll, setTransferAll] = useState(false);
-  const [maxAmountToSend, setMaxAmountToSend] = useState<string>('');
+  const [maxAmountToSend, setMaxAmountToSend] = useState('');
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [deposit, setDeposit] = useState(0);
 
@@ -35,9 +36,9 @@ export const useAmountLogic = ({ chainId, asset, isGift }: AmountLogicParams) =>
     return getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount);
   };
 
-  const getMaxAmount = async (chainId: ChainId, asset: Asset, transferAmount = '0'): Promise<string> => {
-    const fee = await getFeeAmount(chainId, asset, transferAmount);
-    const max = Math.max(+transferAmount - fee, 0).toString();
+  const getMaxAmount = async (chainId: ChainId, asset: Asset, transferableAmount = '0'): Promise<string> => {
+    const fee = await getFeeAmount(chainId, asset, transferableAmount);
+    const max = Math.max(+transferableAmount - fee, 0).toString();
 
     return Number(formatBalance(max, asset.precision).formattedValue).toFixed(5);
   };
@@ -84,8 +85,8 @@ export const useAmountLogic = ({ chainId, asset, isGift }: AmountLogicParams) =>
   useEffect(() => {
     if (!asset) return;
 
-    getMaxAmount(chainId, asset, amount).then(setMaxAmountToSend);
-  }, [amount]);
+    getMaxAmount(chainId, asset, balance?.transferable).then(setMaxAmountToSend);
+  }, []);
 
   useEffect(() => {
     if (!touched) return;

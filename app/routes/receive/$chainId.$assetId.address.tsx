@@ -56,7 +56,8 @@ const Page = () => {
             <Button
               color="primary"
               className="w-[200px] min-h-[50px] rounded-full"
-              onClick={() => navigator.clipboard.writeText(address)}
+              // navigator.clipboard is undefined in web version of Telegram
+              onClick={() => navigator.clipboard?.writeText(address)}
             >
               <MediumTitle as="span" className="text-white">
                 Copy address

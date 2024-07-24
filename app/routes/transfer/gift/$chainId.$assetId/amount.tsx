@@ -10,7 +10,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { BodyText, HeadlineText, Icon } from '@/components';
 import { AmountDetails } from '@/components/AmountDetails';
-import { networkModel } from '@/models';
+import { balancesModel, networkModel } from '@/models';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/gift/:chainId/:assetId/amount', params);
@@ -22,9 +22,11 @@ const Page = () => {
   const navigate = useNavigate();
 
   const assets = useUnit(networkModel.$assets);
+  const balances = useUnit(balancesModel.$balances);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
+  const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
 
   const {
     handleMaxSend,
@@ -38,7 +40,7 @@ const Page = () => {
     maxAmountToSend,
     isAmountValid,
     touched,
-  } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: true });
+  } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: true, balance });
 
   const handleMaxGiftSend = () => {
     handleMaxSend();

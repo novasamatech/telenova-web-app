@@ -11,7 +11,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { AmountDetails } from '@/components/AmountDetails';
-import { networkModel } from '@/models';
+import { balancesModel, networkModel } from '@/models';
 
 // Query params for /transfer/direct/:chainId/:assetId/amount?amount=__value__
 export type SearchParams = {
@@ -33,8 +33,10 @@ const Page = () => {
 
   const typedChainId = chainId as ChainId;
   const assets = useUnit(networkModel.$assets);
+  const balances = useUnit(balancesModel.$balances);
 
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
+  const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
 
   const {
     handleMaxSend,
@@ -46,7 +48,12 @@ const Page = () => {
     fee,
     maxAmountToSend,
     isAmountValid,
-  } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: false });
+  } = useAmountLogic({
+    chainId: typedChainId,
+    asset: selectedAsset!,
+    isGift: false,
+    balance,
+  });
 
   // Set amount from query params (/exchange/widget Mercurio page does this)
   useEffect(() => {
