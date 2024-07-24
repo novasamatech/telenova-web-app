@@ -14,7 +14,7 @@ type Props = {
   maxAmountToSend: string;
   isPending: boolean;
   deposit: number;
-  isAccountTerminate: boolean;
+  isAccountToBeReaped: boolean;
   handleChange: (value: string) => void;
 };
 
@@ -25,7 +25,7 @@ export const AmountDetails = ({
   maxAmountToSend,
   isPending,
   deposit,
-  isAccountTerminate,
+  isAccountToBeReaped,
   handleChange,
   children,
 }: PropsWithChildren<Props>) => {
@@ -64,7 +64,7 @@ export const AmountDetails = ({
           {children}
         </BodyText>
       )}
-      {isAccountTerminate && (
+      {isAccountToBeReaped && (
         <div className="mt-4 p-4 bg-[#FFE2E0] border border-border-danger rounded-lg grid grid-cols-[auto,1fr]">
           <Icon name="ExclamationMark" size={28} />
           <BodyText align="left" className="text-text-danger">

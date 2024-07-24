@@ -8,7 +8,6 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { Icon, MediumTitle, TitleText } from '@/components';
 import { networkModel } from '@/models';
 
-// Query params for /transfer/direct/:chainId/:assetId/result?amount=__value__
 export type SearchParams = {
   amount: string;
 };

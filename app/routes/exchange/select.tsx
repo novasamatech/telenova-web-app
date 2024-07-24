@@ -10,7 +10,6 @@ import { AssetBalance, TitleText } from '@/components';
 import { balancesModel, networkModel } from '@/models';
 import { type Asset } from '@/types/substrate';
 
-// Query params for /exchange/select?type=__value__
 export type SearchParams = {
   type: 'buy' | 'sell';
 };

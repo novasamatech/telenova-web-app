@@ -9,11 +9,9 @@ import { $params, $path } from 'remix-routes';
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { HeadlineText, Identicon, TruncateAddress } from '@/components';
-import { AmountDetails } from '@/components/AmountDetails';
+import { AmountDetails, HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { balancesModel, networkModel } from '@/models';
 
-// Query params for /transfer/direct/:chainId/:assetId/amount?amount=__value__
 export type SearchParams = {
   amount: string;
 };
@@ -48,6 +46,8 @@ const Page = () => {
     fee,
     maxAmountToSend,
     isAmountValid,
+    touched,
+    transferAll,
   } = useAmountLogic({
     chainId: typedChainId,
     asset: selectedAsset!,
@@ -66,7 +66,7 @@ const Page = () => {
     if (!selectedAsset) return;
 
     const params = { chainId, assetId, address };
-    const query = { amount, fee: (fee || '0').toString() };
+    const query = { amount, fee: (fee || '0').toString(), all: transferAll };
 
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
@@ -101,11 +101,11 @@ const Page = () => {
       <AmountDetails
         asset={selectedAsset}
         amount={amount}
-        isAmountValid={isAmountValid}
+        isAmountValid={!touched || isAmountValid}
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
-        isAccountTerminate={getIsAccountToBeReaped()}
+        isAccountToBeReaped={getIsAccountToBeReaped()}
         handleChange={handleChange}
       />
     </>

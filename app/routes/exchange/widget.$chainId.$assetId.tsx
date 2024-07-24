@@ -14,7 +14,6 @@ import { runMercuryoWidget, toAddress } from '@/common/utils';
 import { MediumTitle } from '@/components';
 import { networkModel, walletModel } from '@/models';
 
-// Query params for /exchange/select?type=__value__
 export type SearchParams = {
   type: 'buy' | 'sell';
 };

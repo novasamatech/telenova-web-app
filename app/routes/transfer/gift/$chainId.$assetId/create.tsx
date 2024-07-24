@@ -17,10 +17,10 @@ import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 import { networkModel } from '@/models';
 
-// Query params for /transfer/gift/:chainId/:assetId/create?amount=__value__&fee=__value__
 export type SearchParams = {
   amount: string;
   fee: string;
+  all: boolean;
 };
 
 export const loader = () => {
@@ -38,13 +38,14 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
     ...$params('/transfer/gift/:chainId/:assetId/create', params),
     amount: url.searchParams.get('amount') || '',
     fee: Number(url.searchParams.get('fee') || 0),
+    all: url.searchParams.get('all') === 'true',
   };
 
   return { ...serverData, ...data };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
-  const { botUrl, appName, chainId, assetId, amount, fee } = useLoaderData<typeof clientLoader>();
+  const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
   const { webApp } = useTelegram();
   const { sendGift } = useExtrinsic();
@@ -58,13 +59,12 @@ const Page = () => {
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  // TODO: refactor
   useEffect(() => {
     if (!selectedAsset || !chains[typedChainId]) return;
 
     const giftWallet = createGiftWallet(chains[typedChainId].addressPrefix);
 
-    sendGift(giftWallet.address, { chainId: typedChainId, asset: selectedAsset, amount, fee })
+    sendGift(giftWallet.address, { chainId: typedChainId, asset: selectedAsset, transferAll: all, amount, fee })
       .then(() => {
         backupGifts({
           chainId: typedChainId,

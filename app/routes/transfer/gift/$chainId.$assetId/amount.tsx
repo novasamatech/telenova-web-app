@@ -8,8 +8,7 @@ import { $params, $path } from 'remix-routes';
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { BodyText, HeadlineText, Icon } from '@/components';
-import { AmountDetails } from '@/components/AmountDetails';
+import { AmountDetails, HeadlineText, Icon } from '@/components';
 import { balancesModel, networkModel } from '@/models';
 
 export const clientLoader = (({ params }) => {
@@ -40,6 +39,7 @@ const Page = () => {
     maxAmountToSend,
     isAmountValid,
     touched,
+    transferAll,
   } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: true, balance });
 
   const handleMaxGiftSend = () => {
@@ -49,7 +49,7 @@ const Page = () => {
 
   const navigateToCreate = () => {
     const params = { chainId, assetId };
-    const query = { amount, fee: (fee || '0').toString() };
+    const query = { amount, fee: (fee || '0').toString(), all: transferAll };
 
     navigate($path('/transfer/gift/:chainId/:assetId/create', params, query));
   };
@@ -62,7 +62,7 @@ const Page = () => {
     <>
       <MainButton
         text="Create gift"
-        disabled={!isAmountValid || !isAboveDeposit || !Number(fee) || getIsAccountToBeReaped()}
+        disabled={!isAmountValid || !isAboveDeposit || !Number(fee) || getIsAccountToBeReaped() || isPending}
         progress={isPending}
         onClick={navigateToCreate}
       />
@@ -90,13 +90,15 @@ const Page = () => {
         maxAmountToSend={maxAmountToSend}
         isPending={isPending}
         deposit={deposit}
-        isAccountTerminate={getIsAccountToBeReaped()}
+        isAccountToBeReaped={getIsAccountToBeReaped()}
         handleChange={handleChange}
       >
         {touched && !isAboveDeposit && (
-          <BodyText as="span" className="text-text-danger">
-            Your gift should remain above the minimal network deposit {deposit} {selectedAsset.symbol}
-          </BodyText>
+          <>
+            Your gift should remain above the minimal
+            <br />
+            network deposit {deposit} {selectedAsset.symbol}
+          </>
         )}
       </AmountDetails>
     </>
