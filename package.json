@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "test:ci": "vitest run --coverage",
     "prepare": "husky",
-    "precommit": "concurrently 'npm:lint' 'npm:typecheck' 'npm:test'"
+    "prettier": "prettier --write '{app,server}/**/*.{js,ts,tsx,json,css,md}'",
+    "precommit": "concurrently 'npm:lint' 'npm:typecheck' 'npm:test' 'npm:prettier'"
   },
   "dependencies": {
     "@lottiefiles/react-lottie-player": "3.5.4",

@@ -1,8 +1,3 @@
-const fs = require('node:fs');
-
-const prettierConfig = fs.readFileSync('./.prettierrc', 'utf8');
-const prettierOptions = JSON.parse(prettierConfig);
-
 /**
  * @type {import('eslint').Linter.Config}
  */
@@ -22,9 +17,8 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:effector/recommended',
-    'prettier',
   ],
-  plugins: ['effector', 'prettier', 'import'],
+  plugins: ['effector', 'import'],
   parserOptions: { ecmaVersion: 2022 },
   settings: {
     react: { version: 'detect' },
@@ -97,7 +91,6 @@ module.exports = {
     ],
 
     'newline-before-return': 'error',
-    'prettier/prettier': ['error', prettierOptions],
     'react/no-array-index-key': 'warn',
     'react/display-name': 'off',
     'react/react-in-jsx-scope': 'off',
