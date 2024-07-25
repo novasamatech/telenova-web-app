@@ -12,6 +12,10 @@ import { MainButton } from '@/common/telegram/MainButton.tsx';
 import { pickAsset, runMercuryoWidget } from '@/common/utils';
 import { MediumTitle } from '@/components';
 
+export type SearchParams = {
+  type: 'buy' | 'sell';
+};
+
 export const loader = () => {
   return json({
     mercuryoSecret: process.env.PUBLIC_WIDGET_SECRET,
@@ -19,15 +23,21 @@ export const loader = () => {
   });
 };
 
-export const clientLoader = (async ({ params, serverLoader }) => {
+export const clientLoader = (async ({ params, request, serverLoader }) => {
   const serverData = await serverLoader<typeof loader>();
-  const data = $params('/exchange/widget/:chainId/:assetId', params);
+
+  const url = new URL(request.url);
+
+  const data = {
+    ...$params('/exchange/widget/:chainId/:assetId', params),
+    type: (url.searchParams.get('type') || 'buy') as SearchParams['type'],
+  };
 
   return { ...serverData, ...data };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
-  const { chainId, assetId, mercuryoSecret, mercuryoWidgetId } = useLoaderData<typeof clientLoader>();
+  const { chainId, assetId, mercuryoSecret, mercuryoWidgetId, type } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
   const { webApp } = useTelegram();
@@ -50,7 +60,9 @@ const Page = () => {
       returnPage: $path('/dashboard'),
       secret: mercuryoSecret,
       widgetId: mercuryoWidgetId,
-      selectedAsset,
+      operationType: type,
+      address: selectedAsset.address,
+      symbol: selectedAsset.asset.symbol,
       handleStatus,
       handleSell,
     });

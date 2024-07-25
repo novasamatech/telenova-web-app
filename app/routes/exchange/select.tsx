@@ -17,7 +17,7 @@ const skippedBuyAssets = ['WND', 'USDT'];
 export const clientLoader = (({ request }) => {
   const url = new URL(request.url);
 
-  return { type: url.searchParams.get('type') || '' };
+  return { type: (url.searchParams.get('type') || 'buy') as SearchParams['type'] };
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
@@ -36,7 +36,11 @@ const Page = () => {
         {exchangeAssets.map(asset => (
           <Link
             key={asset.chainId}
-            to={$path('/exchange/widget/:chainId/:assetId', { chainId: asset.chainId, assetId: asset.asset.assetId })}
+            to={$path(
+              '/exchange/widget/:chainId/:assetId',
+              { chainId: asset.chainId, assetId: asset.asset.assetId },
+              { type },
+            )}
           >
             <AssetBalance
               asset={asset.asset}
