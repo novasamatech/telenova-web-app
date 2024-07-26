@@ -37,7 +37,7 @@ import UserWelcome from '@/assets/svg/welcome/User.svg';
 import SuccessWelcome from '@/assets/svg/welcome/success-welcome.svg';
 import Welcome from '@/assets/svg/welcome/welcome.svg';
 
-const AllIcons = {
+export const AllIcons = {
   DOT,
   WND,
   KSM,
@@ -79,5 +79,3 @@ const AllIcons = {
 };
 
 export type IconNames = keyof typeof AllIcons;
-
-export default AllIcons;

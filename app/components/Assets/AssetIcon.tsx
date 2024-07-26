@@ -1,6 +1,7 @@
+import { Shimmering } from '../Shimmering/Shimmering';
+
 import { cnTw } from '@/common/utils';
 import { useToggle } from '@/common/utils/hooks';
-import { Shimmering } from '@/components';
 
 type Props = {
   src?: string;
@@ -8,7 +9,7 @@ type Props = {
   className?: string;
 };
 
-const AssetIcon = ({ src, size = 32, className }: Props) => {
+export const AssetIcon = ({ src, size = 32, className }: Props) => {
   const [isImgLoaded, toggleImgLoaded] = useToggle();
 
   return (
@@ -24,5 +25,3 @@ const AssetIcon = ({ src, size = 32, className }: Props) => {
     </div>
   );
 };
-
-export default AssetIcon;

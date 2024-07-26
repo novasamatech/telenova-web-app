@@ -11,9 +11,9 @@ import {
   ModalHeader,
 } from '@nextui-org/react';
 
+import { Icon } from '../Icon';
 import { type IconNames } from '../Icon/types';
-
-import { BigTitle, BodyText, Icon } from '@/components';
+import { BigTitle, BodyText } from '../Typography';
 
 type Props = {
   isOpen: boolean;
@@ -55,7 +55,7 @@ const checkboxes = [
   },
 ];
 
-export default function RecoveryModal({ isOpen, onClose, onSubmit }: Props) {
+export const RecoveryModal = ({ isOpen, onClose, onSubmit }: Props) => {
   const [selected, setSelected] = useState<string[]>([]);
 
   return (
@@ -93,4 +93,4 @@ export default function RecoveryModal({ isOpen, onClose, onSubmit }: Props) {
       </Modal>
     </>
   );
-}
+};

@@ -4,7 +4,7 @@ import { cnTw } from '@/common/utils/twMerge';
 
 import { type TypographyProps } from './types';
 
-const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyProps) => {
+export const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyProps) => {
   return createElement(
     as,
     {
@@ -21,5 +21,3 @@ const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyP
     children,
   );
 };
-
-export default TextBase;

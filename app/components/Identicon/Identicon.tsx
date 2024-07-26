@@ -11,7 +11,7 @@ type Props = {
   className?: string;
 };
 
-const Identicon = ({ address, theme = 'polkadot', background = true, size = 32, className }: Props) => {
+export const Identicon = ({ address, theme = 'polkadot', background = true, size = 32, className }: Props) => {
   return (
     <div
       className={cnTw('relative flex justify-center items-center', background && 'bg-white rounded-full', className)}
@@ -27,5 +27,3 @@ const Identicon = ({ address, theme = 'polkadot', background = true, size = 32, 
     </div>
   );
 };
-
-export default Identicon;

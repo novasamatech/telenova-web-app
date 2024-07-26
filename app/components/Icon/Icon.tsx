@@ -1,6 +1,6 @@
 import { type ComponentType, type SVGAttributes } from 'react';
 
-import AllIcons, { type IconNames } from './types';
+import { AllIcons, type IconNames } from './types';
 
 type Props = {
   name: IconNames;
@@ -9,7 +9,7 @@ type Props = {
   alt?: string;
 };
 
-const Icon = ({ name, size = 24, className }: Props) => {
+export const Icon = ({ name, size = 24, className }: Props) => {
   const IconComponent = AllIcons[name] as unknown as ComponentType<SVGAttributes<unknown>>;
 
   if (!IconComponent) {
@@ -20,5 +20,3 @@ const Icon = ({ name, size = 24, className }: Props) => {
 
   return <IconComponent className={className} width={size} height={size} />;
 };
-
-export default Icon;

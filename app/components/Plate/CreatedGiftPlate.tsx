@@ -4,14 +4,18 @@ import { Link } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
+import { Icon } from '../Icon/Icon';
+import { Plate } from '../Plate';
+import { Shimmering } from '../Shimmering/Shimmering';
+import { BigTitle, BodyText } from '../Typography';
+
 import { type Gift } from '@/common/types';
 import { GIFT_STORE, getGifts } from '@/common/utils';
 import { useGifts } from '@/common/utils/hooks';
 import { getStoreName } from '@/common/wallet';
-import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/components';
 import { networkModel } from '@/models';
 
-const CreatedGiftPlate = () => {
+export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();
 
   const connections = useUnit(networkModel.$connections);
@@ -48,5 +52,3 @@ const CreatedGiftPlate = () => {
     </Plate>
   );
 };
-
-export default CreatedGiftPlate;

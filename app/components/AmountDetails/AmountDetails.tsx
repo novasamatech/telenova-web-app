@@ -2,8 +2,11 @@ import { type PropsWithChildren } from 'react';
 
 import { Input } from '@nextui-org/react';
 
-import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
-import { type IconNames } from '@/components/Icon/types';
+import { Icon } from '../Icon';
+import { TokenPrice } from '../Price/TokenPrice';
+import { BodyText, LargeTitleText } from '../Typography';
+import { type IconNames } from '../types';
+
 import { type Asset } from '@/types/substrate';
 
 //TODO: Change layout mobile text

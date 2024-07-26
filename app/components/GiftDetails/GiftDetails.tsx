@@ -1,16 +1,17 @@
 import { type WebApp } from '@twa-dev/types';
 
+import { BodyText, TitleText } from '../Typography';
+
 import { navigateTransferById } from '@/common/telegram';
 import { MainButton } from '@/common/telegram/MainButton';
 import { type TgLink } from '@/common/telegram/types';
-import { BodyText, TitleText } from '@/components';
 
 type Props = {
   link: TgLink;
   webApp: WebApp;
 };
 
-const GiftDetails = ({ link, webApp }: Props) => {
+export const GiftDetails = ({ link, webApp }: Props) => {
   return (
     <>
       <MainButton text="Send to contact" onClick={() => navigateTransferById(webApp, link)} />
@@ -21,5 +22,3 @@ const GiftDetails = ({ link, webApp }: Props) => {
     </>
   );
 };
-
-export default GiftDetails;

@@ -3,7 +3,7 @@ import { type ComponentProps } from 'react';
 import { cnTw } from '@/common/utils';
 import { type AssetBalance, type AssetsMap, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
-import { default as AssetBalanceItem } from './AssetBalance';
+import { AssetBalance as AssetBalanceItem } from './AssetBalance';
 
 type Props = Pick<ComponentProps<typeof AssetBalanceItem>, 'animate' | 'showArrow' | 'showPrice' | 'className'> & {
   chains: ChainsMap;
@@ -12,7 +12,7 @@ type Props = Pick<ComponentProps<typeof AssetBalanceItem>, 'animate' | 'showArro
   onClick?: (asset: AssetBalance) => void;
 };
 
-const AssetsList = ({ chains, assets, className, balances, onClick, ...props }: Props) => {
+export const AssetsList = ({ chains, assets, className, balances, onClick, ...props }: Props) => {
   return Object.entries(assets).map(([chainId, assetsMap]) => {
     const typedChainId = chainId as ChainId;
 
@@ -47,5 +47,3 @@ const AssetsList = ({ chains, assets, className, balances, onClick, ...props }: 
     });
   });
 };
-
-export default AssetsList;

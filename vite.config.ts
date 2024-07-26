@@ -12,7 +12,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const isTest = (mode: string): boolean => mode === 'test';
 const isProd = (mode: string): boolean => mode === 'production';
 
-export default defineConfig(({ mode }) => ({
+const config = defineConfig(({ mode }) => ({
   envPrefix: 'PUBLIC_',
   plugins: [
     tsconfigPaths(),
@@ -39,3 +39,5 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+
+export default config;

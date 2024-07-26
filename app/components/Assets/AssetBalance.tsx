@@ -1,8 +1,12 @@
+import { Icon } from '../Icon';
+import { TokenPrice } from '../Price/TokenPrice';
+import { MediumTitle } from '../Typography';
+
 import { cnTw } from '@/common/utils/twMerge';
-import { AssetIcon, Icon, MediumTitle, TokenPrice } from '@/components';
 import { type Asset } from '@/types/substrate';
 
-import Balance from './Balance';
+import { AssetIcon } from './AssetIcon';
+import { Balance } from './Balance';
 
 type Props = {
   asset: Asset;
@@ -14,7 +18,7 @@ type Props = {
   animate?: boolean;
 };
 
-const AssetBalance = ({ balance, asset, className, showPrice, showArrow, animate }: Props) => {
+export const AssetBalance = ({ balance, asset, className, showPrice, showArrow, animate }: Props) => {
   const { icon, precision, symbol, priceId } = asset;
 
   return (
@@ -29,5 +33,3 @@ const AssetBalance = ({ balance, asset, className, showPrice, showArrow, animate
     </div>
   );
 };
-
-export default AssetBalance;

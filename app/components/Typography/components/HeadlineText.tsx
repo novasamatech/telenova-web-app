@@ -1,4 +1,4 @@
-import TextBase from '../common/TextBase';
+import { TextBase } from '../common/TextBase';
 import { type TypographyProps } from '../common/types';
 
 import { cnTw } from '@/common/utils/twMerge';

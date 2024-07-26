@@ -4,9 +4,8 @@ import { $path } from 'remix-routes';
 
 import { useTelegram } from '@/common/providers/telegramProvider';
 import { MainButton } from '@/common/telegram/MainButton';
-import Icon from '@/components/Icon/Icon';
-import { type IconNames } from '@/components/Icon/types';
-import { BodyText, MediumTitle, TitleText } from '@/components/Typography';
+import { BodyText, Icon, MediumTitle, TitleText } from '@/components';
+import { type IconNames } from '@/components/types';
 
 const welcomeData = [
   {

@@ -1,7 +1,8 @@
 import { Button } from '@nextui-org/react';
 
-import { Icon, LabelText } from '@/components';
+import { LabelText } from '../Typography';
 
+import { Icon } from './Icon';
 import { type IconNames } from './types';
 
 type Props = {
@@ -12,7 +13,7 @@ type Props = {
   onClick: () => void;
 };
 
-const IconButton = ({ iconName, onClick, size = 40, text = '' }: Props) => {
+export const IconButton = ({ iconName, onClick, size = 40, text = '' }: Props) => {
   return (
     <Button
       variant="shadow"
@@ -26,5 +27,3 @@ const IconButton = ({ iconName, onClick, size = 40, text = '' }: Props) => {
     </Button>
   );
 };
-
-export default IconButton;
