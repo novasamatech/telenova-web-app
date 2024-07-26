@@ -59,7 +59,7 @@ const Page = () => {
         {exchangeAssets.flatMap(([chainId, assets]) => {
           return assets.map(asset => (
             <Link
-              key={asset.assetId}
+              key={`${chainId}_${asset.assetId}`}
               to={$path('/exchange/widget/:chainId/:assetId', { chainId, assetId: asset.assetId }, { type })}
             >
               <AssetBalance

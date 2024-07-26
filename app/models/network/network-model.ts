@@ -4,6 +4,7 @@ import { combineEvents, readonly, spread } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
+import { CONNECTIONS_STORE } from '@/common/utils';
 import { DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
 import { chainsApi, metadataApi } from '@/shared/api';
 import { type ProviderWithMetadata, providerApi } from '@/shared/api/network/provider-api';
@@ -33,39 +34,51 @@ const $connections = createStore<Record<ChainId, Connection>>({});
 const $metadata = createStore<ChainMetadata[]>([]);
 const $metadataSubscriptions = createStore<Record<ChainId, VoidFunction>>({});
 
-const populateChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'): Promise<Record<ChainId, Chain>> => {
+const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) => {
+  Object.entries(chainsMap).forEach(([chainId, assetIds]) => {
+    assetIds.forEach(assetId => assetConnected({ chainId: chainId as ChainId, assetId }));
+  });
+});
+
+const requestChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'): Promise<Record<ChainId, Chain>> => {
   const chains = await chainsApi.getChainsData({ file, sort: true });
 
   return keyBy(chains, 'chainId');
 });
 
 const getConnectedAssetsFx = createEffect((): Promise<Record<ChainIndex, AssetId[]>> => {
-  const cloud = '3_0,2,3;19_0,2,3;'; // Karura & unknown chain
+  const webApp = window.Telegram?.WebApp;
 
-  const result: Record<ChainIndex, AssetId[]> = {};
-  const entries = cloud.split(';').filter(item => item.trim() !== '');
+  if (!webApp) return Promise.resolve({});
 
-  entries.forEach(entry => {
-    const [key, values] = entry.split('_');
-    result[key] = values.split(',').map(Number);
+  return new Promise(resolve => {
+    // connections format is chainIndex_assetId1,...,assetIdn;
+    webApp.CloudStorage.getItem(CONNECTIONS_STORE, (error, connections) => {
+      if (error || !connections) resolve({});
+
+      const result: Record<ChainIndex, AssetId[]> = {};
+      const entries = connections!.split(';').filter(item => item.trim() !== '');
+
+      entries.forEach(entry => {
+        const [key, values] = entry.split('_');
+        result[key] = values.split(',').map(Number);
+      });
+
+      resolve(result);
+    });
   });
+});
 
-  return Promise.resolve(result);
+const updateAssetsInCloudFx = createEffect((assets: Record<ChainIndex, AssetId[]>) => {
+  const webApp = window.Telegram?.WebApp;
 
-  // TODO: uncomment during task - https://app.clickup.com/t/869502m30
-  // const webApp = window.Telegram?.WebApp;
-  //
-  // if (!webApp) return Promise.resolve([]);
-  //
-  // return new Promise(resolve => {
-  //   // connections format is chainIndex_assetId1,...,assetIdn;
-  //   webApp.CloudStorage.getItem(CONNECTIONS_STORE, (error, connections) => {
-  //     if (error || !connections) resolve([]);
-  //
-  //     const chainIndices = (connections as string).match(/(\d)_/g)?.map(match => match[0]);
-  //     resolve(chainIndices || []);
-  //   });
-  // });
+  if (!webApp) return;
+
+  const joinedAssets = Object.entries(assets).reduce((acc, [chainIndex, assetIds]) => {
+    return acc + `${chainIndex}_${assetIds.join(',')};`;
+  }, '');
+
+  webApp.CloudStorage.setItem(CONNECTIONS_STORE, joinedAssets);
 });
 
 type MetadataSubResult = {
@@ -94,12 +107,6 @@ const updateProviderMetadataFx = createEffect(({ provider, metadata }: ProviderM
   provider.updateMetadata(metadata);
 });
 
-const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) => {
-  Object.entries(chainsMap).forEach(([chainId, values]) => {
-    values.forEach(assetId => assetConnected({ chainId: chainId as ChainId, assetId }));
-  });
-});
-
 type CreateProviderParams = {
   name: string;
   chainId: ChainId;
@@ -111,6 +118,8 @@ const createProviderFx = createEffect(
     const boundConnected = scopeBind(connected, { safe: true });
     const boundDisconnected = scopeBind(disconnected, { safe: true });
     const boundFailed = scopeBind(failed, { safe: true });
+
+    console.info('⚫️ Connecting to ==> ', params.name);
 
     return providerApi.createConnector(
       { nodes: params.nodes, metadata: params.metadata?.metadata },
@@ -150,16 +159,16 @@ const disconnectFx = createEffect(async ({ provider, api }: DisconnectParams): P
 
 sample({
   clock: networkStarted,
-  target: [populateChainsFx, getConnectedAssetsFx],
+  target: [requestChainsFx, getConnectedAssetsFx],
 });
 
 sample({
-  clock: populateChainsFx.doneData,
+  clock: requestChainsFx.doneData,
   target: $chains,
 });
 
 sample({
-  clock: populateChainsFx.doneData,
+  clock: requestChainsFx.doneData,
   fn: chains => {
     const connections: Record<ChainId, Connection> = {};
 
@@ -173,16 +182,30 @@ sample({
 });
 
 sample({
-  clock: combineEvents([populateChainsFx.doneData, getConnectedAssetsFx.doneData]),
+  clock: requestChainsFx.doneData,
+  fn: chains => {
+    const chainsMap: Record<ChainId, AssetId[]> = {};
+
+    for (const chain of Object.values(chains)) {
+      if (!DEFAULT_CONNECTED_CHAINS[chain.chainId]) continue;
+
+      chainsMap[chain.chainId] = DEFAULT_CONNECTED_CHAINS[chain.chainId];
+    }
+
+    return chainsMap;
+  },
+  target: initConnectionsFx,
+});
+
+sample({
+  clock: combineEvents([requestChainsFx.doneData, getConnectedAssetsFx.doneData]),
   fn: ([chains, assetsMap]) => {
     const chainsMap: Record<ChainId, AssetId[]> = {};
 
     for (const chain of Object.values(chains)) {
-      if (DEFAULT_CONNECTED_CHAINS[chain.chainId]) {
-        chainsMap[chain.chainId] = [chain.assets[0].assetId];
-      } else if (assetsMap[chain.chainIndex]) {
-        chainsMap[chain.chainId] = assetsMap[chain.chainIndex];
-      }
+      if (!assetsMap[chain.chainIndex]) continue;
+
+      chainsMap[chain.chainId] = assetsMap[chain.chainIndex];
     }
 
     return chainsMap;
@@ -198,7 +221,7 @@ sample({
     connections: $connections,
   },
   filter: ({ chains }, { chainId, assetId }) => {
-    return chains[chainId].assets.some(a => a.assetId === assetId);
+    return chains[chainId]?.assets.some(a => a.assetId === assetId);
   },
   fn: ({ chains, connections, assets }, { chainId, assetId }) => {
     const isDisconnected = connections[chainId].status === 'disconnected';
@@ -206,7 +229,7 @@ sample({
     const asset = chains[chainId].assets.find(a => a.assetId === assetId);
     const newAssets = { ...assets, [chainId]: { ...assets[chainId], [assetId]: asset! } };
 
-    // If chain is disconnected then connect, notify with new asset, assets is updated anyway
+    // If chain is disconnected then connect, notify with new asset, $assets is updated anyway
     return {
       assets: newAssets,
       notify: { chainId, assetId, status: 'on' as const },
@@ -218,6 +241,29 @@ sample({
     notify: assetChanged,
     connect: chainConnected,
   }),
+});
+
+sample({
+  clock: [assetConnected, assetDisconnected],
+  source: {
+    chains: $chains,
+    assets: $assets,
+  },
+  fn: ({ chains, assets }) => {
+    const result: Record<ChainIndex, AssetId[]> = {};
+
+    for (const chainId of Object.keys(assets)) {
+      const typedChainId = chainId as ChainId;
+      const chain = chains[typedChainId];
+
+      if (!chain || !assets[typedChainId]) continue;
+
+      result[chain.chainIndex] = Object.keys(assets[typedChainId]).map(Number);
+    }
+
+    return result;
+  },
+  target: updateAssetsInCloudFx,
 });
 
 sample({
@@ -258,7 +304,6 @@ sample({
   target: $connections,
 });
 
-// TODO: save new connection in CloudStorage - https://app.clickup.com/t/869502m30
 sample({
   clock: chainConnected,
   source: {
@@ -268,13 +313,13 @@ sample({
   fn: ({ chains, metadata }, chainId) => {
     const name = chains[chainId].name;
     const nodes = chains[chainId].nodes.map(node => node.url);
-    const newMetadata = metadata.reduce<Record<ChainId, ChainMetadata>>((acc, data) => {
-      if (data.version >= (acc[data.chainId]?.version || -1)) {
-        acc[data.chainId] = data;
-      }
 
-      return acc;
-    }, {});
+    const newMetadata: Record<ChainId, ChainMetadata> = {};
+    for (const data of metadata) {
+      if (data.version < (newMetadata[data.chainId]?.version || -1)) continue;
+
+      newMetadata[data.chainId] = data;
+    }
 
     return { name, chainId, nodes, metadata: newMetadata[chainId] };
   },
@@ -461,7 +506,7 @@ export const networkModel = {
     $metadata,
     $metadataSubscriptions,
 
-    populateChainsFx,
+    requestChainsFx,
     getConnectedAssetsFx,
     createProviderFx,
     disconnectFx,

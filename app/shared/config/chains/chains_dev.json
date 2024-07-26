@@ -190,7 +190,7 @@
     "assets": [
       {
         "name": "USD Tether",
-        "assetId": "1",
+        "assetId": 1,
         "symbol": "USDT",
         "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/USDT.svg",
         "precision": 6,
