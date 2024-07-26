@@ -88,8 +88,11 @@ const Page = () => {
   };
 
   const navigateBack = () => {
-    const url = done ? '/dashboard' : '/exchange/select';
-    navigate($path(url));
+    if (done) {
+      navigate($path('/dashboard'));
+    } else {
+      navigate(-1);
+    }
   };
 
   return (
