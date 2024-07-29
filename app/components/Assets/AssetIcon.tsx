@@ -13,7 +13,7 @@ export const AssetIcon = ({ src, size = 32, className }: Props) => {
   const [isImgLoaded, toggleImgLoaded] = useToggle();
 
   return (
-    <div className={cnTw('rounded-full', isImgLoaded && 'bg-icon-on-neutral', className)}>
+    <div className={cnTw('rounded-full', className)}>
       {!isImgLoaded && <Shimmering circle width={size} height={size} className={className} />}
       <img
         alt=""

@@ -9,6 +9,7 @@ export { GiftDetails } from './GiftDetails/GiftDetails';
 export { Icon, IconButton } from './Icon';
 export { Identicon } from './Identicon/Identicon';
 export { Input } from './Input/Input';
+export { Switch } from './Switch/Switch';
 export { LinkCard } from './LinkCard/LinkCard';
 export { LoadingScreen } from './LoadingScreen/LoadingScreen';
 export { LottiePlayer } from './LottiePlayer/LottiePlayer';

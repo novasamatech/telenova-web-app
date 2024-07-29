@@ -22,8 +22,8 @@ export const AssetBalance = ({ balance, asset, className, showPrice, showArrow, 
   const { icon, precision, symbol, priceId } = asset;
 
   return (
-    <div className={cnTw('grid grid-cols-[40px,1fr,auto] items-center gap-x-3 grid-rows-[1fr,auto]', className)}>
-      <AssetIcon src={icon} size={40} className="row-span-2" />
+    <div className={cnTw('grid grid-cols-[48px,1fr,auto] items-center gap-x-3 grid-rows-[1fr,auto]', className)}>
+      <AssetIcon src={icon} size={48} className="row-span-2" />
       <MediumTitle>{symbol}</MediumTitle>
       <MediumTitle className="flex items-center justify-self-end">
         <Balance balance={balance} precision={precision} animate={animate} />

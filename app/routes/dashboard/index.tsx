@@ -118,6 +118,9 @@ const Page = () => {
             <Button variant="faded" onClick={() => clearWallet(true)}>
               Reset Wallet Local
             </Button>
+            <Button variant="faded" onClick={() => navigate($path('/assets'))}>
+              Go to assets
+            </Button>
           </div>
         )}
       </div>

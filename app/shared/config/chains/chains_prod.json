@@ -1,11 +1,21 @@
 [
   {
     "name": "Polkadot",
-    "specName": "polkadot",
-    "chainIndex":"0",
+    "chainIndex": 0,
     "addressPrefix": 0,
     "chainId": "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3",
-    "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Polkadot.svg",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Polkadot.svg",
+    "assets": [
+      {
+        "assetId": 0,
+        "symbol": "DOT",
+        "precision": 10,
+        "type": "native",
+        "priceId": "polkadot",
+        "name": "Polkadot",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/DOT.svg"
+      }
+    ],
     "nodes": [
       {
         "url": "wss://rpc-polkadot.novasamatech.org",
@@ -43,27 +53,25 @@
         "url": "wss://rpc.dotters.network/polkadot",
         "name": "Dotters Net node"
       }
-    ],
-    "assets": [
-      {
-        "assetId": 0,
-        "symbol": "DOT",
-        "type": "native",
-        "precision": 10,
-        "priceId": "polkadot",
-        "staking": "relaychain",
-        "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Polkadot_(DOT).svg",
-        "name": "Polkadot"
-      }
     ]
   },
   {
     "name": "Kusama",
-    "specName": "kusama",
-    "chainIndex": "1",
+    "chainIndex": 1,
     "addressPrefix": 2,
     "chainId": "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe",
-    "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Kusama.svg",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Kusama.svg",
+    "assets": [
+      {
+        "assetId": 0,
+        "symbol": "KSM",
+        "precision": 12,
+        "type": "native",
+        "priceId": "kusama",
+        "name": "Kusama",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/KSM.svg"
+      }
+    ],
     "nodes": [
       {
         "url": "wss://rpc-kusama.novasamatech.org",
@@ -101,27 +109,24 @@
         "url": "wss://kusama.api.onfinality.io/public-ws",
         "name": "OnFinality node"
       }
-    ],
-    "assets": [
-      {
-        "assetId": 0,
-        "symbol": "KSM",
-        "type": "native",
-        "precision": 12,
-        "priceId": "kusama",
-        "staking": "relaychain",
-        "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Kusama_(KSM).svg",
-        "name": "Kusama"
-      }
     ]
   },
   {
     "name": "Westend",
-    "specName": "westend",
-    "chainIndex": "2",
+    "chainIndex": 2,
     "addressPrefix": 42,
     "chainId": "0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e",
-    "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Westend_Testnet.svg",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Westend_Testnet.svg",
+    "assets": [
+      {
+        "assetId": 0,
+        "symbol": "WND",
+        "precision": 12,
+        "type": "native",
+        "name": "Westend",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/WND.svg"
+      }
+    ],
     "nodes": [
       {
         "url": "wss://westend-rpc.dwellir.com",
@@ -143,16 +148,41 @@
         "url": "wss://westend.api.onfinality.io/public-ws",
         "name": "OnFinality node"
       }
-    ],
+    ]
+  },
+  {
+    "name": "Polkadot Asset Hub",
+    "chainIndex": 3,
+    "addressPrefix": 0,
+    "chainId": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Polkadot_Asset_Hub.svg",
     "assets": [
       {
-        "assetId": 0,
-        "symbol": "WND",
-        "type": "native",
-        "precision": 12,
-        "staking": "relaychain",
-        "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Westend_(WND).svg",
-        "name": "Westend"
+        "assetId": 1,
+        "symbol": "USDT",
+        "precision": 6,
+        "type": "statemine",
+        "priceId": "tether",
+        "name": "USD Tether",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/USDT.svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://sys.ibp.network/statemint",
+        "name": "IBP network node"
+      },
+      {
+        "url": "wss://sys.dotters.network/statemint",
+        "name": "Dotters Net node"
+      },
+      {
+        "url": "wss://statemint-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://statemint.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
       }
     ]
   },
@@ -179,44 +209,6 @@
         "priceId": "karura",
         "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Karura_(KAR).svg",
         "name": "Karura"
-      }
-    ]
-  },
-  {
-    "name": "Polkadot Asset Hub",
-    "chainIndex":"4",
-    "addressPrefix": "0",
-    "chainId": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
-    "assets": [
-      {
-        "name": "USD Tether",
-        "assetId": 1,
-        "symbol": "USDT",
-        "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/USDT.svg",
-        "precision": 6,
-        "type": "statemine",
-        "priceId": "tether",
-        "typeExtras": {
-          "assetId": "1984"
-        }
-      }
-    ],
-    "nodes": [
-      {
-        "url": "wss://asset-hub-polkadot-rpc.dwellir.com",
-        "name": "Dwellir node"
-      },
-      {
-        "url": "wss://sys.ibp.network/statemint",
-        "name": "IBP network node"
-      },
-      {
-        "url": "wss://sys.dotters.network/statemint",
-        "name": "Dotters Net node"
-      },
-      {
-        "url": "wss://statemint.api.onfinality.io/public-ws",
-        "name": "OnFinality node"
       }
     ]
   }
