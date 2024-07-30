@@ -11,7 +11,7 @@ import {
   ModalHeader,
 } from '@nextui-org/react';
 
-import { Icon } from '../Icon';
+import { Icon } from '../Icon/Icon';
 import { type IconNames } from '../Icon/types';
 import { BigTitle, BodyText } from '../Typography';
 

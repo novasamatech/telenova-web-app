@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { Shimmering } from '../Shimmering/Shimmering';
 
+import { cnTw } from '@/common/utils';
 import { useToggle } from '@/common/utils/hooks';
 
 type Props = {
@@ -20,7 +21,15 @@ export const AssetIcon = ({ src, size = 32, className }: Props) => {
   }, []);
 
   if (!isImgLoaded) {
-    return <Shimmering circle width={size} height={size} className={className} />;
+    return (
+      // Asset SVG icon has empty space between border and real icon
+      <div
+        className={cnTw('flex items-center justify-center', className)}
+        style={{ width: `${size}px`, height: `${size}px` }}
+      >
+        <Shimmering circle width={Math.round(size * 0.75)} />
+      </div>
+    );
   }
 
   return <img alt="" src={src} className={className} style={{ width: size, height: size }} />;

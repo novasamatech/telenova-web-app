@@ -164,7 +164,10 @@
         "type": "statemine",
         "priceId": "tether",
         "name": "USD Tether",
-        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/USDT.svg"
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/USDT.svg",
+        "typeExtras": {
+          "assetId": "1984"
+        }
       }
     ],
     "nodes": [
@@ -189,11 +192,11 @@
   {
     "name": "Karura",
     "specName": "kusama",
-    "chainIndex": "3",
+    "chainIndex": "4",
     "addressPrefix": 8,
     "chainId": "0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b",
     "parentId": "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe",
-    "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Karura.svg",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Karura.svg",
     "nodes": [
       {
         "url": "wss://karura.api.onfinality.io/public-ws",
@@ -207,8 +210,42 @@
         "type": "native",
         "precision": 12,
         "priceId": "karura",
-        "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Karura_(KAR).svg",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Karura_(KAR).svg",
         "name": "Karura"
+      }
+    ]
+  },
+  {
+    "name": "Moonbeam",
+    "specName": "polkadot",
+    "addressPrefix": 1284,
+    "chainIndex": 5,
+    "chainId": "0xfe58ea77779b7abda7da4ec526d14db9b1e9cd40a217c34892af80a9b332b76d",
+    "parentId": "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Moonbeam.svg",
+    "nodes": [
+      {
+        "url": "wss://wss.api.moonbeam.network",
+        "name": "Moonbeam Foundation node"
+      },
+      {
+        "url": "wss://moonbeam.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://moonbeam.public.blastapi.io",
+        "name": "Blast node"
+      }
+    ],
+    "assets": [
+      {
+        "assetId": 0,
+        "symbol": "GLMR",
+        "type": "native",
+        "precision": 18,
+        "priceId": "moonbeam",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Moonbeam_(GLMR).svg",
+        "name": "Moonbeam"
       }
     ]
   }

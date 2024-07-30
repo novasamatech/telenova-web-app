@@ -5,6 +5,7 @@ import GiftClaimed from '@/assets/svg/GiftClaimed.svg';
 import Loader from '@/assets/svg/Loader.svg';
 import NoResult from '@/assets/svg/NoResult.svg';
 import Novasama from '@/assets/svg/Novasama.svg';
+import Plus from '@/assets/svg/Plus.svg';
 import Receive from '@/assets/svg/Receive.svg';
 import ResetPassword from '@/assets/svg/ResetPassword.svg';
 import ResetPasswordDone from '@/assets/svg/ResetPasswordDone.svg';
@@ -72,6 +73,7 @@ export const AllIcons = {
   ResetPasswordDone,
   NoResult,
   Search,
+  Plus,
 };
 
 export type IconNames = keyof typeof AllIcons;

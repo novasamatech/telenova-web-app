@@ -25,8 +25,6 @@ export const clientLoader = (({ request }) => {
   return { type: (url.searchParams.get('type') || 'buy') as SearchParams['type'] };
 }) satisfies ClientLoaderFunction;
 
-// type LoaderType = ReturnType<typeof clientLoader>>;
-
 const Page = () => {
   const { type } = useLoaderData<typeof clientLoader>();
 

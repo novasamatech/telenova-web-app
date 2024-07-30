@@ -17,6 +17,7 @@ import {
   Icon,
   IconButton,
   LargeTitleText,
+  LinkButton,
   MediumTitle,
   Plate,
   Price,
@@ -88,6 +89,7 @@ const Page = () => {
             <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
           </Button>
         </div>
+
         <div className="flex flex-col mt-4 items-center">
           <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
           <LargeTitleText>
@@ -99,13 +101,24 @@ const Page = () => {
             <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate($path('/exchange'))} />
           </div>
         </div>
+
         <CreatedGiftPlate />
-        <Plate className="flex flex-col my-2 rounded-3xl">
+
+        <Plate className="flex flex-col my-2 rounded-3xl border-1 border-border-neutral">
           <TitleText align="left">Assets</TitleText>
-          <div className="flex flex-col gap-6 mt-4">
-            <AssetsList className="m-1" chains={chains} assets={assets} balances={balances} showPrice animate />
+          <div className="flex flex-col gap-y-6 mt-4">
+            <AssetsList showPrice animate className="m-1" chains={chains} assets={assets} balances={balances} />
           </div>
         </Plate>
+
+        <LinkButton
+          className="mx-auto my-5"
+          href={$path('/assets')}
+          prefixIcon={<Icon className="text-inherit" name="Plus" size={16} />}
+        >
+          Manage tokens
+        </LinkButton>
+
         <GiftModal />
 
         {import.meta.env.DEV && (
@@ -117,9 +130,6 @@ const Page = () => {
             </Button>
             <Button variant="faded" onClick={() => clearWallet(true)}>
               Reset Wallet Local
-            </Button>
-            <Button variant="faded" onClick={() => navigate($path('/assets'))}>
-              Go to assets
             </Button>
           </div>
         )}

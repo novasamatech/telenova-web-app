@@ -1,9 +1,8 @@
 import { Button } from '@nextui-org/react';
 
+import { Icon } from '../Icon/Icon';
+import { type IconNames } from '../Icon/types';
 import { LabelText } from '../Typography';
-
-import { Icon } from './Icon';
-import { type IconNames } from './types';
 
 type Props = {
   iconName: IconNames;

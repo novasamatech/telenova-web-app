@@ -1,4 +1,4 @@
-import { Icon } from '../Icon';
+import { Icon } from '../Icon/Icon';
 import { TokenPrice } from '../Price/TokenPrice';
 import { MediumTitle } from '../Typography';
 

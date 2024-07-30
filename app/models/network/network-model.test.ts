@@ -228,7 +228,7 @@ describe('@/common/network/network-model', () => {
     const scope = fork({
       values: [
         [networkModel._internal.$chains, mockedChainsMap],
-        [networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true, 1: true } }],
+        [networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true } }],
         [
           networkModel._internal.$connections,
           {
@@ -245,6 +245,7 @@ describe('@/common/network/network-model', () => {
       params: { chainId: mockedChains[2].chainId, assetId: 1 },
     });
 
-    expect(setItemSpy).toHaveBeenCalledWith(CONNECTIONS_STORE, '0_0,1;2_1;');
+    // Polkadot asset_0 should not appear
+    expect(setItemSpy).toHaveBeenCalledWith(CONNECTIONS_STORE, '2_1;');
   });
 });

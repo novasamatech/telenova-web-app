@@ -16,6 +16,8 @@ const networkStarted = createEvent<'chains_dev' | 'chains_prod'>();
 const chainConnected = createEvent<ChainId>();
 const chainDisconnected = createEvent<ChainId>();
 
+const assetInitialized = createEvent<{ chainId: ChainId; assetId: AssetId }>();
+
 const assetConnected = createEvent<{ chainId: ChainId; assetId: AssetId }>();
 const assetDisconnected = createEvent<{ chainId: ChainId; assetId: AssetId }>();
 
@@ -36,7 +38,7 @@ const $metadataSubscriptions = createStore<Record<ChainId, VoidFunction>>({});
 
 const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) => {
   Object.entries(chainsMap).forEach(([chainId, assetIds]) => {
-    assetIds.forEach(assetId => assetConnected({ chainId: chainId as ChainId, assetId }));
+    assetIds.forEach(assetId => assetInitialized({ chainId: chainId as ChainId, assetId }));
   });
 });
 
@@ -214,7 +216,7 @@ sample({
 });
 
 sample({
-  clock: assetConnected,
+  clock: [assetInitialized, assetConnected],
   source: {
     chains: $chains,
     assets: $assets,
@@ -244,29 +246,6 @@ sample({
 });
 
 sample({
-  clock: [assetConnected, assetDisconnected],
-  source: {
-    chains: $chains,
-    assets: $assets,
-  },
-  fn: ({ chains, assets }) => {
-    const result: Record<ChainIndex, AssetId[]> = {};
-
-    for (const chainId of Object.keys(assets)) {
-      const typedChainId = chainId as ChainId;
-      const chain = chains[typedChainId];
-
-      if (!chain || !assets[typedChainId]) continue;
-
-      result[chain.chainIndex] = Object.keys(assets[typedChainId]).map(Number);
-    }
-
-    return result;
-  },
-  target: updateAssetsInCloudFx,
-});
-
-sample({
   clock: assetDisconnected,
   source: {
     assets: $assets,
@@ -292,6 +271,38 @@ sample({
     notify: assetChanged,
     disconnect: chainDisconnected,
   }),
+});
+
+sample({
+  clock: [assetConnected, assetDisconnected],
+  source: {
+    chains: $chains,
+    assets: $assets,
+  },
+  fn: ({ chains, assets }) => {
+    const result: Record<ChainIndex, AssetId[]> = {};
+
+    for (const chainId of Object.keys(assets)) {
+      const typedChainId = chainId as ChainId;
+      const chain = chains[typedChainId];
+
+      if (!chain || !assets[typedChainId]) continue;
+
+      const assetToExclude = DEFAULT_CONNECTED_CHAINS[typedChainId];
+
+      // Exclude assets that appear in DEFAULT_CONNECTED_CHAINS
+      const assetsToSave = Object.keys(assets[typedChainId])
+        .filter(assetId => !assetToExclude || !assetToExclude.includes(Number(assetId)))
+        .map(Number);
+
+      if (assetsToSave.length === 0) continue;
+
+      result[chain.chainIndex] = assetsToSave;
+    }
+
+    return result;
+  },
+  target: updateAssetsInCloudFx,
 });
 
 sample({

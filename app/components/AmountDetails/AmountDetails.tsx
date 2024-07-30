@@ -2,7 +2,7 @@ import { type PropsWithChildren } from 'react';
 
 import { Input } from '@nextui-org/react';
 
-import { Icon } from '../Icon';
+import { Icon } from '../Icon/Icon';
 import { TokenPrice } from '../Price/TokenPrice';
 import { BodyText, LargeTitleText } from '../Typography';
 import { type IconNames } from '../types';
