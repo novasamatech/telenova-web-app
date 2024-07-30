@@ -1,10 +1,11 @@
 import { allSettled, fork } from 'effector';
-import { keyBy, noop } from 'lodash-es';
+import { keyBy } from 'lodash-es';
 import { describe, expect, test, vi } from 'vitest';
 
 import { type ApiPromise } from '@polkadot/api';
 
-import { type ProviderWithMetadata } from '@/shared/api/network/provider-api';
+import { CONNECTIONS_STORE } from '@/common/utils';
+import { chainsApi } from '@/shared/api';
 import { type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkModel } from './network-model';
@@ -26,62 +27,65 @@ const mockedChains = [
   },
   {
     name: 'Karura',
-    chainIndex: '3',
+    chainIndex: '2',
     chainId: '0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b',
     assets: [{ assetId: 0 }, { assetId: 1 }, { assetId: 2 }],
     nodes: [],
   },
+  {
+    name: 'Polkadot Asset Hub',
+    chainIndex: '3',
+    chainId: '0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f',
+    assets: [{ assetId: 1 }],
+    nodes: [],
+  },
+  {
+    name: 'Westend',
+    chainIndex: '4',
+    chainId: '0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e',
+    assets: [{ assetId: 0 }],
+    nodes: [],
+  },
 ] as unknown as Chain[];
 
+const mockedChainsMap = keyBy(mockedChains, 'chainId');
+
 describe('@/common/network/network-model', () => {
-  const mockedChainsMap = keyBy(mockedChains, 'chainId');
-
-  const mockProvider = () => {
-    networkModel._internal.getConnectedAssetsFx.use(() => Promise.resolve({}));
-    networkModel._internal.createProviderFx.use(({ chainId }) => {
-      const mockedProvider = {} as ProviderWithMetadata;
-      const mockedApi = { genesisHash: { toHex: () => chainId } } as ApiPromise;
-
-      return Promise.resolve({ provider: mockedProvider, api: mockedApi });
-    });
+  const effectMocks = {
+    createProviderFx: {
+      fx: networkModel._internal.createProviderFx,
+      mock: ({ chainId }: any) => ({
+        provider: {},
+        api: { genesisHash: { toHex: () => chainId } },
+      }),
+    },
+    getConnectedAssetsFx: {
+      fx: networkModel._internal.getConnectedAssetsFx,
+      mock: vi.fn().mockResolvedValue({}),
+    },
   };
 
   test('should populate $chains on networkStarted event', async () => {
-    const fakePopulateFx = vi.fn().mockResolvedValue(mockedChainsMap);
-    const scope = fork();
-
-    networkModel._internal.populateChainsFx.use(fakePopulateFx);
+    const fakeRequestFx = vi.fn().mockResolvedValue(mockedChainsMap);
+    const scope = fork({
+      handlers: [
+        [networkModel._internal.requestChainsFx, fakeRequestFx],
+        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock],
+      ],
+    });
 
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
-    expect(fakePopulateFx).toHaveBeenCalledOnce();
+    expect(fakeRequestFx).toHaveBeenCalledOnce();
     expect(scope.getState(networkModel._internal.$chains)).toEqual(mockedChainsMap);
-  });
-
-  test('should add metadata subscription after createProviderFx effect', async () => {
-    const chain = mockedChains[0];
-    const scope = fork();
-
-    mockProvider();
-    networkModel._internal.populateChainsFx.use(() => {
-      return Promise.resolve({ [chain.chainId]: chain });
-    });
-    networkModel._internal.subscribeMetadataFx.use(() => {
-      return Promise.resolve({ chainId: chain.chainId, unsubscribe: noop });
-    });
-
-    await allSettled(networkModel.input.networkStarted, { scope, params: mockedChains[0].chainId });
-
-    expect(scope.getState(networkModel._internal.$metadataSubscriptions)).toEqual({ [chain.chainId]: noop });
   });
 
   test('should update $metadata after requestMetadataFx effect', async () => {
     const chain = mockedChains[0];
     const mockMetadata: ChainMetadata = { chainId: chain.chainId, version: 1, metadata: '0x0000' };
     const scope = fork({
-      values: new Map().set(networkModel._internal.$chains, chain),
+      values: [[networkModel._internal.$chains, chain]],
+      handlers: [[networkModel._internal.requestMetadataFx, () => mockMetadata]],
     });
-
-    networkModel._internal.requestMetadataFx.use(() => Promise.resolve(mockMetadata));
 
     await allSettled(networkModel._internal.requestMetadataFx, { scope, params: {} as ApiPromise });
 
@@ -89,16 +93,22 @@ describe('@/common/network/network-model', () => {
   });
 
   test('should connect to default_chains on networkStarted event', async () => {
-    const scope = fork();
+    vi.spyOn(chainsApi, 'getChainsData').mockResolvedValue(mockedChains);
 
-    mockProvider();
-    networkModel._internal.populateChainsFx.use(() => mockedChainsMap);
+    const scope = fork({
+      handlers: [
+        [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.mock],
+        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock],
+      ],
+    });
 
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
 
     expect(scope.getState(networkModel.$assets)).toEqual({
       [mockedChains[0].chainId]: { 0: { assetId: 0 } },
       [mockedChains[1].chainId]: { 0: { assetId: 0 } },
+      [mockedChains[3].chainId]: { 1: { assetId: 1 } },
+      [mockedChains[4].chainId]: { 0: { assetId: 0 } },
     });
 
     const connection = { provider: expect.any(Object), api: expect.any(Object) };
@@ -106,22 +116,31 @@ describe('@/common/network/network-model', () => {
       [mockedChains[0].chainId]: { ...connection, status: 'connected' }, // Polkadot
       [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
       [mockedChains[2].chainId]: { status: 'disconnected' }, // Karura
+      [mockedChains[3].chainId]: { ...connection, status: 'connected' }, // Polkadot Asset Hub
+      [mockedChains[4].chainId]: { ...connection, status: 'connected' }, // Westend
     });
   });
 
   test('should connect to default_chains + Karura from CloudStorage on networkStarted event', async () => {
-    const scope = fork();
+    vi.spyOn(chainsApi, 'getChainsData').mockResolvedValue(mockedChains);
 
-    mockProvider();
-    networkModel._internal.getConnectedAssetsFx.use(() => Promise.resolve({ 3: [1, 2] }));
-    networkModel._internal.populateChainsFx.use(() => mockedChainsMap);
+    // Karura (index 2) and chain (index 19) that's missing in chains.json
+    const getItem = (_: string, cb: (_: null, result: string) => void) => cb(null, '2_0,2;19_0,2,3;');
+
+    window.Telegram = { WebApp: { CloudStorage: { getItem } } } as any;
+
+    const scope = fork({
+      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock]],
+    });
 
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
 
     expect(scope.getState(networkModel.$assets)).toEqual({
       [mockedChains[0].chainId]: { 0: { assetId: 0 } },
       [mockedChains[1].chainId]: { 0: { assetId: 0 } },
-      [mockedChains[2].chainId]: { 1: { assetId: 1 }, 2: { assetId: 2 } },
+      [mockedChains[2].chainId]: { 0: { assetId: 0 }, 2: { assetId: 2 } },
+      [mockedChains[3].chainId]: { 1: { assetId: 1 } },
+      [mockedChains[4].chainId]: { 0: { assetId: 0 } },
     });
 
     const connection = { provider: expect.any(Object), api: expect.any(Object) };
@@ -129,17 +148,22 @@ describe('@/common/network/network-model', () => {
       [mockedChains[0].chainId]: { ...connection, status: 'connected' }, // Polkadot
       [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
       [mockedChains[2].chainId]: { ...connection, status: 'connected' }, // Karura
+      [mockedChains[3].chainId]: { ...connection, status: 'connected' }, // Polkadot Asset Hub
+      [mockedChains[4].chainId]: { ...connection, status: 'connected' }, // Westend
     });
   });
 
   test('should connect to Karura on assetConnected event', async () => {
     const scope = fork({
-      values: new Map().set(networkModel._internal.$chains, mockedChainsMap).set(networkModel._internal.$connections, {
-        [mockedChains[2].chainId]: { status: 'disconnected' }, // Karura
-      }),
+      values: [
+        [networkModel._internal.$chains, mockedChainsMap],
+        [networkModel._internal.$connections, { [mockedChains[2].chainId]: { status: 'disconnected' } }], // Karura
+      ],
+      handlers: [
+        [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.mock],
+        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock],
+      ],
     });
-
-    mockProvider();
 
     await allSettled(networkModel.input.assetConnected, {
       scope,
@@ -154,15 +178,16 @@ describe('@/common/network/network-model', () => {
 
   test('should disconnect from Polkadot on assetDisconnected event', async () => {
     const scope = fork({
-      values: new Map()
-        .set(networkModel._internal.$chains, mockedChainsMap)
-        .set(networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true } })
-        .set(networkModel._internal.$connections, {
-          [mockedChains[0].chainId]: { provider: {}, api: {}, status: 'connected' }, // Polkadot
-        }),
+      values: [
+        [networkModel._internal.$chains, mockedChainsMap],
+        [networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true } }],
+        [
+          networkModel._internal.$connections,
+          { [mockedChains[0].chainId]: { provider: {}, api: {}, status: 'connected' } }, // Polkadot
+        ],
+      ],
+      handlers: [[networkModel._internal.disconnectFx, () => mockedChains[0].chainId]],
     });
-
-    networkModel._internal.disconnectFx.use(() => Promise.resolve(mockedChains[0].chainId));
 
     await allSettled(networkModel.input.assetDisconnected, {
       scope,
@@ -178,15 +203,13 @@ describe('@/common/network/network-model', () => {
     const connection = { provider: {}, api: {}, status: 'connected' };
 
     const scope = fork({
-      values: new Map()
-        .set(networkModel._internal.$chains, mockedChainsMap)
-        .set(networkModel._internal.$assets, { [mockedChains[2].chainId]: { 0: true, 1: true } })
-        .set(networkModel._internal.$connections, {
-          [mockedChains[2].chainId]: connection, // Karura
-        }),
+      values: [
+        [networkModel._internal.$chains, mockedChainsMap],
+        [networkModel._internal.$assets, { [mockedChains[2].chainId]: { 0: true, 1: true } }],
+        [networkModel._internal.$connections, { [mockedChains[2].chainId]: connection }], // Karura
+      ],
+      handlers: [[networkModel._internal.disconnectFx, () => mockedChains[2].chainId]],
     });
-
-    networkModel._internal.disconnectFx.use(() => Promise.resolve(mockedChains[2].chainId));
 
     await allSettled(networkModel.input.assetDisconnected, {
       scope,
@@ -196,5 +219,32 @@ describe('@/common/network/network-model', () => {
     expect(scope.getState(networkModel.$connections)).toEqual({
       [mockedChains[2].chainId]: connection, // Karura
     });
+  });
+
+  test('should update CloudStorage on assetConnected event', async () => {
+    const setItemSpy = vi.fn();
+    window.Telegram = { WebApp: { CloudStorage: { setItem: setItemSpy } } } as any;
+
+    const scope = fork({
+      values: [
+        [networkModel._internal.$chains, mockedChainsMap],
+        [networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true, 1: true } }],
+        [
+          networkModel._internal.$connections,
+          {
+            [mockedChains[0].chainId]: { status: 'connected' },
+            [mockedChains[2].chainId]: { status: 'disconnected' },
+          },
+        ],
+      ],
+      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock]],
+    });
+
+    await allSettled(networkModel.input.assetConnected, {
+      scope,
+      params: { chainId: mockedChains[2].chainId, assetId: 1 },
+    });
+
+    expect(setItemSpy).toHaveBeenCalledWith(CONNECTIONS_STORE, '0_0,1;2_1;');
   });
 });
