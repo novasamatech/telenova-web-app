@@ -14,6 +14,7 @@ export const AssetIcon = ({ src, size = 32, className }: Props) => {
 
   return (
     <div className={cnTw('rounded-full', className)}>
+      {/* FIXME: can have Shimmering & img at the same time bloating container in height */}
       {!isImgLoaded && <Shimmering circle width={size} height={size} className={className} />}
       <img
         alt=""

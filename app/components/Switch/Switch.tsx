@@ -10,4 +10,3 @@ export const Switch = (props: Omit<SwitchProps, 'classNames'>) => {
     />
   );
 };
-// text-[--tg-theme-button-color]
