@@ -2,14 +2,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button, Progress } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { pickAsset } from '@/common/utils';
 import { AmountDetails, HeadlineText, Icon } from '@/components';
+import { balancesModel, networkModel } from '@/models';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/gift/:chainId/:assetId/amount', params);
@@ -18,10 +18,14 @@ export const clientLoader = (({ params }) => {
 const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
-  const { assets } = useGlobalContext();
   const navigate = useNavigate();
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const assets = useUnit(networkModel.$assets);
+  const balances = useUnit(balancesModel.$balances);
+
+  const typedChainId = chainId as ChainId;
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
+  const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
 
   const {
     handleMaxSend,
@@ -36,7 +40,7 @@ const Page = () => {
     isAmountValid,
     touched,
     transferAll,
-  } = useAmountLogic({ selectedAsset, isGift: true });
+  } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: true, balance });
 
   const handleMaxGiftSend = () => {
     handleMaxSend();
@@ -51,6 +55,8 @@ const Page = () => {
   };
 
   const isAboveDeposit = Boolean(deposit) && +amount >= deposit;
+
+  if (!selectedAsset) return null;
 
   return (
     <>
@@ -73,12 +79,12 @@ const Page = () => {
               <Progress size="md" isIndeterminate />
             </div>
           )}
-          <HeadlineText className="flex items-center text-text-link">{selectedAsset?.asset?.symbol}</HeadlineText>
+          <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
         </Button>
       </div>
 
       <AmountDetails
-        selectedAsset={selectedAsset}
+        asset={selectedAsset}
         amount={amount}
         isAmountValid={!touched || (isAmountValid && isAboveDeposit)}
         maxAmountToSend={maxAmountToSend}
@@ -91,7 +97,7 @@ const Page = () => {
           <>
             Your gift should remain above the minimal
             <br />
-            network deposit {deposit} {selectedAsset?.asset?.symbol}
+            network deposit {deposit} {selectedAsset.symbol}
           </>
         )}
       </AmountDetails>

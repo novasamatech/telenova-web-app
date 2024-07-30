@@ -1,43 +1,56 @@
 import { createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
 import { keyBy } from 'lodash-es';
-import { combineEvents, spread } from 'patronum';
+import { combineEvents, readonly, spread } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
-import { DEFAULT_CHAINS } from '@/common/utils/constants';
-import { chainsService, metadataService } from '@/services';
-import { providerService } from '@/services/network/provider-service';
-import { type Chain, type ChainMetadata } from '@/types/substrate';
+import { DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
+import { chainsApi, metadataApi } from '@/shared/api';
+import { type ProviderWithMetadata, providerApi } from '@/shared/api/network/provider-api';
+import { type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
 
-import { networkUtils } from './network-utils';
-import { type Connection, ConnectionStatus, type ProviderWithMetadata } from './types';
+import { type Connection } from './types';
 
 const networkStarted = createEvent<'chains_dev' | 'chains_prod'>();
 const chainConnected = createEvent<ChainId>();
 const chainDisconnected = createEvent<ChainId>();
-const connectionStatusChanged = createEvent<{ chainId: ChainId; status: ConnectionStatus }>();
+
+const assetConnected = createEvent<{ chainId: ChainId; assetId: AssetId }>();
+const assetDisconnected = createEvent<{ chainId: ChainId; assetId: AssetId }>();
+
+const assetChanged = createEvent<{ chainId: ChainId; assetId: AssetId; status: 'on' | 'off' }>();
+const connectionChanged = createEvent<{ chainId: ChainId; status: Connection['status'] }>();
 
 const connected = createEvent<ChainId>();
 const disconnected = createEvent<ChainId>();
 const failed = createEvent<ChainId>();
 
-const $chains = createStore<Record<ChainId, Chain>>({});
+const $chains = createStore<ChainsMap>({});
+const $assets = createStore<AssetsMap>({});
+
 const $connections = createStore<Record<ChainId, Connection>>({});
 
 const $metadata = createStore<ChainMetadata[]>([]);
 const $metadataSubscriptions = createStore<Record<ChainId, VoidFunction>>({});
 
 const populateChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'): Promise<Record<ChainId, Chain>> => {
-  const chains = await chainsService.getChainsData({ file, sort: true });
+  const chains = await chainsApi.getChainsData({ file, sort: true });
 
   return keyBy(chains, 'chainId');
 });
 
-const getConnectedChainIndicesFx = createEffect((): Promise<ChainIndex[]> => {
+const getConnectedAssetsFx = createEffect((): Promise<Record<ChainIndex, AssetId[]>> => {
   const cloud = '3_0,2,3;19_0,2,3;'; // Karura & unknown chain
-  const chainIndices = cloud.match(/(\d+)_/g)?.map(match => match[0]);
 
-  return Promise.resolve(chainIndices || []);
+  const result: Record<ChainIndex, AssetId[]> = {};
+  const entries = cloud.split(';').filter(item => item.trim() !== '');
+
+  entries.forEach(entry => {
+    const [key, values] = entry.split('_');
+    result[key] = values.split(',').map(Number);
+  });
+
+  return Promise.resolve(result);
 
   // TODO: uncomment during task - https://app.clickup.com/t/869502m30
   // const webApp = window.Telegram?.WebApp;
@@ -60,13 +73,13 @@ type MetadataSubResult = {
   unsubscribe: VoidFunction;
 };
 const subscribeMetadataFx = createEffect(async (api: ApiPromise): Promise<MetadataSubResult> => {
-  const unsubscribe = await metadataService.subscribeMetadata(api, requestMetadataFx);
+  const unsubscribe = await metadataApi.subscribeMetadata(api, requestMetadataFx);
 
   return { chainId: api.genesisHash.toHex(), unsubscribe };
 });
 
 const requestMetadataFx = createEffect((api: ApiPromise): Promise<ChainMetadata> => {
-  return metadataService.requestMetadata(api);
+  return metadataApi.requestMetadata(api);
 });
 
 const unsubscribeMetadataFx = createEffect((unsubscribe: VoidFunction) => {
@@ -81,8 +94,10 @@ const updateProviderMetadataFx = createEffect(({ provider, metadata }: ProviderM
   provider.updateMetadata(metadata);
 });
 
-const initConnectionsFx = createEffect((chainIds: ChainId[]) => {
-  chainIds.forEach(chainConnected);
+const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) => {
+  Object.entries(chainsMap).forEach(([chainId, values]) => {
+    values.forEach(assetId => assetConnected({ chainId: chainId as ChainId, assetId }));
+  });
 });
 
 type CreateProviderParams = {
@@ -97,7 +112,7 @@ const createProviderFx = createEffect(
     const boundDisconnected = scopeBind(disconnected, { safe: true });
     const boundFailed = scopeBind(failed, { safe: true });
 
-    return providerService.createConnector(
+    return providerApi.createConnector(
       { nodes: params.nodes, metadata: params.metadata?.metadata },
       {
         onConnected: () => {
@@ -135,7 +150,7 @@ const disconnectFx = createEffect(async ({ provider, api }: DisconnectParams): P
 
 sample({
   clock: networkStarted,
-  target: [populateChainsFx, getConnectedChainIndicesFx],
+  target: [populateChainsFx, getConnectedAssetsFx],
 });
 
 sample({
@@ -149,7 +164,7 @@ sample({
     const connections: Record<ChainId, Connection> = {};
 
     for (const chainId of Object.keys(chains)) {
-      connections[chainId as ChainId] = { status: ConnectionStatus.DISCONNECTED };
+      connections[chainId as ChainId] = { status: 'disconnected' };
     }
 
     return connections;
@@ -158,18 +173,89 @@ sample({
 });
 
 sample({
-  clock: combineEvents([populateChainsFx.doneData, getConnectedChainIndicesFx.doneData]),
-  fn: ([chains, chainIndices]) => {
-    const mapper = <T extends string, K extends Record<T, true>>(acc: K, value: T) => ({ ...acc, [value]: true });
+  clock: combineEvents([populateChainsFx.doneData, getConnectedAssetsFx.doneData]),
+  fn: ([chains, assetsMap]) => {
+    const chainsMap: Record<ChainId, AssetId[]> = {};
 
-    const defaultChainsMap = Object.values(DEFAULT_CHAINS).reduce<Record<ChainId, true>>(mapper, {});
-    const activeChainIndices = chainIndices.reduce<Record<ChainIndex, true>>(mapper, {});
+    for (const chain of Object.values(chains)) {
+      if (DEFAULT_CONNECTED_CHAINS[chain.chainId]) {
+        chainsMap[chain.chainId] = [chain.assets[0].assetId];
+      } else if (assetsMap[chain.chainIndex]) {
+        chainsMap[chain.chainId] = assetsMap[chain.chainIndex];
+      }
+    }
 
-    return Object.values(chains)
-      .filter(({ chainId, chainIndex }) => defaultChainsMap[chainId] || activeChainIndices[chainIndex])
-      .map(chain => chain.chainId);
+    return chainsMap;
   },
   target: initConnectionsFx,
+});
+
+sample({
+  clock: assetConnected,
+  source: {
+    chains: $chains,
+    assets: $assets,
+    connections: $connections,
+  },
+  filter: ({ chains }, { chainId, assetId }) => {
+    return chains[chainId].assets.some(a => a.assetId === assetId);
+  },
+  fn: ({ chains, connections, assets }, { chainId, assetId }) => {
+    const isDisconnected = connections[chainId].status === 'disconnected';
+
+    const asset = chains[chainId].assets.find(a => a.assetId === assetId);
+    const newAssets = { ...assets, [chainId]: { ...assets[chainId], [assetId]: asset! } };
+
+    // If chain is disconnected then connect, notify with new asset, assets is updated anyway
+    return {
+      assets: newAssets,
+      notify: { chainId, assetId, status: 'on' as const },
+      ...(isDisconnected && { connect: chainId }),
+    };
+  },
+  target: spread({
+    assets: $assets,
+    notify: assetChanged,
+    connect: chainConnected,
+  }),
+});
+
+sample({
+  clock: assetDisconnected,
+  source: {
+    assets: $assets,
+    connections: $connections,
+  },
+  filter: ({ assets }, { chainId }) => Boolean(assets[chainId]),
+  fn: ({ connections, assets }, { chainId, assetId }) => {
+    const isConnected = connections[chainId].status !== 'disconnected';
+    const isLastAsset = Object.values(assets[chainId]!).filter(isActive => isActive).length === 1;
+
+    const { [assetId]: _, ...restAssets } = assets[chainId]!;
+    const newAssets = { ...assets, [chainId]: isLastAsset ? undefined : restAssets };
+
+    // If chain is not disconnected then disconnect, notify with asset, assets is updated anyway
+    return {
+      assets: newAssets,
+      notify: { chainId, assetId, status: 'off' as const },
+      ...(isConnected && isLastAsset && { disconnect: chainId }),
+    };
+  },
+  target: spread({
+    assets: $assets,
+    notify: assetChanged,
+    disconnect: chainDisconnected,
+  }),
+});
+
+sample({
+  clock: chainConnected,
+  source: $connections,
+  fn: (connections, chainId) => ({
+    ...connections,
+    [chainId]: { ...connections[chainId], status: 'connecting' },
+  }),
+  target: $connections,
 });
 
 // TODO: save new connection in CloudStorage - https://app.clickup.com/t/869502m30
@@ -182,9 +268,15 @@ sample({
   fn: ({ chains, metadata }, chainId) => {
     const name = chains[chainId].name;
     const nodes = chains[chainId].nodes.map(node => node.url);
-    const newMetadata = networkUtils.getNewestMetadata(metadata)[chainId];
+    const newMetadata = metadata.reduce<Record<ChainId, ChainMetadata>>((acc, data) => {
+      if (data.version >= (acc[data.chainId]?.version || -1)) {
+        acc[data.chainId] = data;
+      }
 
-    return { name, chainId, nodes, metadata: newMetadata };
+      return acc;
+    }, {});
+
+    return { name, chainId, nodes, metadata: newMetadata[chainId] };
   },
   target: createProviderFx,
 });
@@ -195,14 +287,14 @@ sample({
   source: $connections,
   fn: (connections, { provider, api }) => {
     const chainId = api.genesisHash.toHex();
-    const event = { chainId, status: ConnectionStatus.CONNECTED };
-    const data = { ...connections, [chainId]: { provider, api, status: ConnectionStatus.CONNECTED } };
+    const event = { chainId, status: 'connected' as const };
+    const data = { ...connections, [chainId]: { provider, api, status: 'connected' as const } };
 
     return { event, data };
   },
   target: spread({
     data: $connections,
-    event: connectionStatusChanged,
+    event: connectionChanged,
   }),
 });
 
@@ -211,17 +303,19 @@ sample({
   clock: connected,
   source: $connections,
   filter: (connections, chainId) => {
-    return Boolean(connections[chainId].api) && connections[chainId].status !== ConnectionStatus.CONNECTED;
+    // We don't rely on connected event when start chain for the first time
+    // createProviderFx.doneData is responsible for that
+    return connections[chainId].status !== 'connecting';
   },
   fn: (connections, chainId) => {
-    const event = { chainId, status: ConnectionStatus.CONNECTED };
-    const data = { ...connections, [chainId]: { ...connections[chainId], status: ConnectionStatus.CONNECTED } };
+    const event = { chainId, status: 'connected' as const };
+    const data = { ...connections, [chainId]: { ...connections[chainId], status: 'connected' as const } };
 
     return { event, data };
   },
   target: spread({
     data: $connections,
-    event: connectionStatusChanged,
+    event: connectionChanged,
   }),
 });
 
@@ -232,7 +326,7 @@ sample({
     return (
       Boolean(connections[chainId].provider) &&
       Boolean(connections[chainId].api) &&
-      connections[chainId].status === ConnectionStatus.CONNECTED
+      connections[chainId].status !== 'disconnected'
     );
   },
   fn: (connections, chainId) => {
@@ -248,21 +342,21 @@ sample({
   source: $connections,
   fn: (connections, chainId) => ({
     ...connections,
-    [chainId]: { status: ConnectionStatus.DISCONNECTED },
+    [chainId]: { status: 'disconnected' },
   }),
   target: $connections,
 });
 
 sample({
   clock: disconnected,
-  fn: chainId => ({ chainId, status: ConnectionStatus.DISCONNECTED }),
-  target: connectionStatusChanged,
+  fn: chainId => ({ chainId, status: 'disconnected' as const }),
+  target: connectionChanged,
 });
 
 sample({
   clock: failed,
-  fn: chainId => ({ chainId, status: ConnectionStatus.ERROR }),
-  target: connectionStatusChanged,
+  fn: chainId => ({ chainId, status: 'error' as const }),
+  target: connectionChanged,
 });
 
 // =====================================================
@@ -338,26 +432,37 @@ sample({
 });
 
 export const networkModel = {
-  $chains,
-  $connections,
+  // All available chains
+  $chains: readonly($chains),
+
+  // Selected assets
+  $assets: readonly($assets),
+
+  // All available chains with connection statuses
+  $connections: readonly($connections),
 
   input: {
     networkStarted,
-    chainConnected,
-    chainDisconnected,
+    assetConnected,
+    assetDisconnected,
   },
 
   output: {
-    connectionStatusChanged,
+    assetChanged,
+    connectionChanged,
   },
 
   /* Internal API (tests only) */
   _internal: {
+    $chains,
+    $assets,
+    $connections,
+
     $metadata,
     $metadataSubscriptions,
 
     populateChainsFx,
-    getConnectedChainIndicesFx,
+    getConnectedAssetsFx,
     createProviderFx,
     disconnectFx,
     subscribeMetadataFx,

@@ -1,12 +1,14 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { type ProviderInterface, type ProviderInterfaceEmitCb } from '@polkadot/rpc-provider/types';
 
-import { type ProviderWithMetadata } from '@/common/network/types';
+export interface ProviderWithMetadata extends ProviderInterface {
+  updateMetadata: (metadata: HexString) => void;
+}
 
 const GET_METADATA_METHOD = 'state_getMetadata';
 const RETRY_DELAY = 2000;
 
-export const providerService = {
+export const providerApi = {
   createConnector,
 };
 

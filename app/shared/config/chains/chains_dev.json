@@ -2,7 +2,7 @@
   {
     "name": "Polkadot",
     "specName": "polkadot",
-    "chainIndex":"0",
+    "chainIndex": "0",
     "addressPrefix": 0,
     "chainId": "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3",
     "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/chains/Polkadot.svg",
@@ -48,6 +48,7 @@
       {
         "assetId": 0,
         "symbol": "DOT",
+        "type": "native",
         "precision": 10,
         "priceId": "polkadot",
         "staking": "relaychain",
@@ -105,6 +106,7 @@
       {
         "assetId": 0,
         "symbol": "KSM",
+        "type": "native",
         "precision": 12,
         "priceId": "kusama",
         "staking": "relaychain",
@@ -146,6 +148,7 @@
       {
         "assetId": 0,
         "symbol": "WND",
+        "type": "native",
         "precision": 12,
         "staking": "relaychain",
         "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Westend_(WND).svg",
@@ -171,6 +174,7 @@
       {
         "assetId": 0,
         "symbol": "KAR",
+        "type": "native",
         "precision": 12,
         "priceId": "karura",
         "icon": "https://raw.githubusercontent.com/novasamatech/nova-spektr-utils/main/icons/v1/assets/white/Karura_(KAR).svg",
@@ -180,7 +184,7 @@
   },
   {
     "name": "Polkadot Asset Hub",
-    "chainIndex":"4",
+    "chainIndex": "4",
     "addressPrefix": "0",
     "chainId": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
     "assets": [

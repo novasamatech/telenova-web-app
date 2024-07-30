@@ -2,7 +2,7 @@ import type { GetExistentialDeposit, GetExistentialDepositStatemine } from './ty
 
 import { useUnit } from 'effector-react';
 
-import { networkModel } from '@/common/network/network-model';
+import { networkModel } from '@/models';
 
 interface ExtrinsicService {
   getExistentialDeposit: GetExistentialDeposit;

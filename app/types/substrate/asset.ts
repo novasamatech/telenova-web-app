@@ -5,20 +5,26 @@ export type Asset = {
   precision: number;
   priceId?: string;
   icon: string;
-  type?: AssetType;
+  type: 'native' | 'statemine'; // Support 'orml' in future
   typeExtras?: StatemineExtras;
-  // typeExtras?: StatemineExtras | OrmlExtras;
 };
-
-export type AssetType = 'orml' | 'statemine';
 
 export type StatemineExtras = {
   assetId: string;
 };
 
-export type OrmlExtras = {
-  currencyIdScale: string;
-  currencyIdType: string;
-  existentialDeposit: string;
-  transfersEnabled?: boolean;
+// export type OrmlExtras = {
+//   currencyIdScale: string;
+//   currencyIdType: string;
+//   existentialDeposit: string;
+//   transfersEnabled?: boolean;
+// };
+
+export type AssetPrice = Record<Currency, PriceItem>;
+
+export type PriceItem = {
+  price: number;
+  change?: number;
 };
+
+export type AssetsMap = Record<ChainId, Record<AssetId, Asset> | undefined>;

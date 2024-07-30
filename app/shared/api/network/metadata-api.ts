@@ -3,7 +3,7 @@ import { type UnsubscribePromise } from '@polkadot/api/types';
 
 import { type ChainMetadata } from '@/types/substrate';
 
-export const metadataService = {
+export const metadataApi = {
   requestMetadata,
   subscribeMetadata,
 };

@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
+import { isEmpty } from 'lodash-es';
 
 import { BN, BN_TEN } from '@polkadot/util';
 
-import { type IAssetBalance } from '../balances/types';
-import { type AssetAccount, type AssetPrice, type ChainAssetAccount, type ChainAssetId } from '../types';
+import { type AssetPrice, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
 import { ZERO_BALANCE } from './constants';
 
@@ -22,16 +22,6 @@ const enum Suffix {
 export const enum Decimal {
   SMALL_NUMBER = 5,
   BIG_NUMBER = 2,
-}
-
-export function chainAssetIdToString(value: ChainAssetId): string {
-  return `${value.chainId} - ${value.assetId}`;
-}
-
-export function chainAssetAccountIdToString(value: ChainAssetAccount): string {
-  const partial = chainAssetIdToString({ chainId: value.chainId, assetId: value.asset.assetId });
-
-  return `${partial} - ${value.publicKey}`;
 }
 
 // Format balance from spektr
@@ -80,18 +70,6 @@ export const formatBalance = (balance = '0', precision = 0): FormattedBalance =>
   };
 };
 
-export const updateAssetsBalance = (prevAssets: AssetAccount[], chainId: string, balance: IAssetBalance) => {
-  return prevAssets.map(asset => {
-    if (asset.chainId !== chainId) return asset;
-
-    return {
-      ...asset,
-      totalBalance: balance.total().toString(),
-      transferableBalance: balance.transferable().toString(),
-    };
-  });
-};
-
 export const formatAmount = (rawAmount: string, precision: number): string => {
   if (!rawAmount) return ZERO_BALANCE;
 
@@ -112,20 +90,20 @@ export const formatAmount = (rawAmount: string, precision: number): string => {
   return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision)).toString();
 };
 
-export const getTotalBalance = (assets: AssetAccount[], assetsPrices: AssetPrice | null) => {
-  if (!assets.length || !assetsPrices) {
-    return;
+export const getTotalBalance = (chains: ChainsMap, balances: ChainBalances, prices: AssetPrice | null): number => {
+  if (isEmpty(balances) || !prices) return 0;
+
+  let totalBalance = 0;
+
+  for (const [chainId, assetBalance] of Object.entries(balances)) {
+    const asset = chains[chainId as ChainId].assets.find(asset => assetBalance[asset.assetId]);
+
+    if (!asset || !asset.priceId) continue;
+
+    const formatedBalance = formatBalance(assetBalance[asset.assetId].balance.total, asset.precision).formattedValue;
+
+    totalBalance += (prices[asset.priceId].price || 0) * Number(formatedBalance);
   }
 
-  return assets.reduce((acc, asset) => {
-    if (!asset.asset.priceId) {
-      return acc;
-    }
-
-    const price = assetsPrices[asset.asset.priceId].price || 0;
-    const formatedBalance = Number(formatBalance(asset.totalBalance, asset.asset.precision).formattedValue);
-    acc += price * formatedBalance;
-
-    return acc;
-  }, 0);
+  return totalBalance;
 };

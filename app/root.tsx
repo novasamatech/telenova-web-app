@@ -7,13 +7,12 @@ import { $path } from 'remix-routes';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
-import { BalanceProvider } from '@/common/balances';
 import { ExtrinsicProvider } from '@/common/extrinsicService';
-import { networkModel } from '@/common/network/network-model';
 import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider';
 import { TelegramProvider } from '@/common/providers/telegramProvider';
 import { getWallet } from '@/common/wallet';
 import { ErrorScreen } from '@/components';
+import * as models from '@/models';
 
 import stylesheet from './tailwind.css?url';
 
@@ -74,7 +73,7 @@ const DataContext = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    networkModel.input.networkStarted(file);
+    models.networkModel.input.networkStarted(file);
 
     cryptoWaitReady().then(() => setIsLoading(false));
   }, []);
@@ -84,9 +83,7 @@ const DataContext = ({ children }: PropsWithChildren) => {
   return (
     <GlobalStateProvider>
       <TelegramProvider>
-        <ExtrinsicProvider>
-          <BalanceProvider>{children}</BalanceProvider>
-        </ExtrinsicProvider>
+        <ExtrinsicProvider>{children}</ExtrinsicProvider>
       </TelegramProvider>
     </GlobalStateProvider>
   );
@@ -102,10 +99,13 @@ const App = () => {
     getWallet()
       .then(wallet => {
         if (!wallet) {
-          return navigate($path('/onboarding'), { replace: true });
+          navigate($path('/onboarding'), { replace: true });
+        } else {
+          setPublicKey(wallet.publicKey);
+          models.walletModel.input.accountChanged(wallet.publicKey);
+
+          navigate($path('/dashboard'), { replace: true });
         }
-        setPublicKey(wallet?.publicKey);
-        navigate($path('/dashboard'), { replace: true });
       })
       .catch(e => setError(e?.toString?.()));
   }, []);

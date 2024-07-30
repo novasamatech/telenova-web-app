@@ -2,13 +2,13 @@ import { type PropsWithChildren } from 'react';
 
 import { Input } from '@nextui-org/react';
 
-import { type TransferAsset } from '@/common/types';
 import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
 import { type IconNames } from '@/components/Icon/types';
+import { type Asset } from '@/types/substrate';
 
 //TODO: Change layout mobile text
 type Props = {
-  selectedAsset?: Partial<TransferAsset | null>;
+  asset: Asset;
   amount: string;
   isAmountValid: boolean;
   maxAmountToSend: string;
@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const AmountDetails = ({
-  selectedAsset,
+  asset,
   amount,
   isAmountValid,
   maxAmountToSend,
@@ -34,8 +34,8 @@ export const AmountDetails = ({
   return (
     <>
       <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">
-        <Icon name={selectedAsset?.asset?.symbol as IconNames} className="w-10 h-10" />
-        <LargeTitleText>{selectedAsset?.asset?.symbol}</LargeTitleText>
+        <Icon name={asset.symbol as IconNames} className="w-10 h-10" />
+        <LargeTitleText>{asset.symbol}</LargeTitleText>
         <Input
           fullWidth={false}
           variant="underlined"
@@ -53,7 +53,7 @@ export const AmountDetails = ({
       {shouldShowPrice && (
         <TokenPrice
           className="col-span-2"
-          priceId={selectedAsset?.asset?.priceId}
+          priceId={asset.priceId}
           balance={amount || '0'}
           showBalance={!isNaN(+amount) && isAmountValid && !isPending}
         />
@@ -69,7 +69,7 @@ export const AmountDetails = ({
           <Icon name="ExclamationMark" size={28} />
           <BodyText align="left" className="text-text-danger">
             The balance that remains after sending your amount is less than the minimal network deposit ({deposit}{' '}
-            {selectedAsset?.asset?.symbol}), please choose a different amount or use Max instead.
+            {asset.symbol}), please choose a different amount or use Max instead.
           </BodyText>
         </div>
       )}

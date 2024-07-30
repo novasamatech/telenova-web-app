@@ -1,14 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { useGlobalContext } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { pickAsset } from '@/common/utils';
 import { Icon, MediumTitle, TitleText } from '@/components';
+import { networkModel } from '@/models';
 
-// Query params for /transfer/direct/:chainId/:assetId/result?amount=__value__
 export type SearchParams = {
   amount: string;
 };
@@ -25,9 +24,12 @@ const Page = () => {
   const { address, amount, assetId, chainId } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { assets } = useGlobalContext();
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const assets = useUnit(networkModel.$assets);
+
+  const selectedAsset = assets[chainId as ChainId]?.[Number(assetId) as AssetId];
+
+  if (!selectedAsset) return null;
 
   return (
     <>
@@ -35,7 +37,7 @@ const Page = () => {
       <div className="flex flex-col items-center justify-center h-[95vh] gap-3">
         <Icon name="Success" size={250} />
         <TitleText>
-          {amount} {selectedAsset?.asset?.symbol} Sent to
+          {amount} {selectedAsset.symbol} Sent to
         </TitleText>
         <MediumTitle className="text-text-hint break-all" align="center">
           {address}

@@ -11,7 +11,6 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { type TgLink } from '@/common/telegram/types';
 import { GiftDetails, Icon } from '@/components';
 
-// Query params for /gifts/details?seed=__value__&symbol=__value&balance=__value__
 export type SearchParams = {
   seed: string;
   symbol: string;

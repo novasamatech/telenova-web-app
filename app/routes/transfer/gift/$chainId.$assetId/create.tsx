@@ -5,17 +5,18 @@ import { useEffect, useState } from 'react';
 
 import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params } from 'remix-routes';
 
 import { useExtrinsic } from '@/common/extrinsicService';
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
-import { backupGifts, pickAsset } from '@/common/utils';
+import { backupGifts } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
+import { networkModel } from '@/models';
 
-// Query params for /transfer/gift/:chainId/:assetId/create?amount=_&fee=_&all=_
 export type SearchParams = {
   amount: string;
   fee: string;
@@ -48,24 +49,26 @@ const Page = () => {
 
   const { webApp } = useTelegram();
   const { sendGift } = useExtrinsic();
-  const { assets } = useGlobalContext();
+
+  const chains = useUnit(networkModel.$chains);
+  const assets = useUnit(networkModel.$assets);
 
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const typedChainId = chainId as ChainId;
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!selectedAsset) return;
+    if (!selectedAsset || !chains[typedChainId]) return;
 
-    const giftWallet = createGiftWallet(selectedAsset.addressPrefix);
-    const assetParams = { ...selectedAsset, transferAll: all, amount, fee };
+    const giftWallet = createGiftWallet(chains[typedChainId].addressPrefix);
 
-    sendGift(assetParams, giftWallet.address)
+    sendGift(giftWallet.address, { chainId: typedChainId, asset: selectedAsset, transferAll: all, amount, fee })
       .then(() => {
         backupGifts({
-          chainId: selectedAsset.chainId,
-          assetId: selectedAsset.asset.assetId,
+          chainId: typedChainId,
+          assetId: selectedAsset.assetId,
           address: giftWallet.address,
           secret: giftWallet.secret,
           balance: amount,
@@ -75,13 +78,13 @@ const Page = () => {
           appName,
           amount,
           secret: giftWallet.secret,
-          symbol: selectedAsset.asset.symbol,
+          symbol: selectedAsset.symbol,
         });
 
         setLink(tgLink);
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
-  }, [selectedAsset]);
+  }, [selectedAsset, chains]);
 
   const handleLottieEvent = (event: PlayerEvent) => {
     if (event === 'complete') {
@@ -89,12 +92,14 @@ const Page = () => {
     }
   };
 
+  if (!selectedAsset) return null;
+
   return (
     <>
       <div className="grid items-end justify-center h-[93vh]">
         <LottiePlayer
           className="mb-3"
-          src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
+          src={`/gifs/Gift_Packing_${selectedAsset.symbol}.json`}
           autoplay
           keepLastFrame
           onEvent={handleLottieEvent}

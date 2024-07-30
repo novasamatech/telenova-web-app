@@ -1,5 +1,3 @@
-export {};
-
 declare global {
   export type HexString = `0x${string}`;
 
@@ -17,3 +15,5 @@ declare global {
 
   export type Currency = string;
 }
+
+export {};
