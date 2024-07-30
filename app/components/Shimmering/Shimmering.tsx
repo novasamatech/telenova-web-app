@@ -1,6 +1,6 @@
 import { cnTw } from '@/common/utils/twMerge';
 
-import './Shimmering.css';
+import './style.css';
 
 type Props = {
   width?: number;
@@ -13,6 +13,5 @@ export const Shimmering = ({ width, height, circle, className }: Props) => (
   <span
     className={cnTw('h-full w-full block spektr-shimmer', circle ? 'rounded-full' : 'rounded-[10px]', className)}
     style={{ width: `${width}px`, height: `${circle ? width : height}px` }}
-    data-testid="shimmer"
   />
 );

@@ -16,7 +16,6 @@ export const Identicon = ({ address, theme = 'polkadot', background = true, size
     <div
       className={cnTw('relative flex justify-center items-center', background && 'bg-white rounded-full', className)}
       style={{ width: size, height: size }}
-      data-testid={`identicon-${address}`}
     >
       <PolkadotIdenticon
         theme={theme}
