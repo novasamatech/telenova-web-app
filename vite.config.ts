@@ -28,7 +28,7 @@ const config = defineConfig(({ mode }) => ({
       : remix({
           routes: r =>
             createRoutesFromFolders(r, {
-              ignoredFilePatterns: ['**/*.test.ts'],
+              ignoredFilePatterns: ['**/_model/**.ts', '**/*.test.ts'],
             }),
         }),
     remixRoutes({ strict: true, outDir: './app/types' }),

@@ -18,11 +18,6 @@ declare module "remix-routes" {
       query: ExportedQuery<import('../routes/assets/index').SearchParams>,
     };
   
-    "/assets/_model/assets-page-model": {
-      params: never,
-      query: ExportedQuery<import('../routes/assets/_model/assets-page-model').SearchParams>,
-    };
-  
     "/dashboard": {
       params: never,
       query: ExportedQuery<import('../routes/dashboard/index').SearchParams>,
@@ -191,7 +186,6 @@ declare module "remix-routes" {
   export type RouteId =
     | 'root'
     | 'routes/assets'
-    | 'routes/assets/_model/assets-page-model'
     | 'routes/assets/index'
     | 'routes/dashboard'
     | 'routes/dashboard/index'

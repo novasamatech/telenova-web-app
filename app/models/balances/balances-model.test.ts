@@ -10,7 +10,7 @@ import { type ChainsMap } from '@/types/substrate';
 
 import { balancesModel } from './balances-model';
 
-describe('models/balances/balances-_model', () => {
+describe('models/balances/balances-model', () => {
   const mockedChains = {
     '0x001': { name: 'Polkadot', chainId: '0x001', assets: [{ assetId: 0 }] },
     '0x002': { name: 'Kusama', chainId: '0x002', assets: [{ assetId: 1 }] },

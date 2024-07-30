@@ -50,7 +50,7 @@ const mockedChains = [
 
 const mockedChainsMap = keyBy(mockedChains, 'chainId');
 
-describe('@/common/network/network-_model', () => {
+describe('@/common/network/network-model', () => {
   const effectMocks = {
     createProviderFx: {
       fx: networkModel._internal.createProviderFx,
