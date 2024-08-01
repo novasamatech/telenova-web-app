@@ -1,6 +1,6 @@
 import { allSettled, fork } from 'effector';
 import noop from 'lodash/noop';
-import { describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { networkModel } from '../network/network-model';
 import { walletModel } from '../wallet/wallet-model';
@@ -16,6 +16,10 @@ describe('models/balances/balances-model', () => {
     '0x002': { name: 'Kusama', chainId: '0x002', assets: [{ assetId: 1 }] },
     '0x003': { name: 'Karura', chainId: '0x003', assets: [{ assetId: 0 }, { assetId: 1 }, { assetId: 2 }] },
   } as unknown as ChainsMap;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
 
   test('should update $balance on balanceUpdated', async () => {
     const defaultBalance = {

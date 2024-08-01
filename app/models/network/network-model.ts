@@ -1,14 +1,14 @@
-import { createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
-import { keyBy } from 'lodash-es';
+import { combine, createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
+import { isEmpty, keyBy, orderBy } from 'lodash-es';
 import { combineEvents, readonly, spread } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
 import { CONNECTIONS_STORE } from '@/common/utils';
-import { DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
+import { DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
 import { chainsApi, metadataApi } from '@/shared/api';
 import { type ProviderWithMetadata, providerApi } from '@/shared/api/network/provider-api';
-import { type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
+import { type Asset, type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
 
 import { type Connection } from './types';
 
@@ -156,6 +156,38 @@ const disconnectFx = createEffect(async ({ provider, api }: DisconnectParams): P
 });
 
 // =====================================================
+// ================= Computed section ==================
+// =====================================================
+
+const $sortedAssets = combine($assets, assets => {
+  if (isEmpty(assets)) return [];
+
+  // Predefined array with empty elements for the first coming assets
+  const preSortedAssets = Object.values(DEFAULT_CHAINS_ORDER).flatMap(assetTuples => {
+    return Array.from({ length: Object.keys(assetTuples).length }, () => [] as unknown as [ChainId, Asset]);
+  });
+
+  const assetsToSort: [ChainId, Asset][] = [];
+
+  for (const [chainId, assetMap] of Object.entries(assets)) {
+    const typedChainId = chainId as ChainId;
+    const isChainToPresort = DEFAULT_CHAINS_ORDER[typedChainId];
+
+    for (const asset of Object.values(assetMap)) {
+      if (!isChainToPresort || !(asset.assetId in DEFAULT_CHAINS_ORDER[typedChainId])) {
+        assetsToSort.push([typedChainId, asset]);
+      } else {
+        const index = DEFAULT_CHAINS_ORDER[typedChainId][asset.assetId];
+        preSortedAssets[index] = [typedChainId, asset];
+      }
+    }
+  }
+
+  // DOT KSM USDT ... rest alphabetically
+  return preSortedAssets.concat(orderBy(assetsToSort, ([_, asset]) => asset.symbol, 'asc'));
+});
+
+// =====================================================
 // ================= Network section ===================
 // =====================================================
 
@@ -256,8 +288,9 @@ sample({
     const isConnected = connections[chainId].status !== 'disconnected';
     const isLastAsset = Object.values(assets[chainId]!).filter(isActive => isActive).length === 1;
 
-    const { [assetId]: _, ...restAssets } = assets[chainId]!;
-    const newAssets = { ...assets, [chainId]: isLastAsset ? undefined : restAssets };
+    const { [chainId]: _c, ...restChains } = assets;
+    const { [assetId]: _a, ...restAssets } = assets[chainId]!;
+    const newAssets = isLastAsset ? restChains : { ...assets, [chainId]: restAssets };
 
     // If chain is not disconnected then disconnect, notify with asset, assets is updated anyway
     return {
@@ -493,6 +526,9 @@ export const networkModel = {
 
   // Selected assets
   $assets: readonly($assets),
+
+  // ChainId/Asset tuple sorted by asset symbol
+  $sortedAssets: readonly($sortedAssets),
 
   // All available chains with connection statuses
   $connections: readonly($connections),

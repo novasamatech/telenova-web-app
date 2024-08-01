@@ -32,7 +32,7 @@ const Page = () => {
   const { assetsPrices, setAssetsPrices } = useGlobalContext();
 
   const chains = useUnit(networkModel.$chains);
-  const assets = useUnit(networkModel.$assets);
+  const assets = useUnit(networkModel.$sortedAssets);
   const balances = useUnit(balancesModel.$balances);
 
   // Fetching chains

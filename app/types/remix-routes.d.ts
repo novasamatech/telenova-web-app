@@ -10,10 +10,10 @@ declare module 'remix-routes' {
       params: never;
       query: ExportedQuery<import('../root').SearchParams>;
     };
-  
-    "/assets": {
-      params: never,
-      query: ExportedQuery<import('../routes/assets/index').SearchParams>,
+
+    '/assets': {
+      params: never;
+      query: ExportedQuery<import('../routes/assets/index').SearchParams>;
     };
 
     '/dashboard': {
