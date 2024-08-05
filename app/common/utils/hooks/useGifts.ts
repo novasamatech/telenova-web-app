@@ -1,6 +1,6 @@
 import { useUnit } from 'effector-react';
 
-import { isStatemineAsset } from '../assets';
+import { assetUtils } from '../assets';
 
 import { type Gift, GiftStatus, type PersistentGift } from '@/common/types';
 import { networkModel } from '@/models';
@@ -25,7 +25,7 @@ export const useGifts = () => {
       // To have a backward compatibility with old gifts
       const asset = accounts[0].assetId ? chain.assets.find(a => a.assetId === +accounts[0].assetId) : chain?.assets[0];
 
-      if (isStatemineAsset(asset?.type) && asset?.typeExtras?.assetId) {
+      if (assetUtils.isStatemineAsset(asset)) {
         const balances = await api.query.assets.account.multi(
           accounts.map(i => [asset?.typeExtras?.assetId, i.address]),
         );

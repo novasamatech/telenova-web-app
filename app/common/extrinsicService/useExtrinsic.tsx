@@ -1,7 +1,7 @@
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { decodeAddress } from '@polkadot/util-crypto';
 
-import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
+import { ASSET_LOCATION, FAKE_ACCOUNT_ID, assetUtils, formatAmount } from '../utils';
 
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
 import { type Asset } from '@/types/substrate';
@@ -31,14 +31,14 @@ export const useExtrinsic = () => {
     transferAll,
   }: SendTransaction) {
     const address = decodeAddress(destinationAddress);
-    const assetId = getAssetId(asset);
+    const assetId = assetUtils.getAssetId(asset);
     let signOptions;
     let transactionType = TransactionType.TRANSFER;
 
     if (transferAll) {
       transactionType = TransactionType.TRANSFER_ALL;
     }
-    if (isStatemineAsset(asset.type)) {
+    if (assetUtils.isStatemineAsset(asset)) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
     }
@@ -75,7 +75,7 @@ export const useExtrinsic = () => {
   ): Promise<void> {
     const transferAmount = formatAmount(amount!, asset.precision);
 
-    if (isStatemineAsset(asset?.type)) {
+    if (assetUtils.isStatemineAsset(asset)) {
       const giftAmount = Math.ceil(+transferAmount + fee! / 2).toString();
 
       return sendTransfer({

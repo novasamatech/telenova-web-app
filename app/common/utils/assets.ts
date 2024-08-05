@@ -1,18 +1,33 @@
-import { type Asset } from '@/types/substrate';
+import type { Asset, NativeAsset, OrmlAsset, StatemineAsset } from '@/types/substrate';
 
-export const getAssetId = (asset: Asset): string => {
+export const assetUtils = {
+  getAssetId,
+
+  isNativeAsset,
+  isStatemineAsset,
+  isOrmlAsset,
+};
+
+function getAssetId(asset: Asset): string {
+  const defaultAssetId = asset.assetId.toString();
+
   const assetIds: Record<Asset['type'], string> = {
-    native: asset.assetId.toString(),
-    statemine: asset.typeExtras!.assetId,
+    native: defaultAssetId,
+    statemine: isStatemineAsset(asset) ? asset.typeExtras.assetId : defaultAssetId,
+    orml: isOrmlAsset(asset) ? asset.typeExtras.currencyIdScale : defaultAssetId,
   };
 
   return assetIds[asset.type];
-};
+}
 
-export const isNativeAsset = (type?: Asset['type']): boolean => {
-  return type === 'native';
-};
+function isNativeAsset(asset?: Asset): asset is NativeAsset {
+  return asset?.type === 'native';
+}
 
-export const isStatemineAsset = (type?: Asset['type']): boolean => {
-  return type === 'statemine';
-};
+function isStatemineAsset(asset?: Asset): asset is StatemineAsset {
+  return asset?.type === 'statemine';
+}
+
+function isOrmlAsset(asset?: Asset): asset is OrmlAsset {
+  return asset?.type === 'orml';
+}

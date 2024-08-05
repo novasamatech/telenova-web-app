@@ -5,7 +5,7 @@ import { ZERO_BALANCE } from '../constants';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { type Asset } from '@/types/substrate';
+import { type StatemineAsset } from '@/types/substrate';
 
 export const useAssetHub = () => {
   const { getTransactionFee } = useExtrinsic();
@@ -34,8 +34,8 @@ export const useAssetHub = () => {
     return assetConversion(chainId, transferDotFee, assetId);
   };
 
-  const getGiftBalanceStatemine = async (chainId: ChainId, asset: Asset, address: string): Promise<string> => {
-    const assetId = asset.typeExtras!.assetId;
+  const getGiftBalanceStatemine = async (chainId: ChainId, asset: StatemineAsset, address: string): Promise<string> => {
+    const assetId = asset.typeExtras.assetId;
 
     const giftBalance = await getFreeBalanceStatemine(address, chainId, assetId);
     if (giftBalance === ZERO_BALANCE) return ZERO_BALANCE;

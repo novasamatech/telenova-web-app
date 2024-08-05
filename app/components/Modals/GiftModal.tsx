@@ -13,10 +13,10 @@ import { BigTitle } from '../Typography';
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { type ChainAsset } from '@/common/types';
-import { formatAmount, formatBalance, getGiftInfo, isStatemineAsset } from '@/common/utils';
+import { formatAmount, formatBalance, getGiftInfo } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
 import { networkModel } from '@/models';
+import { type Asset, type NativeAsset, type StatemineAsset } from '@/types/substrate';
 
 const enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -53,22 +53,22 @@ export const GiftModal = () => {
   const [giftStatus, setGiftStatus] = useState<GIFT_STATUS | null>(null);
   const [lottie, setLottie] = useState<AnimationItem | null>(null);
 
-  const getGiftBalance = async (chain: ChainAsset, giftAddress: string) => {
+  const getGiftBalance = async (chainId: ChainId, asset: NativeAsset, giftAddress: string): Promise<string> => {
     const timerID = setTimeout(() => {
       setGiftBalance('-');
     }, 5500);
 
-    const giftBalance = await getFreeBalance(giftAddress, chain.chain.chainId);
+    const giftBalance = await getFreeBalance(giftAddress, chainId);
     if (giftBalance === '0') {
       clearTimeout(timerID);
 
       return '0';
     }
-    const fee = await getTransactionFee(chain.chain.chainId, TransactionType.TRANSFER_ALL);
+    const fee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
     clearTimeout(timerID);
     const rawBalance = +giftBalance - fee;
 
-    return formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
+    return formatBalance(rawBalance.toString(), asset.precision).formattedValue;
   };
 
   useEffect(() => {
@@ -78,12 +78,15 @@ export const GiftModal = () => {
     const { giftAddress, chain, symbol } = getGiftInfo(Object.values(chains), publicKey, startParam);
     if (connections[chain.chain.chainId].status === 'disconnected') return;
 
-    const balanceRequest = {
-      statemine: () => getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress),
-      default: () => getGiftBalance(chain, giftAddress),
-    };
+    // TODO: check ORML balance
+    const balanceRequest: Record<Asset['type'], (chainId: ChainId, asset: Asset, address: Address) => Promise<string>> =
+      {
+        native: (chainId, asset, address) => getGiftBalance(chainId, asset as NativeAsset, address),
+        orml: (chainId, asset, address) => getGiftBalance(chainId, asset as NativeAsset, address),
+        statemine: (chainId, asset, address) => getGiftBalanceStatemine(chainId, asset as StatemineAsset, address),
+      };
 
-    balanceRequest[isStatemineAsset(chain.asset?.type) ? 'statemine' : 'default']().then(balance => {
+    balanceRequest[chain.asset.type](chain.chain.chainId, chain.asset, giftAddress).then(balance => {
       setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
       setGiftSymbol(balance === '0' ? '' : symbol);
       setGiftBalance(balance);

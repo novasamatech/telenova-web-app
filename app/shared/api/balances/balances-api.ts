@@ -2,27 +2,25 @@ import noop from 'lodash/noop';
 
 import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
-import { BN_ZERO } from '@polkadot/util';
+import { BN_ZERO, hexToU8a } from '@polkadot/util';
 
-import { getAssetId, toAddress } from '@/common/utils';
-import { type Asset, type Chain } from '@/types/substrate';
+import { assetUtils, toAddress } from '@/common/utils';
+import { type Asset, type Chain, type NativeAsset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 import { type AssetBalance } from '@/types/substrate/balance';
 
 export const balancesApi = {
   subscribeBalance,
 };
 
-type ISubscribeBalance = (
+type ISubscribeBalance<T extends Asset> = (
   api: ApiPromise,
   chain: Chain,
-  asset: Asset | undefined,
+  asset: T,
   accountId: AccountId,
   callback: (newBalance: AssetBalance) => void,
 ) => UnsubscribePromise;
 
-const subscribeNativeBalanceChange: ISubscribeBalance = (api, chain, asset, accountId, callback) => {
-  if (!asset) return Promise.resolve(noop);
-
+const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain, asset, accountId, callback) => {
   const address = toAddress(accountId, { prefix: chain.addressPrefix });
 
   return api.query.system.account(address, accountInfo => {
@@ -46,12 +44,12 @@ const subscribeNativeBalanceChange: ISubscribeBalance = (api, chain, asset, acco
   });
 };
 
-const subscribeStatemineAssetsChange: ISubscribeBalance = (api, chain, asset, accountId, callback) => {
-  if (!asset || !api.query.assets) return Promise.resolve(noop);
+const subscribeStatemineAssetChange: ISubscribeBalance<StatemineAsset> = (api, chain, asset, accountId, callback) => {
+  if (!api.query.assets) return Promise.resolve(noop);
 
   const address = toAddress(accountId, { prefix: chain.addressPrefix });
 
-  return api.query.assets.account(getAssetId(asset), address, accountInfo => {
+  return api.query.assets.account(assetUtils.getAssetId(asset), address, accountInfo => {
     const free = accountInfo.isNone ? BN_ZERO : accountInfo.unwrap().balance.toBn();
 
     callback({
@@ -70,6 +68,37 @@ const subscribeStatemineAssetsChange: ISubscribeBalance = (api, chain, asset, ac
   });
 };
 
+const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asset, accountId, callback) => {
+  const method: (...args: any[]) => UnsubscribePromise =
+    api.query['tokens']?.['accounts'] || api.query['currencies']?.['accounts'];
+
+  if (!method) return Promise.resolve(noop);
+
+  const ormlAssetId = assetUtils.getAssetId(asset);
+  const currencyIdType = asset.typeExtras.currencyIdType;
+  const assetId = api.createType(currencyIdType, hexToU8a(ormlAssetId));
+
+  const address = toAddress(accountId, { prefix: chain.addressPrefix });
+
+  return method(assetId, address, (accountInfo: any) => {
+    const free = accountInfo.free.toBn();
+
+    callback({
+      accountId,
+      chainId: chain.chainId,
+      assetId: asset.assetId,
+      balance: {
+        free,
+        frozen: accountInfo.frozen.toString(),
+        reserved: accountInfo.reserved.toString(),
+
+        total: free,
+        transferable: free,
+      },
+    });
+  });
+};
+
 function subscribeBalance(
   api: ApiPromise,
   chain: Chain,
@@ -77,9 +106,10 @@ function subscribeBalance(
   accountId: AccountId,
   callback: (newBalance: AssetBalance) => void,
 ): UnsubscribePromise {
-  const actions: Record<Asset['type'], ISubscribeBalance> = {
+  const actions: Record<Asset['type'], ISubscribeBalance<any>> = {
     native: subscribeNativeBalanceChange,
-    statemine: subscribeStatemineAssetsChange,
+    statemine: subscribeStatemineAssetChange,
+    orml: subscribeOrmlAssetChange,
   };
 
   return actions[asset.type](api, chain, asset, accountId, callback);

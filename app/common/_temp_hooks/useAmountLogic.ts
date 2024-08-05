@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
+import { assetUtils, formatAmount, formatBalance } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
 import { type Asset, type Balance } from '@/types/substrate';
 
@@ -29,8 +29,8 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   const [deposit, setDeposit] = useState(0);
 
   const getFeeAmount = (chainId: ChainId, asset: Asset, transferAmount: string): Promise<number> => {
-    if (isStatemineAsset(asset.type)) {
-      return getAssetHubFee(chainId, asset.typeExtras!.assetId, transferAmount, isGift);
+    if (assetUtils.isStatemineAsset(asset)) {
+      return getAssetHubFee(chainId, asset.typeExtras.assetId, transferAmount, isGift);
     }
 
     return getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount);
@@ -50,8 +50,8 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   ): Promise<{ fee: number; formattedDeposit: number }> => {
     const transferAmount = formatAmount(amount || '0', asset?.precision);
 
-    const deposit = isStatemineAsset(asset.type)
-      ? await getExistentialDepositStatemine(chainId, asset.typeExtras!.assetId)
+    const deposit = assetUtils.isStatemineAsset(asset)
+      ? await getExistentialDepositStatemine(chainId, asset.typeExtras.assetId)
       : await getExistentialDeposit(chainId);
 
     const fee = await getFeeAmount(chainId, asset, transferAmount);

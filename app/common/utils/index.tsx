@@ -1,6 +1,5 @@
 export * from './twMerge';
 export * from './address';
-export * from './assets';
 export * from './balance';
 export * from './coingecko';
 export * from './constants';
@@ -9,3 +8,4 @@ export * from './gift';
 export * from './functions';
 export * from './arrays';
 export * from './utility';
+export { assetUtils } from './assets';
