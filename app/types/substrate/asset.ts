@@ -27,4 +27,4 @@ export type PriceItem = {
   change?: number;
 };
 
-export type AssetsMap = Record<ChainId, Record<AssetId, Asset> | undefined>;
+export type AssetsMap = Record<ChainId, Record<AssetId, Asset>>;

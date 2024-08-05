@@ -2,15 +2,18 @@ import { useState } from 'react';
 
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@nextui-org/react';
 
+import { Countdown } from '../../Countdown/Countdown';
+import { Icon } from '../../Icon/Icon';
+import { BigTitle, BodyText, MediumTitle } from '../../Typography';
+
 import { resetWallet } from '@/common/wallet';
-import { BigTitle, BodyText, Countdown, Icon, MediumTitle } from '@/components';
 
 type Props = {
   onSubmit: () => void;
   onClose: () => void;
 };
 
-export default function ResetPassword({ onClose, onSubmit }: Props) {
+export const ResetPassword = ({ onClose, onSubmit }: Props) => {
   const [isDisabled, setIsDisabled] = useState(true);
 
   const handleClose = () => {
@@ -57,4 +60,4 @@ export default function ResetPassword({ onClose, onSubmit }: Props) {
       </ModalFooter>
     </>
   );
-}
+};

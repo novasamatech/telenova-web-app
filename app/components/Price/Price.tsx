@@ -1,5 +1,6 @@
+import { Shimmering } from '../Shimmering/Shimmering';
+
 import { cnTw } from '@/common/utils';
-import { Shimmering } from '@/components';
 
 type Props = {
   amount?: number;
@@ -12,7 +13,7 @@ const SIZE: Record<NonNullable<Props['decimalSize']>, string> = {
   lg: 'text-3xl',
 };
 
-const Price = ({ amount, symbol = '$', decimalSize = 'sm' }: Props) => {
+export const Price = ({ amount, symbol = '$', decimalSize = 'sm' }: Props) => {
   if (amount === undefined) {
     return <Shimmering width={50} height={30} />;
   }
@@ -28,4 +29,3 @@ const Price = ({ amount, symbol = '$', decimalSize = 'sm' }: Props) => {
     </>
   );
 };
-export default Price;

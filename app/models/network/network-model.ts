@@ -1,20 +1,22 @@
-import { createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
-import { keyBy } from 'lodash-es';
+import { combine, createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
+import { isEmpty, keyBy, orderBy } from 'lodash-es';
 import { combineEvents, readonly, spread } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
 import { CONNECTIONS_STORE } from '@/common/utils';
-import { DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
+import { DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
 import { chainsApi, metadataApi } from '@/shared/api';
 import { type ProviderWithMetadata, providerApi } from '@/shared/api/network/provider-api';
-import { type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
+import { type Asset, type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
 
 import { type Connection } from './types';
 
 const networkStarted = createEvent<'chains_dev' | 'chains_prod'>();
 const chainConnected = createEvent<ChainId>();
 const chainDisconnected = createEvent<ChainId>();
+
+const assetInitialized = createEvent<{ chainId: ChainId; assetId: AssetId }>();
 
 const assetConnected = createEvent<{ chainId: ChainId; assetId: AssetId }>();
 const assetDisconnected = createEvent<{ chainId: ChainId; assetId: AssetId }>();
@@ -36,7 +38,7 @@ const $metadataSubscriptions = createStore<Record<ChainId, VoidFunction>>({});
 
 const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) => {
   Object.entries(chainsMap).forEach(([chainId, assetIds]) => {
-    assetIds.forEach(assetId => assetConnected({ chainId: chainId as ChainId, assetId }));
+    assetIds.forEach(assetId => assetInitialized({ chainId: chainId as ChainId, assetId }));
   });
 });
 
@@ -154,6 +156,38 @@ const disconnectFx = createEffect(async ({ provider, api }: DisconnectParams): P
 });
 
 // =====================================================
+// ================= Computed section ==================
+// =====================================================
+
+const $sortedAssets = combine($assets, assets => {
+  if (isEmpty(assets)) return [];
+
+  // Predefined array with empty elements for the first coming assets
+  const preSortedAssets = Object.values(DEFAULT_CHAINS_ORDER).flatMap(assetTuples => {
+    return Array.from({ length: Object.keys(assetTuples).length }, () => [] as unknown as [ChainId, Asset]);
+  });
+
+  const assetsToSort: [ChainId, Asset][] = [];
+
+  for (const [chainId, assetMap] of Object.entries(assets)) {
+    const typedChainId = chainId as ChainId;
+    const isChainToPresort = DEFAULT_CHAINS_ORDER[typedChainId];
+
+    for (const asset of Object.values(assetMap)) {
+      if (!isChainToPresort || !(asset.assetId in DEFAULT_CHAINS_ORDER[typedChainId])) {
+        assetsToSort.push([typedChainId, asset]);
+      } else {
+        const index = DEFAULT_CHAINS_ORDER[typedChainId][asset.assetId];
+        preSortedAssets[index] = [typedChainId, asset];
+      }
+    }
+  }
+
+  // DOT KSM USDT ... rest alphabetically
+  return preSortedAssets.concat(orderBy(assetsToSort, ([_, asset]) => asset.symbol, 'asc'));
+});
+
+// =====================================================
 // ================= Network section ===================
 // =====================================================
 
@@ -214,7 +248,7 @@ sample({
 });
 
 sample({
-  clock: assetConnected,
+  clock: [assetInitialized, assetConnected],
   source: {
     chains: $chains,
     assets: $assets,
@@ -244,6 +278,35 @@ sample({
 });
 
 sample({
+  clock: assetDisconnected,
+  source: {
+    assets: $assets,
+    connections: $connections,
+  },
+  filter: ({ assets }, { chainId }) => Boolean(assets[chainId]),
+  fn: ({ connections, assets }, { chainId, assetId }) => {
+    const isConnected = connections[chainId].status !== 'disconnected';
+    const isLastAsset = Object.values(assets[chainId]!).filter(isActive => isActive).length === 1;
+
+    const { [chainId]: _c, ...restChains } = assets;
+    const { [assetId]: _a, ...restAssets } = assets[chainId]!;
+    const newAssets = isLastAsset ? restChains : { ...assets, [chainId]: restAssets };
+
+    // If chain is not disconnected then disconnect, notify with asset, assets is updated anyway
+    return {
+      assets: newAssets,
+      notify: { chainId, assetId, status: 'off' as const },
+      ...(isConnected && isLastAsset && { disconnect: chainId }),
+    };
+  },
+  target: spread({
+    assets: $assets,
+    notify: assetChanged,
+    disconnect: chainDisconnected,
+  }),
+});
+
+sample({
   clock: [assetConnected, assetDisconnected],
   source: {
     chains: $chains,
@@ -258,40 +321,21 @@ sample({
 
       if (!chain || !assets[typedChainId]) continue;
 
-      result[chain.chainIndex] = Object.keys(assets[typedChainId]).map(Number);
+      const assetToExclude = DEFAULT_CONNECTED_CHAINS[typedChainId];
+
+      // Exclude assets that appear in DEFAULT_CONNECTED_CHAINS
+      const assetsToSave = Object.keys(assets[typedChainId])
+        .filter(assetId => !assetToExclude || !assetToExclude.includes(Number(assetId)))
+        .map(Number);
+
+      if (assetsToSave.length === 0) continue;
+
+      result[chain.chainIndex] = assetsToSave;
     }
 
     return result;
   },
   target: updateAssetsInCloudFx,
-});
-
-sample({
-  clock: assetDisconnected,
-  source: {
-    assets: $assets,
-    connections: $connections,
-  },
-  filter: ({ assets }, { chainId }) => Boolean(assets[chainId]),
-  fn: ({ connections, assets }, { chainId, assetId }) => {
-    const isConnected = connections[chainId].status !== 'disconnected';
-    const isLastAsset = Object.values(assets[chainId]!).filter(isActive => isActive).length === 1;
-
-    const { [assetId]: _, ...restAssets } = assets[chainId]!;
-    const newAssets = { ...assets, [chainId]: isLastAsset ? undefined : restAssets };
-
-    // If chain is not disconnected then disconnect, notify with asset, assets is updated anyway
-    return {
-      assets: newAssets,
-      notify: { chainId, assetId, status: 'off' as const },
-      ...(isConnected && isLastAsset && { disconnect: chainId }),
-    };
-  },
-  target: spread({
-    assets: $assets,
-    notify: assetChanged,
-    disconnect: chainDisconnected,
-  }),
 });
 
 sample({
@@ -482,6 +526,9 @@ export const networkModel = {
 
   // Selected assets
   $assets: readonly($assets),
+
+  // ChainId/Asset tuple sorted by asset symbol
+  $sortedAssets: readonly($sortedAssets),
 
   // All available chains with connection statuses
   $connections: readonly($connections),

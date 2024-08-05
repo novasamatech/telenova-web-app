@@ -1,12 +1,13 @@
 import { allSettled, fork } from 'effector';
 import { keyBy } from 'lodash-es';
-import { describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { type ApiPromise } from '@polkadot/api';
 
 import { CONNECTIONS_STORE } from '@/common/utils';
+import { KUSAMA, POLKADOT, POLKADOT_ASSET_HUB } from '@/common/utils/chains.ts';
 import { chainsApi } from '@/shared/api';
-import { type Chain, type ChainMetadata } from '@/types/substrate';
+import { type AssetsMap, type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkModel } from './network-model';
 
@@ -54,23 +55,32 @@ describe('@/common/network/network-model', () => {
   const effectMocks = {
     createProviderFx: {
       fx: networkModel._internal.createProviderFx,
-      mock: ({ chainId }: any) => ({
-        provider: {},
-        api: { genesisHash: { toHex: () => chainId } },
-      }),
+      data: () =>
+        vi.fn().mockImplementation(({ chainId }: any) => ({
+          provider: {},
+          api: { genesisHash: { toHex: () => chainId } },
+        })),
     },
     getConnectedAssetsFx: {
       fx: networkModel._internal.getConnectedAssetsFx,
-      mock: vi.fn().mockResolvedValue({}),
+      data: () => vi.fn().mockResolvedValue({}),
+    },
+    requestChainsFx: {
+      fx: networkModel._internal.requestChainsFx,
+      data: () => vi.fn().mockResolvedValue(mockedChainsMap),
     },
   };
 
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   test('should populate $chains on networkStarted event', async () => {
-    const fakeRequestFx = vi.fn().mockResolvedValue(mockedChainsMap);
+    const fakeRequestFx = effectMocks.requestChainsFx.data();
     const scope = fork({
       handlers: [
-        [networkModel._internal.requestChainsFx, fakeRequestFx],
-        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock],
+        [effectMocks.requestChainsFx.fx, fakeRequestFx],
+        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()],
       ],
     });
 
@@ -97,8 +107,9 @@ describe('@/common/network/network-model', () => {
 
     const scope = fork({
       handlers: [
-        [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.mock],
-        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock],
+        [effectMocks.requestChainsFx.fx, effectMocks.requestChainsFx.data()],
+        [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.data()],
+        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()],
       ],
     });
 
@@ -130,7 +141,7 @@ describe('@/common/network/network-model', () => {
     window.Telegram = { WebApp: { CloudStorage: { getItem } } } as any;
 
     const scope = fork({
-      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock]],
+      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()]],
     });
 
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
@@ -160,8 +171,8 @@ describe('@/common/network/network-model', () => {
         [networkModel._internal.$connections, { [mockedChains[2].chainId]: { status: 'disconnected' } }], // Karura
       ],
       handlers: [
-        [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.mock],
-        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock],
+        [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.data()],
+        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()],
       ],
     });
 
@@ -228,7 +239,7 @@ describe('@/common/network/network-model', () => {
     const scope = fork({
       values: [
         [networkModel._internal.$chains, mockedChainsMap],
-        [networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true, 1: true } }],
+        [networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true } }],
         [
           networkModel._internal.$connections,
           {
@@ -237,7 +248,7 @@ describe('@/common/network/network-model', () => {
           },
         ],
       ],
-      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.mock]],
+      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()]],
     });
 
     await allSettled(networkModel.input.assetConnected, {
@@ -245,6 +256,32 @@ describe('@/common/network/network-model', () => {
       params: { chainId: mockedChains[2].chainId, assetId: 1 },
     });
 
-    expect(setItemSpy).toHaveBeenCalledWith(CONNECTIONS_STORE, '0_0,1;2_1;');
+    // Polkadot asset_0 should not appear
+    expect(setItemSpy).toHaveBeenCalledWith(CONNECTIONS_STORE, '2_1;');
+  });
+
+  test('should sort assets with presorted chains', async () => {
+    const mockedAssetsMap = {
+      '0x001': { 0: { assetId: 0, symbol: 'WND' } },
+      '0x002': { 0: { assetId: 0, symbol: 'KAR' } },
+      '0x003': { 0: { assetId: 0, symbol: 'GLMR' } },
+      [POLKADOT]: { 0: { assetId: 0, symbol: 'DOT' } },
+      [KUSAMA]: { 0: { assetId: 0, symbol: 'KSM' } },
+      [POLKADOT_ASSET_HUB]: { 1: { assetId: 1, symbol: 'USDT' }, 2: { assetId: 2, symbol: 'USDC' } },
+    } as unknown as AssetsMap;
+
+    const scope = fork();
+
+    await allSettled(networkModel._internal.$assets, { scope, params: mockedAssetsMap });
+
+    expect(scope.getState(networkModel.$sortedAssets)).toEqual([
+      [POLKADOT, mockedAssetsMap[POLKADOT]['0']],
+      [KUSAMA, mockedAssetsMap[KUSAMA]['0']],
+      [POLKADOT_ASSET_HUB, mockedAssetsMap[POLKADOT_ASSET_HUB]['1']],
+      ['0x003', mockedAssetsMap['0x003']['0']],
+      ['0x002', mockedAssetsMap['0x002']['0']],
+      [POLKADOT_ASSET_HUB, mockedAssetsMap[POLKADOT_ASSET_HUB]['2']],
+      ['0x001', mockedAssetsMap['0x001']['0']],
+    ]);
   });
 });

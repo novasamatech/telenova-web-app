@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import { Input } from '../Input/Input';
+import { BodyText } from '../Typography';
+
 import { cnTw } from '@/common/utils/twMerge';
-import { BodyText, Input } from '@/components';
 
 type Variants = 'error' | 'success' | 'default';
 

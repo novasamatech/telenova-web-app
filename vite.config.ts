@@ -12,7 +12,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const isTest = (mode: string): boolean => mode === 'test';
 const isProd = (mode: string): boolean => mode === 'production';
 
-export default defineConfig(({ mode }) => ({
+const config = defineConfig(({ mode }) => ({
   envPrefix: 'PUBLIC_',
   plugins: [
     tsconfigPaths(),
@@ -23,7 +23,14 @@ export default defineConfig(({ mode }) => ({
       },
     }),
     // remix v2 doesn't disable hmr in test mode, so we simply replace it with react plugin
-    isTest(mode) ? react() : remix({ routes: r => createRoutesFromFolders(r) }),
+    isTest(mode)
+      ? react()
+      : remix({
+          routes: r =>
+            createRoutesFromFolders(r, {
+              ignoredFilePatterns: ['**/_model/**.ts', '**/*.test.ts'],
+            }),
+        }),
     remixRoutes({ strict: true, outDir: './app/types' }),
     isProd(mode) && compression({ algorithm: 'gzip', compressionOptions: { level: 9 } }),
     isProd(mode) && compression({ algorithm: 'brotliCompress' }),
@@ -39,3 +46,5 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+
+export default config;

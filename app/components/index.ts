@@ -1,72 +1,26 @@
-import TruncateAddress from './Address/TruncateAddress';
-import { AmountDetails } from './AmountDetails/AmountDetails';
-import AssetBalance from './Assets/AssetBalance';
-import AssetIcon from './Assets/AssetIcon';
-import AssetsList from './Assets/AssetsList';
-import Countdown from './Countdown/Countdown';
-import { ErrorScreen } from './ErrorScreen/ErrorScreen';
-import GiftDetails from './GiftDetails/GiftDetails';
-import { Icon, IconButton } from './Icon';
-import Identicon from './Identicon/Identicon';
-import { Input } from './Input/Input';
-import LinkCard from './LinkCard/LinkCard';
-import { LoadingScreen } from './LoadingScreen/LoadingScreen';
-import { LottiePlayer } from './LottiePlayer/LottiePlayer';
-import GiftModal from './Modals/GiftModal';
-import ResetPasswordModal from './Modals/ResetModal/ResetPasswordModal';
-import PasswordForm from './PasswordForm/PasswordForm';
-import { CreatedGiftPlate, GiftPlate, Plate } from './Plate';
-import Price from './Price/Price';
-import TokenPrice from './Price/TokenPrice';
-import RecoveryPhrase from './RecoveryPhrase/RecoveryPhrase';
-import Shimmering from './Shimmering/Shimmering';
-import {
-  BigTitle,
-  BodyText,
-  HeadlineText,
-  HelpText,
-  LabelText,
-  LargeTitleText,
-  MediumTitle,
-  TextBase,
-  TitleText,
-} from './Typography';
-
+export { TruncateAddress } from './Address/TruncateAddress';
+export { AmountDetails } from './AmountDetails/AmountDetails';
+export { AssetBalance } from './Assets/AssetBalance';
+export { AssetIcon } from './Assets/AssetIcon';
+export { AssetsList } from './Assets/AssetsList';
+export { Countdown } from './Countdown/Countdown';
+export { ErrorScreen } from './ErrorScreen/ErrorScreen';
+export { GiftDetails } from './GiftDetails/GiftDetails';
+export { Icon } from './Icon/Icon';
+export { Identicon } from './Identicon/Identicon';
+export { Input } from './Input/Input';
+export { Switch } from './Switch/Switch';
+export { LinkCard } from './LinkCard/LinkCard';
+export { LoadingScreen } from './LoadingScreen/LoadingScreen';
+export { LottiePlayer } from './LottiePlayer/LottiePlayer';
+export { GiftModal } from './Modals/GiftModal';
+export { ResetPasswordModal } from './Modals/ResetModal/ResetPasswordModal';
+export { PasswordForm } from './PasswordForm/PasswordForm';
+export { CreatedGiftPlate, GiftPlate, Plate } from './Plate';
+export { Price } from './Price/Price';
+export { TokenPrice } from './Price/TokenPrice';
+export { RecoveryPhrase } from './RecoveryPhrase/RecoveryPhrase';
+export { Shimmering } from './Shimmering/Shimmering';
 export { CreatePasswordForm } from './CreatePasswordForm/CreatePasswordForm';
-
-export {
-  TextBase,
-  BodyText,
-  TitleText,
-  MediumTitle,
-  LargeTitleText,
-  HeadlineText,
-  LabelText,
-  HelpText,
-  BigTitle,
-  Icon,
-  IconButton,
-  Price,
-  AssetsList,
-  AssetIcon,
-  AssetBalance,
-  Plate,
-  PasswordForm,
-  Shimmering,
-  Identicon,
-  GiftPlate,
-  TokenPrice,
-  AmountDetails,
-  TruncateAddress,
-  LinkCard,
-  GiftDetails,
-  GiftModal,
-  RecoveryPhrase,
-  CreatedGiftPlate,
-  Countdown,
-  ResetPasswordModal,
-  LoadingScreen,
-  ErrorScreen,
-  Input,
-  LottiePlayer,
-};
+export * from './Buttons';
+export * from './Typography';

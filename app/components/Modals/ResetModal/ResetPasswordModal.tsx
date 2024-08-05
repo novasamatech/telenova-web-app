@@ -6,8 +6,8 @@ import { $path } from 'remix-routes';
 
 import { resetWallet } from '@/common/wallet';
 
-import BackupDeleted from './BackupDeleted';
-import ResetPassword from './ResetPassword';
+import { BackupDeleted } from './BackupDeleted';
+import { ResetPassword } from './ResetPassword';
 
 const enum Step {
   INIT,
@@ -19,7 +19,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default function ResetPasswordModal({ isOpen, onClose }: Props) {
+export const ResetPasswordModal = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate();
 
   const [step, setStep] = useState(Step.INIT);
@@ -59,4 +59,4 @@ export default function ResetPasswordModal({ isOpen, onClose }: Props) {
       </Modal>
     </>
   );
-}
+};

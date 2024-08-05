@@ -1,4 +1,4 @@
-import { BodyText, MediumTitle, TitleText } from '@/components/Typography';
+import { BodyText, MediumTitle, TitleText } from '../Typography';
 
 type Props = {
   error?: string;

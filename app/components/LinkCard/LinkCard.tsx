@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 
+import { Icon } from '../Icon/Icon';
 import { type IconNames } from '../Icon/types';
+import { Plate } from '../Plate/Plate';
+import { BodyText, HelpText } from '../Typography';
 
 import { cnTw } from '@/common/utils/twMerge';
-import { BodyText, HelpText, Icon, Plate } from '@/components';
 
 type Props = {
   text: string;
@@ -19,7 +21,7 @@ type Props = {
   onClick?: () => void;
 };
 
-const LinkCard = ({
+export const LinkCard = ({
   href = '',
   iconName,
   className,
@@ -50,5 +52,3 @@ const LinkCard = ({
     </Link>
   </Plate>
 );
-
-export default LinkCard;

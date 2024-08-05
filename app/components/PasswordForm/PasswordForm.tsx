@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
+import { Input } from '../Input/Input';
+import { BodyText } from '../Typography';
+
 import { cnTw } from '@/common/utils/twMerge';
-import { BodyText, Input } from '@/components';
 
 type Variants = 'error' | 'success' | 'default';
 
@@ -15,7 +17,7 @@ type Props = {
   onSubmit: (password: string) => void;
 };
 
-export default function PasswordForm({ onSubmit }: Props) {
+export const PasswordForm = ({ onSubmit }: Props) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
@@ -99,4 +101,4 @@ export default function PasswordForm({ onSubmit }: Props) {
       </BodyText>
     </form>
   );
-}
+};

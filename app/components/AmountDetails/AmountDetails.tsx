@@ -2,8 +2,11 @@ import { type PropsWithChildren } from 'react';
 
 import { Input } from '@nextui-org/react';
 
-import { BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
-import { type IconNames } from '@/components/Icon/types';
+import { Icon } from '../Icon/Icon';
+import { TokenPrice } from '../Price/TokenPrice';
+import { BodyText, LargeTitleText } from '../Typography';
+
+import { AssetIcon } from '@/components';
 import { type Asset } from '@/types/substrate';
 
 //TODO: Change layout mobile text
@@ -33,13 +36,13 @@ export const AmountDetails = ({
 
   return (
     <>
-      <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-2 h-[40px] items-center">
-        <Icon name={asset.symbol as IconNames} className="w-10 h-10" />
+      <div className="flex gap-x-2 items-center mb-6 mt-5 -ml-1.5">
+        <AssetIcon src={asset.icon} size={46} />
         <LargeTitleText>{asset.symbol}</LargeTitleText>
         <Input
           fullWidth={false}
           variant="underlined"
-          className="mt-2.5 font-manrope h-full"
+          className="font-manrope w-max ml-auto mt-2.5 "
           classNames={{ input: ['text-right !text-large-title max-w-[7ch]'] }}
           value={amount}
           isInvalid={!isAmountValid}

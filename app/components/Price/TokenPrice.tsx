@@ -1,7 +1,10 @@
+import { Price } from '../Price/Price';
+import { Shimmering } from '../Shimmering/Shimmering';
+import { BodyText } from '../Typography';
+
 import { useGlobalContext } from '@/common/providers/contextProvider';
 import { cnTw } from '@/common/utils';
 import { formatBalance } from '@/common/utils/balance';
-import { BodyText, Price, Shimmering } from '@/components';
 
 type Props = {
   balance?: string;
@@ -11,7 +14,7 @@ type Props = {
   className?: string;
 };
 
-const TokenPrice = ({ balance, priceId, precision, showBalance = true, className }: Props) => {
+export const TokenPrice = ({ balance, priceId, precision, showBalance = true, className }: Props) => {
   const { assetsPrices } = useGlobalContext();
 
   const price = priceId ? assetsPrices?.[priceId] : { price: 0 };
@@ -44,5 +47,3 @@ const TokenPrice = ({ balance, priceId, precision, showBalance = true, className
     </div>
   );
 };
-
-export default TokenPrice;

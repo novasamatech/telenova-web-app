@@ -5,7 +5,7 @@ type Props = {
   onFinish: () => void;
 };
 
-export default function Countdown({ initValue, onFinish }: Props) {
+export const Countdown = ({ initValue, onFinish }: Props) => {
   const [counter, setCounter] = useState(initValue);
 
   useEffect(() => {
@@ -24,4 +24,4 @@ export default function Countdown({ initValue, onFinish }: Props) {
   }
 
   return <span>({counter} sec)</span>;
-}
+};

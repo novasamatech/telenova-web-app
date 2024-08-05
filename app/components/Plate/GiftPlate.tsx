@@ -1,13 +1,17 @@
+import { Icon } from '../Icon/Icon';
+import { HelpText, MediumTitle } from '../Typography';
+
 import { type Gift, GiftStatus } from '@/common/types';
 import { cnTw } from '@/common/utils';
-import { HelpText, Icon, MediumTitle, Plate } from '@/components';
+
+import { Plate } from './Plate';
 
 type Props = {
   gift: Gift;
   isClaimed: boolean;
 };
 
-const GiftPlate = ({ gift, isClaimed }: Props) => {
+export const GiftPlate = ({ gift, isClaimed }: Props) => {
   const date = new Date(gift.timestamp).toLocaleString();
 
   return (
@@ -28,5 +32,3 @@ const GiftPlate = ({ gift, isClaimed }: Props) => {
     </Plate>
   );
 };
-
-export default GiftPlate;

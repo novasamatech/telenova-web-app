@@ -5,13 +5,17 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from
 import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
 
+import { Icon } from '../Icon/Icon';
+import { LottiePlayer } from '../LottiePlayer/LottiePlayer';
+import { Shimmering } from '../Shimmering/Shimmering';
+import { BigTitle } from '../Typography';
+
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { type ChainAsset } from '@/common/types';
 import { formatAmount, formatBalance, getGiftInfo, isStatemineAsset } from '@/common/utils';
 import { useAssetHub } from '@/common/utils/hooks';
-import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/components';
 import { networkModel } from '@/models';
 
 const enum GIFT_STATUS {
@@ -32,7 +36,7 @@ const GIFTS: GiftStatusType = {
 
 let timeoutId: ReturnType<typeof setTimeout>;
 
-export default function GiftModal() {
+export const GiftModal = () => {
   const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
   const { sendTransfer, getTransactionFee } = useExtrinsic();
@@ -215,4 +219,4 @@ export default function GiftModal() {
       </Modal>
     </>
   );
-}
+};

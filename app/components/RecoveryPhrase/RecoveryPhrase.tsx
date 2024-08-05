@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
+import { Plate } from '../Plate';
+import { BodyText, MediumTitle } from '../Typography';
+
 import { cnTw } from '@/common/utils/twMerge';
 import { getMnemonic } from '@/common/wallet';
-import { BodyText, MediumTitle, Plate } from '@/components';
 
-import RecoveryModal from './RecoveryModal';
+import { RecoveryModal } from './RecoveryModal';
 
-const RecoveryPhrase = () => {
+export const RecoveryPhrase = () => {
   const [isBlur, setIsBlur] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -48,5 +50,3 @@ const RecoveryPhrase = () => {
     </>
   );
 };
-
-export default RecoveryPhrase;

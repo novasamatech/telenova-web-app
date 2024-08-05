@@ -1,5 +1,3 @@
-import CreatedGiftPlate from './CreatedGiftPlate';
-import GiftPlate from './GiftPlate';
-import Plate from './Plate';
-
-export { CreatedGiftPlate, Plate, GiftPlate };
+export { CreatedGiftPlate } from './CreatedGiftPlate';
+export { GiftPlate } from './GiftPlate';
+export { Plate } from './Plate';

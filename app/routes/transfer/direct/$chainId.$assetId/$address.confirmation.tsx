@@ -19,7 +19,7 @@ import {
   Plate,
   TruncateAddress,
 } from '@/components';
-import type { IconNames } from '@/components/Icon/types';
+import type { IconNames } from '@/components/types';
 import { networkModel } from '@/models';
 
 export type SearchParams = {

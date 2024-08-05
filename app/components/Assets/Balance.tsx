@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 
+import { Shimmering } from '../Shimmering/Shimmering';
+
 import { formatBalance } from '@/common/utils/balance';
-import Shimmering from '@/components/Shimmering/Shimmering';
 
 type Props = {
   balance?: string;
@@ -10,7 +11,7 @@ type Props = {
   animate?: boolean;
 };
 
-const Balance = ({ balance, precision, animate }: Props) => {
+export const Balance = ({ balance, precision, animate }: Props) => {
   // to prevent CountUp loosing value bug
   const [key, setKey] = useState(0);
 
@@ -39,4 +40,3 @@ const Balance = ({ balance, precision, animate }: Props) => {
     </>
   );
 };
-export default Balance;
