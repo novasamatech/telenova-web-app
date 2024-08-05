@@ -11,7 +11,7 @@ const pageMounted = createEvent();
 const queryChanged = createEvent<string>();
 const assetToggled = createEvent<{ chainId: ChainId; assetId: AssetId; selected: boolean }>();
 
-const $query = restore(queryChanged, '');
+const $query = restore(queryChanged, '').reset(pageMounted);
 const $filteredAssets = createStore<[ChainId, Asset, boolean][]>([]);
 
 const $sortedAssets = combine(networkModel.$chains, chains => {
@@ -83,7 +83,7 @@ export const assetsPageModel = {
   $assets: readonly($filteredAssets),
   $query: readonly($query),
 
-  inputs: {
+  input: {
     pageMounted,
     queryChanged,
     assetToggled,

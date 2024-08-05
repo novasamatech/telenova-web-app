@@ -1,6 +1,7 @@
 import { concat, sortBy } from 'lodash-es';
 
 import { nonNullable } from '@/common/utils';
+import { KUSAMA, POLKADOT } from '@/common/utils/chains';
 import { type Chain } from '@/types/substrate';
 
 export const chainsApi = {
@@ -34,17 +35,12 @@ function sortChains(chains: Chain[]): Chain[] {
   return concat([polkadot, kusama].filter(nonNullable), sortBy(parachains, 'name'), sortBy(numberchains, 'name'));
 }
 
-const RelayChains = {
-  POLKADOT: '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3',
-  KUSAMA: '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe',
-  WESTEND: '0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e',
-};
 function isPolkadot(chain: Chain): boolean {
-  return chain.chainId === RelayChains.POLKADOT;
+  return chain.chainId === POLKADOT;
 }
 
 function isKusama(chain: Chain): boolean {
-  return chain.chainId === RelayChains.KUSAMA;
+  return chain.chainId === KUSAMA;
 }
 
 function isNameStartsWithNumber(chain: Chain): boolean {

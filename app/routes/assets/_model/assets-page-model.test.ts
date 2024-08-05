@@ -72,7 +72,7 @@ describe('routes/assets/_model/assets-page-model', () => {
     });
 
     await allSettled(networkModel._internal.$chains, { scope, params: mockedChains });
-    await allSettled(assetsPageModel.inputs.pageMounted, { scope });
+    await allSettled(assetsPageModel.input.pageMounted, { scope });
 
     expect(scope.getState(assetsPageModel.$assets)).toEqual([
       ['0x006', { assetId: 2, symbol: 'GLMR_0' }, true],
@@ -89,7 +89,7 @@ describe('routes/assets/_model/assets-page-model', () => {
     });
 
     await allSettled(networkModel._internal.$chains, { scope, params: mockedChains });
-    await allSettled(assetsPageModel.inputs.queryChanged, { scope, params: 'ar' });
+    await allSettled(assetsPageModel.input.queryChanged, { scope, params: 'ar' });
 
     expect(scope.getState(assetsPageModel.$assets)).toEqual([
       ['0x005', { assetId: 2, symbol: 'KAR_2' }, true],

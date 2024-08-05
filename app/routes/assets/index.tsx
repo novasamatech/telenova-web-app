@@ -16,11 +16,11 @@ const Page = () => {
   const assets = useUnit(assetsPageModel.$assets);
 
   useEffect(() => {
-    assetsPageModel.inputs.pageMounted();
+    assetsPageModel.input.pageMounted();
   }, []);
 
   const toggleAsset = (chainId: ChainId, assetId: AssetId) => (selected: boolean) => {
-    assetsPageModel.inputs.assetToggled({ chainId, assetId, selected });
+    assetsPageModel.input.assetToggled({ chainId, assetId, selected });
   };
 
   return (
@@ -35,8 +35,8 @@ const Page = () => {
           className="h-12"
           startContent={<Icon name="Search" size={16} className="text-text-hint" />}
           value={query}
-          onValueChange={assetsPageModel.inputs.queryChanged}
-          onClear={() => assetsPageModel.inputs.queryChanged('')}
+          onValueChange={assetsPageModel.input.queryChanged}
+          onClear={() => assetsPageModel.input.queryChanged('')}
         />
 
         {assets.length > 0 && (
