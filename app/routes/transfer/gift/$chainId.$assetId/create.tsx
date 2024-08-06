@@ -10,8 +10,6 @@ import { $params } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
 
-import { backupGifts } from '../../../../shared/helpers';
-
 import { useExtrinsic } from '@/common/extrinsicService';
 import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
@@ -19,6 +17,7 @@ import { type TgLink } from '@/common/telegram/types';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 import { networkModel } from '@/models';
+import { backupGifts } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;

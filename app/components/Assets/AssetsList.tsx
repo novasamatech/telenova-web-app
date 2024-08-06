@@ -1,7 +1,6 @@
 import { type ComponentProps } from 'react';
 
-import { cnTw } from '../../shared/helpers';
-
+import { cnTw } from '@/shared/helpers';
 import { type Asset, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
 import { AssetBalance as AssetBalanceItem } from './AssetBalance';

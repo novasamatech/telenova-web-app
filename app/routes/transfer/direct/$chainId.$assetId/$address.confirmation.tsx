@@ -76,7 +76,6 @@ const Page = () => {
   const bnAmount = new BN(amount);
   const formattedFee = toFormattedBalance(bnFee, selectedAsset.precision);
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
-  // const formattedTotal = (Number(amount) + Number(formattedFee.formattedValue)).toFixed(5);
 
   const details = [
     {
@@ -120,7 +119,7 @@ const Page = () => {
       <div className="my-6 grid grid-cols-[40px,1fr,auto] items-center gap-2">
         <AssetIcon src={selectedAsset.icon} size={46} />
         <LargeTitleText>{symbol}</LargeTitleText>
-        <LargeTitleText>{amount}</LargeTitleText>
+        <LargeTitleText>{toFormattedBalance(amount, selectedAsset.precision).formatted}</LargeTitleText>
       </div>
       <Plate className="w-full pr-0">
         {details.map(({ title, value }, index) => (

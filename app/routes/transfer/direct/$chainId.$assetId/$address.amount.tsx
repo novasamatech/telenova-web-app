@@ -11,6 +11,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { AmountDetails, HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { balancesModel, networkModel } from '@/models';
+import { toFormattedBalance } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -88,12 +89,14 @@ const Page = () => {
         </HeadlineText>
         <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={onMaxAmount}>
           <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
-          {maxAmount ? (
-            <HeadlineText className="flex items-center text-text-link">{maxAmount.toString()}</HeadlineText>
-          ) : (
+          {maxAmount.isZero() ? (
             <div className="shrink-0 w-[7ch]">
               <Progress size="md" isIndeterminate />
             </div>
+          ) : (
+            <HeadlineText className="flex items-center text-text-link">
+              {toFormattedBalance(maxAmount, selectedAsset.precision).formatted}
+            </HeadlineText>
           )}
           <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
         </Button>

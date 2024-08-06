@@ -39,7 +39,7 @@ export const AmountDetails = ({
       <div className="flex gap-x-2 items-center mb-6 mt-5 -ml-1.5">
         <AssetIcon src={asset.icon} size={46} />
         <LargeTitleText>{asset.symbol}</LargeTitleText>
-        <div className="px-1">
+        <div className="px-1 ml-auto">
           <AmountInput
             className="max-w-[7ch]"
             value={toFormattedBalance(amount, asset.precision).value}
@@ -49,17 +49,10 @@ export const AmountDetails = ({
         </div>
       </div>
 
-      {isAmountValid && !isPending && (
-        <TokenPrice
-          className="col-span-2"
-          priceId={asset.priceId}
-          balance={amount}
-          showBalance={!isNaN(+amount) && isAmountValid && !isPending}
-        />
-      )}
+      {isAmountValid && !isPending && <TokenPrice showBalance className="col-span-2" balance={amount} asset={asset} />}
       {!isAmountValid && (
         <BodyText align="right" className="text-text-danger">
-          {+amount > +maxAmount ? 'Insufficient balance' : 'Invalid amount'} <br />
+          {amount.gt(maxAmount) ? 'Insufficient balance' : 'Invalid amount'} <br />
           {children}
         </BodyText>
       )}
@@ -68,7 +61,8 @@ export const AmountDetails = ({
           <Icon name="ExclamationMark" size={28} />
           <BodyText align="left" className="text-text-danger">
             The balance that remains after sending your amount is less than the minimal network deposit (
-            {deposit.toString()} {asset.symbol}), please choose a different amount or use Max instead.
+            {toFormattedBalance(deposit, asset.precision).value} {asset.symbol}), please choose a different amount or
+            use Max instead.
           </BodyText>
         </div>
       )}

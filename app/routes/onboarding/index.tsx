@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { MNEMONIC_STORE } from '../../shared/helpers';
-
 import { useTelegram } from '@/common/providers';
 import { getCloudStorageItem } from '@/common/wallet';
 import { LoadingScreen } from '@/components';
+import { MNEMONIC_STORE } from '@/shared/helpers';
 
 const delay = (ttl: number) => new Promise(resolve => setTimeout(resolve, ttl));
 

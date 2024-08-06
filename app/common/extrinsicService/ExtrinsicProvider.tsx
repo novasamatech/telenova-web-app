@@ -5,9 +5,8 @@ import { type PropsWithChildren, createContext, useContext } from 'react';
 import { type Hash } from '@polkadot/types/interfaces';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { FAKE_ACCOUNT_ID } from '../../shared/helpers';
-
 import { getKeyringPair } from '@/common/wallet';
+import { FAKE_ACCOUNT_ID } from '@/shared/helpers';
 
 import { useExtrinsicService } from './ExtrinsicService';
 

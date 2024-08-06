@@ -21,17 +21,15 @@ type Props = {
 };
 
 export const AssetBalance = ({ balance, asset, className, showPrice, showArrow, animate }: Props) => {
-  const { icon, precision, symbol, priceId } = asset;
-
   return (
     <div className={cnTw('grid grid-cols-[48px,1fr,auto] items-center gap-x-3 grid-rows-[1fr,auto]', className)}>
-      <AssetIcon src={icon} size={48} className="row-span-2" />
-      <MediumTitle>{symbol}</MediumTitle>
+      <AssetIcon src={asset.icon} size={48} className="row-span-2" />
+      <MediumTitle>{asset.symbol}</MediumTitle>
       <MediumTitle className="flex items-center justify-self-end">
-        <Balance balance={balance} precision={precision} animate={animate} />
-        {showArrow && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
+        <Balance balance={balance} precision={asset.precision} animate={animate} />
+        {showArrow && <Icon name="ChevronForward" size={16} className="ml-2" />}
       </MediumTitle>
-      {showPrice && <TokenPrice className="col-span-2" balance={balance} priceId={priceId} precision={precision} />}
+      {showPrice && <TokenPrice className="col-span-2" balance={balance} asset={asset} />}
     </div>
   );
 };

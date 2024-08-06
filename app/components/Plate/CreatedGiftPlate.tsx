@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { GIFT_STORE, getGifts } from '../../shared/helpers';
 import { useGifts } from '../../shared/hooks';
 import { Icon } from '../Icon/Icon';
 import { Plate } from '../Plate';
@@ -14,6 +13,7 @@ import { BigTitle, BodyText } from '../Typography';
 import { type Gift } from '@/common/types';
 import { getStoreName } from '@/common/wallet';
 import { networkModel } from '@/models';
+import { GIFT_STORE, getGifts } from '@/shared/helpers';
 
 export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();

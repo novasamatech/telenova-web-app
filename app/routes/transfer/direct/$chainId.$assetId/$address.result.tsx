@@ -4,11 +4,10 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { toShortAddress } from '../../../../shared/helpers';
-
 import { MainButton } from '@/common/telegram/MainButton';
 import { Icon, Identicon, MediumTitle, TitleText } from '@/components';
 import { networkModel } from '@/models';
+import { toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;

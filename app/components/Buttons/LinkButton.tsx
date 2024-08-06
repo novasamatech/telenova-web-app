@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 
 import { type LinkProps, Link as NextUiLink } from '@nextui-org/link';
 
-import { cnTw } from '../../shared/helpers';
 import { MediumTitle } from '../Typography';
+
+import { cnTw } from '@/shared/helpers';
 
 type Props = Omit<LinkProps, 'anchorIcon' | 'showAnchorIcon'> & {
   prefixIcon?: ReactNode;

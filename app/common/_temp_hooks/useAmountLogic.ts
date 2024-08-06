@@ -80,7 +80,6 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   ): Promise<{ fee: BN; deposit: BN }> => {
     const deposit = await getExistentialDeposit(chainId, asset);
     const fee = await getFeeAmount(chainId, asset, transferAmount);
-    // const formattedDeposit = new BN(toFormattedBalance(deposit, asset.precision).value);
 
     return { fee, deposit };
   };
@@ -103,6 +102,9 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   };
 
   const onAmountChange = (amount: string) => {
+    // BN fails converting values like "0."
+    // const safeAmount = parseFloat(amount).toString();
+
     setIsTransferAll(false);
     setIsTouched(true);
     setAmount(toPrecisedBalance(amount, asset.precision));

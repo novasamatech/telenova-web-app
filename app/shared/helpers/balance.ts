@@ -118,11 +118,11 @@ export const getTotalBalance = (chains: ChainsMap, balances: ChainBalances, pric
   for (const [chainId, assetBalance] of Object.entries(balances)) {
     const asset = chains[chainId as ChainId].assets.find(asset => assetBalance[asset.assetId]);
 
-    if (!asset || !asset.priceId) continue;
+    if (!asset?.priceId) continue;
 
     const formatedBalance = toFormattedBalance(assetBalance[asset.assetId].balance.total, asset.precision).value;
 
-    totalBalance += (prices[asset.priceId].price || 0) * Number(formatedBalance);
+    totalBalance += parseFloat(formatedBalance) * (prices[asset.priceId].price || 0);
   }
 
   return totalBalance;

@@ -3,9 +3,8 @@ import { type KeyringPair } from '@polkadot/keyring/types';
 import { type BN } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 
-import { ASSET_LOCATION, FAKE_ACCOUNT_ID, assetUtils } from '../../shared/helpers';
-
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
+import { ASSET_LOCATION, FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 
 type SendTransaction = {
