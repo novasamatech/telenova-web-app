@@ -1,7 +1,7 @@
 import { isHex, isU8a, u8aToU8a } from '@polkadot/util';
 import { base58Decode, checkAddressChecksum, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import { SS58_DEFAULT_PREFIX } from '@/common/utils/constants';
+import { SS58_DEFAULT_PREFIX } from '@/shared/helpers/constants.ts';
 
 const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
 const ACCOUNT_ID_LENGTH = 32;

@@ -5,9 +5,12 @@ import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
+import { BN } from '@polkadot/util';
+
+import { getPrice, getTotalBalance } from '../../shared/helpers';
+
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
-import { getPrice, getTotalBalance } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
   AssetsList,
@@ -93,7 +96,7 @@ const Page = () => {
         <div className="flex flex-col mt-4 items-center">
           <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
           <LargeTitleText>
-            <Price amount={totalBalance} decimalSize="lg" />
+            <Price amount={new BN(totalBalance)} decimalSize="lg" />
           </LargeTitleText>
           <div className="grid grid-cols-3 w-full mt-7 gap-2">
             <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />

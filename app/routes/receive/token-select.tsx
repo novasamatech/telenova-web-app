@@ -7,7 +7,6 @@ import { $path } from 'remix-routes';
 import { BackButton } from '@/common/telegram/BackButton';
 import { AssetsList, BodyText, Icon, Input, TitleText } from '@/components';
 import { assetsFilterModel, balancesModel, networkModel } from '@/models';
-import { type AssetBalance } from '@/types/substrate';
 
 const Page = () => {
   const navigate = useNavigate();
@@ -21,11 +20,11 @@ const Page = () => {
     assetsFilterModel.input.pageMounted();
   }, []);
 
-  const navigateToAddress = (asset: AssetBalance) => {
+  const navigateToAddress = (chainId: ChainId, assetId: AssetId) => {
     navigate(
       $path('/receive/:chainId/:assetId/address', {
-        chainId: asset.chainId,
-        assetId: asset.assetId.toString(),
+        chainId,
+        assetId: assetId.toString(),
       }),
     );
   };

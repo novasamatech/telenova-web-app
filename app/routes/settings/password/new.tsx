@@ -4,9 +4,10 @@ import secureLocalStorage from 'react-secure-storage';
 
 import { $path } from 'remix-routes';
 
+import { MNEMONIC_STORE } from '../../../shared/helpers';
+
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { MNEMONIC_STORE } from '@/common/utils';
 import { backupMnemonic, getStoreName } from '@/common/wallet';
 import { CreatePasswordForm, TitleText } from '@/components';
 

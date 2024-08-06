@@ -1,13 +1,15 @@
+import { BN } from '@polkadot/util';
+
+import { cnTw } from '../../shared/helpers';
 import { Price } from '../Price/Price';
 import { Shimmering } from '../Shimmering/Shimmering';
 import { BodyText } from '../Typography';
 
 import { useGlobalContext } from '@/common/providers/contextProvider';
-import { cnTw } from '@/common/utils';
-import { formatBalance } from '@/common/utils/balance';
+import { toFormattedBalance } from '@/shared/helpers/balance';
 
 type Props = {
-  balance?: string;
+  balance?: BN;
   priceId?: string;
   precision?: number;
   showBalance?: boolean;
@@ -23,15 +25,15 @@ export const TokenPrice = ({ balance, priceId, precision, showBalance = true, cl
     return <Shimmering width={100} height={20} />;
   }
 
-  const { formattedValue, suffix } = formatBalance(balance, precision);
+  const { bn, suffix } = toFormattedBalance(balance, precision);
   const isGrow = price.change && price.change >= 0;
   const changeToShow = price.change && `${isGrow ? '+' : ''}${price.change.toFixed(2)}%`;
-  const total = price.price * Number(formattedValue);
+  const total = bn.muln(price.price);
 
   return (
     <div className={cnTw('flex items-center justify-between', className)}>
       <BodyText className="text-text-hint" align="left">
-        <Price amount={price.price} />
+        <Price amount={new BN(price.price)} />
         {price.change && (
           <BodyText as="span" className={cnTw('ml-1', isGrow ? 'text-text-positive' : 'text-text-danger')}>
             {changeToShow}

@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
+import { MNEMONIC_STORE } from '../../../shared/helpers';
+
 import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { MNEMONIC_STORE } from '@/common/utils';
 import { initializeWalletFromCloud } from '@/common/wallet';
 import { Input, TitleText } from '@/components';
 

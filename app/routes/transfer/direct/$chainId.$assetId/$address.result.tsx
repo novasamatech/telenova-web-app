@@ -4,8 +4,10 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
+import { toShortAddress } from '../../../../shared/helpers';
+
 import { MainButton } from '@/common/telegram/MainButton';
-import { Icon, MediumTitle, TitleText } from '@/components';
+import { Icon, Identicon, MediumTitle, TitleText } from '@/components';
 import { networkModel } from '@/models';
 
 export type SearchParams = {
@@ -39,9 +41,10 @@ const Page = () => {
         <TitleText>
           {amount} {selectedAsset.symbol} Sent to
         </TitleText>
-        <MediumTitle className="text-text-hint break-all" align="center">
-          {address}
-        </MediumTitle>
+        <div className="flex gap-x-1 items-center">
+          <Identicon address={address} />
+          <MediumTitle className="text-text-hint">{toShortAddress(address, 15)}</MediumTitle>
+        </div>
         <MediumTitle className="text-text-hint" align="center">
           Your transaction has been sent to the network and will be processed in a few seconds.
         </MediumTitle>

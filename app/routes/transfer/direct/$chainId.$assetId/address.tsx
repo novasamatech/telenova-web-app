@@ -5,10 +5,11 @@ import { Button } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
 
+import { validateAddress } from '../../../../shared/helpers';
+
 import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { validateAddress } from '@/common/utils';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
 
 export const clientLoader = (({ params }) => {

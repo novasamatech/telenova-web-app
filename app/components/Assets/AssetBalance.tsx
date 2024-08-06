@@ -1,8 +1,10 @@
+import { type BN } from '@polkadot/util';
+
 import { Icon } from '../Icon/Icon';
 import { TokenPrice } from '../Price/TokenPrice';
 import { MediumTitle } from '../Typography';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 import { type Asset } from '@/types/substrate';
 
 import { AssetIcon } from './AssetIcon';
@@ -10,11 +12,11 @@ import { Balance } from './Balance';
 
 type Props = {
   asset: Asset;
-  balance?: string;
+  balance?: BN;
   name?: string;
-  className?: string;
   showPrice?: boolean;
   showArrow?: boolean;
+  className?: string;
   animate?: boolean;
 };
 

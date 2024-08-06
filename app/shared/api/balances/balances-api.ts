@@ -4,7 +4,8 @@ import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
 import { BN_ZERO, hexToU8a } from '@polkadot/util';
 
-import { assetUtils, toAddress } from '@/common/utils';
+import { assetUtils, toAddress } from '../../helpers';
+
 import { type Asset, type Chain, type NativeAsset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 import { type AssetBalance } from '@/types/substrate/balance';
 
@@ -37,8 +38,8 @@ const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain
         frozen,
         reserved,
 
-        total: free.add(reserved).toString(),
-        transferable: free.gt(frozen) ? free.sub(frozen).toString() : BN_ZERO.toString(),
+        total: free.add(reserved),
+        transferable: free.gt(frozen) ? free.sub(frozen) : BN_ZERO,
       },
     });
   });
@@ -61,8 +62,8 @@ const subscribeStatemineAssetChange: ISubscribeBalance<StatemineAsset> = (api, c
         frozen: BN_ZERO,
         reserved: BN_ZERO,
 
-        total: free.toString(),
-        transferable: free.toString(),
+        total: free,
+        transferable: free,
       },
     });
   });
@@ -80,7 +81,7 @@ const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asse
 
   const address = toAddress(accountId, { prefix: chain.addressPrefix });
 
-  return method(assetId, address, (accountInfo: any) => {
+  return method(address, assetId, (accountInfo: any) => {
     const free = accountInfo.free.toBn();
 
     callback({

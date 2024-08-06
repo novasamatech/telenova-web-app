@@ -5,9 +5,10 @@ import { Avatar, Button } from '@nextui-org/react';
 import { useLocation } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
+import { BACKUP_DATE } from '../../shared/helpers';
+
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { BACKUP_DATE } from '@/common/utils';
 import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
 

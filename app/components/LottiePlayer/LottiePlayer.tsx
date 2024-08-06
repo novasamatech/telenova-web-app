@@ -3,7 +3,7 @@ import { Suspense, lazy } from 'react';
 import { type IPlayerProps } from '@lottiefiles/react-lottie-player';
 import { CircularProgress } from '@nextui-org/react';
 
-import { cnTw } from '@/common/utils';
+import { cnTw } from '../../shared/helpers';
 
 const LazyPlayer = lazy(() => {
   return import('@lottiefiles/react-lottie-player').then(lottie => ({ default: lottie.Player }));

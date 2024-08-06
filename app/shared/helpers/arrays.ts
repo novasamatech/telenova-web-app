@@ -1,4 +1,4 @@
-import { type KeysOfType } from './utility';
+import { type KeysOfType } from './utility.ts';
 
 /**
  * Create dictionary with given key and value

@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { extendTailwindMerge } from 'tailwind-merge';
 
-import fontSizes from '../../../tw-config-consts/font-sizes';
+import fontSizes from '../../../tw-config-consts/font-sizes.ts';
 
 type CnArgs = Parameters<typeof cn>;
 

@@ -4,14 +4,14 @@ import { Link } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
+import { GIFT_STORE, getGifts } from '../../shared/helpers';
+import { useGifts } from '../../shared/hooks';
 import { Icon } from '../Icon/Icon';
 import { Plate } from '../Plate';
 import { Shimmering } from '../Shimmering/Shimmering';
 import { BigTitle, BodyText } from '../Typography';
 
 import { type Gift } from '@/common/types';
-import { GIFT_STORE, getGifts } from '@/common/utils';
-import { useGifts } from '@/common/utils/hooks';
 import { getStoreName } from '@/common/wallet';
 import { networkModel } from '@/models';
 

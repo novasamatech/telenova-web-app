@@ -39,7 +39,7 @@ const mockedAssets = [
 ];
 
 // These assets should not appear in any list on Assets page
-vi.mock('@/common/utils/chains', () => ({
+vi.mock('@/shared/helpers/chains', () => ({
   DEFAULT_CONNECTED_CHAINS: {
     '0x001': [0], // POLKADOT
     '0x002': [0], // KUSAMA

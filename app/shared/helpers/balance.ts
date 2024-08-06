@@ -1,34 +1,43 @@
 import BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash-es';
 
-import { BN, BN_TEN } from '@polkadot/util';
+import { BN, BN_TEN, BN_ZERO } from '@polkadot/util';
 
 import { type AssetPrice, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
-import { ZERO_BALANCE } from './constants';
+type Suffix = 'thousand' | 'million' | 'billion' | 'trillion';
 
-type FormattedBalance = {
-  formattedValue: string;
-  suffix: string;
-  decimalPlaces: number;
+const Decimal = {
+  SMALL_NUMBER: 5,
+  BIG_NUMBER: 2,
 };
 
-const enum Suffix {
-  MILLIONS = 'M',
-  BILLIONS = 'B',
-  TRILLIONS = 'T',
-}
+type FormattedBalance = {
+  value: string;
+  bn: BN;
+  suffix: string;
+  decimalPlaces: number;
+  formatted: string;
+};
 
-export const enum Decimal {
-  SMALL_NUMBER = 5,
-  BIG_NUMBER = 2,
-}
+const defaultShorthands: Record<Suffix, boolean> = {
+  thousand: false,
+  million: true,
+  billion: true,
+  trillion: true,
+};
 
-// Format balance from spektr
-export const formatBalance = (balance = '0', precision = 0): FormattedBalance => {
+export const toFormattedBalance = (
+  balance: string | BN = '0',
+  precision = 0,
+  shorthands?: Partial<Record<Suffix, boolean>>,
+): FormattedBalance => {
+  const mergedShorthands = shorthands ? Object.assign(defaultShorthands, shorthands) : defaultShorthands;
+
+  const stringBalance = balance.toString();
+
   const BNWithConfig = BigNumber.clone();
   BNWithConfig.config({
-    // HOOK: for divide with decimal part
     DECIMAL_PLACES: precision || Decimal.SMALL_NUMBER,
     ROUNDING_MODE: BNWithConfig.ROUND_DOWN,
     FORMAT: {
@@ -38,56 +47,67 @@ export const formatBalance = (balance = '0', precision = 0): FormattedBalance =>
   });
   const TEN = new BNWithConfig(10);
   const bnPrecision = new BNWithConfig(precision);
-  const bnBalance = new BNWithConfig(balance).div(TEN.pow(bnPrecision));
+  const bnBalance = new BNWithConfig(stringBalance).div(TEN.pow(bnPrecision));
   let divider = new BNWithConfig(1);
   let decimalPlaces = 0;
   let suffix = '';
 
   if (bnBalance.lt(1)) {
-    decimalPlaces = Math.max(precision - balance.toString().length + 1, 5);
+    decimalPlaces = Math.max(precision - stringBalance.length + 1, 5);
   } else if (bnBalance.lt(10)) {
     decimalPlaces = Decimal.SMALL_NUMBER;
   } else if (bnBalance.lt(1_000_000)) {
     decimalPlaces = Decimal.BIG_NUMBER;
+    if (mergedShorthands.thousand) {
+      divider = TEN.pow(new BNWithConfig(3));
+      suffix = 'K';
+    }
   } else if (bnBalance.lt(1_000_000_000)) {
     decimalPlaces = Decimal.BIG_NUMBER;
-    divider = TEN.pow(new BNWithConfig(6));
-    suffix = Suffix.MILLIONS;
+    if (mergedShorthands.million) {
+      divider = TEN.pow(new BNWithConfig(6));
+      suffix = 'M';
+    }
   } else if (bnBalance.lt(1_000_000_000_000)) {
     decimalPlaces = Decimal.BIG_NUMBER;
-    divider = TEN.pow(new BNWithConfig(9));
-    suffix = Suffix.BILLIONS;
+    if (mergedShorthands.billion) {
+      divider = TEN.pow(new BNWithConfig(9));
+      suffix = 'B';
+    }
   } else {
     decimalPlaces = Decimal.BIG_NUMBER;
-    divider = TEN.pow(new BNWithConfig(12));
-    suffix = Suffix.TRILLIONS;
+    if (mergedShorthands.trillion) {
+      divider = TEN.pow(new BNWithConfig(12));
+      suffix = 'T';
+    }
   }
 
+  const value = new BNWithConfig(bnBalance).div(divider).decimalPlaces(decimalPlaces);
+
   return {
-    formattedValue: new BNWithConfig(bnBalance).div(divider).decimalPlaces(decimalPlaces).toFormat(),
+    value: value.toFormat(),
+    bn: new BN(balance),
     suffix,
     decimalPlaces,
+    formatted: value.toFormat() + suffix,
   };
 };
 
-export const formatAmount = (rawAmount: string, precision: number): string => {
-  if (!rawAmount) return ZERO_BALANCE;
+export const toPrecisedBalance = (amount: string, precision: number): BN => {
+  if (!amount || Number.isNaN(parseFloat(amount))) return BN_ZERO;
 
-  const amount = (+rawAmount).toString();
   const isDecimalValue = amount.match(/^(\d+)\.(\d+)$/);
   const bnPrecision = new BN(precision);
+
   if (isDecimalValue) {
     const div = new BN(amount.replace(/\.\d*$/, ''));
     const modString = amount.replace(/^\d+\./, '').slice(0, precision);
     const mod = new BN(modString);
 
-    return div
-      .mul(BN_TEN.pow(bnPrecision))
-      .add(mod.mul(BN_TEN.pow(new BN(precision - modString.length))))
-      .toString();
+    return div.mul(BN_TEN.pow(bnPrecision)).add(mod.mul(BN_TEN.pow(new BN(precision - modString.length))));
   }
 
-  return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision)).toString();
+  return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision));
 };
 
 export const getTotalBalance = (chains: ChainsMap, balances: ChainBalances, prices: AssetPrice | null): number => {
@@ -100,7 +120,7 @@ export const getTotalBalance = (chains: ChainsMap, balances: ChainBalances, pric
 
     if (!asset || !asset.priceId) continue;
 
-    const formatedBalance = formatBalance(assetBalance[asset.assetId].balance.total, asset.precision).formattedValue;
+    const formatedBalance = toFormattedBalance(assetBalance[asset.assetId].balance.total, asset.precision).value;
 
     totalBalance += (prices[asset.priceId].price || 0) * Number(formatedBalance);
   }

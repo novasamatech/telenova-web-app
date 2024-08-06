@@ -6,11 +6,12 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
+import { runMercuryoWidget, toAddress } from '../../shared/helpers';
+
 import { useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { runMercuryoWidget, toAddress } from '@/common/utils';
 import { MediumTitle } from '@/components';
 import { networkModel, walletModel } from '@/models';
 

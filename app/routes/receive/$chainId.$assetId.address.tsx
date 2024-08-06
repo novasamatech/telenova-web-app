@@ -6,8 +6,9 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
+import { shareQrAddress, toAddress } from '../../shared/helpers';
+
 import { BackButton } from '@/common/telegram/BackButton';
-import { shareQrAddress, toAddress } from '@/common/utils';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/components';
 import { networkModel, walletModel } from '@/models';
 

@@ -1,9 +1,10 @@
+import { type BN } from '@polkadot/util';
+
+import { cnTw } from '../../shared/helpers';
 import { Shimmering } from '../Shimmering/Shimmering';
 
-import { cnTw } from '@/common/utils';
-
 type Props = {
-  amount?: number;
+  amount?: BN;
   symbol?: string;
   decimalSize?: 'sm' | 'lg';
 };
@@ -18,7 +19,7 @@ export const Price = ({ amount, symbol = '$', decimalSize = 'sm' }: Props) => {
     return <Shimmering width={50} height={30} />;
   }
 
-  const value = amount === 0 ? '0.00' : parseFloat(amount.toFixed(3));
+  const value = amount.isZero() ? '0.00' : amount.toString(); // parseFloat(amount.toFixed(3));
   const [integerPart, decimalPart] = value.toString().split('.');
 
   return (
