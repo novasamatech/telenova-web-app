@@ -1,3 +1,4 @@
+import type { SignerOptions } from '@polkadot/api/types';
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { type BN } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
@@ -16,7 +17,7 @@ type SendTransaction = {
   keyring?: KeyringPair;
 };
 
-const getAssetIdSignOption = (assetId: string) => ({
+const getAssetIdSignOption = (assetId: string): Pick<SignerOptions, 'assetId'> => ({
   assetId: ASSET_LOCATION[assetId],
 });
 
@@ -47,10 +48,12 @@ export const useExtrinsic = () => {
       transactionType = TransactionType.TRANSFER_ORML;
     }
 
+    // nonce: -1 makes polkadot.js use next nonce
+    // https://github.com/polkadot-js/api/blob/dac94c51964a90f9b26bc88d5a63f1e1b2038281/packages/api-derive/src/tx/signingInfo.ts#L93
     return submitExtrinsic({
       chainId,
-      signOptions,
       keyring,
+      signOptions: { ...signOptions, nonce: -1 },
       transaction: {
         type: transactionType,
         args: {

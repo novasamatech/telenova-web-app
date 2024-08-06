@@ -1,14 +1,14 @@
 import { type PropsWithChildren } from 'react';
 
-import { Input } from '@nextui-org/react';
-
 import { type BN } from '@polkadot/util';
 
+import { AmountInput } from '../AmountInput/AmountInput';
 import { Icon } from '../Icon/Icon';
 import { TokenPrice } from '../Price/TokenPrice';
 import { BodyText, LargeTitleText } from '../Typography';
 
 import { AssetIcon } from '@/components';
+import { toFormattedBalance } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 
 //TODO: Change layout mobile text
@@ -39,18 +39,14 @@ export const AmountDetails = ({
       <div className="flex gap-x-2 items-center mb-6 mt-5 -ml-1.5">
         <AssetIcon src={asset.icon} size={46} />
         <LargeTitleText>{asset.symbol}</LargeTitleText>
-        <Input
-          fullWidth={false}
-          variant="underlined"
-          className="font-manrope w-max ml-auto mt-2.5 "
-          classNames={{ input: ['text-right !text-large-title max-w-[7ch]'] }}
-          // value={amount.toString()}
-          isInvalid={!isAmountValid}
-          type="text"
-          inputMode="decimal"
-          placeholder="0.00"
-          onValueChange={handleChange}
-        />
+        <div className="px-1">
+          <AmountInput
+            className="max-w-[7ch]"
+            value={toFormattedBalance(amount, asset.precision).value}
+            isValid={isAmountValid}
+            onChange={handleChange}
+          />
+        </div>
       </div>
 
       {isAmountValid && !isPending && (
