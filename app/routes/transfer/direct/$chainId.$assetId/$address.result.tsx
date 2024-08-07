@@ -7,7 +7,7 @@ import { $params, $path } from 'remix-routes';
 import { MainButton } from '@/common/telegram/MainButton';
 import { Icon, Identicon, MediumTitle, TitleText } from '@/components';
 import { networkModel } from '@/models';
-import { toShortAddress } from '@/shared/helpers';
+import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -38,7 +38,7 @@ const Page = () => {
       <div className="flex flex-col items-center justify-center h-[95vh] gap-3">
         <Icon name="Success" size={250} />
         <TitleText>
-          {amount} {selectedAsset.symbol} Sent to
+          {toFormattedBalance(amount, selectedAsset.precision).formatted} {selectedAsset.symbol} Sent to
         </TitleText>
         <div className="flex gap-x-1 items-center">
           <Identicon address={address} />

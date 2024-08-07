@@ -109,7 +109,7 @@ const Page = () => {
         isPending={isPending}
         isAmountValid={!isTouched || isAmountValid}
         isAccountToBeReaped={getIsAccountToBeReaped()}
-        handleChange={onAmountChange}
+        onAmountChange={onAmountChange}
       />
     </>
   );

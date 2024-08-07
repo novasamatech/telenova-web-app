@@ -21,7 +21,7 @@ import {
   TruncateAddress,
 } from '@/components';
 import { networkModel } from '@/models';
-import { toFormattedBalance, toPrecisedBalance, toShortAddress } from '@/shared/helpers';
+import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -54,11 +54,17 @@ const Page = () => {
 
   if (!selectedAsset || !chains[typedChainId]) return null;
 
+  const symbol = selectedAsset.symbol;
+  const bnFee = new BN(fee);
+  const bnAmount = new BN(amount);
+  const formattedFee = toFormattedBalance(bnFee, selectedAsset.precision);
+  const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
+
   const mainCallback = () => {
     sendTransfer({
       chainId: typedChainId,
       asset: selectedAsset,
-      transferAmount: toPrecisedBalance(amount, selectedAsset.precision),
+      transferAmount: bnAmount,
       destinationAddress: address,
       transferAll: all,
     })
@@ -70,12 +76,6 @@ const Page = () => {
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
   };
-
-  const symbol = selectedAsset.symbol;
-  const bnFee = new BN(fee);
-  const bnAmount = new BN(amount);
-  const formattedFee = toFormattedBalance(bnFee, selectedAsset.precision);
-  const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const details = [
     {

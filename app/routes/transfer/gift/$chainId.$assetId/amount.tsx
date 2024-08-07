@@ -94,7 +94,7 @@ const Page = () => {
         isPending={isPending}
         deposit={deposit}
         isAccountToBeReaped={getIsAccountToBeReaped()}
-        handleChange={onAmountChange}
+        onAmountChange={onAmountChange}
       >
         {isTouched && !isAboveDeposit && (
           <>

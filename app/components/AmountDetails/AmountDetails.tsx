@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 
 import { type BN } from '@polkadot/util';
 
@@ -20,7 +20,7 @@ type Props = {
   isAmountValid: boolean;
   isPending: boolean;
   isAccountToBeReaped: boolean;
-  handleChange: (value: string) => void;
+  onAmountChange: (value: string) => void;
 };
 
 export const AmountDetails = ({
@@ -31,9 +31,22 @@ export const AmountDetails = ({
   isPending,
   isAccountToBeReaped,
   isAmountValid,
-  handleChange,
+  onAmountChange,
   children,
 }: PropsWithChildren<Props>) => {
+  const [inputAmount, setInputAmount] = useState(toFormattedBalance(amount, asset.precision).value);
+
+  useEffect(() => {
+    if (maxAmount.isZero() || amount.isZero() || !maxAmount.eq(amount)) return;
+
+    setInputAmount(toFormattedBalance(maxAmount, asset.precision).value);
+  }, [amount, maxAmount]);
+
+  const handleAmountChange = (value: string) => {
+    setInputAmount(value);
+    onAmountChange(value);
+  };
+
   return (
     <>
       <div className="flex gap-x-2 items-center mb-6 mt-5 -ml-1.5">
@@ -42,9 +55,9 @@ export const AmountDetails = ({
         <div className="px-1 ml-auto">
           <AmountInput
             className="max-w-[7ch]"
-            value={toFormattedBalance(amount, asset.precision).value}
+            value={inputAmount}
             isValid={isAmountValid}
-            onChange={handleChange}
+            onChange={handleAmountChange}
           />
         </div>
       </div>
