@@ -14,9 +14,9 @@ import { Shimmering } from '../Shimmering/Shimmering';
 import { BigTitle } from '../Typography';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useGlobalContext } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { networkModel } from '@/models';
+import { networkModel, telegramModel, walletModel } from '@/models';
 import { getGiftInfo, toPrecisedBalance } from '@/shared/helpers';
 import { type Asset, type StatemineAsset } from '@/types/substrate';
 
@@ -39,14 +39,16 @@ const GIFTS: GiftStatusType = {
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export const GiftModal = () => {
-  const { startParam, webApp } = useTelegram();
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
   const { sendTransfer, getTransactionFee } = useExtrinsic();
-  const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
+  const { isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
 
+  const wallet = useUnit(walletModel.$wallet);
   const chains = useUnit(networkModel.$chains);
   const connections = useUnit(networkModel.$connections);
+  const webApp = useUnit(telegramModel.$webApp);
+  const startParam = useUnit(telegramModel.$startParam);
 
   const [giftSymbol, setGiftSymbol] = useState('');
   const [giftBalance, setGiftBalance] = useState(BN_ZERO);
@@ -75,10 +77,10 @@ export const GiftModal = () => {
   };
 
   useEffect(() => {
-    if (isGiftClaimed || !startParam || !publicKey) return;
+    if (isGiftClaimed || !startParam || !wallet?.publicKey) return;
     setIsOpen(true);
 
-    const giftInfo = getGiftInfo(Object.values(chains), publicKey, startParam);
+    const giftInfo = getGiftInfo(Object.values(chains), wallet.publicKey, startParam);
     if (!giftInfo || connections[giftInfo.chainId].status === 'disconnected') return;
 
     const { chainId, asset, giftAddress, symbol } = giftInfo;
@@ -98,7 +100,7 @@ export const GiftModal = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [startParam, publicKey, isGiftClaimed, connections]);
+  }, [startParam, wallet, isGiftClaimed, connections]);
 
   const handleClose = () => {
     clearTimeout(timeoutId);
@@ -109,7 +111,7 @@ export const GiftModal = () => {
   };
 
   const handleGiftClaim = async () => {
-    const giftInfo = getGiftInfo(Object.values(chains), publicKey!, startParam!);
+    const giftInfo = getGiftInfo(Object.values(chains), wallet!.publicKey!, startParam!);
     if (!giftInfo) return;
 
     setIsDisabled(true);

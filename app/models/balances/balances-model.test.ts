@@ -26,7 +26,7 @@ describe('models/balances/balances-model', () => {
   test('should update $balance on balanceUpdated', async () => {
     const defaultBalance = {
       chainId: '0x002',
-      accountId: '0x999',
+      publicKey: '0x999',
       balance: { total: BN_TEN, transferable: BN_TEN },
     };
 
@@ -146,7 +146,7 @@ describe('models/balances/balances-model', () => {
 
     await allSettled(balancesModel._internal.subscribeChainsAssetsFx, {
       scope,
-      params: { apis: {}, chains: [], assets: [], accountId: '0x999' },
+      params: { apis: {}, chains: [], assets: [], publicKey: '0x999' },
     });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 1: Promise.resolve(noop) } });

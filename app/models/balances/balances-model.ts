@@ -62,11 +62,11 @@ type SubAssetsParams = {
   apis: Record<ChainId, ApiPromise>;
   chains: Chain[];
   assets: Asset[][];
-  accountId: AccountId;
+  publicKey: PublicKey;
   subscriptions: Subscriptions;
 };
 const pureSubscribeChainsAssetsFx = createEffect(
-  ({ apis, chains, assets, accountId, subscriptions }: SubAssetsParams): Subscriptions => {
+  ({ apis, chains, assets, publicKey, subscriptions }: SubAssetsParams): Subscriptions => {
     const boundUpdate = scopeBind(balanceUpdated, { safe: true });
 
     const newChainSubscriptions: Subscriptions = {};
@@ -76,7 +76,7 @@ const pureSubscribeChainsAssetsFx = createEffect(
       const assetsSubscriptions = subscriptions[chain.chainId] || {};
 
       assets[index].forEach(asset => {
-        assetsSubscriptions[asset.assetId] = balancesApi.subscribeBalance(api, chain, asset, accountId, boundUpdate);
+        assetsSubscriptions[asset.assetId] = balancesApi.subscribeBalance(api, chain, asset, publicKey, boundUpdate);
       });
 
       newChainSubscriptions[chain.chainId] = assetsSubscriptions;
@@ -167,7 +167,7 @@ sample({
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => a.assetId === data.assetId)];
 
-    return { apis, chains: activeChains, assets, accountId: wallet!.publicKey! };
+    return { apis, chains: activeChains, assets, publicKey: wallet!.publicKey! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -206,7 +206,7 @@ sample({
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => activeAssets[data.chainId]?.[a.assetId])];
 
-    return { apis, chains: activeChains, assets, accountId: wallet!.publicKey! };
+    return { apis, chains: activeChains, assets, publicKey: wallet!.publicKey! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -254,7 +254,7 @@ sample({
       chain.assets.filter(asset => activeAssets[chain.chainId]?.[asset.assetId]),
     );
 
-    return { apis, chains: activeChains, assets, accountId: wallet!.publicKey! };
+    return { apis, chains: activeChains, assets, publicKey: wallet!.publicKey! };
   },
   target: subscribeChainsAssetsFx,
 });

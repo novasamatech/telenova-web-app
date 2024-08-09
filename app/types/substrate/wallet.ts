@@ -1,3 +1,3 @@
 export type Wallet = {
-  publicKey?: AccountId;
+  publicKey?: PublicKey;
 };

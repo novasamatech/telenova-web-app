@@ -6,11 +6,10 @@ import { useLocation } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { createWallet, initializeWalletFromCloud } from '@/common/wallet';
+import { initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
-import { telegramModel } from '@/models';
+import { telegramModel, walletModel } from '@/models';
 import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
@@ -18,7 +17,6 @@ import { useToggle } from '@/shared/hooks';
 const Page = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setPublicKey } = useGlobalContext();
 
   const webApp = useUnit(telegramModel.$webApp);
   const user = useUnit(telegramModel.$user);
@@ -38,18 +36,16 @@ const Page = () => {
     }
 
     const decryptedMnemonic = initializeWalletFromCloud(password, location.state.mnemonic);
-    const wallet = createWallet(webApp, decryptedMnemonic);
-    setIsPasswordValid(Boolean(wallet));
+    if (!decryptedMnemonic) return;
 
-    if (!wallet) return;
-
+    walletModel.input.walletCreated(decryptedMnemonic);
+    setIsPasswordValid(true);
     setIsPending(true);
+
     telegramApi
       .getCloudStorageItem(webApp, BACKUP_DATE)
-      .then(value => {
-        localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), value);
-        setPublicKey(wallet.publicKey);
-
+      .then(backupDate => {
+        localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), backupDate);
         navigate($path('/dashboard'));
       })
       .finally(() => {

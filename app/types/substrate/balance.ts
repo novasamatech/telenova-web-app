@@ -8,7 +8,7 @@ export type ChainBalances = {
 
 export type AssetBalance = {
   chainId: ChainId;
-  accountId: AccountId;
+  publicKey: PublicKey;
   assetId: AssetId;
   balance: Balance;
 };

@@ -1,8 +1,9 @@
 import { type PropsWithChildren, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type LoaderFunction, type MetaFunction, json } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
-import { useUnit } from 'effector-react/effector-react.umd';
+import { useUnit } from 'effector-react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
@@ -67,9 +68,15 @@ export const loader = (() => {
 const DataContext = ({ children }: PropsWithChildren) => {
   const { file } = useLoaderData<typeof loader>();
 
+  const navigate = useNavigate();
+
   const webAppError = useUnit(models.telegramModel.$error);
 
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    models.navigationModel.input.navigatorChanged(navigate);
+  }, [navigate]);
 
   useEffect(() => {
     models.telegramModel.input.webAppStarted();
@@ -90,30 +97,6 @@ const DataContext = ({ children }: PropsWithChildren) => {
 };
 
 const App = () => {
-  // const navigate = useNavigate();
-  // const { setPublicKey } = useGlobalContext();
-  //
-  // const [error, setError] = useState<string | null>(null);
-  //
-  // useEffect(() => {
-  //   // getWallet()
-  //   //   .then(wallet => {
-  //   //     if (!wallet) {
-  //   //       navigate($path('/onboarding'), { replace: true });
-  //   //     } else {
-  //   //       setPublicKey(wallet.publicKey);
-  //   //       models.walletModel.input.accountChanged(wallet.publicKey);
-  //   //
-  //   //       navigate($path('/dashboard'), { replace: true });
-  //   //     }
-  //   //   })
-  //   //   .catch(e => setError(e?.toString?.()));
-  // }, []);
-
-  // if (error) {
-  //   return <ErrorScreen error={error} />;
-  // }
-
   return (
     <main className="font-manrope flex justify-center">
       <div className="min-h-screen p-4 w-full overflow-x-auto break-words">

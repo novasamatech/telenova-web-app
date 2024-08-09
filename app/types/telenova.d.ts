@@ -6,8 +6,8 @@ declare global {
   export type AssetId = number;
 
   export type Address = string;
-  export type AccountId = HexString;
   export type PublicKey = HexString;
+  export type Mnemonic = string;
 
   export type CallData = HexString;
   export type CallHash = HexString;

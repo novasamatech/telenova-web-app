@@ -5,12 +5,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react/effector-react.umd';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
 import { completeOnboarding } from '@/common/telegram';
 import { MainButton } from '@/common/telegram/MainButton';
 import { BodyText, HeadlineText, LottiePlayer, TitleText } from '@/components';
+import { telegramModel, walletModel } from '@/models';
 
 export const loader = () => {
   return json({
@@ -22,13 +23,14 @@ const Page = () => {
   const { botApiUrl } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
-  const { publicKey } = useGlobalContext();
+
+  const webApp = useUnit(telegramModel.$webApp);
+  const wallet = useUnit(walletModel.$wallet);
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!publicKey) {
+    if (!wallet?.publicKey) {
       console.error("Can't create wallet when public key is missing");
 
       return;
@@ -41,7 +43,7 @@ const Page = () => {
     }
 
     // TODO: Handle errors here and display retry page maybe
-    completeOnboarding({ publicKey, webApp, baseUrl: botApiUrl }).catch(() => {
+    completeOnboarding({ webApp, publicKey: wallet.publicKey, baseUrl: botApiUrl }).catch(() => {
       console.warn('Onboarding failed');
     });
   }, []);

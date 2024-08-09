@@ -3,3 +3,4 @@ export { networkModel } from './network/network-model';
 export { assetsFilterModel } from './network/assets-filter-model';
 export { walletModel } from './wallet/wallet-model';
 export { telegramModel } from './telegram/telegram-model';
+export { navigationModel } from './navigation/navigation-model';

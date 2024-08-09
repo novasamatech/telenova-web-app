@@ -5,15 +5,13 @@ import { Avatar } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { backupMnemonic, createWallet, generateWalletMnemonic } from '@/common/wallet';
+import { backupMnemonic, generateWalletMnemonic } from '@/common/wallet';
 import { BodyText, CreatePasswordForm, TitleText } from '@/components';
-import { telegramModel } from '@/models';
+import { telegramModel, walletModel } from '@/models';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { setPublicKey } = useGlobalContext();
 
   const webApp = useUnit(telegramModel.$webApp);
   const user = useUnit(telegramModel.$user);
@@ -26,9 +24,8 @@ const Page = () => {
 
   const onSubmit = () => {
     const mnemonic = generateWalletMnemonic();
-    const wallet = createWallet(webApp, mnemonic);
 
-    setPublicKey(wallet?.publicKey);
+    walletModel.input.walletCreated(mnemonic);
     backupMnemonic(webApp, mnemonic, password);
     navigate($path('/onboarding/create-wallet'));
   };

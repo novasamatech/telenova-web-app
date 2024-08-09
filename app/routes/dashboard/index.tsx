@@ -5,7 +5,7 @@ import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
@@ -28,13 +28,11 @@ import { getPrice, getTotalBalance } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { user } = useTelegram();
   const { assetsPrices, setAssetsPrices } = useGlobalContext();
 
-  const chains = useUnit(networkModel.$chains);
-  const assets = useUnit(networkModel.$sortedAssets);
   const balances = useUnit(balancesModel.$balances);
-  const webApp = useUnit(telegramModel.$webApp);
+  const [chains, assets] = useUnit([networkModel.$chains, networkModel.$sortedAssets]);
+  const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
 
   // Fetching chains
   useEffect(() => {

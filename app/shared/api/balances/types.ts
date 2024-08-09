@@ -14,6 +14,6 @@ export type ISubscribeBalance<T extends Asset> = (
   api: ApiPromise,
   chain: Chain,
   asset: T,
-  accountId: AccountId,
+  publicKey: PublicKey,
   callback: (newBalance: AssetBalance) => void,
 ) => UnsubscribePromise;
