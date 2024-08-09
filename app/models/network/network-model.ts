@@ -64,7 +64,7 @@ const getConnectedAssetsFx = createEffect((): Promise<Record<ChainIndex, AssetId
 
       entries.forEach(entry => {
         const [key, values] = entry.split('_');
-        result[key] = values.split(',').map(Number);
+        result[Number(key)] = values.split(',').map(Number);
       });
 
       resolve(result);

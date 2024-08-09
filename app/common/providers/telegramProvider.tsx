@@ -1,11 +1,10 @@
 import { type PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-import { type BackButton, type WebApp, type WebAppUser } from '@twa-dev/types';
+import { type WebApp, type WebAppUser } from '@twa-dev/types';
 
 export interface ITelegramContext {
   webApp?: WebApp;
   user?: WebAppUser;
-  BackButton?: BackButton;
   startParam?: string;
 }
 
@@ -31,7 +30,6 @@ export const TelegramProvider = ({ children }: PropsWithChildren) => {
 
     return {
       webApp,
-      BackButton: webApp.BackButton,
       user: webApp.initDataUnsafe.user,
       startParam: webApp.initDataUnsafe.start_param,
     };

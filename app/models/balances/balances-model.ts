@@ -151,23 +151,23 @@ sample({
 sample({
   clock: assetToSubSet,
   source: {
-    account: walletModel.$account,
+    wallet: walletModel.$wallet,
     connections: networkModel.$connections,
     chains: networkModel.$chains,
   },
-  filter: ({ account, connections, chains }, data) => {
-    const isAccountExist = Boolean(account);
+  filter: ({ wallet, connections, chains }, data) => {
+    const isAccountExist = Boolean(wallet?.publicKey);
     const isConnected = connections[data.chainId]?.status === 'connected';
     const hasAsset = chains[data.chainId]?.assets.some(a => a.assetId === data.assetId);
 
     return isAccountExist && isConnected && hasAsset;
   },
-  fn: ({ account, connections, chains }, data) => {
+  fn: ({ wallet, connections, chains }, data) => {
     const apis = { [data.chainId]: connections[data.chainId].api! };
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => a.assetId === data.assetId)];
 
-    return { apis, chains: activeChains, assets, accountId: account! };
+    return { apis, chains: activeChains, assets, accountId: wallet!.publicKey! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -190,23 +190,23 @@ sample({
 sample({
   clock: networkModel.output.connectionChanged,
   source: {
-    account: walletModel.$account,
+    wallet: walletModel.$wallet,
     connections: networkModel.$connections,
     chains: networkModel.$chains,
     activeAssets: $activeAssets,
   },
-  filter: ({ account }, { status }) => {
-    const isAccountExist = Boolean(account);
+  filter: ({ wallet }, { status }) => {
+    const isAccountExist = Boolean(wallet?.publicKey);
     const isConnected = status === 'connected';
 
     return isAccountExist && isConnected;
   },
-  fn: ({ connections, chains, activeAssets, account }, data) => {
+  fn: ({ connections, chains, activeAssets, wallet }, data) => {
     const apis = { [data.chainId]: connections[data.chainId].api! };
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => activeAssets[data.chainId]?.[a.assetId])];
 
-    return { apis, chains: activeChains, assets, accountId: account! };
+    return { apis, chains: activeChains, assets, accountId: wallet!.publicKey! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -227,20 +227,20 @@ sample({
 
 // Wallet is active - subscribe all active assets for relevant active chains
 sample({
-  clock: walletModel.$account.updates,
+  clock: walletModel.$wallet.updates,
   source: {
     connections: networkModel.$connections,
     chains: networkModel.$chains,
     activeAssets: $activeAssets,
   },
-  filter: ({ connections, activeAssets }, account) => {
-    const isAccountExist = Boolean(account);
+  filter: ({ connections, activeAssets }, wallet) => {
+    const isAccountExist = Boolean(wallet?.publicKey);
     const isAnyToConnect = !isEmpty(activeAssets);
     const isSomeConnected = Object.values(connections).some(({ status }) => status === 'connected');
 
     return isAccountExist && isAnyToConnect && isSomeConnected;
   },
-  fn: ({ connections, chains, activeAssets }, account) => {
+  fn: ({ connections, chains, activeAssets }, wallet) => {
     const apis: Record<ChainId, ApiPromise> = {};
     for (const [chainId, connection] of Object.entries(connections)) {
       if (!activeAssets[chainId as ChainId] || connection.status !== 'connected') continue;
@@ -254,7 +254,7 @@ sample({
       chain.assets.filter(asset => activeAssets[chain.chainId]?.[asset.assetId]),
     );
 
-    return { apis, chains: activeChains, assets, accountId: account! };
+    return { apis, chains: activeChains, assets, accountId: wallet!.publicKey! };
   },
   target: subscribeChainsAssetsFx,
 });

@@ -23,7 +23,7 @@ import {
   TextBase,
   TitleText,
 } from '@/components';
-import { balancesModel, networkModel } from '@/models';
+import { balancesModel, networkModel, telegramModel } from '@/models';
 import { getPrice, getTotalBalance } from '@/shared/helpers';
 
 const Page = () => {
@@ -34,13 +34,14 @@ const Page = () => {
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$sortedAssets);
   const balances = useUnit(balancesModel.$balances);
+  const webApp = useUnit(telegramModel.$webApp);
 
   // Fetching chains
   useEffect(() => {
-    if (getMnemonic()) return;
+    if (!webApp || getMnemonic(webApp)) return;
 
     clearWallet(true);
-  }, []);
+  }, [webApp]);
 
   const clearWallet = (clearLocal?: boolean) => {
     resetWallet(clearLocal);

@@ -39,21 +39,22 @@ const GIFTS: GiftStatusType = {
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export const GiftModal = () => {
-  const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
   const { startParam, webApp } = useTelegram();
-  const { sendTransfer, getTransactionFee } = useExtrinsic();
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
+  const { sendTransfer, getTransactionFee } = useExtrinsic();
+  const { publicKey, isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
 
   const chains = useUnit(networkModel.$chains);
   const connections = useUnit(networkModel.$connections);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
   const [giftSymbol, setGiftSymbol] = useState('');
   const [giftBalance, setGiftBalance] = useState(BN_ZERO);
   const [giftStatus, setGiftStatus] = useState<GIFT_STATUS | null>(null);
+
   const [lottie, setLottie] = useState<AnimationItem | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const getGiftBalance = async (chainId: ChainId, giftAddress: string): Promise<BN> => {
     const timerID = setTimeout(() => {
@@ -77,17 +78,18 @@ export const GiftModal = () => {
     if (isGiftClaimed || !startParam || !publicKey) return;
     setIsOpen(true);
 
-    const { giftAddress, chain, symbol } = getGiftInfo(Object.values(chains), publicKey, startParam);
-    if (connections[chain.chain.chainId].status === 'disconnected') return;
+    const giftInfo = getGiftInfo(Object.values(chains), publicKey, startParam);
+    if (!giftInfo || connections[giftInfo.chainId].status === 'disconnected') return;
 
-    // TODO: check ORML balance
+    const { chainId, asset, giftAddress, symbol } = giftInfo;
+
     const balanceRequest: Record<Asset['type'], (chainId: ChainId, address: Address, asset?: Asset) => Promise<BN>> = {
       native: (chainId, address) => getGiftBalance(chainId, address),
       orml: (chainId, address) => getGiftBalance(chainId, address),
       statemine: (chainId, address, asset) => getGiftBalanceStatemine(chainId, address, asset as StatemineAsset),
     };
 
-    balanceRequest[chain.asset.type](chain.chain.chainId, giftAddress, chain.asset).then(balance => {
+    balanceRequest[asset.type](chainId, giftAddress, asset).then(balance => {
       setGiftStatus(balance.isZero() ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
       setGiftSymbol(balance.isZero() ? '' : symbol);
       setGiftBalance(balance);
@@ -107,6 +109,9 @@ export const GiftModal = () => {
   };
 
   const handleGiftClaim = async () => {
+    const giftInfo = getGiftInfo(Object.values(chains), publicKey!, startParam!);
+    if (!giftInfo) return;
+
     setIsDisabled(true);
     if (giftBalance.isZero()) {
       handleClose();
@@ -119,15 +124,13 @@ export const GiftModal = () => {
       lottie.play();
     }
 
-    const { chainAddress, chain, keyring } = getGiftInfo(Object.values(chains), publicKey!, startParam!);
-
     sendTransfer({
-      chainId: chain.chain.chainId,
-      asset: chain.asset,
-      destinationAddress: chainAddress,
-      transferAmount: toPrecisedBalance(giftBalance.toString(), chain.asset.precision),
+      chainId: giftInfo.chainId,
+      asset: giftInfo.asset,
+      destinationAddress: giftInfo.address,
+      transferAmount: toPrecisedBalance(giftBalance.toString(), giftInfo.asset.precision),
       transferAll: true,
-      keyring,
+      keyringPair: giftInfo.keyring,
     })
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');

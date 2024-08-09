@@ -1,7 +1,3 @@
-export type Wallet = {
-  publicKey: HexString;
-};
-
 export type GiftWallet = {
   address: Address;
   secret: string;
@@ -9,6 +5,21 @@ export type GiftWallet = {
 
 declare global {
   interface Window {
-    mercuryoWidget?: any;
+    mercuryoWidget?: {
+      run: (params: {
+        widgetId: string;
+        returnUrl: string;
+        signature: string;
+        host: HTMLElement;
+        fixCurrency: boolean;
+        type: 'buy' | 'sell';
+        refundAddress: Address;
+        address: Address;
+        // Asset symbol
+        currency: string;
+        onStatusChange: (data: { status: 'paid' | 'new' }) => void;
+        onSellTransferEnabled: (data: { address: string; amount: string }) => void;
+      }) => void;
+    };
   }
 }

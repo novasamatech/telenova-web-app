@@ -11,12 +11,14 @@ export const enum GiftStatus {
   UNCLAIMED = 'Unclaimed',
 }
 
+// HINT: old gifts don't have chainIndex
 export type PersistentGift = {
   timestamp: number;
   address: string;
   secret: string;
   balance: string;
   chainId: ChainId;
+  chainIndex?: ChainIndex;
   status: GiftStatus;
   assetId: string;
 };

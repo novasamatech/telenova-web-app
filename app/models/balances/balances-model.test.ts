@@ -87,7 +87,10 @@ describe('models/balances/balances-model', () => {
 
   test('should update $activeAssets on assetToSubSet', async () => {
     const scope = fork({
-      values: [[balancesModel._internal.$activeAssets, { '0x001': { 0: true } }]],
+      values: [
+        [balancesModel._internal.$activeAssets, { '0x001': { 0: true } }],
+        [walletModel._internal.$wallet, { publicKey: '0x999' }],
+      ],
     });
 
     await allSettled(balancesModel.input.assetToSubSet, {
@@ -176,7 +179,7 @@ describe('models/balances/balances-model', () => {
       values: [
         [balancesModel._internal.$activeAssets, { '0x003': { 0: true } }],
         [balancesModel._internal.$subscriptions, { '0x003': { 0: unsubPromise } }],
-        [walletModel._internal.$account, '0x999'],
+        [walletModel._internal.$wallet, { publicKey: '0x999' }],
         [networkModel._internal.$chains, mockedChains],
         [networkModel._internal.$connections, { '0x003': { api: {}, status: 'connected' } }],
       ],
@@ -199,7 +202,7 @@ describe('models/balances/balances-model', () => {
     const scope = fork({
       values: [
         [balancesModel._internal.$activeAssets, { '0x001': { 1: true }, '0x003': { 0: true, 1: true } }],
-        [walletModel._internal.$account, '0x999'],
+        [walletModel._internal.$wallet, { publicKey: '0x999' }],
         [networkModel._internal.$chains, mockedChains],
         [
           networkModel._internal.$connections,
@@ -228,7 +231,7 @@ describe('models/balances/balances-model', () => {
     const scope = fork({
       values: [
         [balancesModel._internal.$activeAssets, { '0x001': { 1: true }, '0x003': { 0: true, 1: true } }],
-        [walletModel._internal.$account, '0x999'],
+        [walletModel._internal.$wallet, { publicKey: '0x999' }],
         [networkModel._internal.$chains, mockedChains],
         [
           balancesModel._internal.$subscriptions,
@@ -270,7 +273,7 @@ describe('models/balances/balances-model', () => {
       ],
     });
 
-    await allSettled(walletModel._internal.$account, { scope, params: '0x999' });
+    await allSettled(walletModel._internal.$wallet, { scope, params: { publicKey: '0x999' } });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
       '0x001': { 0: unsubPromise },

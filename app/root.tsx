@@ -1,16 +1,13 @@
 import { type PropsWithChildren, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type LoaderFunction, type MetaFunction, json } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
-import { $path } from 'remix-routes';
+import { useUnit } from 'effector-react/effector-react.umd';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import { ExtrinsicProvider } from '@/common/extrinsicService';
-import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider';
-import { TelegramProvider } from '@/common/providers/telegramProvider';
-import { getWallet } from '@/common/wallet';
+import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import { ErrorScreen } from '@/components';
 import * as models from '@/models';
 
@@ -70,9 +67,12 @@ export const loader = (() => {
 const DataContext = ({ children }: PropsWithChildren) => {
   const { file } = useLoaderData<typeof loader>();
 
+  const webAppError = useUnit(models.telegramModel.$error);
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    models.telegramModel.input.webAppStarted();
     models.networkModel.input.networkStarted(file);
 
     cryptoWaitReady().then(() => setIsLoading(false));
@@ -80,39 +80,39 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
   if (isLoading) return null;
 
+  if (webAppError) return <ErrorScreen error={webAppError.message} />;
+
   return (
     <GlobalStateProvider>
-      <TelegramProvider>
-        <ExtrinsicProvider>{children}</ExtrinsicProvider>
-      </TelegramProvider>
+      <ExtrinsicProvider>{children}</ExtrinsicProvider>
     </GlobalStateProvider>
   );
 };
 
 const App = () => {
-  const navigate = useNavigate();
-  const { setPublicKey } = useGlobalContext();
+  // const navigate = useNavigate();
+  // const { setPublicKey } = useGlobalContext();
+  //
+  // const [error, setError] = useState<string | null>(null);
+  //
+  // useEffect(() => {
+  //   // getWallet()
+  //   //   .then(wallet => {
+  //   //     if (!wallet) {
+  //   //       navigate($path('/onboarding'), { replace: true });
+  //   //     } else {
+  //   //       setPublicKey(wallet.publicKey);
+  //   //       models.walletModel.input.accountChanged(wallet.publicKey);
+  //   //
+  //   //       navigate($path('/dashboard'), { replace: true });
+  //   //     }
+  //   //   })
+  //   //   .catch(e => setError(e?.toString?.()));
+  // }, []);
 
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    getWallet()
-      .then(wallet => {
-        if (!wallet) {
-          navigate($path('/onboarding'), { replace: true });
-        } else {
-          setPublicKey(wallet.publicKey);
-          models.walletModel.input.accountChanged(wallet.publicKey);
-
-          navigate($path('/dashboard'), { replace: true });
-        }
-      })
-      .catch(e => setError(e?.toString?.()));
-  }, []);
-
-  if (error) {
-    return <ErrorScreen error={error} />;
-  }
+  // if (error) {
+  //   return <ErrorScreen error={error} />;
+  // }
 
   return (
     <main className="font-manrope flex justify-center">

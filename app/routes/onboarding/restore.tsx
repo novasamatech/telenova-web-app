@@ -3,30 +3,34 @@ import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button } from '@nextui-org/react';
 import { useLocation } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useGlobalContext } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
+import { createWallet, initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
+import { telegramModel } from '@/models';
+import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
+import { useToggle } from '@/shared/hooks';
 
 const Page = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useTelegram();
   const { setPublicKey } = useGlobalContext();
+
+  const webApp = useUnit(telegramModel.$webApp);
+  const user = useUnit(telegramModel.$user);
 
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, toggleModal] = useToggle();
   const [isPending, setIsPending] = useState(false);
 
-  const toggleModal = () => {
-    setIsModalOpen(isOpen => !isOpen);
-  };
+  if (!webApp) return null;
 
-  const submit = () => {
+  const onSubmit = () => {
     if (password.length < 8) {
       setIsPasswordValid(false);
 
@@ -34,22 +38,28 @@ const Page = () => {
     }
 
     const decryptedMnemonic = initializeWalletFromCloud(password, location.state.mnemonic);
-    const wallet = createWallet(decryptedMnemonic);
+    const wallet = createWallet(webApp, decryptedMnemonic);
     setIsPasswordValid(Boolean(wallet));
-    if (wallet) {
-      setIsPending(true);
-      getCloudStorageItem(BACKUP_DATE).then(value => {
-        value && localStorage.setItem(getStoreName(BACKUP_DATE), value);
-        setPublicKey(wallet?.publicKey);
-        setIsPending(false);
+
+    if (!wallet) return;
+
+    setIsPending(true);
+    telegramApi
+      .getCloudStorageItem(webApp, BACKUP_DATE)
+      .then(value => {
+        localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), value);
+        setPublicKey(wallet.publicKey);
+
         navigate($path('/dashboard'));
+      })
+      .finally(() => {
+        setIsPending(false);
       });
-    }
   };
 
   return (
     <>
-      <MainButton progress={isPending} disabled={password.length === 0 || isModalOpen} onClick={submit} />
+      <MainButton progress={isPending} disabled={password.length === 0 || isModalOpen} onClick={onSubmit} />
       <div className="flex flex-col items-center text-center">
         <Avatar
           src={user?.photo_url}

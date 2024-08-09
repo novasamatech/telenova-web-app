@@ -26,7 +26,7 @@ export const AssetsList = ({ chains, assets, className, balances, onClick, ...pr
           <AssetBalanceItem
             asset={asset}
             balance={assetBalance?.balance.total}
-            name={chains[chainId].name}
+            name={chains[chainId]?.name || ''}
             {...props}
           />
         </button>
@@ -39,7 +39,7 @@ export const AssetsList = ({ chains, assets, className, balances, onClick, ...pr
         className={className}
         asset={asset}
         balance={assetBalance?.balance.total}
-        name={chains[chainId].name}
+        name={chains[chainId]?.name || ''}
         {...props}
       />
     );

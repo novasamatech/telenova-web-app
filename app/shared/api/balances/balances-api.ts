@@ -9,17 +9,11 @@ import { assetUtils, toAddress } from '../../helpers';
 import { type Asset, type Chain, type NativeAsset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 import { type AssetBalance } from '@/types/substrate/balance';
 
+import { type ISubscribeBalance, type OrmlAccountData } from './types';
+
 export const balancesApi = {
   subscribeBalance,
 };
-
-type ISubscribeBalance<T extends Asset> = (
-  api: ApiPromise,
-  chain: Chain,
-  asset: T,
-  accountId: AccountId,
-  callback: (newBalance: AssetBalance) => void,
-) => UnsubscribePromise;
 
 const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain, asset, accountId, callback) => {
   const address = toAddress(accountId, { prefix: chain.addressPrefix });
@@ -70,8 +64,7 @@ const subscribeStatemineAssetChange: ISubscribeBalance<StatemineAsset> = (api, c
 };
 
 const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asset, accountId, callback) => {
-  const method: (...args: any[]) => UnsubscribePromise =
-    api.query['tokens']?.['accounts'] || api.query['currencies']?.['accounts'];
+  const method = api.query['tokens']?.['accounts'] as any;
 
   if (!method) return Promise.resolve(noop);
 
@@ -81,7 +74,7 @@ const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asse
 
   const address = toAddress(accountId, { prefix: chain.addressPrefix });
 
-  return method(address, assetId, (accountInfo: any) => {
+  return method(address, assetId, (accountInfo: OrmlAccountData) => {
     const free = accountInfo.free.toBn();
 
     callback({
@@ -90,8 +83,8 @@ const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asse
       assetId: asset.assetId,
       balance: {
         free,
-        frozen: accountInfo.frozen.toString(),
-        reserved: accountInfo.reserved.toString(),
+        frozen: accountInfo.frozen.toBn(),
+        reserved: accountInfo.reserved.toBn(),
 
         total: free,
         transferable: free,

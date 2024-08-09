@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { useGifts } from '../../shared/hooks';
@@ -8,18 +9,23 @@ import { useGifts } from '../../shared/hooks';
 import { BackButton } from '@/common/telegram/BackButton';
 import { type Gift } from '@/common/types';
 import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
+import { telegramModel } from '@/models';
 import { getGifts } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();
   const { getGiftsState } = useGifts();
 
+  const webApp = useUnit(telegramModel.$webApp);
+
   const [loading, setLoading] = useState(true);
   const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
 
   useEffect(() => {
-    const mapGifts = getGifts();
+    if (!webApp) return;
+
+    const mapGifts = getGifts(webApp);
     if (!mapGifts) return;
 
     getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
@@ -27,7 +33,7 @@ const Page = () => {
       setClaimedGifts(claimed);
       setLoading(false);
     });
-  }, []);
+  }, [webApp]);
 
   return (
     <>
@@ -49,6 +55,7 @@ const Page = () => {
                 key={gift.timestamp}
                 to={$path('/gifts/details', {
                   seed: gift.secret,
+                  chainIndex: gift.chainIndex?.toString() || '',
                   symbol: gift.chainAsset?.symbol ?? '',
                   balance: gift.balance,
                 })}
