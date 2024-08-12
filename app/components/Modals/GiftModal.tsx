@@ -7,7 +7,6 @@ import { type AnimationItem } from 'lottie-web';
 
 import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { useAssetHub } from '../../shared/hooks';
 import { Icon } from '../Icon/Icon';
 import { LottiePlayer } from '../LottiePlayer/LottiePlayer';
 import { Shimmering } from '../Shimmering/Shimmering';
@@ -18,6 +17,7 @@ import { useGlobalContext } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { networkModel, telegramModel, walletModel } from '@/models';
 import { getGiftInfo, toPrecisedBalance } from '@/shared/helpers';
+import { useAssetHub } from '@/shared/hooks';
 import { type Asset, type StatemineAsset } from '@/types/substrate';
 
 const enum GIFT_STATUS {
