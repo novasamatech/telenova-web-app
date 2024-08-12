@@ -89,15 +89,15 @@ const Page = () => {
     },
     {
       title: 'Fee',
-      value: `${formattedFee.formatted} ${symbol}`,
+      value: <MediumTitle>{`${formattedFee.formatted} ${symbol}`}</MediumTitle>,
     },
     {
       title: 'Total amount',
-      value: `${formattedTotal.formatted} ${symbol}`,
+      value: <MediumTitle>{`${formattedTotal.formatted} ${symbol}`}</MediumTitle>,
     },
     {
       title: 'Network',
-      value: chains[typedChainId].name,
+      value: <MediumTitle>{chains[typedChainId].name}</MediumTitle>,
     },
   ];
 
@@ -129,7 +129,7 @@ const Page = () => {
               <BodyText align="left" className="text-text-hint">
                 {title}
               </BodyText>
-              {typeof value === 'string' ? <MediumTitle>{value}</MediumTitle> : value}
+              {value}
             </div>
           </div>
         ))}

@@ -1,4 +1,4 @@
-import { type BN } from '@polkadot/util';
+import { type BN, BN_ZERO } from '@polkadot/util';
 
 import { Price } from '../Price/Price';
 import { Shimmering } from '../Shimmering/Shimmering';
@@ -16,7 +16,7 @@ type Props = {
   className?: string;
 };
 
-export const TokenPrice = ({ balance, asset, showBalance = true, className }: Props) => {
+export const TokenPrice = ({ balance = BN_ZERO, asset, showBalance = true, className }: Props) => {
   const { assetsPrices } = useGlobalContext();
 
   const price = asset.priceId ? assetsPrices?.[asset.priceId] : { price: 0 };
@@ -25,7 +25,8 @@ export const TokenPrice = ({ balance, asset, showBalance = true, className }: Pr
     return <Shimmering width={100} height={20} />;
   }
 
-  const { value, suffix } = toFormattedBalance(balance, asset.precision);
+  const total = balance.muln(price.price);
+  const { value, suffix } = toFormattedBalance(total, asset.precision);
 
   const isGrow = price.change && price.change >= 0;
   const changeToShow = price.change && `${isGrow ? '+' : ''}${price.change.toFixed(2)}%`;
@@ -42,7 +43,7 @@ export const TokenPrice = ({ balance, asset, showBalance = true, className }: Pr
       </BodyText>
       {showBalance && (
         <BodyText className="text-text-hint" align="right">
-          <Price amount={Number(value) * price.price} />
+          <Price amount={Number(value)} />
           {suffix}
         </BodyText>
       )}

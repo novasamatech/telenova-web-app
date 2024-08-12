@@ -4,8 +4,7 @@ import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
 import { BN_ZERO, hexToU8a } from '@polkadot/util';
 
-import { assetUtils, toAddress } from '../../helpers';
-
+import { assetUtils, toAddress } from '@/shared/helpers';
 import { type Asset, type Chain, type NativeAsset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 import { type AssetBalance } from '@/types/substrate/balance';
 

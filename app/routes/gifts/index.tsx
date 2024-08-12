@@ -3,12 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { useGifts } from '../../shared/hooks';
-
 import { BackButton } from '@/common/telegram/BackButton';
 import { type Gift } from '@/common/types';
 import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
 import { getGifts } from '@/shared/helpers';
+import { useGifts } from '@/shared/hooks';
 
 const Page = () => {
   const navigate = useNavigate();
