@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 import { type TypographyProps } from './types';
 

@@ -1,17 +1,18 @@
-import type { EstimateFee, EstimateFeeParams, SubmitExtrinsic, SubmitExtrinsicParams } from './types';
+import type { EstimateFeeParams, SubmitExtrinsicParams } from './types';
 
 import { type PropsWithChildren, createContext, useContext } from 'react';
 
-import { type Balance, type Hash } from '@polkadot/types/interfaces';
+import { type Hash } from '@polkadot/types/interfaces';
+import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { FAKE_ACCOUNT_ID } from '@/common/utils';
 import { getKeyringPair } from '@/common/wallet';
+import { FAKE_ACCOUNT_ID } from '@/shared/helpers';
 
 import { useExtrinsicService } from './ExtrinsicService';
 
 type ExtrinsicProviderContextProps = {
-  estimateFee: EstimateFee;
-  submitExtrinsic: SubmitExtrinsic;
+  estimateFee: (params: EstimateFeeParams) => Promise<BN>;
+  submitExtrinsic: (params: SubmitExtrinsicParams) => Promise<Hash | undefined>;
 };
 
 const ExtrinsicProviderContext = createContext<ExtrinsicProviderContextProps>({} as ExtrinsicProviderContextProps);
@@ -19,11 +20,17 @@ const ExtrinsicProviderContext = createContext<ExtrinsicProviderContextProps>({}
 export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
   const { prepareExtrinsic } = useExtrinsicService();
 
-  async function estimateFee({ chainId, transaction, signOptions, options }: EstimateFeeParams): Promise<Balance> {
-    const extrinsic = await prepareExtrinsic<'promise'>(chainId, transaction, options);
-    const paymentInfo = await extrinsic.paymentInfo(FAKE_ACCOUNT_ID, signOptions);
+  async function estimateFee({ chainId, transaction, signOptions, options }: EstimateFeeParams): Promise<BN> {
+    try {
+      const extrinsic = await prepareExtrinsic<'promise'>(chainId, transaction, options);
+      const paymentInfo = await extrinsic.paymentInfo(FAKE_ACCOUNT_ID, signOptions);
 
-    return paymentInfo.partialFee;
+      return paymentInfo.partialFee.toBn();
+    } catch (e) {
+      console.log('=== e', e);
+    }
+
+    return BN_ZERO;
   }
 
   async function submitExtrinsic({

@@ -2,6 +2,8 @@ import { allSettled, fork } from 'effector';
 import noop from 'lodash/noop';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
+import { BN_TEN } from '@polkadot/util';
+
 import { networkModel } from '../network/network-model';
 import { walletModel } from '../wallet/wallet-model';
 
@@ -25,7 +27,7 @@ describe('models/balances/balances-model', () => {
     const defaultBalance = {
       chainId: '0x002',
       accountId: '0x999',
-      balance: { total: '10', transferable: '10' },
+      balance: { total: BN_TEN, transferable: BN_TEN },
     };
 
     const scope = fork({

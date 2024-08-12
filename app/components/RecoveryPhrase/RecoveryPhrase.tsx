@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { Plate } from '../Plate';
 import { BodyText, MediumTitle } from '../Typography';
 
-import { cnTw } from '@/common/utils/twMerge';
 import { getMnemonic } from '@/common/wallet';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 import { RecoveryModal } from './RecoveryModal';
 

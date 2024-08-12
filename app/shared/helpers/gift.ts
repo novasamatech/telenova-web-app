@@ -1,12 +1,12 @@
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { type ChainAsset, type PersistentGift } from '../types';
-import { getKeyringPairFromSeed, getStoreName } from '../wallet';
+import { type ChainAsset, type PersistentGift } from '../../common/types';
+import { getKeyringPairFromSeed, getStoreName } from '../../common/wallet';
 
 import { type Chain } from '@/types/substrate';
 
-import { GIFT_STORE } from './constants';
+import { GIFT_STORE } from './constants.ts';
 
 type BackupParams = {
   address: string;

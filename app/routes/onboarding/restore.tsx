@@ -7,9 +7,9 @@ import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { BACKUP_DATE } from '@/common/utils';
 import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
+import { BACKUP_DATE } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();

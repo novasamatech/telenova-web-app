@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Input } from '../Input/Input';
 import { BodyText } from '../Typography';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 type Variants = 'error' | 'success' | 'default';
 

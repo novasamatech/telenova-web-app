@@ -12,7 +12,7 @@ export const ZERO_BALANCE = '0';
 
 export const SS58_DEFAULT_PREFIX = 42;
 
-// TODO: take json from nova-utils
+// TODO: take json from nova-helpers
 export const ASSET_LOCATION: Record<string, SignerOptions> = {
   1984: {
     // @ts-expect-error type error

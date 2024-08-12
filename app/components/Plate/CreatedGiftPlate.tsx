@@ -10,10 +10,10 @@ import { Shimmering } from '../Shimmering/Shimmering';
 import { BigTitle, BodyText } from '../Typography';
 
 import { type Gift } from '@/common/types';
-import { GIFT_STORE, getGifts } from '@/common/utils';
-import { useGifts } from '@/common/utils/hooks';
 import { getStoreName } from '@/common/wallet';
 import { networkModel } from '@/models';
+import { GIFT_STORE, getGifts } from '@/shared/helpers';
+import { useGifts } from '@/shared/hooks';
 
 export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();

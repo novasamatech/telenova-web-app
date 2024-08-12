@@ -1,11 +1,12 @@
 import { useUnit } from 'effector-react';
 
-import { isStatemineAsset } from '../assets';
+import { BN, BN_ZERO } from '@polkadot/util';
 
 import { type Gift, GiftStatus, type PersistentGift } from '@/common/types';
 import { networkModel } from '@/models';
+import { assetUtils } from '@/shared/helpers/assets.ts';
 
-import { useAssetHub } from './useAssetHub';
+import { useAssetHub } from './useAssetHub.ts';
 
 export const useGifts = () => {
   const { getAssetHubFee } = useAssetHub();
@@ -25,37 +26,41 @@ export const useGifts = () => {
       // To have a backward compatibility with old gifts
       const asset = accounts[0].assetId ? chain.assets.find(a => a.assetId === +accounts[0].assetId) : chain?.assets[0];
 
-      if (isStatemineAsset(asset?.type) && asset?.typeExtras?.assetId) {
+      if (assetUtils.isStatemineAsset(asset)) {
         const balances = await api.query.assets.account.multi(
           accounts.map(i => [asset?.typeExtras?.assetId, i.address]),
         );
 
-        const maxBalance = Math.max(
-          ...balances.map(balance => (balance.isNone ? 0 : Number(balance.unwrap().balance))),
-        ).toString();
-        const fee = await getAssetHubFee(chainId, asset.typeExtras.assetId, maxBalance);
+        const maxBalance = balances.reduce((acc, balance) => {
+          return balance.isNone ? acc : BN.max(acc, balance.unwrap().balance);
+        }, BN_ZERO);
+        const fee = await getAssetHubFee(chainId, asset, maxBalance);
 
         balances.forEach((balance, index) => {
-          balance.isNone || Number(balance.unwrap().balance) <= fee
-            ? claimed.push({
-                ...accounts[index],
-                chainAsset: asset,
-                status: GiftStatus.CLAIMED,
-              })
-            : unclaimed.push({ ...accounts[index], chainAsset: asset, status: GiftStatus.UNCLAIMED });
+          if (balance.isNone || balance.unwrap().balance.lte(fee)) {
+            claimed.push({
+              ...accounts[index],
+              chainAsset: asset,
+              status: GiftStatus.CLAIMED,
+            });
+          } else {
+            unclaimed.push({ ...accounts[index], chainAsset: asset, status: GiftStatus.UNCLAIMED });
+          }
         });
       } else {
         const balances = await api.query.system.account.multi(accounts.map(i => i.address));
 
-        balances.forEach((balance, index) =>
-          balance.data.free.isEmpty
-            ? claimed.push({
-                ...accounts[index],
-                chainAsset: asset,
-                status: GiftStatus.CLAIMED,
-              })
-            : unclaimed.push({ ...accounts[index], chainAsset: asset, status: GiftStatus.UNCLAIMED }),
-        );
+        balances.forEach((balance, index) => {
+          if (balance.data.free.isEmpty) {
+            claimed.push({
+              ...accounts[index],
+              chainAsset: asset,
+              status: GiftStatus.CLAIMED,
+            });
+          } else {
+            unclaimed.push({ ...accounts[index], chainAsset: asset, status: GiftStatus.UNCLAIMED });
+          }
+        });
       }
     });
 

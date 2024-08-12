@@ -1,6 +1,6 @@
 import { type ElementType, type PropsWithChildren } from 'react';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 type Props = {
   as?: ElementType;

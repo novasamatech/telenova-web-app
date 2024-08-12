@@ -2,7 +2,6 @@ import { type ApiPromise } from '@polkadot/api';
 import { type SignerOptions } from '@polkadot/api/types';
 import { type SubmittableExtrinsic } from '@polkadot/api-base/types';
 import { type KeyringPair } from '@polkadot/keyring/types';
-import { type Balance, type Hash } from '@polkadot/types/interfaces';
 
 export interface ExtrinsicBuilder {
   api: ApiPromise;
@@ -41,8 +40,6 @@ export type EstimateFeeParams = {
   options?: Partial<ExtrinsicBuildingOptions>;
 };
 
-export type EstimateFee = (params: EstimateFeeParams) => Promise<Balance>;
-
 export type SubmitExtrinsicParams = {
   chainId: ChainId;
   transaction: ExtrinsicTransaction;
@@ -51,10 +48,9 @@ export type SubmitExtrinsicParams = {
   signOptions?: Partial<SignerOptions>;
 };
 
-export type SubmitExtrinsic = (params: SubmitExtrinsicParams) => Promise<Hash | undefined>;
-
 export const enum TransactionType {
   TRANSFER = 'transfer',
   TRANSFER_ALL = 'transferAll',
   TRANSFER_STATEMINE = 'transferStatemine',
+  TRANSFER_ORML = 'transferOrml',
 }

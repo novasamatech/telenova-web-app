@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 
+import { BN, BN_ZERO } from '@polkadot/util';
+
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { formatAmount, formatBalance, isStatemineAsset } from '@/common/utils';
-import { useAssetHub } from '@/common/utils/hooks/useAssetHub';
-import { type Asset, type Balance } from '@/types/substrate';
+import { toPrecisedBalance } from '@/shared/helpers';
+import { useAssetHub } from '@/shared/hooks/useAssetHub';
+import { type Asset, type Balance, type StatemineAsset } from '@/types/substrate';
 
 type AmountLogicParams = {
   chainId: ChainId;
@@ -13,69 +15,27 @@ type AmountLogicParams = {
   isGift: boolean;
 };
 
-// TODO: Use BN to operate with amount and fee
 export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicParams) => {
   const { getAssetHubFee } = useAssetHub();
   const { getTransactionFee } = useExtrinsic();
-  const { getExistentialDeposit, getExistentialDepositStatemine } = useQueryService();
+  const { getExistentialDeposit } = useQueryService();
 
-  const [amount, setAmount] = useState('');
-  const [fee, setFee] = useState(0);
-  const [touched, setTouched] = useState(false);
+  const [fee, setFee] = useState(BN_ZERO);
+  const [amount, setAmount] = useState(BN_ZERO);
+  const [deposit, setDeposit] = useState(BN_ZERO);
+  const [maxAmount, setMaxAmount] = useState(BN_ZERO);
+
+  const [isTouched, setIsTouched] = useState(false);
   const [isPending, setPending] = useState(false);
-  const [transferAll, setTransferAll] = useState(false);
-  const [maxAmountToSend, setMaxAmountToSend] = useState('');
+  const [isTransferAll, setIsTransferAll] = useState(false);
   const [isAmountValid, setIsAmountValid] = useState(true);
-  const [deposit, setDeposit] = useState(0);
-
-  const getFeeAmount = (chainId: ChainId, asset: Asset, transferAmount: string): Promise<number> => {
-    if (isStatemineAsset(asset.type)) {
-      return getAssetHubFee(chainId, asset.typeExtras!.assetId, transferAmount, isGift);
-    }
-
-    return getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount);
-  };
-
-  const getMaxAmount = async (chainId: ChainId, asset: Asset, transferableAmount = '0'): Promise<string> => {
-    const fee = await getFeeAmount(chainId, asset, transferableAmount);
-    const max = Math.max(+transferableAmount - fee, 0).toString();
-
-    return Number(formatBalance(max, asset.precision).formattedValue).toFixed(5);
-  };
-
-  const getTransferDetails = async (
-    chainId: ChainId,
-    asset: Asset,
-    amount: string,
-  ): Promise<{ fee: number; formattedDeposit: number }> => {
-    const transferAmount = formatAmount(amount || '0', asset?.precision);
-
-    const deposit = isStatemineAsset(asset.type)
-      ? await getExistentialDepositStatemine(chainId, asset.typeExtras!.assetId)
-      : await getExistentialDeposit(chainId);
-
-    const fee = await getFeeAmount(chainId, asset, transferAmount);
-
-    return {
-      fee,
-      formattedDeposit: Number(formatBalance(deposit, asset.precision).formattedValue),
-    };
-  };
-
-  const getIsAccountToBeReaped = (): boolean => {
-    if (!amount || !parseFloat(amount) || !touched || transferAll || !maxAmountToSend || !fee) return false;
-
-    // We don't add fee to the amount because maxAmountToSend is already subtracted by fee
-    // getMaxAmount is responsible for that
-    return Number(maxAmountToSend) - Number(amount) < deposit;
-  };
 
   useEffect(() => {
     setPending(true);
-    getTransferDetails(chainId, asset, amount || '0')
-      .then(({ fee, formattedDeposit }) => {
+    getTransferDetails(chainId, asset, amount)
+      .then(({ fee, deposit }) => {
         setFee(fee);
-        setDeposit(formattedDeposit);
+        setDeposit(deposit);
       })
       .finally(() => {
         setPending(false);
@@ -85,50 +45,83 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   useEffect(() => {
     if (!asset) return;
 
-    getMaxAmount(chainId, asset, balance?.transferable).then(setMaxAmountToSend);
+    getMaxAmount(chainId, asset, balance?.transferable).then(setMaxAmount);
   }, []);
 
   useEffect(() => {
-    if (!touched) return;
+    if (!isTouched) return;
 
-    const lessThanMax = (+amount || 0) <= +maxAmountToSend;
-    const greaterThanDeposit = +maxAmountToSend - (+amount || 0) >= deposit;
+    const isUnderMax = amount.lte(maxAmount);
+    const isOverDeposit = maxAmount.sub(amount).gte(deposit);
 
-    setIsAmountValid(lessThanMax && (transferAll || greaterThanDeposit));
-  }, [transferAll, maxAmountToSend, amount, deposit, touched]);
+    setIsAmountValid(!amount.isZero() && isUnderMax && (isTransferAll || isOverDeposit));
+  }, [isTransferAll, maxAmount, amount, deposit, isTouched]);
 
-  const handleMaxSend = () => {
-    if (maxAmountToSend === '') return;
+  const getFeeAmount = (chainId: ChainId, asset: Asset, transferAmount: BN): Promise<BN> => {
+    const FEE_BY_TYPE: Record<Asset['type'], () => Promise<BN>> = {
+      native: () => getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount),
+      statemine: () => getAssetHubFee(chainId, asset as StatemineAsset, transferAmount, isGift),
+      orml: () => getTransactionFee(chainId, TransactionType.TRANSFER_ORML, transferAmount),
+    };
 
-    setTransferAll(true);
-    setTouched(true);
-    setAmount(String(maxAmountToSend));
-    setIsAmountValid(Boolean(parseFloat(maxAmountToSend)));
+    return FEE_BY_TYPE[asset.type]();
   };
 
-  const handleChange = (value: string) => {
-    let formattedValue = value.trim().replace(/,/g, '.');
-    if (formattedValue.charAt(0) === '.') {
-      formattedValue = '0' + formattedValue;
-    }
+  const getMaxAmount = async (chainId: ChainId, asset: Asset, transferable = BN_ZERO): Promise<BN> => {
+    const fee = await getFeeAmount(chainId, asset, transferable);
 
-    setTransferAll(false);
-    setTouched(true);
-    setAmount(formattedValue);
+    return BN.max(transferable.sub(fee), BN_ZERO);
+  };
+
+  const getTransferDetails = async (
+    chainId: ChainId,
+    asset: Asset,
+    transferAmount: BN,
+  ): Promise<{ fee: BN; deposit: BN }> => {
+    const deposit = await getExistentialDeposit(chainId, asset);
+    const fee = await getFeeAmount(chainId, asset, transferAmount);
+
+    return { fee, deposit };
+  };
+
+  const getIsAccountToBeReaped = (): boolean => {
+    if (amount.isZero() || fee.isZero() || !isTouched || isTransferAll || !maxAmount) return false;
+
+    // We don't add fee to the amount because maxAmountToSend is already subtracted by fee
+    // getMaxAmount is responsible for that
+    return maxAmount.sub(amount).lt(deposit);
+  };
+
+  const onMaxAmount = () => {
+    if (maxAmount.isZero()) return;
+
+    setIsTransferAll(true);
+    setIsTouched(true);
+    setAmount(maxAmount);
+    setIsAmountValid(true);
+  };
+
+  const onAmountChange = (amount: string) => {
+    // BN fails converting values like "0."
+    // const safeAmount = parseFloat(amount).toString();
+
+    setIsTransferAll(false);
+    setIsTouched(true);
+    setAmount(toPrecisedBalance(amount, asset.precision));
   };
 
   return {
-    handleMaxSend,
-    handleChange,
+    onMaxAmount,
+    onAmountChange,
     setIsAmountValid,
     getIsAccountToBeReaped,
     isPending,
     deposit,
     amount,
     fee,
-    maxAmountToSend,
+    maxAmount,
     isAmountValid,
-    touched,
-    transferAll,
+    isTouched,
+    isTransferAll,
   };
 };

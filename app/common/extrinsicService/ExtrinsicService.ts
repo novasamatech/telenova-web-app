@@ -26,6 +26,10 @@ export function useExtrinsicService(): ExtrinsicService {
         : api.tx.balances['transfer'](dest, value),
     [TransactionType.TRANSFER_ALL]: ({ dest }, api) => api.tx.balances.transferAll(dest, false),
     [TransactionType.TRANSFER_STATEMINE]: ({ dest, value, asset }, api) => api.tx.assets.transfer(asset, dest, value),
+    [TransactionType.TRANSFER_ORML]: ({ dest, value, asset }, api) =>
+      api.tx['currencies']
+        ? api.tx['currencies']['transfer'](dest, asset, value)
+        : api.tx['tokens']['transfer'](dest, asset, value),
   };
 
   const prepareExtrinsic = async (

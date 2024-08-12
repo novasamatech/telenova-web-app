@@ -7,9 +7,9 @@ import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { shareQrAddress, toAddress } from '@/common/utils';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/components';
 import { networkModel, walletModel } from '@/models';
+import { shareQrAddress, toAddress } from '@/shared/helpers';
 
 export const clientLoader = (({ params }) => {
   return $params('/receive/:chainId/:assetId/address', params);

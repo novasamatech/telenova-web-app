@@ -4,10 +4,10 @@ import { combineEvents, readonly, spread } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
-import { CONNECTIONS_STORE } from '@/common/utils';
-import { DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains.ts';
 import { chainsApi, metadataApi } from '@/shared/api';
 import { type ProviderWithMetadata, providerApi } from '@/shared/api/network/provider-api';
+import { CONNECTIONS_STORE, nonNullable } from '@/shared/helpers';
+import { DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS } from '@/shared/helpers/chains.ts';
 import { type Asset, type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
 
 import { type Connection } from './types';
@@ -124,6 +124,7 @@ const createProviderFx = createEffect(
     console.info('⚫️ Connecting to ==> ', params.name);
 
     return providerApi.createConnector(
+      params.chainId,
       { nodes: params.nodes, metadata: params.metadata?.metadata },
       {
         onConnected: () => {
@@ -163,8 +164,8 @@ const $sortedAssets = combine($assets, assets => {
   if (isEmpty(assets)) return [];
 
   // Predefined array with empty elements for the first coming assets
-  const preSortedAssets = Object.values(DEFAULT_CHAINS_ORDER).flatMap(assetTuples => {
-    return Array.from({ length: Object.keys(assetTuples).length }, () => [] as unknown as [ChainId, Asset]);
+  const preSortedAssets: ([ChainId, Asset] | null)[] = Object.values(DEFAULT_CHAINS_ORDER).flatMap(assetTuples => {
+    return Array.from({ length: Object.keys(assetTuples).length }, () => null);
   });
 
   const assetsToSort: [ChainId, Asset][] = [];
@@ -184,7 +185,7 @@ const $sortedAssets = combine($assets, assets => {
   }
 
   // DOT KSM USDT ... rest alphabetically
-  return preSortedAssets.concat(orderBy(assetsToSort, ([_, asset]) => asset.symbol, 'asc'));
+  return preSortedAssets.filter(nonNullable).concat(orderBy(assetsToSort, ([_, asset]) => asset.symbol, 'asc'));
 });
 
 // =====================================================

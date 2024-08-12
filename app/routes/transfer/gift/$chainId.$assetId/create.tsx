@@ -8,14 +8,16 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params } from 'remix-routes';
 
+import { BN } from '@polkadot/util';
+
 import { useExtrinsic } from '@/common/extrinsicService';
 import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
-import { backupGifts } from '@/common/utils';
 import { createGiftWallet } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 import { networkModel } from '@/models';
+import { backupGifts } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -64,7 +66,13 @@ const Page = () => {
 
     const giftWallet = createGiftWallet(chains[typedChainId].addressPrefix);
 
-    sendGift(giftWallet.address, { chainId: typedChainId, asset: selectedAsset, transferAll: all, amount, fee })
+    sendGift(giftWallet.address, {
+      chainId: typedChainId,
+      asset: selectedAsset,
+      amount: new BN(amount),
+      fee: new BN(fee),
+      transferAll: all,
+    })
       .then(() => {
         backupGifts({
           chainId: typedChainId,

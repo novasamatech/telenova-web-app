@@ -1,6 +1,8 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { type ProviderInterface, type ProviderInterfaceEmitCb } from '@polkadot/rpc-provider/types';
 
+import { EXTENSIONS } from '@/shared/config/extensions';
+
 export interface ProviderWithMetadata extends ProviderInterface {
   updateMetadata: (metadata: HexString) => void;
 }
@@ -13,17 +15,23 @@ export const providerApi = {
 };
 
 async function createConnector(
+  chainId: ChainId,
   params: ProviderParams,
   listeners: ProviderListeners,
 ): Promise<{ provider: ProviderWithMetadata; api: ApiPromise }> {
   const provider = createProvider(params, listeners);
-  const api = await createApi(provider);
+  const api = await createApi(chainId, provider);
 
   return { provider, api };
 }
 
-function createApi(provider: ProviderInterface): Promise<ApiPromise> {
-  return ApiPromise.create({ provider, throwOnConnect: true, throwOnUnknown: true });
+function createApi(chainId: ChainId, provider: ProviderInterface): Promise<ApiPromise> {
+  return ApiPromise.create({
+    provider,
+    throwOnConnect: true,
+    throwOnUnknown: true,
+    ...EXTENSIONS[chainId],
+  });
 }
 
 type ProviderParams = {

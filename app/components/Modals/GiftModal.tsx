@@ -5,6 +5,8 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from
 import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
 
+import { type BN, BN_ZERO } from '@polkadot/util';
+
 import { Icon } from '../Icon/Icon';
 import { LottiePlayer } from '../LottiePlayer/LottiePlayer';
 import { Shimmering } from '../Shimmering/Shimmering';
@@ -13,10 +15,10 @@ import { BigTitle } from '../Typography';
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { type ChainAsset } from '@/common/types';
-import { formatAmount, formatBalance, getGiftInfo, isStatemineAsset } from '@/common/utils';
-import { useAssetHub } from '@/common/utils/hooks';
 import { networkModel } from '@/models';
+import { getGiftInfo, toPrecisedBalance } from '@/shared/helpers';
+import { useAssetHub } from '@/shared/hooks';
+import { type Asset, type StatemineAsset } from '@/types/substrate';
 
 const enum GIFT_STATUS {
   NOT_CLAIMED,
@@ -49,26 +51,26 @@ export const GiftModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [giftSymbol, setGiftSymbol] = useState('');
-  const [giftBalance, setGiftBalance] = useState('');
+  const [giftBalance, setGiftBalance] = useState(BN_ZERO);
   const [giftStatus, setGiftStatus] = useState<GIFT_STATUS | null>(null);
   const [lottie, setLottie] = useState<AnimationItem | null>(null);
 
-  const getGiftBalance = async (chain: ChainAsset, giftAddress: string) => {
+  const getGiftBalance = async (chainId: ChainId, giftAddress: string): Promise<BN> => {
     const timerID = setTimeout(() => {
-      setGiftBalance('-');
+      setGiftBalance(BN_ZERO);
     }, 5500);
 
-    const giftBalance = await getFreeBalance(giftAddress, chain.chain.chainId);
-    if (giftBalance === '0') {
+    const giftBalance = await getFreeBalance(giftAddress, chainId);
+    if (giftBalance.isZero()) {
       clearTimeout(timerID);
 
-      return '0';
+      return BN_ZERO;
     }
-    const fee = await getTransactionFee(chain.chain.chainId, TransactionType.TRANSFER_ALL);
+    const fee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
     clearTimeout(timerID);
-    const rawBalance = +giftBalance - fee;
+    const rawBalance = giftBalance.sub(fee);
 
-    return formatBalance(rawBalance.toString(), chain.asset.precision).formattedValue;
+    return rawBalance.isNeg() ? BN_ZERO : rawBalance;
   };
 
   useEffect(() => {
@@ -78,14 +80,16 @@ export const GiftModal = () => {
     const { giftAddress, chain, symbol } = getGiftInfo(Object.values(chains), publicKey, startParam);
     if (connections[chain.chain.chainId].status === 'disconnected') return;
 
-    const balanceRequest = {
-      statemine: () => getGiftBalanceStatemine(chain.chain.chainId, chain.asset, giftAddress),
-      default: () => getGiftBalance(chain, giftAddress),
+    // TODO: check ORML balance
+    const balanceRequest: Record<Asset['type'], (chainId: ChainId, address: Address, asset?: Asset) => Promise<BN>> = {
+      native: (chainId, address) => getGiftBalance(chainId, address),
+      orml: (chainId, address) => getGiftBalance(chainId, address),
+      statemine: (chainId, address, asset) => getGiftBalanceStatemine(chainId, address, asset as StatemineAsset),
     };
 
-    balanceRequest[isStatemineAsset(chain.asset?.type) ? 'statemine' : 'default']().then(balance => {
-      setGiftStatus(balance === '0' ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
-      setGiftSymbol(balance === '0' ? '' : symbol);
+    balanceRequest[chain.asset.type](chain.chain.chainId, giftAddress, chain.asset).then(balance => {
+      setGiftStatus(balance.isZero() ? GIFT_STATUS.CLAIMED : GIFT_STATUS.NOT_CLAIMED);
+      setGiftSymbol(balance.isZero() ? '' : symbol);
       setGiftBalance(balance);
     });
 
@@ -104,7 +108,7 @@ export const GiftModal = () => {
 
   const handleGiftClaim = async () => {
     setIsDisabled(true);
-    if (giftBalance === '0') {
+    if (giftBalance.isZero()) {
       handleClose();
 
       return;
@@ -118,10 +122,10 @@ export const GiftModal = () => {
     const { chainAddress, chain, keyring } = getGiftInfo(Object.values(chains), publicKey!, startParam!);
 
     sendTransfer({
-      destinationAddress: chainAddress,
       chainId: chain.chain.chainId,
-      transferAmount: formatAmount(giftBalance, chain.asset.precision),
       asset: chain.asset,
+      destinationAddress: chainAddress,
+      transferAmount: toPrecisedBalance(giftBalance.toString(), chain.asset.precision),
       transferAll: true,
       keyring,
     })

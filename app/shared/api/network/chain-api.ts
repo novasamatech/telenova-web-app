@@ -1,7 +1,7 @@
 import { concat, sortBy } from 'lodash-es';
 
-import { nonNullable } from '@/common/utils';
-import { KUSAMA, POLKADOT } from '@/common/utils/chains';
+import { nonNullable } from '@/shared/helpers';
+import { KUSAMA, POLKADOT } from '@/shared/helpers/chains';
 import { type Chain } from '@/types/substrate';
 
 export const chainsApi = {

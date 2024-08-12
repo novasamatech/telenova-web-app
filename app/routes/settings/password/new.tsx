@@ -6,9 +6,9 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { MNEMONIC_STORE } from '@/common/utils';
 import { backupMnemonic, getStoreName } from '@/common/wallet';
 import { CreatePasswordForm, TitleText } from '@/components';
+import { MNEMONIC_STORE } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();

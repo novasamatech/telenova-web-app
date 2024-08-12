@@ -5,22 +5,23 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
+import { BN } from '@polkadot/util';
+
 import { useExtrinsic } from '@/common/extrinsicService';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { formatAmount, formatBalance } from '@/common/utils';
 import {
+  AssetIcon,
   BodyText,
   HeadlineText,
-  Icon,
   Identicon,
   LargeTitleText,
   MediumTitle,
   Plate,
   TruncateAddress,
 } from '@/components';
-import type { IconNames } from '@/components/types';
 import { networkModel } from '@/models';
+import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -48,17 +49,24 @@ const Page = () => {
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
 
-  const selectedAsset = assets[chainId as ChainId]?.[Number(assetId) as AssetId];
+  const typedChainId = chainId as ChainId;
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!selectedAsset || chains[chainId as ChainId]) return null;
+  if (!selectedAsset || !chains[typedChainId]) return null;
+
+  const symbol = selectedAsset.symbol;
+  const bnFee = new BN(fee);
+  const bnAmount = new BN(amount);
+  const formattedFee = toFormattedBalance(bnFee, selectedAsset.precision);
+  const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
     sendTransfer({
-      destinationAddress: address,
-      chainId: chainId as ChainId,
-      transferAll: all,
-      transferAmount: formatAmount(amount, selectedAsset.precision),
+      chainId: typedChainId,
       asset: selectedAsset,
+      transferAmount: bnAmount,
+      destinationAddress: address,
+      transferAll: all,
     })
       .then(() => {
         const params = { chainId, assetId, address };
@@ -69,37 +77,38 @@ const Page = () => {
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
   };
 
-  const symbol = selectedAsset.symbol;
-  const formattedFee = formatBalance(fee, selectedAsset.precision);
-  const formattedTotal = (Number(amount) + Number(formattedFee.formattedValue)).toFixed(5);
-
   const details = [
     {
       title: 'Recipients address',
-      value: address,
+      value: (
+        <div className="flex gap-x-1 items-center">
+          <Identicon address={address} />
+          <MediumTitle>{toShortAddress(address, 15)}</MediumTitle>
+        </div>
+      ),
     },
     {
       title: 'Fee',
-      value: `${formattedFee.formattedValue} ${symbol}`,
+      value: <MediumTitle>{`${formattedFee.formatted} ${symbol}`}</MediumTitle>,
     },
     {
       title: 'Total amount',
-      value: `${formattedTotal} ${symbol}`,
+      value: <MediumTitle>{`${formattedTotal.formatted} ${symbol}`}</MediumTitle>,
     },
     {
       title: 'Network',
-      value: chains[chainId as ChainId].name,
+      value: <MediumTitle>{chains[typedChainId].name}</MediumTitle>,
     },
   ];
+
+  const navigateBack = () => {
+    navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { chainId, assetId, address }));
+  };
 
   return (
     <>
       <MainButton text="Confirm" onClick={mainCallback} />
-      <BackButton
-        onClick={() =>
-          navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { chainId, assetId, address }))
-        }
-      />
+      <BackButton onClick={navigateBack} />
       <div className="grid grid-cols-[40px,1fr] items-center">
         <Identicon address={address} />
         <HeadlineText className="flex gap-1">
@@ -108,9 +117,9 @@ const Page = () => {
         </HeadlineText>
       </div>
       <div className="my-6 grid grid-cols-[40px,1fr,auto] items-center gap-2">
-        <Icon name={symbol as IconNames} className="w-10 h-10" />
+        <AssetIcon src={selectedAsset.icon} size={46} />
         <LargeTitleText>{symbol}</LargeTitleText>
-        <LargeTitleText>{amount}</LargeTitleText>
+        <LargeTitleText>{toFormattedBalance(amount, selectedAsset.precision).formatted}</LargeTitleText>
       </div>
       <Plate className="w-full pr-0">
         {details.map(({ title, value }, index) => (
@@ -120,7 +129,7 @@ const Page = () => {
               <BodyText align="left" className="text-text-hint">
                 {title}
               </BodyText>
-              <MediumTitle>{value}</MediumTitle>
+              {value}
             </div>
           </div>
         ))}

@@ -1,24 +1,34 @@
-export type Asset = {
+interface BaseAsset {
   name: string;
   assetId: AssetId;
   symbol: string;
   precision: number;
   priceId?: string;
   icon: string;
-  type: 'native' | 'statemine'; // Support 'orml' in future
-  typeExtras?: StatemineExtras;
-};
+}
 
-export type StatemineExtras = {
-  assetId: string;
-};
+export interface NativeAsset extends BaseAsset {
+  type: 'native';
+}
 
-// export type OrmlExtras = {
-//   currencyIdScale: string;
-//   currencyIdType: string;
-//   existentialDeposit: string;
-//   transfersEnabled?: boolean;
-// };
+export interface StatemineAsset extends BaseAsset {
+  type: 'statemine';
+  typeExtras: {
+    assetId: string;
+  };
+}
+
+export interface OrmlAsset extends BaseAsset {
+  type: 'orml';
+  typeExtras: {
+    currencyIdScale: string;
+    currencyIdType: string;
+    existentialDeposit: string;
+    transfersEnabled?: boolean;
+  };
+}
+
+export type Asset = NativeAsset | StatemineAsset | OrmlAsset;
 
 export type AssetPrice = Record<Currency, PriceItem>;
 

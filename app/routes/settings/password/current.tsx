@@ -6,9 +6,9 @@ import { $path } from 'remix-routes';
 import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { MNEMONIC_STORE } from '@/common/utils';
 import { initializeWalletFromCloud } from '@/common/wallet';
 import { Input, TitleText } from '@/components';
+import { MNEMONIC_STORE } from '@/shared/helpers';
 
 const Page = () => {
   const { webApp } = useTelegram();

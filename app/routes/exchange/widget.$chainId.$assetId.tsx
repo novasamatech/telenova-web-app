@@ -10,9 +10,9 @@ import { useTelegram } from '@/common/providers';
 import { isOpenInWeb } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { runMercuryoWidget, toAddress } from '@/common/utils';
 import { MediumTitle } from '@/components';
 import { networkModel, walletModel } from '@/models';
+import { runMercuryoWidget, toAddress } from '@/shared/helpers';
 
 export type SearchParams = {
   type: 'buy' | 'sell';
@@ -94,8 +94,11 @@ const Page = () => {
   };
 
   const navigateBack = () => {
-    const url = done ? '/dashboard' : '/exchange/select';
-    navigate($path(url));
+    if (done) {
+      navigate($path('/dashboard'));
+    } else {
+      navigate(-1);
+    }
   };
 
   if (!selectedAsset) return null;

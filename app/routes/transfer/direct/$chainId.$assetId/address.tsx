@@ -8,8 +8,8 @@ import { $params, $path } from 'remix-routes';
 import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { validateAddress } from '@/common/utils';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
+import { validateAddress } from '@/shared/helpers';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/address', params);

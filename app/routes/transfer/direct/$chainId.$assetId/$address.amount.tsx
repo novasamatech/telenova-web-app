@@ -11,6 +11,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { AmountDetails, HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { balancesModel, networkModel } from '@/models';
+import { toFormattedBalance } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -37,17 +38,17 @@ const Page = () => {
   const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
 
   const {
-    handleMaxSend,
-    handleChange,
+    onMaxAmount,
+    onAmountChange,
     getIsAccountToBeReaped,
     isPending,
     deposit,
     amount,
     fee,
-    maxAmountToSend,
+    maxAmount,
     isAmountValid,
-    touched,
-    transferAll,
+    isTouched,
+    isTransferAll,
   } = useAmountLogic({
     chainId: typedChainId,
     asset: selectedAsset!,
@@ -59,14 +60,14 @@ const Page = () => {
   useEffect(() => {
     if (!transferAmount) return;
 
-    handleChange(transferAmount);
+    onAmountChange(transferAmount);
   }, [transferAmount]);
 
   const navigateToConfirm = () => {
     if (!selectedAsset) return;
 
     const params = { chainId, assetId, address };
-    const query = { amount, fee: (fee || '0').toString(), all: transferAll };
+    const query = { amount: amount.toString(), fee: fee.toString(), all: isTransferAll };
 
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
@@ -86,14 +87,16 @@ const Page = () => {
           Send to
           <TruncateAddress address={address} className="max-w-[120px]" />
         </HeadlineText>
-        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxSend}>
+        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={onMaxAmount}>
           <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
-          {maxAmountToSend ? (
-            <HeadlineText className="flex items-center text-text-link">{maxAmountToSend}</HeadlineText>
-          ) : (
+          {maxAmount.isZero() ? (
             <div className="shrink-0 w-[7ch]">
               <Progress size="md" isIndeterminate />
             </div>
+          ) : (
+            <HeadlineText className="flex items-center text-text-link">
+              {toFormattedBalance(maxAmount, selectedAsset.precision).formatted}
+            </HeadlineText>
           )}
           <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
         </Button>
@@ -101,12 +104,12 @@ const Page = () => {
       <AmountDetails
         asset={selectedAsset}
         amount={amount}
-        isAmountValid={!touched || isAmountValid}
-        maxAmountToSend={maxAmountToSend}
-        isPending={isPending}
+        maxAmount={maxAmount}
         deposit={deposit}
+        isPending={isPending}
+        isAmountValid={!isTouched || isAmountValid}
         isAccountToBeReaped={getIsAccountToBeReaped()}
-        handleChange={handleChange}
+        onAmountChange={onAmountChange}
       />
     </>
   );

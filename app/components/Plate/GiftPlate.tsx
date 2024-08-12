@@ -2,7 +2,7 @@ import { Icon } from '../Icon/Icon';
 import { HelpText, MediumTitle } from '../Typography';
 
 import { type Gift, GiftStatus } from '@/common/types';
-import { cnTw } from '@/common/utils';
+import { cnTw } from '@/shared/helpers';
 
 import { Plate } from './Plate';
 

@@ -5,8 +5,9 @@ import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
-import { Icon, MediumTitle, TitleText } from '@/components';
+import { Icon, Identicon, MediumTitle, TitleText } from '@/components';
 import { networkModel } from '@/models';
+import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -37,11 +38,12 @@ const Page = () => {
       <div className="flex flex-col items-center justify-center h-[95vh] gap-3">
         <Icon name="Success" size={250} />
         <TitleText>
-          {amount} {selectedAsset.symbol} Sent to
+          {toFormattedBalance(amount, selectedAsset.precision).formatted} {selectedAsset.symbol} Sent to
         </TitleText>
-        <MediumTitle className="text-text-hint break-all" align="center">
-          {address}
-        </MediumTitle>
+        <div className="flex gap-x-1 items-center">
+          <Identicon address={address} />
+          <MediumTitle className="text-text-hint">{toShortAddress(address, 15)}</MediumTitle>
+        </div>
         <MediumTitle className="text-text-hint" align="center">
           Your transaction has been sent to the network and will be processed in a few seconds.
         </MediumTitle>

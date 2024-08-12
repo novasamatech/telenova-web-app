@@ -1,6 +1,6 @@
 import { Shimmering } from '../Shimmering/Shimmering';
 
-import { cnTw } from '@/common/utils';
+import { cnTw } from '@/shared/helpers';
 
 type Props = {
   amount?: number;

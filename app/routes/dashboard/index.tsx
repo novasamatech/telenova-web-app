@@ -7,7 +7,6 @@ import { $path } from 'remix-routes';
 
 import { useGlobalContext, useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
-import { getPrice, getTotalBalance } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
   AssetsList,
@@ -25,6 +24,7 @@ import {
   TitleText,
 } from '@/components';
 import { balancesModel, networkModel } from '@/models';
+import { getPrice, getTotalBalance } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();

@@ -14,7 +14,7 @@ import {
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
 
-import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/common/utils';
+import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/shared/helpers';
 
 import { type GiftWallet, type Wallet } from './types';
 

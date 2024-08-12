@@ -1,3 +1,3 @@
-export { type Asset, type AssetPrice, type AssetsMap } from './asset';
-export { type Chain, type ChainMetadata, type ChainsMap } from './chain';
-export { type AssetBalance, type Balance, type ChainBalances } from './balance';
+export type { Asset, NativeAsset, OrmlAsset, StatemineAsset, AssetPrice, AssetsMap } from './asset';
+export type { Chain, ChainMetadata, ChainsMap } from './chain';
+export type { AssetBalance, Balance, ChainBalances } from './balance';

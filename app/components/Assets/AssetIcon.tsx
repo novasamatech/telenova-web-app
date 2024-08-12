@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 import { Shimmering } from '../Shimmering/Shimmering';
 
-import { cnTw } from '@/common/utils';
-import { useToggle } from '@/common/utils/hooks';
+import { cnTw } from '@/shared/helpers';
+import { useToggle } from '@/shared/hooks';
 
 type Props = {
   src: string;

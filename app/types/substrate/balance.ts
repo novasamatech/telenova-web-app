@@ -17,6 +17,6 @@ export type Balance = {
   free?: BN;
   reserved?: BN;
   frozen?: BN;
-  total: string; // TODO: change to BN during https://app.clickup.com/t/869508mvw
-  transferable: string; // TODO: change to BN during https://app.clickup.com/t/869508mvw
+  total: BN;
+  transferable: BN;
 };

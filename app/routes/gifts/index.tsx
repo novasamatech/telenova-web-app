@@ -5,9 +5,9 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { type Gift } from '@/common/types';
-import { getGifts } from '@/common/utils';
-import { useGifts } from '@/common/utils/hooks';
 import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
+import { getGifts } from '@/shared/helpers';
+import { useGifts } from '@/shared/hooks';
 
 const Page = () => {
   const navigate = useNavigate();

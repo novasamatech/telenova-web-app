@@ -1,7 +1,7 @@
 import { Identicon as PolkadotIdenticon } from '@polkadot/react-identicon';
 import { type IconTheme } from '@polkadot/react-identicon/types';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 type Props = {
   address?: string;

@@ -1,69 +1,71 @@
-import { type PropsWithChildren } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 
-import { Input } from '@nextui-org/react';
+import { type BN } from '@polkadot/util';
 
+import { AmountInput } from '../AmountInput/AmountInput';
 import { Icon } from '../Icon/Icon';
 import { TokenPrice } from '../Price/TokenPrice';
 import { BodyText, LargeTitleText } from '../Typography';
 
 import { AssetIcon } from '@/components';
+import { toFormattedBalance } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 
 //TODO: Change layout mobile text
 type Props = {
   asset: Asset;
-  amount: string;
+  amount: BN;
+  deposit: BN;
+  maxAmount: BN;
   isAmountValid: boolean;
-  maxAmountToSend: string;
   isPending: boolean;
-  deposit: number;
   isAccountToBeReaped: boolean;
-  handleChange: (value: string) => void;
+  onAmountChange: (value: string) => void;
 };
 
 export const AmountDetails = ({
   asset,
   amount,
-  isAmountValid,
-  maxAmountToSend,
-  isPending,
   deposit,
+  maxAmount,
+  isPending,
   isAccountToBeReaped,
-  handleChange,
+  isAmountValid,
+  onAmountChange,
   children,
 }: PropsWithChildren<Props>) => {
-  const shouldShowPrice = !isNaN(+amount) && isAmountValid && !isPending;
+  const [inputAmount, setInputAmount] = useState(toFormattedBalance(amount, asset.precision).value);
+
+  useEffect(() => {
+    if (maxAmount.isZero() || amount.isZero() || !maxAmount.eq(amount)) return;
+
+    setInputAmount(toFormattedBalance(maxAmount, asset.precision).value);
+  }, [amount, maxAmount]);
+
+  const handleAmountChange = (value: string) => {
+    setInputAmount(value);
+    onAmountChange(value);
+  };
 
   return (
     <>
       <div className="flex gap-x-2 items-center mb-6 mt-5 -ml-1.5">
         <AssetIcon src={asset.icon} size={46} />
         <LargeTitleText>{asset.symbol}</LargeTitleText>
-        <Input
-          fullWidth={false}
-          variant="underlined"
-          className="font-manrope w-max ml-auto mt-2.5 "
-          classNames={{ input: ['text-right !text-large-title max-w-[7ch]'] }}
-          value={amount}
-          isInvalid={!isAmountValid}
-          type="text"
-          inputMode="decimal"
-          placeholder="0.00"
-          onValueChange={handleChange}
-        />
+        <div className="px-1 ml-auto">
+          <AmountInput
+            className="max-w-[7ch]"
+            value={inputAmount}
+            isValid={isAmountValid}
+            onChange={handleAmountChange}
+          />
+        </div>
       </div>
 
-      {shouldShowPrice && (
-        <TokenPrice
-          className="col-span-2"
-          priceId={asset.priceId}
-          balance={amount || '0'}
-          showBalance={!isNaN(+amount) && isAmountValid && !isPending}
-        />
-      )}
+      {isAmountValid && !isPending && <TokenPrice showBalance className="col-span-2" balance={amount} asset={asset} />}
       {!isAmountValid && (
         <BodyText align="right" className="text-text-danger">
-          {+amount > +maxAmountToSend ? 'Insufficient balance' : 'Invalid amount'} <br />
+          {amount.gt(maxAmount) ? 'Insufficient balance' : 'Invalid amount'} <br />
           {children}
         </BodyText>
       )}
@@ -71,8 +73,9 @@ export const AmountDetails = ({
         <div className="mt-4 p-4 bg-[#FFE2E0] border border-border-danger rounded-lg grid grid-cols-[auto,1fr]">
           <Icon name="ExclamationMark" size={28} />
           <BodyText align="left" className="text-text-danger">
-            The balance that remains after sending your amount is less than the minimal network deposit ({deposit}{' '}
-            {asset.symbol}), please choose a different amount or use Max instead.
+            The balance that remains after sending your amount is less than the minimal network deposit (
+            {toFormattedBalance(deposit, asset.precision).value} {asset.symbol}), please choose a different amount or
+            use Max instead.
           </BodyText>
         </div>
       )}

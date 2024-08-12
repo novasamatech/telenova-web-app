@@ -5,7 +5,7 @@ import { type LinkProps, Link as NextUiLink } from '@nextui-org/link';
 
 import { MediumTitle } from '../Typography';
 
-import { cnTw } from '@/common/utils';
+import { cnTw } from '@/shared/helpers';
 
 type Props = Omit<LinkProps, 'anchorIcon' | 'showAnchorIcon'> & {
   prefixIcon?: ReactNode;

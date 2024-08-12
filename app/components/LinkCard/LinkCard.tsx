@@ -5,7 +5,7 @@ import { type IconNames } from '../Icon/types';
 import { Plate } from '../Plate/Plate';
 import { BodyText, HelpText } from '../Typography';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 type Props = {
   text: string;

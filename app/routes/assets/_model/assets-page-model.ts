@@ -2,9 +2,9 @@ import { combine, createEvent, createStore, restore, sample, split } from 'effec
 import { isEmpty, orderBy } from 'lodash-es';
 import { readonly } from 'patronum';
 
-import { nonNullable } from '@/common/utils';
-import { DEFAULT_CONNECTED_CHAINS } from '@/common/utils/chains';
 import { networkModel } from '@/models';
+import { nonNullable } from '@/shared/helpers';
+import { DEFAULT_CONNECTED_CHAINS } from '@/shared/helpers/chains';
 import { type Asset } from '@/types/substrate';
 
 const pageMounted = createEvent();

@@ -1,21 +1,22 @@
+import type { SignerOptions } from '@polkadot/api/types';
 import { type KeyringPair } from '@polkadot/keyring/types';
+import { type BN } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 
-import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
-
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
+import { ASSET_LOCATION, FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 
 type SendTransaction = {
   destinationAddress: string;
   chainId: ChainId;
   asset: Asset;
-  transferAmount?: string;
+  transferAmount?: BN;
   transferAll?: boolean;
   keyring?: KeyringPair;
 };
 
-const getAssetIdSignOption = (assetId: string) => ({
+const getAssetIdSignOption = (assetId: string): Pick<SignerOptions, 'assetId'> => ({
   assetId: ASSET_LOCATION[assetId],
 });
 
@@ -30,83 +31,85 @@ export const useExtrinsic = () => {
     transferAmount,
     transferAll,
   }: SendTransaction) {
-    const address = decodeAddress(destinationAddress);
-    const assetId = getAssetId(asset);
+    const assetId = assetUtils.getAssetId(asset);
     let signOptions;
     let transactionType = TransactionType.TRANSFER;
 
     if (transferAll) {
       transactionType = TransactionType.TRANSFER_ALL;
     }
-    if (isStatemineAsset(asset.type)) {
+    // TODO: currently only for USDT
+    if (assetUtils.isStatemineAsset(asset)) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
     }
+    if (assetUtils.isOrmlAsset(asset)) {
+      transactionType = TransactionType.TRANSFER_ORML;
+    }
 
+    // nonce: -1 makes polkadot.js use next nonce
+    // https://github.com/polkadot-js/api/blob/dac94c51964a90f9b26bc88d5a63f1e1b2038281/packages/api-derive/src/tx/signingInfo.ts#L93
     return submitExtrinsic({
       chainId,
-      signOptions,
       keyring,
+      signOptions: { ...signOptions, nonce: -1 },
       transaction: {
         type: transactionType,
         args: {
-          dest: address,
+          dest: decodeAddress(destinationAddress),
           value: transferAmount,
-          asset: assetId,
+          ...(!assetUtils.isNativeAsset() && { asset: assetUtils.getAssetId(asset) }),
         },
       },
     }).then(hash => {
       if (!hash) throw Error('Something went wrong');
 
-      console.log('Success, Hash:', hash?.toString());
+      console.log('Success, Hash:', hash.toString());
     });
   }
 
   type GiftParams = {
     chainId: ChainId;
-    amount: string;
-    fee?: number;
     asset: Asset;
+    amount: BN;
+    fee: BN;
     transferAll?: boolean;
   };
   async function sendGift(
     transferAddress: Address,
     { chainId, asset, amount, fee, transferAll }: GiftParams,
   ): Promise<void> {
-    const transferAmount = formatAmount(amount!, asset.precision);
+    // const transferAmount = toPrecisedBalance(amount!, asset.precision);
 
-    if (isStatemineAsset(asset?.type)) {
-      const giftAmount = Math.ceil(+transferAmount + fee! / 2).toString();
-
+    if (assetUtils.isStatemineAsset(asset)) {
       return sendTransfer({
         chainId,
         asset,
         destinationAddress: transferAddress,
-        transferAmount: giftAmount,
+        transferAmount: fee.divn(2).add(amount), // TODO: math.ceil ???
       });
     }
 
     const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
-    const giftAmount = (+transferAmount + transferAllFee).toString();
 
     return sendTransfer({
       chainId,
       asset,
       transferAll,
       destinationAddress: transferAddress,
-      transferAmount: giftAmount,
+      transferAmount: amount.add(transferAllFee),
     });
   }
 
-  async function getTransactionFee(
+  function getTransactionFee(
     chainId: ChainId,
     transactionType = TransactionType.TRANSFER,
-    amount?: string,
+    amount?: BN,
     assetId?: string,
-  ): Promise<number> {
-    const fee = await estimateFee({
+  ): Promise<BN> {
+    return estimateFee({
       chainId,
-      signOptions: assetId ? getAssetIdSignOption(assetId) : undefined,
+      signOptions: assetId ? { assetId: ASSET_LOCATION[assetId] } : undefined,
       transaction: {
         type: transactionType,
         args: {
@@ -116,8 +119,6 @@ export const useExtrinsic = () => {
         },
       },
     });
-
-    return fee.toNumber();
   }
 
   return { getTransactionFee, sendTransfer, sendGift };
