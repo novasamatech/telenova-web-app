@@ -80,8 +80,6 @@ export const useExtrinsic = () => {
     transferAddress: Address,
     { chainId, asset, amount, fee, transferAll }: GiftParams,
   ): Promise<void> {
-    // const transferAmount = toPrecisedBalance(amount!, asset.precision);
-
     if (assetUtils.isStatemineAsset(asset)) {
       return sendTransfer({
         chainId,

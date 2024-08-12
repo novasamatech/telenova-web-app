@@ -9,10 +9,10 @@ import { Plate } from '../Plate';
 import { Shimmering } from '../Shimmering/Shimmering';
 import { BigTitle, BodyText } from '../Typography';
 
-import { type Gift } from '@/common/types';
 import { networkModel, telegramModel } from '@/models';
 import { getGifts } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
+import { type Gift } from '@/types/substrate';
 
 export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();

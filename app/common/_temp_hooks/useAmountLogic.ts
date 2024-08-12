@@ -102,9 +102,6 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   };
 
   const onAmountChange = (amount: string) => {
-    // BN fails converting values like "0."
-    // const safeAmount = parseFloat(amount).toString();
-
     setIsTransferAll(false);
     setIsTouched(true);
     setAmount(toPrecisedBalance(amount, asset.precision));

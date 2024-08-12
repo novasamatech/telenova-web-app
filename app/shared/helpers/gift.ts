@@ -3,11 +3,10 @@ import { type WebApp } from '@twa-dev/types';
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-import { type PersistentGift } from '../../common/types';
 import { getKeyringPairFromSeed } from '../../common/wallet';
 
 import { telegramApi } from '@/shared/api';
-import { type Asset, type Chain } from '@/types/substrate';
+import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
 
 import { GIFT_STORE } from './constants.ts';
 
@@ -17,6 +16,7 @@ type BackupParams = {
   address: string;
   secret: string;
   balance: string;
+  chainIndex: number;
 };
 export const backupGifts = (webApp: WebApp, params: BackupParams) => {
   const gift = { ...params, timestamp: Date.now() };
@@ -31,7 +31,7 @@ export const getGifts = (webApp: WebApp): Map<ChainId, PersistentGift[]> | null 
   const gifts = JSON.parse(localStorage.getItem(telegramApi.getStoreName(webApp, GIFT_STORE)) as string);
   if (!gifts) return null;
 
-  const map = new Map();
+  const map = new Map<ChainId, PersistentGift[]>();
   gifts.forEach((gift: PersistentGift) => {
     map.set(gift.chainId, [...(map.get(gift.chainId) || []), gift]);
   });
@@ -48,28 +48,50 @@ type GiftInfo = {
   keyring: KeyringPair;
 };
 export const getGiftInfo = (chains: Chain[], publicKey: PublicKey, startParam: string): GiftInfo | undefined => {
-  // TODO: support old URLs
-  const [seed, chainIndex, symbol] = startParam.split('_');
+  const [seed, ...rest] = startParam.split('_');
+  let symbol: string | undefined;
+  let chain: Chain | undefined;
+  let asset: Asset | undefined;
 
-  const chain = chains.find(chain => chain.chainIndex.toString() === chainIndex);
-  const asset = chain?.assets.find(asset => asset.symbol === symbol);
-  if (!chain || !asset) return undefined;
+  // Old gifts (with chainIndex)
+  if (rest.length === 1) {
+    symbol = rest[0];
+    const payload = getAssetBySymbol(chains, symbol);
+    chain = payload?.chain;
+    asset = payload?.asset;
+  }
+
+  // New gifts (include chainIndex)
+  if (rest.length === 2) {
+    symbol = rest[1];
+    chain = chains.find(chain => chain.chainIndex.toString() === rest[0]);
+    asset = chain?.assets.find(asset => asset.symbol === symbol);
+  }
+
+  if (!chain || !asset || !symbol) return undefined;
 
   const keyring = getKeyringPairFromSeed(seed);
   const address = encodeAddress(publicKey, chain.addressPrefix);
   const giftAddress = encodeAddress(keyring.publicKey, chain.addressPrefix);
 
-  return { chainId: chain.chainId, asset, address, giftAddress, symbol, keyring };
+  return {
+    keyring,
+    address,
+    giftAddress,
+    asset,
+    symbol,
+    chainId: chain.chainId,
+  };
 };
 
-// function getAssetBySymbol(chains: Chain[], symbol: string): ChainAsset | undefined {
-//   for (const chain of chains) {
-//     for (const asset of chain.assets) {
-//       if (asset.symbol == symbol) {
-//         return { chain, asset };
-//       }
-//     }
-//   }
-//
-//   return undefined;
-// }
+function getAssetBySymbol(chains: Chain[], symbol: string): { chain: Chain; asset: Asset } | undefined {
+  for (const chain of chains) {
+    for (const asset of chain.assets) {
+      if (asset.symbol !== symbol) continue;
+
+      return { chain, asset };
+    }
+  }
+
+  return undefined;
+}

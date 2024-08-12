@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { useUnit } from 'effector-react/effector-react.umd';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { completeOnboarding } from '@/common/telegram';

@@ -5,11 +5,11 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { type Gift } from '@/common/types';
 import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
 import { telegramModel } from '@/models';
 import { getGifts } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
+import { type Gift } from '@/types/substrate';
 
 const Page = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Page = () => {
 
   const webApp = useUnit(telegramModel.$webApp);
 
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
 
@@ -30,7 +30,7 @@ const Page = () => {
     getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
       setUnclaimedGifts(unclaimed);
       setClaimedGifts(claimed);
-      setLoading(false);
+      setIsLoading(false);
     });
   }, [webApp]);
 
@@ -46,9 +46,16 @@ const Page = () => {
           <BodyText className="text-text-hint" align="left">
             Unclaimed <span className="text-text-on-button-disabled">{unclaimedGifts.length || 0}</span>
           </BodyText>
-          {loading ? (
-            <Shimmering height={92} className="rounded-lg" />
-          ) : unclaimedGifts.length ? (
+          {isLoading && <Shimmering height={92} className="rounded-lg" />}
+
+          {!isLoading && unclaimedGifts.length === 0 && (
+            <div className="w-full bg-bg-input h-[92px] rounded-lg flex justify-center items-center">
+              <HelpText className="text-text-hint">All Gifts are claimed</HelpText>
+            </div>
+          )}
+
+          {!isLoading &&
+            unclaimedGifts.length > 0 &&
             unclaimedGifts.map(gift => (
               <Link
                 key={gift.timestamp}
@@ -61,27 +68,24 @@ const Page = () => {
               >
                 <GiftPlate gift={gift} isClaimed={false} />
               </Link>
-            ))
-          ) : (
-            <div className="w-full bg-bg-input h-[92px] rounded-lg flex justify-center items-center">
-              <HelpText className="text-text-hint">All Gifts are claimed</HelpText>
-            </div>
-          )}
+            ))}
         </div>
 
         <div className="flex flex-col gap-y-2">
           <BodyText className="text-text-hint mb-2" align="left">
             Claimed <span className="text-text-on-button-disabled">{claimedGifts.length || 0}</span>
           </BodyText>
-          {loading ? (
-            <Shimmering height={92} className="rounded-lg" />
-          ) : claimedGifts.length ? (
-            claimedGifts.map(gift => <GiftPlate gift={gift} key={gift.timestamp} isClaimed />)
-          ) : (
+          {isLoading && <Shimmering height={92} className="rounded-lg" />}
+
+          {!isLoading && claimedGifts.length === 0 && (
             <div className="w-full bg-bg-input h-[92px] rounded-2xl flex justify-center items-center">
               <HelpText className="text-text-hint">No claimed gifts</HelpText>
             </div>
           )}
+
+          {!isLoading &&
+            claimedGifts.length > 0 &&
+            claimedGifts.map(gift => <GiftPlate gift={gift} key={gift.timestamp} isClaimed />)}
         </div>
       </div>
     </>

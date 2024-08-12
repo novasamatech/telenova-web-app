@@ -2,9 +2,9 @@ import { useUnit } from 'effector-react';
 
 import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
-import { type Gift, GiftStatus, type PersistentGift } from '@/common/types';
 import { networkModel } from '@/models';
 import { assetUtils } from '@/shared/helpers/assets.ts';
+import { type Gift, type PersistentGift } from '@/types/substrate';
 
 import { useAssetHub } from './useAssetHub.ts';
 
@@ -40,9 +40,9 @@ export const useGifts = () => {
 
         balances.forEach((balance, index) => {
           if (balance.isNone || balance.unwrap().balance.lte(fee)) {
-            claimed.push({ ...gifts[index]!, chainAsset: asset, status: GiftStatus.CLAIMED });
+            claimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Claimed' });
           } else {
-            unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: GiftStatus.UNCLAIMED });
+            unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Unclaimed' });
           }
         });
       } else if (assetUtils.isOrmlAsset(asset)) {
@@ -60,9 +60,9 @@ export const useGifts = () => {
 
         balances.forEach((balance: any, index: number) => {
           if (balance.data.free.isEmpty) {
-            claimed.push({ ...gifts[index]!, chainAsset: asset, status: GiftStatus.CLAIMED });
+            claimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Claimed' });
           } else {
-            unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: GiftStatus.UNCLAIMED });
+            unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Unclaimed' });
           }
         });
       } else {
@@ -70,9 +70,9 @@ export const useGifts = () => {
 
         balances.forEach((balance, index) => {
           if (balance.data.free.isEmpty) {
-            claimed.push({ ...gifts[index]!, chainAsset: asset, status: GiftStatus.CLAIMED });
+            claimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Claimed' });
           } else {
-            unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: GiftStatus.UNCLAIMED });
+            unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Unclaimed' });
           }
         });
       }

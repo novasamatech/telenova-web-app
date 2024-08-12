@@ -23,7 +23,7 @@ type CreateTgLinkParams = {
   appName: string;
   amount: string;
   secret: string;
-  chainIndex: string | number;
+  chainIndex?: string | number;
   symbol: string;
 };
 
@@ -31,7 +31,7 @@ export const createTgLink = ({ botUrl, appName, amount, secret, chainIndex, symb
   const text = `\nHey, I have sent you ${amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
   const url = new URL(`/${botUrl}/${appName}`, 'https://t.me');
 
-  if (chainIndex === '') {
+  if (chainIndex === undefined || chainIndex === '') {
     url.searchParams.set('startapp', `${secret}_${symbol}`);
   } else {
     url.searchParams.set('startapp', `${secret}_${chainIndex}_${symbol}`);

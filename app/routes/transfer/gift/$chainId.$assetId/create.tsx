@@ -66,7 +66,8 @@ const Page = () => {
     const keyringPair = getKeyringPair(webApp);
     if (!keyringPair) return;
 
-    const giftWallet = createGiftWallet(chains[typedChainId].addressPrefix);
+    const selectedChain = chains[typedChainId];
+    const giftWallet = createGiftWallet(selectedChain.addressPrefix);
 
     sendGift(keyringPair, giftWallet.address, {
       chainId: typedChainId,
@@ -82,13 +83,14 @@ const Page = () => {
           address: giftWallet.address,
           secret: giftWallet.secret,
           balance: amount,
+          chainIndex: selectedChain.chainIndex,
         });
         const tgLink = createTgLink({
           botUrl,
           appName,
           amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
           secret: giftWallet.secret,
-          chainIndex: chains[typedChainId].chainIndex,
+          chainIndex: selectedChain.chainIndex,
           symbol: selectedAsset.symbol,
         });
 
