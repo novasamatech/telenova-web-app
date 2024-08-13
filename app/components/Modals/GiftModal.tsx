@@ -16,9 +16,9 @@ import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { networkModel, telegramModel, walletModel } from '@/models';
-import { getGiftInfo, toFormattedBalance, toPrecisedBalance } from '@/shared/helpers';
-import { useAssetHub } from '@/shared/hooks';
-import { type Asset, type StatemineAsset } from '@/types/substrate';
+import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
+import { useAssetHub, useOrml } from '@/shared/hooks';
+import { type Asset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 
 type GiftStatus = 'claimed' | 'notClaimed';
 
@@ -34,6 +34,7 @@ let timeoutId: ReturnType<typeof setTimeout>;
 export const GiftModal = () => {
   const { getFreeBalance } = useQueryService();
   const { getGiftBalanceStatemine } = useAssetHub();
+  const { getOrmlGiftBalance } = useOrml();
   const { sendTransfer, getTransactionFee } = useExtrinsic();
   const { isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
 
@@ -52,36 +53,24 @@ export const GiftModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const getGiftBalance = async (chainId: ChainId, giftAddress: string): Promise<BN> => {
-    const timerID = setTimeout(() => {
-      setGiftBalance(BN_ZERO);
-    }, 5500);
-
-    const giftBalance = await getFreeBalance(giftAddress, chainId);
-    if (giftBalance.isZero()) {
-      clearTimeout(timerID);
-
-      return BN_ZERO;
-    }
-    const fee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
-    clearTimeout(timerID);
-    const rawBalance = giftBalance.sub(fee);
-
-    return rawBalance.isNeg() ? BN_ZERO : rawBalance;
-  };
-
   useEffect(() => {
     if (isGiftClaimed || !startParam || !wallet?.publicKey) return;
     setIsOpen(true);
 
     const giftInfo = getGiftInfo(Object.values(chains), wallet.publicKey, startParam);
-    if (!giftInfo || connections[giftInfo.chainId].status !== 'connected') return;
+    if (!giftInfo) return;
 
     const { chainId, asset, giftAddress, symbol } = giftInfo;
+    if (connections[chainId].status !== 'connected') {
+      // Repetitive connections will be filtered out in network-model
+      networkModel.input.assetConnected({ chainId, assetId: asset.assetId });
+
+      return;
+    }
 
     const balanceRequest: Record<Asset['type'], (chainId: ChainId, address: Address, asset?: Asset) => Promise<BN>> = {
       native: (chainId, address) => getGiftBalance(chainId, address),
-      orml: (chainId, address) => getGiftBalance(chainId, address),
+      orml: (chainId, address) => getOrmlGiftBalance(chainId, address, asset as OrmlAsset),
       statemine: (chainId, address, asset) => getGiftBalanceStatemine(chainId, address, asset as StatemineAsset),
     };
 
@@ -97,9 +86,20 @@ export const GiftModal = () => {
     };
   }, [startParam, wallet, isGiftClaimed, connections]);
 
+  const getGiftBalance = async (chainId: ChainId, giftAddress: string): Promise<BN> => {
+    const giftBalance = await getFreeBalance(giftAddress, chainId);
+    if (giftBalance.isZero()) return BN_ZERO;
+
+    const fee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
+    const rawBalance = giftBalance.sub(fee);
+
+    return rawBalance.isNeg() ? BN_ZERO : rawBalance;
+  };
+
   const handleClose = () => {
     clearTimeout(timeoutId);
     setIsOpen(false);
+
     if (giftBalance) {
       setIsGiftClaimed(true);
     }
@@ -125,7 +125,7 @@ export const GiftModal = () => {
       chainId: giftInfo.chainId,
       asset: giftInfo.asset,
       destinationAddress: giftInfo.address,
-      transferAmount: toPrecisedBalance(giftBalance.toString(), giftInfo.asset.precision),
+      transferAmount: giftBalance,
       transferAll: true,
       keyringPair: giftInfo.keyring,
     })

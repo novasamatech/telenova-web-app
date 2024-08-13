@@ -35,16 +35,14 @@ export const useExtrinsic = () => {
     let signOptions;
     let transactionType = TransactionType.TRANSFER;
 
-    if (transferAll) {
-      transactionType = TransactionType.TRANSFER_ALL;
-    }
     // TODO: currently only for USDT
     if (assetUtils.isStatemineAsset(asset)) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
-    }
-    if (assetUtils.isOrmlAsset(asset)) {
+    } else if (assetUtils.isOrmlAsset(asset)) {
       transactionType = TransactionType.TRANSFER_ORML;
+    } else if (transferAll) {
+      transactionType = TransactionType.TRANSFER_ALL;
     }
 
     // nonce: -1 makes polkadot.js use next nonce
@@ -80,25 +78,25 @@ export const useExtrinsic = () => {
     transferAddress: Address,
     { chainId, asset, amount, fee, transferAll }: GiftParams,
   ): Promise<void> {
-    if (assetUtils.isStatemineAsset(asset)) {
+    if (assetUtils.isNativeAsset(asset)) {
+      const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
+
       return sendTransfer({
         chainId,
         asset,
         keyringPair,
+        transferAll,
         destinationAddress: transferAddress,
-        transferAmount: fee.divn(2).add(amount), // TODO: math.ceil ???
+        transferAmount: amount.add(transferAllFee),
       });
     }
-
-    const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
 
     return sendTransfer({
       chainId,
       asset,
       keyringPair,
-      transferAll,
       destinationAddress: transferAddress,
-      transferAmount: amount.add(transferAllFee),
+      transferAmount: fee.divn(2).add(amount),
     });
   }
 

@@ -20,16 +20,22 @@ export function useExtrinsicService(): ExtrinsicService {
     TransactionType,
     (args: Record<string, any>, api: ApiPromise) => SubmittableExtrinsic<'promise'>
   > = {
-    [TransactionType.TRANSFER]: ({ dest, value }, api) =>
-      api.tx.balances['transferKeepAlive']
+    [TransactionType.TRANSFER]: ({ dest, value }, api) => {
+      return api.tx.balances['transferKeepAlive']
         ? api.tx.balances['transferKeepAlive'](dest, value)
-        : api.tx.balances['transfer'](dest, value),
-    [TransactionType.TRANSFER_ALL]: ({ dest }, api) => api.tx.balances.transferAll(dest, false),
-    [TransactionType.TRANSFER_STATEMINE]: ({ dest, value, asset }, api) => api.tx.assets.transfer(asset, dest, value),
-    [TransactionType.TRANSFER_ORML]: ({ dest, value, asset }, api) =>
-      api.tx['currencies']
-        ? api.tx['currencies']['transfer'](dest, asset, value)
-        : api.tx['tokens']['transfer'](dest, asset, value),
+        : api.tx.balances['transfer'](dest, value);
+    },
+    [TransactionType.TRANSFER_STATEMINE]: ({ dest, value, asset }, api) => {
+      return api.tx.assets.transfer(asset, dest, value);
+    },
+    [TransactionType.TRANSFER_ORML]: ({ dest, value, asset }, api) => {
+      return api.tx['tokens']
+        ? api.tx['tokens']['transfer'](dest, asset, value)
+        : api.tx['currencies']['transfer'](dest, asset, value);
+    },
+    [TransactionType.TRANSFER_ALL]: ({ dest }, api) => {
+      return api.tx.balances.transferAll(dest, false);
+    },
   };
 
   const prepareExtrinsic = async (

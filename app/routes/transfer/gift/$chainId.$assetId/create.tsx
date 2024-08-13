@@ -38,7 +38,7 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
   const data = {
     ...$params('/transfer/gift/:chainId/:assetId/create', params),
     amount: url.searchParams.get('amount') || '',
-    fee: Number(url.searchParams.get('fee') || 0),
+    fee: url.searchParams.get('fee') || '0',
     all: url.searchParams.get('all') === 'true',
   };
 

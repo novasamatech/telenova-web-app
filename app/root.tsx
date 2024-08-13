@@ -82,7 +82,7 @@ const DataContext = ({ children }: PropsWithChildren) => {
     models.telegramModel.input.webAppStarted();
     models.networkModel.input.networkStarted(file);
 
-    cryptoWaitReady().then(() => setIsLoading(false));
+    cryptoWaitReady().finally(() => setIsLoading(false));
   }, []);
 
   if (isLoading) return null;

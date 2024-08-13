@@ -34,17 +34,11 @@ const Page = () => {
   const [chains, assets] = useUnit([networkModel.$chains, networkModel.$sortedAssets]);
   const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
 
-  // Fetching chains
   useEffect(() => {
     if (!webApp || getMnemonic(webApp)) return;
 
     clearWallet(true);
   }, [webApp]);
-
-  const clearWallet = (clearLocal?: boolean) => {
-    resetWallet(clearLocal);
-    navigate($path('/onboarding'));
-  };
 
   // Fetching prices
   useEffect(() => {
@@ -62,6 +56,11 @@ const Page = () => {
       abortController.abort();
     };
   }, [chains]);
+
+  const clearWallet = (clearLocal?: boolean) => {
+    resetWallet(clearLocal);
+    navigate($path('/onboarding'));
+  };
 
   const totalBalance = getTotalBalance(chains, balances, assetsPrices);
 

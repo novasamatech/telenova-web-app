@@ -1,16 +1,12 @@
 import { useUnit } from 'effector-react';
 
-import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
+import { hexToU8a } from '@polkadot/util';
 
 import { networkModel } from '@/models';
-import { assetUtils } from '@/shared/helpers/assets.ts';
+import { assetUtils } from '@/shared/helpers/assets';
 import { type Gift, type PersistentGift } from '@/types/substrate';
 
-import { useAssetHub } from './useAssetHub.ts';
-
 export const useGifts = () => {
-  const { getAssetHubFee } = useAssetHub();
-
   const chains = useUnit(networkModel.$chains);
   const connections = useUnit(networkModel.$connections);
 
@@ -33,13 +29,8 @@ export const useGifts = () => {
           gifts.map(gift => [asset.typeExtras.assetId, gift.address]),
         );
 
-        const maxBalance = balances.reduce((acc, balance) => {
-          return balance.isNone ? acc : BN.max(acc, balance.unwrap().balance);
-        }, BN_ZERO);
-        const fee = await getAssetHubFee(chainId, asset, maxBalance);
-
         balances.forEach((balance, index) => {
-          if (balance.isNone || balance.unwrap().balance.lte(fee)) {
+          if (balance.isNone || balance.unwrap().balance.isEmpty) {
             claimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Claimed' });
           } else {
             unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Unclaimed' });
@@ -59,7 +50,7 @@ export const useGifts = () => {
         const balances = await method(ormlTuples);
 
         balances.forEach((balance: any, index: number) => {
-          if (balance.data.free.isEmpty) {
+          if (balance.free.isEmpty) {
             claimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Claimed' });
           } else {
             unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Unclaimed' });

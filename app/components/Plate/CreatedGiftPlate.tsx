@@ -26,9 +26,11 @@ export const CreatedGiftPlate = () => {
     if (!webApp) return;
 
     const localStorageGifts = getGifts(webApp);
-    if (!localStorageGifts) return;
-
-    getGiftsState(localStorageGifts).then(([unclaimed]) => setUnclaimed(unclaimed));
+    if (localStorageGifts) {
+      getGiftsState(localStorageGifts).then(([unclaimed]) => setUnclaimed(unclaimed));
+    } else {
+      setUnclaimed([]);
+    }
   }, [webApp, connections]);
 
   return (
