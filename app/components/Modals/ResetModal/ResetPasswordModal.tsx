@@ -41,22 +41,20 @@ export const ResetPasswordModal = ({ isOpen, onClose }: Props) => {
   };
 
   return (
-    <>
-      <Modal
-        isOpen={isOpen}
-        size="xs"
-        placement="center"
-        classNames={{
-          closeButton: 'mt-2 text-2xl text-icon-neutral',
-        }}
-        className="max-h-[93vh] overflow-y-auto"
-        onClose={handleClose}
-      >
-        <ModalContent>
-          {step === Step.INIT && <ResetPassword onClose={onClose} onSubmit={handleSubmit} />}
-          {step === Step.BACKUP_DELETED && <BackupDeleted onClose={handleClose} />}
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal
+      isOpen={isOpen}
+      size="xs"
+      placement="center"
+      classNames={{
+        closeButton: 'mt-2 text-2xl text-icon-neutral',
+      }}
+      className="max-h-[93vh] overflow-y-auto"
+      onClose={handleClose}
+    >
+      <ModalContent>
+        {step === Step.INIT && <ResetPassword onClose={onClose} onSubmit={handleSubmit} />}
+        {step === Step.BACKUP_DELETED && <BackupDeleted onClose={handleClose} />}
+      </ModalContent>
+    </Modal>
   );
 };

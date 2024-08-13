@@ -16,7 +16,7 @@ export const IconButton = ({ iconName, onClick, size = 40, text = '' }: Props) =
   return (
     <Button
       variant="shadow"
-      className="bg-white h-auto w-full px-3 py-[14px] gap-3 justify-start rounded-[20px] flex-col shadow-md-sm"
+      className="h-auto w-full flex-col justify-start gap-3 rounded-[20px] bg-white px-3 py-[14px] shadow-md-sm"
       onClick={onClick}
     >
       <span className="w-[40px]">

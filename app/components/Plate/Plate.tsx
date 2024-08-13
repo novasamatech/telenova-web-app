@@ -8,5 +8,5 @@ type Props = {
 };
 
 export const Plate = ({ as: Tag = 'div', className, children }: PropsWithChildren<Props>) => (
-  <Tag className={cnTw('p-4 rounded-lg bg-white break-words', className)}>{children}</Tag>
+  <Tag className={cnTw('break-words rounded-lg bg-white p-4', className)}>{children}</Tag>
 );

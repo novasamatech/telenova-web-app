@@ -27,8 +27,9 @@ export enum BatchMode {
 export interface ExtrinsicBuilderFactory {
   /**
    * @param chainId
-   * @returns ready-to-use newly initialized ExtrinsicBuilder
-   * or undefined in case there is no relevant chain or connection
+   *
+   * @returns Ready-to-use newly initialized ExtrinsicBuilder or undefined in
+   *   case there is no relevant chain or connection
    */
   forChain(chainId: ChainId): Promise<ExtrinsicBuilder>;
 }

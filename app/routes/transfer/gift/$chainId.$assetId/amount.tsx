@@ -69,12 +69,12 @@ const Page = () => {
       />
       <BackButton onClick={() => navigate($path('/transfer/gift/token-select'))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
-        <Icon name="Gift" className="w-8 h-8 text-bg-icon-accent-primary" />
+        <Icon name="Gift" className="h-8 w-8 text-bg-icon-accent-primary" />
         <HeadlineText>Preparing Gift</HeadlineText>
         <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxGiftSend}>
           <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
           {maxAmount.isZero() ? (
-            <div className="shrink-0 w-[7ch]">
+            <div className="w-[7ch] shrink-0">
               <Progress size="md" isIndeterminate />
             </div>
           ) : (

@@ -15,7 +15,7 @@ type Props = Omit<LinkProps, 'anchorIcon' | 'showAnchorIcon'> & {
 export const LinkButton = ({ href, prefixIcon, suffixIcon, className, children, ...props }: Props) => {
   return (
     <NextUiLink as={Link} to={href} {...props} className={cnTw('text-text-link', className)}>
-      <div className="flex gap-x-2 items-center">
+      <div className="flex items-center gap-x-2">
         {prefixIcon}
         <MediumTitle className="text-inherit">{children}</MediumTitle>
         {suffixIcon}

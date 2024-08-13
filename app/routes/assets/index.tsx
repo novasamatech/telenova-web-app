@@ -42,7 +42,7 @@ const Page = () => {
         {assets.length > 0 && (
           <ul className="flex flex-col gap-y-2">
             {assets.map(([chainId, asset, isActive]) => (
-              <Plate as="li" key={`${chainId}_${asset.assetId}`} className="flex gap-x-3 py-2 px-2.5 items-center">
+              <Plate as="li" key={`${chainId}_${asset.assetId}`} className="flex items-center gap-x-3 px-2.5 py-2">
                 <AssetIcon src={asset.icon} size={48} />
                 <MediumTitle as="span" className="uppercase">
                   {asset.symbol}
@@ -54,7 +54,7 @@ const Page = () => {
         )}
 
         {assets.length === 0 && (
-          <div className="flex flex-col gap-y-4 items-center mt-[70px]">
+          <div className="mt-[70px] flex flex-col items-center gap-y-4">
             <Icon name="NoResult" size={180} />
             <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search </BodyText>
           </div>

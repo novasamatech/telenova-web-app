@@ -41,21 +41,21 @@ const Page = () => {
       <div className="flex flex-col items-center text-center">
         <Icon name="Welcome" size={128} className="mx-auto" />
         <pre>
-          <TitleText className="mt-4 mb-2">{headerText}</TitleText>
+          <TitleText className="mb-2 mt-4">{headerText}</TitleText>
         </pre>
         {startParam && (
-          <BodyText className="text-text-hint px-4 mb-2">
+          <BodyText className="mb-2 px-4 text-text-hint">
             To claim it, let’s create a wallet. It’s super quick.
           </BodyText>
         )}
         {welcomeData.map(({ title, text, icon }) => (
-          <div key={title} className="flex gap-4 px-4 mt-6">
+          <div key={title} className="mt-6 flex gap-4 px-4">
             <span>
               <Icon name={icon as IconNames} size={48} />
             </span>
             <div>
               <MediumTitle>{title}</MediumTitle>
-              <BodyText className="text-text-hint mt-1" align="left">
+              <BodyText className="mt-1 text-text-hint" align="left">
                 {text}
               </BodyText>
             </div>

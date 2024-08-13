@@ -90,7 +90,7 @@ const Page = () => {
         <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={onMaxAmount}>
           <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
           {maxAmount.isZero() ? (
-            <div className="shrink-0 w-[7ch]">
+            <div className="w-[7ch] shrink-0">
               <Progress size="md" isIndeterminate />
             </div>
           ) : (

@@ -87,7 +87,7 @@ const Page = () => {
     {
       title: 'Recipients address',
       value: (
-        <div className="flex gap-x-1 items-center">
+        <div className="flex items-center gap-x-1">
           <Identicon address={address} />
           <MediumTitle>{toShortAddress(address, 15)}</MediumTitle>
         </div>
