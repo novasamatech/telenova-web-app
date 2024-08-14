@@ -16,7 +16,7 @@ export const GiftPlate = ({ gift, isClaimed }: Props) => {
 
   return (
     <Plate className="mb-2 grid grid-cols-[40px,1fr,auto] items-center gap-x-3">
-      <Icon name="Gift" className={cnTw(`w-10 h-10`, isClaimed ? 'text-bg-icon-accent-primary' : 'text-text-hint')} />
+      <Icon name="Gift" className={cnTw(`h-10 w-10`, isClaimed ? 'text-bg-icon-accent-primary' : 'text-text-hint')} />
       <div>
         <MediumTitle>
           {/* HINT: Balance for old gifts are already formatted */}
@@ -32,7 +32,7 @@ export const GiftPlate = ({ gift, isClaimed }: Props) => {
           {gift.status}
         </HelpText>
       </div>
-      {gift.status === 'Unclaimed' && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
+      {gift.status === 'Unclaimed' && <Icon name="ChevronForward" className="ml-2 h-4 w-4" />}
     </Plate>
   );
 };

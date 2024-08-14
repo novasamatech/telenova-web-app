@@ -16,7 +16,7 @@ type Props = {
 };
 
 const Fallback = ({ className }: Props) => (
-  <div className={cnTw('grid place-content-center w-[256px] h-[256px]', className)}>
+  <div className={cnTw('grid h-[256px] w-[256px] place-content-center', className)}>
     <CircularProgress />
   </div>
 );
@@ -39,7 +39,7 @@ export const LottiePlayer = ({ className, sources, ...rest }: { sources: string[
 
   return (
     <Suspense fallback={<Fallback className={className} />}>
-      {lottieSource && <LazyPlayer {...rest} src={lottieSource} className={cnTw('w-[256px] h-[256px]', className)} />}
+      {lottieSource && <LazyPlayer {...rest} src={lottieSource} className={cnTw('h-[256px] w-[256px]', className)} />}
     </Suspense>
   );
 };

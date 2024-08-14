@@ -11,7 +11,7 @@ const Page = () => {
   return (
     <>
       <MainButton onClick={() => navigate($path('/dashboard'), { replace: true })} />
-      <div className="flex flex-col justify-center items-center h-[95vh]">
+      <div className="flex h-[95vh] flex-col items-center justify-center">
         <Icon name="Success" size={250} />
         <TitleText className="m-3">Password changed successfully!</TitleText>
       </div>

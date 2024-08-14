@@ -49,10 +49,10 @@ export const AmountDetails = ({
 
   return (
     <>
-      <div className="flex gap-x-2 items-center mb-6 mt-5 -ml-1.5">
+      <div className="-ml-1.5 mb-6 mt-5 flex items-center gap-x-2">
         <AssetIcon src={asset.icon} size={46} />
         <LargeTitleText>{asset.symbol}</LargeTitleText>
-        <div className="px-1 ml-auto">
+        <div className="ml-auto px-1">
           <AmountInput
             className="max-w-[7ch]"
             value={inputAmount}
@@ -70,7 +70,7 @@ export const AmountDetails = ({
         </BodyText>
       )}
       {isAccountToBeReaped && (
-        <div className="mt-4 p-4 bg-[#FFE2E0] border border-border-danger rounded-lg grid grid-cols-[auto,1fr]">
+        <div className="mt-4 grid grid-cols-[auto,1fr] rounded-lg border border-border-danger bg-[#FFE2E0] p-4">
           <Icon name="ExclamationMark" size={28} />
           <BodyText align="left" className="text-text-danger">
             The balance that remains after sending your amount is less than the minimal network deposit (

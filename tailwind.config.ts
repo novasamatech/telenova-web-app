@@ -2,8 +2,8 @@ import type { Config } from 'tailwindcss';
 
 import { nextui } from '@nextui-org/react';
 
-import colors from './tw-config-consts/colors';
-import fontSize from './tw-config-consts/font-sizes';
+import colors from './app/shared/config/tailwind/colors';
+import fontSize from './app/shared/config/tailwind/font-sizes';
 
 export default {
   future: {

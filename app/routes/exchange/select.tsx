@@ -40,8 +40,8 @@ const Page = () => {
   return (
     <>
       <BackButton onClick={() => navigate($path('/exchange'))} />
-      <TitleText className="mt-6 mb-10">Select a token {type ? `to ${type}` : ''}</TitleText>
-      <div className="flex flex-col gap-2 mt-4">
+      <TitleText className="mb-10 mt-6">Select a token {type ? `to ${type}` : ''}</TitleText>
+      <div className="mt-4 flex flex-col gap-2">
         {exchangeAssets.map(([chainId, asset]) => (
           <Link
             key={`${chainId}_${asset.assetId}`}
@@ -50,7 +50,7 @@ const Page = () => {
             <AssetBalance
               asset={asset}
               balance={balances[chainId]?.[asset.assetId]?.balance.total}
-              className="bg-white rounded-lg px-4 py-3 w-full hover:bg-bg-item-pressed active:bg-bg-item-pressed"
+              className="w-full rounded-lg bg-white px-4 py-3 hover:bg-bg-item-pressed active:bg-bg-item-pressed"
               name={chains[chainId].name}
               showArrow
             />

@@ -17,7 +17,7 @@ export const BackupDeleted = ({ onClose }: Props) => (
       <MediumTitle align="center">Your backup has been deleted</MediumTitle>
     </ModalBody>
     <ModalFooter className="flex-col justify-center">
-      <Button color="primary" className="w-full rounded-full h-[50px]" onPress={onClose}>
+      <Button color="primary" className="h-[50px] w-full rounded-full" onPress={onClose}>
         <MediumTitle className="text-white">Close</MediumTitle>
       </Button>
     </ModalFooter>

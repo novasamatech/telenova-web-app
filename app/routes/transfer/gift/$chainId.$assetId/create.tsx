@@ -107,7 +107,7 @@ const Page = () => {
   if (!selectedAsset) return null;
 
   return (
-    <div className="grid items-end justify-center h-[93vh]">
+    <div className="grid h-[93vh] items-end justify-center">
       <LottiePlayer
         className="mb-3"
         sources={[`/assets/lottie/${selectedAsset.symbol}_packing.json`, '/assets/lottie/Default_packing.json']}
@@ -116,19 +116,19 @@ const Page = () => {
         onEvent={handleLottieEvent}
       />
       {loading || !link ? (
-        <div className="h-[100px] mb-auto">
-          <div className="opacity-0 animate-text mt-3">
+        <div className="mb-auto h-[100px]">
+          <div className="animate-text mt-3 opacity-0">
             <HeadlineText className="text-text-hint" align="center">
               Adding tokens...
             </HeadlineText>
           </div>
-          <div className="mt-5 opacity-0 delay-1">
-            <HeadlineText className="text-text-hint delay-1" align="center">
+          <div className="delay-1 mt-5 opacity-0">
+            <HeadlineText className="delay-1 text-text-hint" align="center">
               Sprinkling confetti
             </HeadlineText>
           </div>
-          <div className="opacity-0 delay-2 m-[-10px]">
-            <HeadlineText className="text-text-hint delay-2" align="center">
+          <div className="delay-2 m-[-10px] opacity-0">
+            <HeadlineText className="delay-2 text-text-hint" align="center">
               Wrapping up the gift box
             </HeadlineText>
           </div>

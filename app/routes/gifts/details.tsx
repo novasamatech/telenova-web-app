@@ -56,8 +56,8 @@ const Page = () => {
   return (
     <>
       <BackButton onClick={() => navigate($path('/gifts'))} />
-      <div className="grid items-center justify-center h-[93vh]">
-        <Icon name="Present" size={250} className="justify-self-center mt-auto" />
+      <div className="grid h-[93vh] items-center justify-center">
+        <Icon name="Present" size={250} className="mt-auto justify-self-center" />
         {link && webApp && <GiftDetails link={link} webApp={webApp} />}
       </div>
     </>

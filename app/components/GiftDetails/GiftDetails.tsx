@@ -16,7 +16,7 @@ export const GiftDetails = ({ link, webApp }: Props) => {
     <>
       <MainButton text="Send to contact" onClick={() => navigateTransferById(webApp, link)} />
       <TitleText className="mb-auto">The gift has been prepared!</TitleText>
-      <BodyText className="text-text-hint mt-auto" align="center">
+      <BodyText className="mt-auto text-text-hint" align="center">
         Your gifts can be managed on Main screen
       </BodyText>
     </>

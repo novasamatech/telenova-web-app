@@ -37,7 +37,7 @@ const Page = () => {
         <Avatar
           src={user?.photo_url}
           size="lg"
-          className="w-[64px] h-[64px]"
+          className="h-[64px] w-[64px]"
           classNames={{
             base: 'bg-[--tg-theme-button-color]',
             name: 'font-manrope font-black text-base text-white',
@@ -47,7 +47,7 @@ const Page = () => {
         <TitleText className="my-4">
           {!startParam && `Hey ${user?.first_name || 'friend'}! `}Let’s set a password to secure your new wallet
         </TitleText>
-        <BodyText className="text-text-hint px-4">
+        <BodyText className="px-4 text-text-hint">
           You should set a strong password to secure your wallet. The password you choose will keep your assets safe and
           sound
         </BodyText>

@@ -110,8 +110,8 @@ a:hover {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  border-radius: 4px;
   border: 2px solid transparent;
+  border-radius: 4px;
   background-clip: padding-box;
 }
 

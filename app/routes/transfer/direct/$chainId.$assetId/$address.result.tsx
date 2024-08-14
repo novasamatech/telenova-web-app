@@ -35,12 +35,12 @@ const Page = () => {
   return (
     <>
       <MainButton text="Done" onClick={() => navigate($path('/dashboard'), { replace: true })} />
-      <div className="flex flex-col items-center justify-center h-[95vh] gap-3">
+      <div className="flex h-[95vh] flex-col items-center justify-center gap-3">
         <Icon name="Success" size={250} />
         <TitleText>
           {toFormattedBalance(amount, selectedAsset.precision).formatted} {selectedAsset.symbol} Sent to
         </TitleText>
-        <div className="flex gap-x-1 items-center">
+        <div className="flex items-center gap-x-1">
           <Identicon address={address} />
           <MediumTitle className="text-text-hint">{toShortAddress(address, 15)}</MediumTitle>
         </div>

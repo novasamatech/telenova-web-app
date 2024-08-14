@@ -64,15 +64,15 @@ const Page = () => {
             base: 'bg-[--tg-theme-button-color]',
             name: 'font-manrope font-black text-base text-white',
           }}
-          className="w-[64px] h-[64px]"
+          className="h-[64px] w-[64px]"
           name={user?.first_name[0]}
         />
         <TitleText className="m-4 px-6">Welcome back, {user?.first_name || 'friend'}!</TitleText>
-        <BodyText as="span" className="text-text-hint px-6 mb-8">
+        <BodyText as="span" className="mb-8 px-6 text-text-hint">
           We&apos;ve found a backup of your existing Telenova wallet in the cloud. To get access to it just enter the
           password you used when creating the wallet
         </BodyText>
-        <div className="max-w-sm w-full text-start">
+        <div className="w-full max-w-sm text-start">
           <Input
             isClearable
             placeholder="Enter Password Here"
@@ -83,7 +83,7 @@ const Page = () => {
             onValueChange={setPassword}
             onClear={() => setPassword('')}
           />
-          <Button aria-label="Reset Password" className="self-baseline p-0 bg-transparent" onClick={toggleModal}>
+          <Button aria-label="Reset Password" className="self-baseline bg-transparent p-0" onClick={toggleModal}>
             <BodyText className="text-text-link">Forgot Password?</BodyText>
           </Button>
         </div>

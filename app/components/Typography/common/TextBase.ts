@@ -9,7 +9,7 @@ export const TextBase = ({ as = 'p', align = 'left', className, children }: Typo
     as,
     {
       className: cnTw(
-        `text-text-primary font-manrope antialiased`,
+        `font-manrope text-text-primary antialiased`,
         {
           'text-left': align === 'left',
           'text-right': align === 'right',

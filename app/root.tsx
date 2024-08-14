@@ -98,8 +98,8 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
 const App = () => {
   return (
-    <main className="font-manrope flex justify-center">
-      <div className="min-h-screen p-4 w-full overflow-x-auto break-words">
+    <main className="flex justify-center font-manrope">
+      <div className="min-h-screen w-full overflow-x-auto break-words p-4">
         <Outlet />
       </div>
     </main>

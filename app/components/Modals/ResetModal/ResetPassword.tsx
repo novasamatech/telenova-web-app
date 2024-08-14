@@ -39,14 +39,14 @@ export const ResetPassword = ({ onClose, onSubmit }: Props) => {
           you cannot access your account or funds. If you lose or forget your password the only option is to delete the
           current backup and its associated account before creating a new one.
         </BodyText>
-        <BodyText className="text-text-on-button-danger font-bold">
+        <BodyText className="font-bold text-text-on-button-danger">
           You will lose your funds and access to the account after Deleting Backup. Delete Backup is your option only if
           you cannot restore the Password at all.
         </BodyText>
       </ModalBody>
       <ModalFooter className="flex-col justify-center">
         <Button
-          className="w-full rounded-full h-[50px] bg-text-on-button-danger"
+          className="h-[50px] w-full rounded-full bg-text-on-button-danger"
           isDisabled={isDisabled}
           onPress={handleSubmit}
         >
@@ -54,7 +54,7 @@ export const ResetPassword = ({ onClose, onSubmit }: Props) => {
             Delete Backup <Countdown initValue={60} onFinish={() => setIsDisabled(false)} />
           </MediumTitle>
         </Button>
-        <Button className="w-full rounded-full h-[50px] bg-bg-input" onPress={handleClose}>
+        <Button className="h-[50px] w-full rounded-full bg-bg-input" onPress={handleClose}>
           <MediumTitle>Cancel</MediumTitle>
         </Button>
       </ModalFooter>

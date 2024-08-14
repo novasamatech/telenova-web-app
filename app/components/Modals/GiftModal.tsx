@@ -184,19 +184,19 @@ export const GiftModal = () => {
                 <LottiePlayer
                   autoplay
                   loop={false}
-                  className="w-[248px] h-[248px] m-auto"
+                  className="m-auto h-[248px] w-[248px]"
                   sources={[`/assets/lottie/${giftSymbol}_unpack.json`, '/assets/lottie/Default_unpack.json']}
                   lottieRef={setLottie}
                   onEvent={handlePlayerEvent}
                 />
               ) : (
-                <Icon name="GiftClaimed" className="w-[248px] h-[248px] m-auto" />
+                <Icon name="GiftClaimed" className="m-auto h-[248px] w-[248px]" />
               )}
             </ModalBody>
             <ModalFooter className="justify-center">
               <Button
                 color="primary"
-                className="w-full h-[50px] rounded-full"
+                className="h-[50px] w-full rounded-full"
                 isDisabled={isDisabled}
                 isLoading={!giftBalance}
                 onPress={handleGiftClaim}
@@ -216,7 +216,7 @@ export const GiftModal = () => {
               <Shimmering width={200} height={30} className="rounded-full" />
             </ModalHeader>
             <ModalBody>
-              <Icon name="PendingGift" className="w-[170px] h-[170px] m-auto" />
+              <Icon name="PendingGift" className="m-auto h-[170px] w-[170px]" />
             </ModalBody>
             <ModalFooter className="justify-center">
               <Shimmering height={50} width={300} className="w-full rounded-full" />

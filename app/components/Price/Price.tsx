@@ -23,9 +23,9 @@ export const Price = ({ amount, symbol = '$', decimalSize = 'sm' }: Props) => {
 
   return (
     <>
-      <span className="text-text-hint inline-block">{symbol}</span>
+      <span className="inline-block text-text-hint">{symbol}</span>
       <span className="inline-block"> {integerPart}</span>
-      {decimalPart && <span className={cnTw('text-text-hint inline-block', SIZE[decimalSize])}>.{decimalPart}</span>}
+      {decimalPart && <span className={cnTw('inline-block text-text-hint', SIZE[decimalSize])}>.{decimalPart}</span>}
     </>
   );
 };
