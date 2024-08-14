@@ -22,14 +22,14 @@ const Page = () => {
 
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
-  const account = useUnit(walletModel.$account);
+  const wallet = useUnit(walletModel.$wallet);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!selectedAsset || !account) return null;
+  if (!selectedAsset || !wallet?.publicKey || !chains[typedChainId]) return null;
 
-  const address = toAddress(account, { prefix: chains[typedChainId].addressPrefix });
+  const address = toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix });
 
   return (
     <>

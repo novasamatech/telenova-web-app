@@ -63,7 +63,7 @@ const Page = () => {
     <>
       <MainButton
         text="Create gift"
-        disabled={!isAmountValid || !isAboveDeposit || !Number(fee) || getIsAccountToBeReaped() || isPending}
+        disabled={!isAmountValid || !isAboveDeposit || fee.isZero() || getIsAccountToBeReaped() || isPending}
         progress={isPending}
         onClick={navigateToCreate}
       />

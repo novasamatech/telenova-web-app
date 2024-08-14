@@ -1,8 +1,9 @@
 import { useUnit } from 'effector-react';
 
-import { BN, BN_ZERO } from '@polkadot/util';
+import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
 import { networkModel } from '@/models';
+import { type OrmlAccountData } from '@/shared/api/balances/types.ts';
 import { assetUtils } from '@/shared/helpers';
 import { type Asset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 
@@ -66,10 +67,23 @@ export const useQueryService = () => {
   }
 
   async function getFreeBalance(address: Address, chainId: ChainId): Promise<BN> {
-    const api = connections[chainId].api;
-    const balance = await api!.query.system.account(address);
+    const api = connections[chainId].api!;
+    const balance = await api.query.system.account(address);
 
     return balance.data.free.toBn();
+  }
+
+  async function getFreeBalanceOrml(address: Address, chainId: ChainId, asset: OrmlAsset): Promise<BN> {
+    const api = connections[chainId].api!;
+    const method = api.query['tokens']?.['accounts'] as any;
+
+    const ormlAssetId = assetUtils.getAssetId(asset);
+    const currencyIdType = asset.typeExtras.currencyIdType;
+    const assetId = api.createType(currencyIdType, hexToU8a(ormlAssetId));
+
+    const balance = await method(address, assetId);
+
+    return (balance as OrmlAccountData).free.toBn();
   }
 
   async function getFreeBalanceStatemine(address: Address, chainId: ChainId, assetId: string): Promise<BN> {
@@ -83,6 +97,7 @@ export const useQueryService = () => {
     getExistentialDeposit,
     assetConversion,
     getFreeBalance,
+    getFreeBalanceOrml,
     getFreeBalanceStatemine,
   };
 };

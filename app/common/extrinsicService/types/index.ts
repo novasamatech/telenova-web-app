@@ -43,7 +43,7 @@ export type EstimateFeeParams = {
 export type SubmitExtrinsicParams = {
   chainId: ChainId;
   transaction: ExtrinsicTransaction;
-  keyring?: KeyringPair;
+  keyringPair: KeyringPair;
   options?: Partial<ExtrinsicBuildingOptions>;
   signOptions?: Partial<SignerOptions>;
 };

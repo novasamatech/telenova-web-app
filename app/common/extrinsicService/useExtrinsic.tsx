@@ -8,12 +8,12 @@ import { ASSET_LOCATION, FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 
 type SendTransaction = {
-  destinationAddress: string;
   chainId: ChainId;
   asset: Asset;
-  transferAmount?: BN;
+  keyringPair: KeyringPair;
+  destinationAddress: string;
   transferAll?: boolean;
-  keyring?: KeyringPair;
+  transferAmount?: BN;
 };
 
 const getAssetIdSignOption = (assetId: string): Pick<SignerOptions, 'assetId'> => ({
@@ -26,7 +26,7 @@ export const useExtrinsic = () => {
   async function sendTransfer({
     chainId,
     asset,
-    keyring,
+    keyringPair,
     destinationAddress,
     transferAmount,
     transferAll,
@@ -35,23 +35,21 @@ export const useExtrinsic = () => {
     let signOptions;
     let transactionType = TransactionType.TRANSFER;
 
-    if (transferAll) {
-      transactionType = TransactionType.TRANSFER_ALL;
-    }
     // TODO: currently only for USDT
     if (assetUtils.isStatemineAsset(asset)) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
-    }
-    if (assetUtils.isOrmlAsset(asset)) {
+    } else if (assetUtils.isOrmlAsset(asset)) {
       transactionType = TransactionType.TRANSFER_ORML;
+    } else if (transferAll) {
+      transactionType = TransactionType.TRANSFER_ALL;
     }
 
     // nonce: -1 makes polkadot.js use next nonce
     // https://github.com/polkadot-js/api/blob/dac94c51964a90f9b26bc88d5a63f1e1b2038281/packages/api-derive/src/tx/signingInfo.ts#L93
     return submitExtrinsic({
       chainId,
-      keyring,
+      keyringPair,
       signOptions: { ...signOptions, nonce: -1 },
       transaction: {
         type: transactionType,
@@ -76,28 +74,29 @@ export const useExtrinsic = () => {
     transferAll?: boolean;
   };
   async function sendGift(
+    keyringPair: KeyringPair,
     transferAddress: Address,
     { chainId, asset, amount, fee, transferAll }: GiftParams,
   ): Promise<void> {
-    // const transferAmount = toPrecisedBalance(amount!, asset.precision);
+    if (assetUtils.isNativeAsset(asset)) {
+      const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
 
-    if (assetUtils.isStatemineAsset(asset)) {
       return sendTransfer({
         chainId,
         asset,
+        keyringPair,
+        transferAll,
         destinationAddress: transferAddress,
-        transferAmount: fee.divn(2).add(amount), // TODO: math.ceil ???
+        transferAmount: amount.add(transferAllFee),
       });
     }
-
-    const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
 
     return sendTransfer({
       chainId,
       asset,
-      transferAll,
+      keyringPair,
       destinationAddress: transferAddress,
-      transferAmount: amount.add(transferAllFee),
+      transferAmount: fee.divn(2).add(amount),
     });
   }
 

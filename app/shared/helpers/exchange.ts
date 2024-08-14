@@ -23,13 +23,10 @@ export const runMercuryoWidget = ({
   handleStatus,
   handleSell,
 }: WidgetParams) => {
-  const signature = CryptoJS.SHA512(address + secret).toString();
-  const returnUrl = new URL(returnPage, window.location.origin).toString();
-
-  window.mercuryoWidget.run({
+  window.mercuryoWidget?.run({
     widgetId,
-    returnUrl,
-    signature,
+    returnUrl: new URL(returnPage, window.location.origin).toString(),
+    signature: CryptoJS.SHA512(address + secret).toString(),
     host: root,
     fixCurrency: true,
     type: operationType,

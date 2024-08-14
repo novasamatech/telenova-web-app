@@ -1,23 +1,30 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { getStoreName } from '@/common/wallet';
 import { BodyText, LinkCard, TitleText } from '@/components';
+import { telegramModel } from '@/models';
+import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();
 
+  const webApp = useUnit(telegramModel.$webApp);
+
   const [backupDate, setBackupDate] = useState('');
 
   useEffect(() => {
-    const storeDate = localStorage.getItem(getStoreName(BACKUP_DATE));
+    if (!webApp) return;
+
+    const storeDate = localStorage.getItem(telegramApi.getStoreName(webApp, BACKUP_DATE));
     const date = storeDate ? new Date(+storeDate).toUTCString() : '';
+
     setBackupDate(date);
-  }, []);
+  }, [webApp]);
 
   return (
     <>

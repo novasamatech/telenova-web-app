@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
 import { MainButton } from '@/common/telegram/MainButton';
 import { BodyText, Icon, MediumTitle, TitleText } from '@/components';
 import { type IconNames } from '@/components/types';
+import { telegramModel } from '@/models';
 
 const welcomeData = [
   {
@@ -27,7 +28,8 @@ const welcomeData = [
 
 const Page = () => {
   const navigate = useNavigate();
-  const { user, startParam } = useTelegram();
+
+  const [user, startParam] = useUnit([telegramModel.$user, telegramModel.$startParam]);
 
   const headerText = startParam
     ? `Hey ${user?.first_name || 'friend'}!\nYou have received a gift!`

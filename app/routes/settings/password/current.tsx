@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { initializeWalletFromCloud } from '@/common/wallet';
 import { Input, TitleText } from '@/components';
+import { telegramModel } from '@/models';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 
 const Page = () => {
-  const { webApp } = useTelegram();
   const navigate = useNavigate();
+
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [password, setPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
@@ -21,13 +23,13 @@ const Page = () => {
 
   const isPasswordValid = password.length > 0;
 
-  const submit = () => {
-    if (!isPasswordValid) return;
+  const onSubmit = () => {
+    if (!webApp || !isPasswordValid) return;
 
     setIsValidMnemonic(true);
     setIsPending(true);
 
-    webApp?.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
+    webApp.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
       const decryptedMnemonic = initializeWalletFromCloud(password, value);
       if (decryptedMnemonic) {
         navigate($path('/settings/password/new'));
@@ -43,7 +45,7 @@ const Page = () => {
 
   return (
     <>
-      <MainButton progress={isPending} disabled={!isPasswordValid} onClick={submit} />
+      <MainButton progress={isPending} disabled={!isPasswordValid} onClick={onSubmit} />
       <BackButton onClick={() => navigate($path('/settings/backup'))} />
       <div className="flex flex-col items-center pt-14">
         <TitleText>Enter your current password</TitleText>

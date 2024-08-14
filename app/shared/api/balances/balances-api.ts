@@ -8,20 +8,14 @@ import { assetUtils, toAddress } from '@/shared/helpers';
 import { type Asset, type Chain, type NativeAsset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 import { type AssetBalance } from '@/types/substrate/balance';
 
+import { type ISubscribeBalance, type OrmlAccountData } from './types';
+
 export const balancesApi = {
   subscribeBalance,
 };
 
-type ISubscribeBalance<T extends Asset> = (
-  api: ApiPromise,
-  chain: Chain,
-  asset: T,
-  accountId: AccountId,
-  callback: (newBalance: AssetBalance) => void,
-) => UnsubscribePromise;
-
-const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain, asset, accountId, callback) => {
-  const address = toAddress(accountId, { prefix: chain.addressPrefix });
+const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain, asset, publicKey, callback) => {
+  const address = toAddress(publicKey, { prefix: chain.addressPrefix });
 
   return api.query.system.account(address, accountInfo => {
     const free = accountInfo.data.free.toBn();
@@ -29,7 +23,7 @@ const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain
     const frozen = accountInfo.data.frozen.toBn();
 
     callback({
-      accountId,
+      publicKey,
       chainId: chain.chainId,
       assetId: asset.assetId,
       balance: {
@@ -44,16 +38,16 @@ const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain
   });
 };
 
-const subscribeStatemineAssetChange: ISubscribeBalance<StatemineAsset> = (api, chain, asset, accountId, callback) => {
+const subscribeStatemineAssetChange: ISubscribeBalance<StatemineAsset> = (api, chain, asset, publicKey, callback) => {
   if (!api.query.assets) return Promise.resolve(noop);
 
-  const address = toAddress(accountId, { prefix: chain.addressPrefix });
+  const address = toAddress(publicKey, { prefix: chain.addressPrefix });
 
   return api.query.assets.account(assetUtils.getAssetId(asset), address, accountInfo => {
     const free = accountInfo.isNone ? BN_ZERO : accountInfo.unwrap().balance.toBn();
 
     callback({
-      accountId,
+      publicKey,
       chainId: chain.chainId,
       assetId: asset.assetId,
       balance: {
@@ -68,9 +62,8 @@ const subscribeStatemineAssetChange: ISubscribeBalance<StatemineAsset> = (api, c
   });
 };
 
-const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asset, accountId, callback) => {
-  const method: (...args: any[]) => UnsubscribePromise =
-    api.query['tokens']?.['accounts'] || api.query['currencies']?.['accounts'];
+const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asset, publicKey, callback) => {
+  const method = api.query['tokens']?.['accounts'] as any;
 
   if (!method) return Promise.resolve(noop);
 
@@ -78,19 +71,19 @@ const subscribeOrmlAssetChange: ISubscribeBalance<OrmlAsset> = (api, chain, asse
   const currencyIdType = asset.typeExtras.currencyIdType;
   const assetId = api.createType(currencyIdType, hexToU8a(ormlAssetId));
 
-  const address = toAddress(accountId, { prefix: chain.addressPrefix });
+  const address = toAddress(publicKey, { prefix: chain.addressPrefix });
 
-  return method(address, assetId, (accountInfo: any) => {
+  return method(address, assetId, (accountInfo: OrmlAccountData) => {
     const free = accountInfo.free.toBn();
 
     callback({
-      accountId,
+      publicKey,
       chainId: chain.chainId,
       assetId: asset.assetId,
       balance: {
         free,
-        frozen: accountInfo.frozen.toString(),
-        reserved: accountInfo.reserved.toString(),
+        frozen: accountInfo.frozen.toBn(),
+        reserved: accountInfo.reserved.toBn(),
 
         total: free,
         transferable: free,
@@ -103,7 +96,7 @@ function subscribeBalance(
   api: ApiPromise,
   chain: Chain,
   asset: Asset,
-  accountId: AccountId,
+  publicKey: PublicKey,
   callback: (newBalance: AssetBalance) => void,
 ): UnsubscribePromise {
   const actions: Record<Asset['type'], ISubscribeBalance<any>> = {
@@ -112,5 +105,5 @@ function subscribeBalance(
     orml: subscribeOrmlAssetChange,
   };
 
-  return actions[asset.type](api, chain, asset, accountId, callback);
+  return actions[asset.type](api, chain, asset, publicKey, callback);
 }

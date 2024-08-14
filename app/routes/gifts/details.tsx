@@ -3,16 +3,18 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { type TgLink } from '@/common/telegram/types';
 import { GiftDetails, Icon } from '@/components';
+import { telegramModel } from '@/models';
 
 export type SearchParams = {
   seed: string;
+  chainIndex: string;
   symbol: string;
   balance: string;
 };
@@ -30,6 +32,7 @@ export const clientLoader = (async ({ request, serverLoader }) => {
   const url = new URL(request.url);
   const data = {
     secret: url.searchParams.get('seed') || '',
+    chainIndex: url.searchParams.get('chainIndex') || '',
     symbol: url.searchParams.get('symbol') || '',
     amount: url.searchParams.get('balance') || '',
   };
@@ -38,27 +41,24 @@ export const clientLoader = (async ({ request, serverLoader }) => {
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
-  const { botUrl, appName, secret, symbol, amount } = useLoaderData<typeof clientLoader>();
+  const params = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
+
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [link, setLink] = useState<TgLink | null>(null);
 
   useEffect(() => {
-    const tgLink = createTgLink({ symbol, secret, amount, botUrl, appName });
-
-    setLink(tgLink);
+    setLink(createTgLink(params));
   }, []);
-
-  const canShowGifDetails = Boolean(link) && Boolean(webApp);
 
   return (
     <>
       <BackButton onClick={() => navigate($path('/gifts'))} />
       <div className="grid items-center justify-center h-[93vh]">
         <Icon name="Present" size={250} className="justify-self-center mt-auto" />
-        {canShowGifDetails && <GiftDetails link={link!} webApp={webApp!} />}
+        {link && webApp && <GiftDetails link={link} webApp={webApp} />}
       </div>
     </>
   );

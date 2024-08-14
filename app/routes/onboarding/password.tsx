@@ -2,33 +2,37 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar } from '@nextui-org/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { backupMnemonic, createWallet, generateWalletMnemonic } from '@/common/wallet';
+import { backupMnemonic, generateWalletMnemonic } from '@/common/wallet';
 import { BodyText, CreatePasswordForm, TitleText } from '@/components';
+import { telegramModel, walletModel } from '@/models';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { user, startParam } = useTelegram();
-  const { setPublicKey } = useGlobalContext();
+
+  const webApp = useUnit(telegramModel.$webApp);
+  const user = useUnit(telegramModel.$user);
+  const startParam = useUnit(telegramModel.$startParam);
 
   const [password, setPassword] = useState('');
   const [valid, setValid] = useState(false);
 
-  const submit = () => {
-    const mnemonic = generateWalletMnemonic();
-    const wallet = createWallet(mnemonic as string);
+  if (!webApp || !password) return null;
 
-    setPublicKey(wallet?.publicKey);
-    backupMnemonic(mnemonic, password);
+  const onSubmit = () => {
+    const mnemonic = generateWalletMnemonic();
+
+    walletModel.input.walletCreated(mnemonic);
+    backupMnemonic(webApp, mnemonic, password);
     navigate($path('/onboarding/create-wallet'));
   };
 
   return (
     <>
-      <MainButton disabled={!valid} onClick={submit} />
+      <MainButton disabled={!valid} onClick={onSubmit} />
       <div className="flex flex-col items-center text-center">
         <Avatar
           src={user?.photo_url}

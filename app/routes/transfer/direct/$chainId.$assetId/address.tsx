@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
+import { telegramModel } from '@/models';
 import { validateAddress } from '@/shared/helpers';
 
 export const clientLoader = (({ params }) => {
@@ -19,7 +20,8 @@ const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
+
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [address, setAddress] = useState('');
   const [isAddressValid, setIsAddressValid] = useState(true);
@@ -30,7 +32,9 @@ const Page = () => {
   };
 
   const handleQrCode = () => {
-    webApp?.showScanQrPopup({ text: 'Scan QR code' }, value => {
+    if (!webApp) return;
+
+    webApp.showScanQrPopup({ text: 'Scan QR code' }, value => {
       setAddress(value);
       setIsAddressValid(validateAddress(value));
       webApp.closeScanQrPopup();

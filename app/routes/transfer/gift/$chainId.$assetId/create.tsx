@@ -11,13 +11,12 @@ import { $params } from 'remix-routes';
 import { BN } from '@polkadot/util';
 
 import { useExtrinsic } from '@/common/extrinsicService';
-import { useTelegram } from '@/common/providers';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
-import { createGiftWallet } from '@/common/wallet';
+import { createGiftWallet, getKeyringPair } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
-import { networkModel } from '@/models';
-import { backupGifts } from '@/shared/helpers';
+import { networkModel, telegramModel } from '@/models';
+import { backupGifts, toFormattedBalance } from '@/shared/helpers';
 
 export type SearchParams = {
   amount: string;
@@ -39,7 +38,7 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
   const data = {
     ...$params('/transfer/gift/:chainId/:assetId/create', params),
     amount: url.searchParams.get('amount') || '',
-    fee: Number(url.searchParams.get('fee') || 0),
+    fee: url.searchParams.get('fee') || '0',
     all: url.searchParams.get('all') === 'true',
   };
 
@@ -49,11 +48,11 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 const Page = () => {
   const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const { webApp } = useTelegram();
   const { sendGift } = useExtrinsic();
 
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
@@ -62,11 +61,15 @@ const Page = () => {
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!selectedAsset || !chains[typedChainId]) return;
+    if (!webApp || !selectedAsset || !chains[typedChainId]) return;
 
-    const giftWallet = createGiftWallet(chains[typedChainId].addressPrefix);
+    const keyringPair = getKeyringPair(webApp);
+    if (!keyringPair) return;
 
-    sendGift(giftWallet.address, {
+    const selectedChain = chains[typedChainId];
+    const giftWallet = createGiftWallet(selectedChain.addressPrefix);
+
+    sendGift(keyringPair, giftWallet.address, {
       chainId: typedChainId,
       asset: selectedAsset,
       amount: new BN(amount),
@@ -74,25 +77,27 @@ const Page = () => {
       transferAll: all,
     })
       .then(() => {
-        backupGifts({
+        backupGifts(webApp, {
           chainId: typedChainId,
           assetId: selectedAsset.assetId,
           address: giftWallet.address,
           secret: giftWallet.secret,
           balance: amount,
+          chainIndex: selectedChain.chainIndex,
         });
         const tgLink = createTgLink({
           botUrl,
           appName,
-          amount,
+          amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
           secret: giftWallet.secret,
+          chainIndex: selectedChain.chainIndex,
           symbol: selectedAsset.symbol,
         });
 
         setLink(tgLink);
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
-  }, [selectedAsset, chains]);
+  }, [webApp, selectedAsset, chains]);
 
   const handleLottieEvent = (event: PlayerEvent) => {
     if (event === 'complete') {

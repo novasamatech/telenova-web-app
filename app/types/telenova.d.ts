@@ -2,12 +2,12 @@ declare global {
   export type HexString = `0x${string}`;
 
   export type ChainId = HexString;
-  export type ChainIndex = string;
+  export type ChainIndex = number;
   export type AssetId = number;
 
   export type Address = string;
-  export type AccountId = HexString;
   export type PublicKey = HexString;
+  export type Mnemonic = string;
 
   export type CallData = HexString;
   export type CallHash = HexString;

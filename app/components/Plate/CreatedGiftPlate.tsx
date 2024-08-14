@@ -9,29 +9,29 @@ import { Plate } from '../Plate';
 import { Shimmering } from '../Shimmering/Shimmering';
 import { BigTitle, BodyText } from '../Typography';
 
-import { type Gift } from '@/common/types';
-import { getStoreName } from '@/common/wallet';
-import { networkModel } from '@/models';
-import { GIFT_STORE, getGifts } from '@/shared/helpers';
+import { networkModel, telegramModel } from '@/models';
+import { getGifts } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
+import { type Gift } from '@/types/substrate';
 
 export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();
 
+  const webApp = useUnit(telegramModel.$webApp);
   const connections = useUnit(networkModel.$connections);
 
   const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
 
-  const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
-
   useEffect(() => {
-    if (!gifts) return;
+    if (!webApp) return;
 
-    const localStorageGifts = getGifts();
-    getGiftsState(localStorageGifts!).then(([unclaimed]) => setUnclaimed(unclaimed));
-  }, [connections]);
-
-  if (!gifts) return null;
+    const localStorageGifts = getGifts(webApp);
+    if (localStorageGifts) {
+      getGiftsState(localStorageGifts).then(([unclaimed]) => setUnclaimed(unclaimed));
+    } else {
+      setUnclaimed([]);
+    }
+  }, [webApp, connections]);
 
   return (
     <Plate className="w-full h-[90px] rounded-3xl mt-4 active:bg-bg-item-pressed">

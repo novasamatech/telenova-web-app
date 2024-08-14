@@ -7,13 +7,13 @@ const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
 const ACCOUNT_ID_LENGTH = 32;
 
 /**
- * Format address or accountId with prefix and chunk size
+ * Format address or publicKey with prefix and chunk size
  * Example: chunk = 6, would produce address like  1ChFWe...X7iTVZ
- * @param value account address or accountId
+ * @param value account address or publicKey
  * @param params chunk and prefix (default is 42)
  * @return {String}
  */
-export const toAddress = (value: Address | AccountId, params?: { chunk?: number; prefix?: number }): Address => {
+export const toAddress = (value: Address | PublicKey, params?: { chunk?: number; prefix?: number }): Address => {
   const chunkValue = params?.chunk;
   const prefixValue = params?.prefix ?? SS58_DEFAULT_PREFIX;
 
@@ -56,7 +56,7 @@ export const truncate = (text: string, start = 5, end = 5): string => {
  * @param address account's address
  * @return {Boolean}
  */
-export const validateAddress = (address?: Address | AccountId): boolean => {
+export const validateAddress = (address?: Address | PublicKey): boolean => {
   if (!address) {
     return false;
   }

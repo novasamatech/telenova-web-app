@@ -10,6 +10,7 @@ import { BN } from '@polkadot/util';
 import { useExtrinsic } from '@/common/extrinsicService';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
+import { getKeyringPair } from '@/common/wallet';
 import {
   AssetIcon,
   BodyText,
@@ -20,7 +21,7 @@ import {
   Plate,
   TruncateAddress,
 } from '@/components';
-import { networkModel } from '@/models';
+import { networkModel, telegramModel } from '@/models';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {
@@ -48,11 +49,12 @@ const Page = () => {
 
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
+  const webApp = useUnit(telegramModel.$webApp);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!selectedAsset || !chains[typedChainId]) return null;
+  if (!webApp || !selectedAsset || !chains[typedChainId]) return null;
 
   const symbol = selectedAsset.symbol;
   const bnFee = new BN(fee);
@@ -61,7 +63,11 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
+    const keyringPair = getKeyringPair(webApp);
+    if (!keyringPair) return;
+
     sendTransfer({
+      keyringPair,
       chainId: typedChainId,
       asset: selectedAsset,
       transferAmount: bnAmount,

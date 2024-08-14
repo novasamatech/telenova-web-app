@@ -1,22 +1,26 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers';
-import { getCloudStorageItem } from '@/common/wallet';
 import { LoadingScreen } from '@/components';
+import { telegramModel } from '@/models';
+import { telegramApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 
 const delay = (ttl: number) => new Promise(resolve => setTimeout(resolve, ttl));
 
 const Page = () => {
-  const { webApp } = useTelegram();
   const navigate = useNavigate();
 
+  const webApp = useUnit(telegramModel.$webApp);
+
   useEffect(() => {
+    if (!webApp) return;
+
     let mounted = true;
-    Promise.all([getCloudStorageItem(MNEMONIC_STORE), delay(1000)]).then(([mnemonic]) => {
+    Promise.all([telegramApi.getCloudStorageItem(webApp, MNEMONIC_STORE), delay(1000)]).then(([mnemonic]) => {
       if (!mounted) return;
 
       if (mnemonic) {

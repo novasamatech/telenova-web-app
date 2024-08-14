@@ -6,12 +6,11 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers';
-import { isOpenInWeb } from '@/common/telegram';
+import { isWebPlatform } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { MediumTitle } from '@/components';
-import { networkModel, walletModel } from '@/models';
+import { networkModel, telegramModel, walletModel } from '@/models';
 import { runMercuryoWidget, toAddress } from '@/shared/helpers';
 
 export type SearchParams = {
@@ -42,11 +41,11 @@ const Page = () => {
   const { chainId, assetId, mercuryoSecret, mercuryoWidgetId, type } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
 
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
-  const account = useUnit(walletModel.$account);
+  const wallet = useUnit(walletModel.$wallet);
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const [done, setDone] = useState(false);
@@ -59,14 +58,14 @@ const Page = () => {
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!account || !selectedAsset || isOpenInWeb(webApp!.platform) || !root || !type) return;
+    if (!wallet?.publicKey || !selectedAsset || isWebPlatform(webApp!.platform) || !root || !type) return;
 
     runMercuryoWidget({
       root,
       returnPage: $path('/dashboard'),
       secret: mercuryoSecret,
       widgetId: mercuryoWidgetId,
-      address: toAddress(account, { prefix: chains[typedChainId].addressPrefix }),
+      address: toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix }),
       operationType: type,
       symbol: selectedAsset.symbol,
       handleStatus,
@@ -112,7 +111,7 @@ const Page = () => {
       />
       <BackButton onClick={navigateBack} />
       <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
-        {isOpenInWeb(webApp?.platform) && (
+        {isWebPlatform(webApp?.platform) && (
           <div>
             <MediumTitle align="center">
               Sorry, the widget is not supported in the web version. Proceed with the application.

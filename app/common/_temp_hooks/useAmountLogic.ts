@@ -5,8 +5,9 @@ import { BN, BN_ZERO } from '@polkadot/util';
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
 import { toPrecisedBalance } from '@/shared/helpers';
+import { useOrml } from '@/shared/hooks';
 import { useAssetHub } from '@/shared/hooks/useAssetHub';
-import { type Asset, type Balance, type StatemineAsset } from '@/types/substrate';
+import type { Asset, Balance, OrmlAsset, StatemineAsset } from '@/types/substrate';
 
 type AmountLogicParams = {
   chainId: ChainId;
@@ -17,6 +18,7 @@ type AmountLogicParams = {
 
 export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicParams) => {
   const { getAssetHubFee } = useAssetHub();
+  const { getOrmlFee } = useOrml();
   const { getTransactionFee } = useExtrinsic();
   const { getExistentialDeposit } = useQueryService();
 
@@ -31,6 +33,8 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   const [isAmountValid, setIsAmountValid] = useState(true);
 
   useEffect(() => {
+    if (amount.isZero()) return;
+
     setPending(true);
     getTransferDetails(chainId, asset, amount)
       .then(({ fee, deposit }) => {
@@ -61,7 +65,7 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
     const FEE_BY_TYPE: Record<Asset['type'], () => Promise<BN>> = {
       native: () => getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount),
       statemine: () => getAssetHubFee(chainId, asset as StatemineAsset, transferAmount, isGift),
-      orml: () => getTransactionFee(chainId, TransactionType.TRANSFER_ORML, transferAmount),
+      orml: () => getOrmlFee(chainId, asset as OrmlAsset, transferAmount, isGift),
     };
 
     return FEE_BY_TYPE[asset.type]();
@@ -102,9 +106,6 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   };
 
   const onAmountChange = (amount: string) => {
-    // BN fails converting values like "0."
-    // const safeAmount = parseFloat(amount).toString();
-
     setIsTransferAll(false);
     setIsTouched(true);
     setAmount(toPrecisedBalance(amount, asset.precision));

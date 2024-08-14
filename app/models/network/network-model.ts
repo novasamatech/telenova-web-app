@@ -63,7 +63,7 @@ const getConnectedAssetsFx = createEffect((): Promise<Record<ChainIndex, AssetId
 
       entries.forEach(entry => {
         const [key, values] = entry.split('_');
-        result[key] = values.split(',').map(Number);
+        result[Number(key)] = values.split(',').map(Number);
       });
 
       resolve(result);
@@ -255,12 +255,11 @@ sample({
     assets: $assets,
     connections: $connections,
   },
-  filter: ({ chains }, { chainId, assetId }) => {
-    return chains[chainId]?.assets.some(a => a.assetId === assetId);
+  filter: ({ assets }, { chainId, assetId }) => {
+    return !assets[chainId]?.[assetId];
   },
   fn: ({ chains, connections, assets }, { chainId, assetId }) => {
     const isDisconnected = connections[chainId].status === 'disconnected';
-
     const asset = chains[chainId].assets.find(a => a.assetId === assetId);
     const newAssets = { ...assets, [chainId]: { ...assets[chainId], [assetId]: asset! } };
 
@@ -284,7 +283,12 @@ sample({
     assets: $assets,
     connections: $connections,
   },
-  filter: ({ assets }, { chainId }) => Boolean(assets[chainId]),
+  filter: ({ assets, connections }, { chainId }) => {
+    const isDisconnected = connections[chainId]?.status === 'disconnected';
+    const isAssetExist = Boolean(assets[chainId]);
+
+    return !isDisconnected && isAssetExist;
+  },
   fn: ({ connections, assets }, { chainId, assetId }) => {
     const isConnected = connections[chainId].status !== 'disconnected';
     const isLastAsset = Object.values(assets[chainId]!).filter(isActive => isActive).length === 1;

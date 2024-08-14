@@ -5,7 +5,7 @@ import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
@@ -23,29 +23,22 @@ import {
   TextBase,
   TitleText,
 } from '@/components';
-import { balancesModel, networkModel } from '@/models';
+import { balancesModel, networkModel, telegramModel } from '@/models';
 import { getPrice, getTotalBalance } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { user } = useTelegram();
   const { assetsPrices, setAssetsPrices } = useGlobalContext();
 
-  const chains = useUnit(networkModel.$chains);
-  const assets = useUnit(networkModel.$sortedAssets);
   const balances = useUnit(balancesModel.$balances);
+  const [chains, assets] = useUnit([networkModel.$chains, networkModel.$sortedAssets]);
+  const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
 
-  // Fetching chains
   useEffect(() => {
-    if (getMnemonic()) return;
+    if (!webApp || getMnemonic(webApp)) return;
 
     clearWallet(true);
-  }, []);
-
-  const clearWallet = (clearLocal?: boolean) => {
-    resetWallet(clearLocal);
-    navigate($path('/onboarding'));
-  };
+  }, [webApp]);
 
   // Fetching prices
   useEffect(() => {
@@ -63,6 +56,11 @@ const Page = () => {
       abortController.abort();
     };
   }, [chains]);
+
+  const clearWallet = (clearLocal?: boolean) => {
+    resetWallet(clearLocal);
+    navigate($path('/onboarding'));
+  };
 
   const totalBalance = getTotalBalance(chains, balances, assetsPrices);
 

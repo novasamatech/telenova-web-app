@@ -1,11 +1,12 @@
 import secureLocalStorage from 'react-secure-storage';
 
+import { type WebApp } from '@twa-dev/types';
 import CryptoJS from 'crypto-js';
 import scryptJS from 'scrypt-js';
 
 import Keyring from '@polkadot/keyring';
 import { type KeyringPair } from '@polkadot/keyring/types';
-import { hexToU8a, u8aToHex } from '@polkadot/util';
+import { u8aToHex } from '@polkadot/util';
 import {
   encodeAddress,
   mnemonicGenerate,
@@ -14,29 +15,15 @@ import {
   sr25519PairFromSeed,
 } from '@polkadot/util-crypto';
 
+import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/shared/helpers';
+import { type Wallet } from '@/types/substrate';
 
-import { type GiftWallet, type Wallet } from './types';
+import { type GiftWallet } from './types';
 
 const keyring = new Keyring({ type: 'sr25519' });
 
 const SALT_SIZE_BYTES = 16;
-
-export const getStoreName = (key: string) => {
-  if (!window) {
-    return '';
-  }
-  const userId = window.Telegram?.WebApp.initDataUnsafe?.user?.id;
-  if (!userId) {
-    return '';
-  }
-
-  return `${userId}_${key}`;
-};
-
-function unwrapHexString(string: string): HexString {
-  return u8aToHex(hexToU8a(string));
-}
 
 export function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {
   try {
@@ -78,72 +65,46 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
   }).toString(CryptoJS.enc.Utf8);
 }
 
-export const getCloudStorageItem = (store: string): Promise<string | undefined> => {
-  const cloudStorage = window.Telegram?.WebApp?.CloudStorage;
-  if (!cloudStorage) return Promise.reject('CloudStorage is not available');
-
-  return new Promise((resolve, reject) => {
-    cloudStorage.getItem(store, (err, value) => {
-      if (err) reject(err);
-
-      resolve(value);
-    });
-  });
-};
-
-export const getWallet = async (): Promise<Wallet | null> => {
-  const publicKey = localStorage.getItem(getStoreName(PUBLIC_KEY_STORE));
-  const backupLocalDate = localStorage.getItem(getStoreName(BACKUP_DATE));
-  try {
-    const backupCloudDate = await getCloudStorageItem(BACKUP_DATE);
-    const compareBackupDate = Boolean(backupCloudDate) && backupCloudDate === backupLocalDate;
-
-    return publicKey && compareBackupDate ? { publicKey: unwrapHexString(publicKey) } : null;
-  } catch (err) {
-    throw Error(`Something went wrong in the Telegram CloudStorage: ${err}`);
-  }
-};
-
 export const generateWalletMnemonic = (): string => {
   return mnemonicGenerate();
 };
 
-export const createWallet = (mnemonic: string | null): Wallet | null => {
-  if (!mnemonic) {
-    return null;
-  }
+export const createWallet = (webApp: WebApp, mnemonic: string | null): Wallet | null => {
+  if (!mnemonic) return null;
+
   const seed = mnemonicToMiniSecret(mnemonic);
   const keypair = sr25519PairFromSeed(seed);
-  const publicKey: HexString = u8aToHex(keypair.publicKey);
+  const publicKey = u8aToHex(keypair.publicKey);
 
-  localStorage.setItem(getStoreName(PUBLIC_KEY_STORE), publicKey);
-  secureLocalStorage.setItem(getStoreName(MNEMONIC_STORE), mnemonic);
+  localStorage.setItem(telegramApi.getStoreName(webApp, PUBLIC_KEY_STORE), publicKey);
+  secureLocalStorage.setItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE), mnemonic);
 
   return { publicKey };
 };
 
-export const backupMnemonic = (mnemonic: string, password: string) => {
+export const backupMnemonic = (webApp: WebApp, mnemonic: string, password: string) => {
   const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
   const date = Date.now().toString();
-  window.Telegram?.WebApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
-  window.Telegram?.WebApp.CloudStorage.setItem(BACKUP_DATE, date);
-  localStorage.setItem(getStoreName(BACKUP_DATE), date);
+
+  webApp.CloudStorage.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
+  webApp.CloudStorage.setItem(BACKUP_DATE, date);
+  localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), date);
 };
 
-export const getMnemonic = (): string | null => {
-  return (secureLocalStorage.getItem(getStoreName(MNEMONIC_STORE)) as string) || null;
+export const getMnemonic = (webApp: WebApp): string | null => {
+  return (secureLocalStorage.getItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE)) as string) || null;
 };
 
 /**
  * Returns decrypted keyring pair for user's wallet
  * Make sure to call lock() after pair was used to clean up secret!
  */
-export const getKeyringPair = (): KeyringPair | undefined => {
+export const getKeyringPair = (webApp: WebApp): KeyringPair | undefined => {
   try {
-    const mnemonic = getMnemonic();
-    if (mnemonic === null) return;
+    const mnemonic = getMnemonic(webApp);
+    if (mnemonic === null) return undefined;
 
-    return keyring.createFromUri(mnemonic);
+    return getKeyringPairFromSeed(mnemonic);
   } catch (e) {
     console.warn(e);
 
@@ -158,35 +119,28 @@ export const getKeyringPairFromSeed = (seed: string): KeyringPair => {
 export const resetWallet = (clearLocal: boolean = false) => {
   localStorage.clear();
   secureLocalStorage.clear();
+
   if (!clearLocal) {
     window.Telegram?.WebApp.CloudStorage.removeItems([MNEMONIC_STORE, BACKUP_DATE]);
   }
 };
 
 export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: string): string | null => {
-  if (!encryptedMnemonic) {
-    return null;
-  }
-  let mnemonic;
+  if (!encryptedMnemonic) return null;
+
   try {
-    mnemonic = decryptMnemonic(encryptedMnemonic, password);
+    return decryptMnemonic(encryptedMnemonic, password) || null;
   } catch {
     return null;
   }
-
-  return mnemonic || null;
-};
-
-const generateGiftSecret = () => {
-  return randomAsHex(10).slice(2);
 };
 
 export const createGiftWallet = (addressPrefix: number): GiftWallet => {
-  const seed = generateGiftSecret();
-  const account = getKeyringPairFromSeed(seed);
+  const seed = randomAsHex(10).slice(2);
+  const keyringPair = getKeyringPairFromSeed(seed);
 
   return {
-    address: encodeAddress(account.publicKey, addressPrefix),
+    address: encodeAddress(keyringPair.publicKey, addressPrefix),
     secret: seed,
   };
 };

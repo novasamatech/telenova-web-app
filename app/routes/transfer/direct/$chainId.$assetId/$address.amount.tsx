@@ -77,7 +77,7 @@ const Page = () => {
   return (
     <>
       <MainButton
-        disabled={!isAmountValid || !Number(fee) || getIsAccountToBeReaped() || isPending}
+        disabled={!isAmountValid || fee.isZero() || getIsAccountToBeReaped() || isPending}
         onClick={navigateToConfirm}
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
