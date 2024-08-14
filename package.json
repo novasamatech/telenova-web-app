@@ -26,7 +26,7 @@
     "@polkadot/types": "12.2.3",
     "@polkadot/util": "13.0.2",
     "@polkadot/util-crypto": "13.0.2",
-    "@remix-run/express": "^2.10.0",
+    "@remix-run/express": "2.9.2",
     "@remix-run/node": "2.9.2",
     "@remix-run/react": "2.9.2",
     "@types/lodash-es": "^4.17.12",

@@ -36,14 +36,17 @@ const Page = () => {
       <BackButton onClick={() => navigate($path('/receive/token-select'))} />
       <TitleText className="mt-2">Receive {selectedAsset.symbol}</TitleText>
       <div className="flex flex-col items-center">
-        <Plate className="flex flex-col items-center gap-3 w-[232px] h-[344px] break-all my-6">
+        <Plate className="my-6 flex h-[344px] w-[232px] flex-col items-center gap-3 break-all">
           <QRCode
-            value={address}
-            logoImage={`/assets/${selectedAsset.symbol}.svg`}
-            quietZone={0}
-            logoPadding={2}
-            eyeRadius={30}
             size={200}
+            quietZone={0}
+            eyeRadius={30}
+            value={address}
+            logoPadding={1}
+            logoWidth={60}
+            logoHeight={60}
+            logoPaddingStyle="circle"
+            logoImage={selectedAsset.icon}
             id={`qrcode_${selectedAsset.symbol}`}
           />
           <BodyText className="text-text-hint">{chains[typedChainId].name} address</BodyText>
@@ -55,7 +58,7 @@ const Page = () => {
           <PopoverTrigger>
             <Button
               color="primary"
-              className="w-[200px] min-h-[50px] rounded-full"
+              className="min-h-[50px] w-[200px] rounded-full"
               // navigator.clipboard is undefined in web version of Telegram
               onClick={() => navigator.clipboard?.writeText(address)}
             >
@@ -71,7 +74,7 @@ const Page = () => {
           <Button
             color="primary"
             variant="flat"
-            className="w-[200px] min-h-[50px] mt-4 rounded-full"
+            className="mt-4 min-h-[50px] w-[200px] rounded-full"
             onClick={() => shareQrAddress(selectedAsset.symbol, address)}
           >
             <Icon name="ArrowUp" size={24} className="text-text-on-button-bold" />

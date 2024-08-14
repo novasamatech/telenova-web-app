@@ -59,7 +59,7 @@ const Page = () => {
       <MainButton text="Get started" hidden={isLoading} onClick={() => navigate($path('/dashboard'))} />
       <div className="flex flex-col justify-center items-center h-[95vh]">
         <LottiePlayer
-          src="/gifs/create-wallet.json"
+          sources={['/assets/lottie/Create-wallet.json']}
           keepLastFrame
           autoplay
           className="player w-[256px] h-[256px] mb-4"

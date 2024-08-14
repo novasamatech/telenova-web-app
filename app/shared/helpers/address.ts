@@ -74,7 +74,7 @@ export const validateAddress = (address?: Address | PublicKey): boolean => {
     const [isValid, endPos, ss58Length] = checkAddressChecksum(decoded);
 
     return isValid && Boolean(decoded.slice(ss58Length, endPos));
-  } catch (error) {
+  } catch {
     return false;
   }
 };

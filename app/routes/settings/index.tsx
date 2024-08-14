@@ -106,7 +106,7 @@ const Page = () => {
         </Plate>
 
         <button
-          className="w-full min-h-[150px] bg-[url('/images/nova.png')] bg-cover rounded-2xl relative"
+          className="w-full min-h-[150px] bg-[url('/assets/misc/nova-wallet.webp')] bg-cover rounded-2xl relative"
           onClick={() => openLink('https://novawallet.io', webApp)}
         >
           <div className="absolute right-[5%] top-[10%] break-words w-[60%]">
