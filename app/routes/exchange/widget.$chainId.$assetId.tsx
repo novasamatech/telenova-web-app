@@ -110,7 +110,7 @@ const Page = () => {
         onClick={navigateToTransfer}
       />
       <BackButton onClick={navigateBack} />
-      <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
+      <div ref={setRoot} className="h-[95svh] w-full" id="mercuryo-widget">
         {isWebPlatform(webApp?.platform) && (
           <div>
             <MediumTitle align="center">

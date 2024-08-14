@@ -1,6 +1,6 @@
 import type { EstimateFeeParams, SubmitExtrinsicParams } from './types';
 
-import { type PropsWithChildren, createContext, useContext } from 'react';
+import { type PropsWithChildren, createContext, useContext, useMemo } from 'react';
 
 import { type Hash } from '@polkadot/types/interfaces';
 import { type BN, BN_ZERO } from '@polkadot/util';
@@ -47,11 +47,11 @@ export const ExtrinsicProvider = ({ children }: PropsWithChildren) => {
     return extrinsic.send();
   }
 
-  return (
-    <ExtrinsicProviderContext.Provider value={{ estimateFee, submitExtrinsic }}>
-      {children}
-    </ExtrinsicProviderContext.Provider>
-  );
+  const value = useMemo(() => {
+    return { estimateFee, submitExtrinsic };
+  }, [estimateFee, submitExtrinsic]);
+
+  return <ExtrinsicProviderContext.Provider value={value}>{children}</ExtrinsicProviderContext.Provider>;
 };
 
 export const useExtrinsicProvider = () => useContext<ExtrinsicProviderContextProps>(ExtrinsicProviderContext);

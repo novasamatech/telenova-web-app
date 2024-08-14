@@ -7,11 +7,13 @@ const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
 const ACCOUNT_ID_LENGTH = 32;
 
 /**
- * Format address or publicKey with prefix and chunk size
- * Example: chunk = 6, would produce address like  1ChFWe...X7iTVZ
- * @param value account address or publicKey
- * @param params chunk and prefix (default is 42)
- * @return {String}
+ * Format address or publicKey with prefix and chunk size Example: chunk = 6,
+ * would produce address like 1ChFWe...X7iTVZ
+ *
+ * @param value Account address or publicKey
+ * @param params Chunk and prefix (default is 42)
+ *
+ * @returns {String}
  */
 export const toAddress = (value: Address | PublicKey, params?: { chunk?: number; prefix?: number }): Address => {
   const chunkValue = params?.chunk;
@@ -30,9 +32,11 @@ export const toAddress = (value: Address | PublicKey, params?: { chunk?: number;
 /**
  * Get short address representation
  * `5DXYNRXmNmFLFxxUjMXSzKh3vqHRDfDGGbY3BnSdQcta1SkX --> 5DXYNR...ta1SkX`
- * @param address value to make short
- * @param chunk how many letters should be visible from start/end
- * @return {String}
+ *
+ * @param address Value to make short
+ * @param chunk How many letters should be visible from start/end
+ *
+ * @returns {String}
  */
 export const toShortAddress = (address: Address, chunk = 6): string => {
   return address.length < 13 ? address : truncate(address, chunk, chunk);
@@ -40,10 +44,12 @@ export const toShortAddress = (address: Address, chunk = 6): string => {
 
 /**
  * Truncate text leaving fixed number of characters
- * @param text text to truncate
- * @param start number of leading symbols
- * @param end number of ending symbols
- * @return {String}
+ *
+ * @param text Text to truncate
+ * @param start Number of leading symbols
+ * @param end Number of ending symbols
+ *
+ * @returns {String}
  */
 export const truncate = (text: string, start = 5, end = 5): string => {
   if (text.length <= start + end) return text;
@@ -53,8 +59,10 @@ export const truncate = (text: string, start = 5, end = 5): string => {
 
 /**
  * Check is account's address valid
- * @param address account's address
- * @return {Boolean}
+ *
+ * @param address Account's address
+ *
+ * @returns {Boolean}
  */
 export const validateAddress = (address?: Address | PublicKey): boolean => {
   if (!address) {
@@ -74,7 +82,7 @@ export const validateAddress = (address?: Address | PublicKey): boolean => {
     const [isValid, endPos, ss58Length] = checkAddressChecksum(decoded);
 
     return isValid && Boolean(decoded.slice(ss58Length, endPos));
-  } catch (error) {
+  } catch {
     return false;
   }
 };

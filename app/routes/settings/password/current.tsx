@@ -54,7 +54,7 @@ const Page = () => {
           variant="flat"
           placeholder="Enter Password Here"
           type="password"
-          className="max-w-sm text-left mt-8"
+          className="mt-8 max-w-sm text-left"
           value={password}
           isInvalid={shouldShowError}
           errorMessage={shouldShowError && 'It seems your password is incorrect.'}

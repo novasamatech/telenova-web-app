@@ -1,12 +1,14 @@
 import { type KeysOfType } from './utility.ts';
 
 /**
- * Create dictionary with given key and value
- * Keys can only be type of string, number or symbol
- * @param collection array of items
- * @param property field to be used as key
- * @param predicate transformer function
- * @return {Object}
+ * Create dictionary with given key and value Keys can only be type of string,
+ * number or symbol
+ *
+ * @param collection Array of items
+ * @param property Field to be used as key
+ * @param predicate Transformer function
+ *
+ * @returns {Object}
  */
 export function dictionary<T extends Record<K, PropertyKey>, K extends KeysOfType<T, PropertyKey>>(
   collection: T[],

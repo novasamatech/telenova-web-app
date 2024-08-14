@@ -68,10 +68,10 @@ const Page = () => {
     <>
       <BackButton hidden />
       <div className="flex flex-col break-words">
-        <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6 items-center">
+        <div className="mb-6 grid grid-cols-[auto,1fr,auto] items-center gap-2">
           <Avatar
             src={user?.photo_url}
-            className="w-10 h-10"
+            className="h-10 w-10"
             name={user?.first_name.charAt(0)}
             classNames={{
               base: 'bg-[--tg-theme-button-color]',
@@ -81,19 +81,19 @@ const Page = () => {
           <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
           <Button
             isIconOnly
-            className="bg-transparent overflow-visible drop-shadow-button"
+            className="overflow-visible bg-transparent drop-shadow-button"
             onClick={() => navigate($path('/settings'))}
           >
             <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
           </Button>
         </div>
 
-        <div className="flex flex-col mt-4 items-center">
-          <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
+        <div className="mt-4 flex flex-col items-center">
+          <HeadlineText className="mb-1 text-text-hint">Total Balance</HeadlineText>
           <LargeTitleText>
             <Price amount={totalBalance} decimalSize="lg" />
           </LargeTitleText>
-          <div className="grid grid-cols-3 w-full mt-7 gap-2">
+          <div className="mt-7 grid w-full grid-cols-3 gap-2">
             <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
             <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
             <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate($path('/exchange'))} />
@@ -102,9 +102,9 @@ const Page = () => {
 
         <CreatedGiftPlate />
 
-        <Plate className="flex flex-col my-2 rounded-3xl border-1 border-border-neutral">
+        <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
           <TitleText align="left">Assets</TitleText>
-          <div className="flex flex-col gap-y-6 mt-4">
+          <div className="mt-4 flex flex-col gap-y-6">
             <AssetsList showPrice animate className="m-1" chains={chains} assets={assets} balances={balances} />
           </div>
         </Plate>
@@ -120,7 +120,7 @@ const Page = () => {
         <GiftModal />
 
         {import.meta.env.DEV && (
-          <div className="p-4 flex flex-col gap-2 justify-center bg-warning rounded-lg">
+          <div className="flex flex-col justify-center gap-2 rounded-lg bg-warning p-4">
             <TextBase className="text-amber-50">DEV MODE</TextBase>
             <Divider className="bg-amber-200" />
             <Button variant="faded" onClick={() => clearWallet()}>

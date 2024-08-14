@@ -49,7 +49,7 @@ const Page = () => {
           {isLoading && <Shimmering height={92} className="rounded-lg" />}
 
           {!isLoading && unclaimedGifts.length === 0 && (
-            <div className="w-full bg-bg-input h-[92px] rounded-lg flex justify-center items-center">
+            <div className="flex h-[92px] w-full items-center justify-center rounded-lg bg-bg-input">
               <HelpText className="text-text-hint">All Gifts are claimed</HelpText>
             </div>
           )}
@@ -80,13 +80,13 @@ const Page = () => {
         </div>
 
         <div className="flex flex-col gap-y-2">
-          <BodyText className="text-text-hint mb-2" align="left">
+          <BodyText className="mb-2 text-text-hint" align="left">
             Claimed <span className="text-text-on-button-disabled">{claimedGifts.length || 0}</span>
           </BodyText>
           {isLoading && <Shimmering height={92} className="rounded-lg" />}
 
           {!isLoading && claimedGifts.length === 0 && (
-            <div className="w-full bg-bg-input h-[92px] rounded-2xl flex justify-center items-center">
+            <div className="flex h-[92px] w-full items-center justify-center rounded-2xl bg-bg-input">
               <HelpText className="text-text-hint">No claimed gifts</HelpText>
             </div>
           )}

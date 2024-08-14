@@ -48,7 +48,7 @@ const Page = () => {
         {assets.length > 0 && (
           <div className="flex flex-col gap-y-2">
             <AssetsList
-              className="bg-white rounded-lg px-4 py-3 w-full hover:bg-bg-item-pressed active:bg-bg-item-pressed"
+              className="w-full rounded-lg bg-white px-4 py-3 hover:bg-bg-item-pressed active:bg-bg-item-pressed"
               showArrow
               chains={chains}
               assets={assets}
@@ -59,7 +59,7 @@ const Page = () => {
         )}
 
         {assets.length === 0 && (
-          <div className="flex flex-col gap-y-4 items-center mt-[70px]">
+          <div className="mt-[70px] flex flex-col items-center gap-y-4">
             <Icon name="NoResult" size={180} />
             <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search </BodyText>
           </div>

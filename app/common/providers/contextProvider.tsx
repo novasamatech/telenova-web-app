@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 
 import { type AssetPrice } from '@/types/substrate';
 
@@ -21,12 +21,14 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [assetsPrices, setAssetsPrices] = useState<AssetPrice | null>(null);
   const [isGiftClaimed, setIsGiftClaimed] = useState(false);
 
-  const value = {
-    isGiftClaimed,
-    assetsPrices,
-    setIsGiftClaimed,
-    setAssetsPrices,
-  };
+  const value = useMemo(() => {
+    return {
+      isGiftClaimed,
+      assetsPrices,
+      setIsGiftClaimed,
+      setAssetsPrices,
+    };
+  }, [isGiftClaimed, assetsPrices]);
 
   return <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>;
 };

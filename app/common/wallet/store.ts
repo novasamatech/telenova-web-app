@@ -96,8 +96,8 @@ export const getMnemonic = (webApp: WebApp): string | null => {
 };
 
 /**
- * Returns decrypted keyring pair for user's wallet
- * Make sure to call lock() after pair was used to clean up secret!
+ * Returns decrypted keyring pair for user's wallet Make sure to call lock()
+ * after pair was used to clean up secret!
  */
 export const getKeyringPair = (webApp: WebApp): KeyringPair | undefined => {
   try {

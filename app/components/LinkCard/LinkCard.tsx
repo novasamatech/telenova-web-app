@@ -37,10 +37,10 @@ export const LinkCard = ({
   <Plate className={cnTw(`w-full p-0 hover:bg-bg-item-pressed active:bg-bg-item-pressed`, wrapperClassName)}>
     <Link
       to={href}
-      className={cnTw(`w-full grid grid-cols-[auto,1fr,auto] items-center gap-3 min-h-[56px] px-4`, className)}
+      className={cnTw(`grid min-h-[56px] w-full grid-cols-[auto,1fr,auto] items-center gap-3 px-4`, className)}
       onClick={onClick}
     >
-      {iconName && <Icon name={iconName} className={cnTw(`w-10 h-10`, iconClassName)} />}
+      {iconName && <Icon name={iconName} className={cnTw(`h-10 w-10`, iconClassName)} />}
       <div className="grid">
         <BodyText align="left" className={textClassName}>
           {text}
@@ -48,7 +48,7 @@ export const LinkCard = ({
         {helpText && <HelpText className="text-text-hint">{helpText}</HelpText>}
       </div>
       {valueText && <BodyText className="text-text-hint">{valueText}</BodyText>}
-      {showArrow && <Icon name="ChevronForward" className="w-4 h-4 self-center" />}
+      {showArrow && <Icon name="ChevronForward" className="h-4 w-4 self-center" />}
     </Link>
   </Plate>
 );

@@ -34,8 +34,8 @@ export const CreatedGiftPlate = () => {
   }, [webApp, connections]);
 
   return (
-    <Plate className="w-full h-[90px] rounded-3xl mt-4 active:bg-bg-item-pressed">
-      <Link to={$path('/gifts')} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
+    <Plate className="mt-4 h-[90px] w-full rounded-3xl active:bg-bg-item-pressed">
+      <Link to={$path('/gifts')} className="grid w-full grid-cols-[auto,1fr,auto] items-center gap-4">
         <Icon name="Present" size={60} />
         <div className="grid">
           <BigTitle align="left">Created Gifts</BigTitle>
@@ -47,7 +47,7 @@ export const CreatedGiftPlate = () => {
             <Shimmering width={100} height={20} />
           )}
         </div>
-        <Icon name="ArrowBold" className="w-10 h-10 self-center" />
+        <Icon name="ArrowBold" className="h-10 w-10 self-center" />
       </Link>
     </Plate>
   );

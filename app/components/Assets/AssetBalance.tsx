@@ -22,7 +22,7 @@ type Props = {
 
 export const AssetBalance = ({ balance, asset, className, showPrice, showArrow, animate }: Props) => {
   return (
-    <div className={cnTw('grid grid-cols-[48px,1fr,auto] items-center gap-x-3 grid-rows-[1fr,auto]', className)}>
+    <div className={cnTw('grid grid-cols-[48px,1fr,auto] grid-rows-[1fr,auto] items-center gap-x-3', className)}>
       <AssetIcon src={asset.icon} size={48} className="row-span-2" />
       <MediumTitle>{asset.symbol}</MediumTitle>
       <MediumTitle className="flex items-center justify-self-end">
