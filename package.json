@@ -26,9 +26,9 @@
     "@polkadot/types": "12.2.3",
     "@polkadot/util": "13.0.2",
     "@polkadot/util-crypto": "13.0.2",
-    "@remix-run/express": "2.11.1",
-    "@remix-run/node": "2.11.1",
-    "@remix-run/react": "2.11.1",
+    "@remix-run/express": "2.9.2",
+    "@remix-run/node": "2.9.2",
+    "@remix-run/react": "2.9.2",
     "@types/lodash-es": "^4.17.12",
     "bignumber.js": "9.1.2",
     "classnames": "2.5.1",
@@ -52,7 +52,7 @@
     "sirv": "2.0.4"
   },
   "devDependencies": {
-    "@remix-run/dev": "2.11.1",
+    "@remix-run/dev": "2.9.2",
     "@remix-run/v1-route-convention": "0.1.4",
     "@svgr/plugin-svgo": "8.1.0",
     "@testing-library/jest-dom": "6.4.8",
