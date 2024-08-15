@@ -185,7 +185,7 @@ export const GiftModal = () => {
                   autoplay
                   loop={false}
                   className="m-auto h-[248px] w-[248px]"
-                  src={`/gifs/Gift_claim_${giftSymbol}.json`}
+                  sources={[`/assets/lottie/${giftSymbol}_unpack.json`, '/assets/lottie/Default_unpack.json']}
                   lottieRef={setLottie}
                   onEvent={handlePlayerEvent}
                 />

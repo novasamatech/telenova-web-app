@@ -1,12 +1,14 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 
 import { type IPlayerProps } from '@lottiefiles/react-lottie-player';
 import { CircularProgress } from '@nextui-org/react';
 
-import { cnTw } from '@/shared/helpers';
+import { cnTw, isFulfilled } from '@/shared/helpers';
 
-const LazyPlayer = lazy(() => {
-  return import('@lottiefiles/react-lottie-player').then(lottie => ({ default: lottie.Player }));
+const LazyPlayer = lazy(async () => {
+  const lottie = await import('@lottiefiles/react-lottie-player');
+
+  return { default: lottie.Player };
 });
 
 type Props = {
@@ -14,15 +16,30 @@ type Props = {
 };
 
 const Fallback = ({ className }: Props) => (
-  <div className={cnTw('place-content grid h-[256px] w-[256px]', className)}>
+  <div className={cnTw('grid h-[256px] w-[256px] place-content-center', className)}>
     <CircularProgress />
   </div>
 );
 
-export const LottiePlayer = ({ className, ...rest }: IPlayerProps) => {
+export const LottiePlayer = ({ className, sources, ...rest }: { sources: string[] } & Omit<IPlayerProps, 'src'>) => {
+  const [lottieSource, setLottieSource] = useState<object | null>(null);
+
+  useEffect(() => {
+    const requests = sources.map(url =>
+      fetch(url).then(response => (response.ok ? response.json() : Promise.reject())),
+    );
+
+    Promise.allSettled(requests).then(results => {
+      const fulfilledLotties = results.filter(isFulfilled);
+      if (fulfilledLotties.length === 0) return;
+
+      setLottieSource(fulfilledLotties[0].value);
+    });
+  }, []);
+
   return (
     <Suspense fallback={<Fallback className={className} />}>
-      <LazyPlayer {...rest} className={cnTw('h-[256px] w-[256px]', className)} />
+      {lottieSource && <LazyPlayer {...rest} src={lottieSource} className={cnTw('h-[256px] w-[256px]', className)} />}
     </Suspense>
   );
 };

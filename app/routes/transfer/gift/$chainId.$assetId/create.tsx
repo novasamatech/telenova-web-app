@@ -1,5 +1,4 @@
 import type { PlayerEvent } from '@lottiefiles/react-lottie-player';
-import type { WebApp } from '@twa-dev/types';
 
 import { useEffect, useState } from 'react';
 
@@ -111,7 +110,7 @@ const Page = () => {
     <div className="grid h-[93vh] items-end justify-center">
       <LottiePlayer
         className="mb-3"
-        src={`/gifs/Gift_Packing_${selectedAsset.symbol}.json`}
+        sources={[`/assets/lottie/${selectedAsset.symbol}_packing.json`, '/assets/lottie/Default_packing.json']}
         autoplay
         keepLastFrame
         onEvent={handleLottieEvent}
@@ -135,7 +134,7 @@ const Page = () => {
           </div>
         </div>
       ) : (
-        <GiftDetails link={link} webApp={webApp as WebApp} />
+        <GiftDetails link={link} webApp={webApp!} />
       )}
     </div>
   );

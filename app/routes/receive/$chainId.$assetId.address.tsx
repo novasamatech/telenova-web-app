@@ -38,12 +38,15 @@ const Page = () => {
       <div className="flex flex-col items-center">
         <Plate className="my-6 flex h-[344px] w-[232px] flex-col items-center gap-3 break-all">
           <QRCode
-            value={address}
-            logoImage={`/assets/${selectedAsset.symbol}.svg`}
-            quietZone={0}
-            logoPadding={2}
-            eyeRadius={30}
             size={200}
+            quietZone={0}
+            eyeRadius={30}
+            value={address}
+            logoPadding={1}
+            logoWidth={60}
+            logoHeight={60}
+            logoPaddingStyle="circle"
+            logoImage={selectedAsset.icon}
             id={`qrcode_${selectedAsset.symbol}`}
           />
           <BodyText className="text-text-hint">{chains[typedChainId].name} address</BodyText>
