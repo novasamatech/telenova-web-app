@@ -1,20 +1,19 @@
 import type { SignerOptions } from '@polkadot/api/types';
 import { type KeyringPair } from '@polkadot/keyring/types';
+import { type BN } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 
-import { type Asset } from '../chainRegistry';
-import { ASSET_LOCATION, FAKE_ACCOUNT_ID, formatAmount, getAssetId, isStatemineAsset } from '../utils';
-
 import { TransactionType, useExtrinsicProvider } from '@/common/extrinsicService';
-import { AssetType, type ChainId, type TransferAsset } from '@/common/types';
+import { ASSET_LOCATION, FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
+import { type Asset } from '@/types/substrate';
 
 type SendTransaction = {
-  destinationAddress: string;
   chainId: ChainId;
   asset: Asset;
-  transferAmount?: string;
+  keyringPair: KeyringPair;
+  destinationAddress: string;
   transferAll?: boolean;
-  keyring?: KeyringPair;
+  transferAmount?: BN;
 };
 
 const getAssetIdSignOption = (assetId: string): Pick<SignerOptions, 'assetId'> => ({
@@ -27,83 +26,89 @@ export const useExtrinsic = () => {
   async function sendTransfer({
     chainId,
     asset,
-    keyring,
+    keyringPair,
     destinationAddress,
     transferAmount,
     transferAll,
   }: SendTransaction) {
-    const address = decodeAddress(destinationAddress);
-    const assetId = getAssetId(asset);
+    const assetId = assetUtils.getAssetId(asset);
     let signOptions;
     let transactionType = TransactionType.TRANSFER;
 
-    if (transferAll) {
-      transactionType = TransactionType.TRANSFER_ALL;
-    }
-    if (asset.type === AssetType.STATEMINE) {
+    // TODO: currently only for USDT
+    if (assetUtils.isStatemineAsset(asset)) {
       transactionType = TransactionType.TRANSFER_STATEMINE;
       signOptions = getAssetIdSignOption(assetId);
+    } else if (assetUtils.isOrmlAsset(asset)) {
+      transactionType = TransactionType.TRANSFER_ORML;
+    } else if (transferAll) {
+      transactionType = TransactionType.TRANSFER_ALL;
     }
 
     // nonce: -1 makes polkadot.js use next nonce
     // https://github.com/polkadot-js/api/blob/dac94c51964a90f9b26bc88d5a63f1e1b2038281/packages/api-derive/src/tx/signingInfo.ts#L93
     return submitExtrinsic({
       chainId,
-      keyring,
+      keyringPair,
       signOptions: { ...signOptions, nonce: -1 },
       transaction: {
         type: transactionType,
         args: {
-          dest: address,
+          dest: decodeAddress(destinationAddress),
           value: transferAmount,
-          asset: assetId,
+          ...(!assetUtils.isNativeAsset() && { asset: assetUtils.getAssetId(asset) }),
         },
       },
     }).then(hash => {
       if (!hash) throw Error('Something went wrong');
 
-      console.log('Success, Hash:', hash?.toString());
+      console.log('Success, Hash:', hash.toString());
     });
   }
 
+  type GiftParams = {
+    chainId: ChainId;
+    asset: Asset;
+    amount: BN;
+    fee: BN;
+    transferAll?: boolean;
+  };
   async function sendGift(
-    { chainId, amount, transferAll, asset, fee }: TransferAsset,
-    giftTransferAddress: string,
+    keyringPair: KeyringPair,
+    transferAddress: Address,
+    { chainId, asset, amount, fee, transferAll }: GiftParams,
   ): Promise<void> {
-    const transferAmount = formatAmount(amount!, asset.precision);
-
-    if (isStatemineAsset(asset?.type)) {
-      const giftAmount = Math.ceil(+transferAmount + fee! / 2).toString();
+    if (assetUtils.isNativeAsset(asset)) {
+      const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
 
       return sendTransfer({
         chainId,
         asset,
-        destinationAddress: giftTransferAddress,
-        transferAmount: giftAmount,
+        keyringPair,
+        transferAll,
+        destinationAddress: transferAddress,
+        transferAmount: amount.add(transferAllFee),
       });
     }
-
-    const transferAllFee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
-    const giftAmount = (+transferAmount + transferAllFee).toString();
 
     return sendTransfer({
       chainId,
       asset,
-      transferAll,
-      destinationAddress: giftTransferAddress,
-      transferAmount: giftAmount,
+      keyringPair,
+      destinationAddress: transferAddress,
+      transferAmount: fee.divn(2).add(amount),
     });
   }
 
-  async function getTransactionFee(
+  function getTransactionFee(
     chainId: ChainId,
     transactionType = TransactionType.TRANSFER,
-    amount?: string,
+    amount?: BN,
     assetId?: string,
-  ): Promise<number> {
-    const fee = await estimateFee({
+  ): Promise<BN> {
+    return estimateFee({
       chainId,
-      signOptions: assetId ? getAssetIdSignOption(assetId) : undefined,
+      signOptions: assetId ? { assetId: ASSET_LOCATION[assetId] } : undefined,
       transaction: {
         type: transactionType,
         args: {
@@ -113,8 +118,6 @@ export const useExtrinsic = () => {
         },
       },
     });
-
-    return fee.toNumber();
   }
 
   return { getTransactionFee, sendTransfer, sendGift };

@@ -3,30 +3,32 @@ import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button } from '@nextui-org/react';
 import { useLocation } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { BACKUP_DATE } from '@/common/utils';
-import { createWallet, getCloudStorageItem, getStoreName, initializeWalletFromCloud } from '@/common/wallet';
+import { initializeWalletFromCloud } from '@/common/wallet';
 import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
+import { telegramModel, walletModel } from '@/models';
+import { telegramApi } from '@/shared/api';
+import { BACKUP_DATE } from '@/shared/helpers';
+import { useToggle } from '@/shared/hooks';
 
 const Page = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useTelegram();
-  const { setPublicKey } = useGlobalContext();
+
+  const webApp = useUnit(telegramModel.$webApp);
+  const user = useUnit(telegramModel.$user);
 
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, toggleModal] = useToggle();
   const [isPending, setIsPending] = useState(false);
 
-  const toggleModal = () => {
-    setIsModalOpen(isOpen => !isOpen);
-  };
+  if (!webApp) return null;
 
-  const submit = () => {
+  const onSubmit = () => {
     if (password.length < 8) {
       setIsPasswordValid(false);
 
@@ -34,22 +36,26 @@ const Page = () => {
     }
 
     const decryptedMnemonic = initializeWalletFromCloud(password, location.state.mnemonic);
-    const wallet = createWallet(decryptedMnemonic);
-    setIsPasswordValid(Boolean(wallet));
-    if (wallet) {
-      setIsPending(true);
-      getCloudStorageItem(BACKUP_DATE).then(value => {
-        value && localStorage.setItem(getStoreName(BACKUP_DATE), value);
-        setPublicKey(wallet?.publicKey);
-        setIsPending(false);
+    if (!decryptedMnemonic) return;
+
+    walletModel.input.walletCreated(decryptedMnemonic);
+    setIsPasswordValid(true);
+    setIsPending(true);
+
+    telegramApi
+      .getCloudStorageItem(webApp, BACKUP_DATE)
+      .then(backupDate => {
+        localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), backupDate);
         navigate($path('/dashboard'));
+      })
+      .finally(() => {
+        setIsPending(false);
       });
-    }
   };
 
   return (
     <>
-      <MainButton progress={isPending} disabled={password.length === 0 || isModalOpen} onClick={submit} />
+      <MainButton progress={isPending} disabled={password.length === 0 || isModalOpen} onClick={onSubmit} />
       <div className="flex flex-col items-center text-center">
         <Avatar
           src={user?.photo_url}
@@ -58,15 +64,15 @@ const Page = () => {
             base: 'bg-[--tg-theme-button-color]',
             name: 'font-manrope font-black text-base text-white',
           }}
-          className="w-[64px] h-[64px]"
+          className="h-[64px] w-[64px]"
           name={user?.first_name[0]}
         />
         <TitleText className="m-4 px-6">Welcome back, {user?.first_name || 'friend'}!</TitleText>
-        <BodyText as="span" className="text-text-hint px-6 mb-8">
+        <BodyText as="span" className="mb-8 px-6 text-text-hint">
           We&apos;ve found a backup of your existing Telenova wallet in the cloud. To get access to it just enter the
           password you used when creating the wallet
         </BodyText>
-        <div className="max-w-sm w-full text-start">
+        <div className="w-full max-w-sm text-start">
           <Input
             isClearable
             placeholder="Enter Password Here"
@@ -77,7 +83,7 @@ const Page = () => {
             onValueChange={setPassword}
             onClear={() => setPassword('')}
           />
-          <Button aria-label="Reset Password" className="self-baseline p-0 bg-transparent" onClick={toggleModal}>
+          <Button aria-label="Reset Password" className="self-baseline bg-transparent p-0" onClick={toggleModal}>
             <BodyText className="text-text-link">Forgot Password?</BodyText>
           </Button>
         </div>

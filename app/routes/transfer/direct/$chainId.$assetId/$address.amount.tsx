@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button, Progress } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { pickAsset } from '@/common/utils';
 import { AmountDetails, HeadlineText, Identicon, TruncateAddress } from '@/components';
+import { balancesModel, networkModel } from '@/models';
+import { toFormattedBalance } from '@/shared/helpers';
 
-// Query params for /transfer/direct/:chainId/:assetId/amount?amount=__value__
 export type SearchParams = {
   amount: string;
 };
@@ -29,44 +29,55 @@ const Page = () => {
   const { chainId, assetId, address, amount: transferAmount } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { assets } = useGlobalContext();
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const typedChainId = chainId as ChainId;
+  const assets = useUnit(networkModel.$assets);
+  const balances = useUnit(balancesModel.$balances);
+
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
+  const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
 
   const {
-    handleMaxSend,
-    handleChange,
+    onMaxAmount,
+    onAmountChange,
     getIsAccountToBeReaped,
     isPending,
     deposit,
     amount,
     fee,
-    maxAmountToSend,
+    maxAmount,
     isAmountValid,
-    touched,
-    transferAll,
-  } = useAmountLogic({ selectedAsset, isGift: false });
+    isTouched,
+    isTransferAll,
+  } = useAmountLogic({
+    chainId: typedChainId,
+    asset: selectedAsset!,
+    isGift: false,
+    balance,
+  });
 
   // Set amount from query params (/exchange/widget Mercurio page does this)
   useEffect(() => {
     if (!transferAmount) return;
 
-    handleChange(transferAmount);
+    onAmountChange(transferAmount);
   }, [transferAmount]);
 
   const navigateToConfirm = () => {
     if (!selectedAsset) return;
 
     const params = { chainId, assetId, address };
-    const query = { amount, fee: (fee || '0').toString(), all: transferAll };
+    const query = { amount: amount.toString(), fee: fee.toString(), all: isTransferAll };
 
     navigate($path('/transfer/direct/:chainId/:assetId/:address/confirmation', params, query));
   };
 
+  if (!selectedAsset) return null;
+
   return (
     <>
       <MainButton
-        disabled={!isAmountValid || !Number(fee) || getIsAccountToBeReaped() || isPending}
+        disabled={!isAmountValid || fee.isZero() || getIsAccountToBeReaped() || isPending}
         onClick={navigateToConfirm}
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
@@ -76,27 +87,29 @@ const Page = () => {
           Send to
           <TruncateAddress address={address} className="max-w-[120px]" />
         </HeadlineText>
-        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxSend}>
+        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={onMaxAmount}>
           <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
-          {maxAmountToSend ? (
-            <HeadlineText className="flex items-center text-text-link">{maxAmountToSend}</HeadlineText>
-          ) : (
-            <div className="shrink-0 w-[7ch]">
+          {maxAmount.isZero() ? (
+            <div className="w-[7ch] shrink-0">
               <Progress size="md" isIndeterminate />
             </div>
+          ) : (
+            <HeadlineText className="flex items-center text-text-link">
+              {toFormattedBalance(maxAmount, selectedAsset.precision).formatted}
+            </HeadlineText>
           )}
-          <HeadlineText className="flex items-center text-text-link">{selectedAsset?.asset?.symbol}</HeadlineText>
+          <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
         </Button>
       </div>
       <AmountDetails
-        selectedAsset={selectedAsset}
+        asset={selectedAsset}
         amount={amount}
-        isAmountValid={!touched || isAmountValid}
-        maxAmountToSend={maxAmountToSend}
-        isPending={isPending}
+        maxAmount={maxAmount}
         deposit={deposit}
+        isPending={isPending}
+        isAmountValid={!isTouched || isAmountValid}
         isAccountToBeReaped={getIsAccountToBeReaped()}
-        handleChange={handleChange}
+        onAmountChange={onAmountChange}
       />
     </>
   );

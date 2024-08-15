@@ -1,7 +1,5 @@
 import type { Telegram } from '@twa-dev/types';
 
-import { type HexString } from '@/common/types';
-
 declare global {
   interface Window {
     Telegram?: Telegram;

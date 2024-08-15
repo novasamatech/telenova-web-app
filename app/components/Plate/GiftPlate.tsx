@@ -1,32 +1,38 @@
-import { type Gift, GiftStatus } from '@/common/types';
-import { cnTw } from '@/common/utils';
-import { HelpText, Icon, MediumTitle, Plate } from '@/components';
+import { Icon } from '../Icon/Icon';
+import { HelpText, MediumTitle } from '../Typography';
+
+import { cnTw, toFormattedBalance } from '@/shared/helpers';
+import { type Gift } from '@/types/substrate';
+
+import { Plate } from './Plate';
 
 type Props = {
   gift: Gift;
   isClaimed: boolean;
 };
 
-const GiftPlate = ({ gift, isClaimed }: Props) => {
+export const GiftPlate = ({ gift, isClaimed }: Props) => {
   const date = new Date(gift.timestamp).toLocaleString();
 
   return (
     <Plate className="mb-2 grid grid-cols-[40px,1fr,auto] items-center gap-x-3">
-      <Icon name="Gift" className={cnTw(`w-10 h-10`, isClaimed ? 'text-bg-icon-accent-primary' : 'text-text-hint')} />
+      <Icon name="Gift" className={cnTw(`h-10 w-10`, isClaimed ? 'text-bg-icon-accent-primary' : 'text-text-hint')} />
       <div>
         <MediumTitle>
-          {gift.balance} {gift.chainAsset?.symbol}
+          {/* HINT: Balance for old gifts are already formatted */}
+          {gift.chainIndex === undefined
+            ? `${gift.balance}`
+            : `${toFormattedBalance(gift.balance, gift.chainAsset?.precision).formatted}`}
+          &nbsp;{gift.chainAsset?.symbol}
         </MediumTitle>
         <HelpText as="p" className="text-text-hint">
           Created: {date}
         </HelpText>
-        <HelpText as="p" className={gift.status === GiftStatus.UNCLAIMED ? 'text-text-hint' : 'text-text-positive'}>
+        <HelpText as="p" className={gift.status === 'Unclaimed' ? 'text-text-hint' : 'text-text-positive'}>
           {gift.status}
         </HelpText>
       </div>
-      {gift.status === GiftStatus.UNCLAIMED && <Icon name="ChevronForward" className="w-4 h-4 ml-2" />}
+      {gift.status === 'Unclaimed' && <Icon name="ChevronForward" className="ml-2 h-4 w-4" />}
     </Plate>
   );
 };
-
-export default GiftPlate;

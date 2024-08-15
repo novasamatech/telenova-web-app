@@ -1,35 +1,41 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useChainRegistry } from '@/common/chainRegistry';
-import { type Gift } from '@/common/types';
-import { GIFT_STORE, getGifts } from '@/common/utils';
-import { useGifts } from '@/common/utils/hooks';
-import { getStoreName } from '@/common/wallet';
-import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/components';
+import { Icon } from '../Icon/Icon';
+import { Plate } from '../Plate';
+import { Shimmering } from '../Shimmering/Shimmering';
+import { BigTitle, BodyText } from '../Typography';
 
-const CreatedGiftPlate = () => {
+import { networkModel, telegramModel } from '@/models';
+import { getGifts } from '@/shared/helpers';
+import { useGifts } from '@/shared/hooks';
+import { type Gift } from '@/types/substrate';
+
+export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();
-  const { connectionStates } = useChainRegistry();
+
+  const webApp = useUnit(telegramModel.$webApp);
+  const connections = useUnit(networkModel.$connections);
 
   const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
 
-  const gifts = JSON.parse(localStorage.getItem(getStoreName(GIFT_STORE)) as string);
-
   useEffect(() => {
-    if (!gifts) return;
+    if (!webApp) return;
 
-    const localStorageGifts = getGifts();
-    getGiftsState(localStorageGifts!).then(([unclaimed]) => setUnclaimed(unclaimed));
-  }, [connectionStates]);
-
-  if (!gifts) return null;
+    const localStorageGifts = getGifts(webApp);
+    if (localStorageGifts) {
+      getGiftsState(localStorageGifts).then(([unclaimed]) => setUnclaimed(unclaimed));
+    } else {
+      setUnclaimed([]);
+    }
+  }, [webApp, connections]);
 
   return (
-    <Plate className="w-full h-[90px] rounded-3xl mt-4 active:bg-bg-item-pressed">
-      <Link to={$path('/gifts')} className="w-full grid grid-cols-[auto,1fr,auto] items-center gap-4">
+    <Plate className="mt-4 h-[90px] w-full rounded-3xl active:bg-bg-item-pressed">
+      <Link to={$path('/gifts')} className="grid w-full grid-cols-[auto,1fr,auto] items-center gap-4">
         <Icon name="Present" size={60} />
         <div className="grid">
           <BigTitle align="left">Created Gifts</BigTitle>
@@ -41,10 +47,8 @@ const CreatedGiftPlate = () => {
             <Shimmering width={100} height={20} />
           )}
         </div>
-        <Icon name="ArrowBold" className="w-10 h-10 self-center" />
+        <Icon name="ArrowBold" className="h-10 w-10 self-center" />
       </Link>
     </Plate>
   );
 };
-
-export default CreatedGiftPlate;

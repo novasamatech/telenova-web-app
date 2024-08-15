@@ -1,14 +1,14 @@
 // @ts-expect-error no types
 import MiddleEllipsis from 'react-middle-ellipsis';
 
-import { TextBase } from '@/components';
+import { TextBase } from '../Typography';
 
 type Props = {
   address?: string;
   className?: string;
 };
 
-const TruncateAddress = ({ address, className }: Props) => {
+export const TruncateAddress = ({ address, className }: Props) => {
   return (
     <span className={className}>
       <MiddleEllipsis>
@@ -19,5 +19,3 @@ const TruncateAddress = ({ address, className }: Props) => {
     </span>
   );
 };
-
-export default TruncateAddress;

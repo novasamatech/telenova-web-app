@@ -1,33 +1,69 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
-import { AssetsList, TitleText } from '@/components';
+import { AssetsList, BodyText, Icon, Input, TitleText } from '@/components';
+import { assetsFilterModel, balancesModel, networkModel } from '@/models';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { assets } = useGlobalContext();
+
+  const chains = useUnit(networkModel.$chains);
+  const balances = useUnit(balancesModel.$balances);
+  const query = useUnit(assetsFilterModel.$query);
+  const assets = useUnit(assetsFilterModel.$assets);
+
+  useEffect(() => {
+    assetsFilterModel.input.pageMounted();
+  }, []);
+
+  const navigateToAddress = (chainId: ChainId, assetId: AssetId) => {
+    navigate(
+      $path('/receive/:chainId/:assetId/address', {
+        chainId,
+        assetId: assetId.toString(),
+      }),
+    );
+  };
 
   return (
     <>
       <BackButton onClick={() => navigate($path('/dashboard'))} />
-      <TitleText className="mt-6 mb-10">Select a token to receive</TitleText>
-      <div className="flex flex-col gap-2 mt-4">
-        <AssetsList
-          className="bg-white rounded-lg px-4 py-3 w-full hover:bg-bg-item-pressed active:bg-bg-item-pressed"
-          showArrow
-          assets={assets}
-          onClick={asset => {
-            navigate(
-              $path('/receive/:chainId/:assetId/address', {
-                chainId: asset.chainId,
-                assetId: asset.asset.assetId.toString(),
-              }),
-            );
-          }}
+      <div className="flex flex-col gap-y-4">
+        <TitleText align="left">Select a token to receive</TitleText>
+        <Input
+          isClearable
+          variant="flat"
+          placeholder="Search"
+          className="h-12"
+          startContent={<Icon name="Search" size={16} className="text-text-hint" />}
+          value={query}
+          onValueChange={assetsFilterModel.input.queryChanged}
+          onClear={() => assetsFilterModel.input.queryChanged('')}
         />
+
+        {assets.length > 0 && (
+          <div className="flex flex-col gap-y-2">
+            <AssetsList
+              className="w-full rounded-lg bg-white px-4 py-3 hover:bg-bg-item-pressed active:bg-bg-item-pressed"
+              showArrow
+              chains={chains}
+              assets={assets}
+              balances={balances}
+              onClick={navigateToAddress}
+            />
+          </div>
+        )}
+
+        {assets.length === 0 && (
+          <div className="mt-[70px] flex flex-col items-center gap-y-4">
+            <Icon name="NoResult" size={180} />
+            <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search </BodyText>
+          </div>
+        )}
       </div>
     </>
   );

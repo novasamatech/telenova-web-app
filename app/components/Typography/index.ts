@@ -1,11 +1,9 @@
-import TextBase from './common/TextBase';
-import { BigTitle } from './components/BigTitle';
-import { BodyText } from './components/BodyText';
-import { HeadlineText } from './components/HeadlineText';
-import { HelpText } from './components/HelpText';
-import { LabelText } from './components/LabelText';
-import { LargeTitleText } from './components/LargeTitleText';
-import { MediumTitle } from './components/MediumTitle';
-import { TitleText } from './components/TitleText';
-
-export { TextBase, BodyText, TitleText, MediumTitle, LargeTitleText, HeadlineText, LabelText, HelpText, BigTitle };
+export { TextBase } from './common/TextBase';
+export { BigTitle } from './components/BigTitle';
+export { BodyText } from './components/BodyText';
+export { HeadlineText } from './components/HeadlineText';
+export { HelpText } from './components/HelpText';
+export { LabelText } from './components/LabelText';
+export { LargeTitleText } from './components/LargeTitleText';
+export { MediumTitle } from './components/MediumTitle';
+export { TitleText } from './components/TitleText';

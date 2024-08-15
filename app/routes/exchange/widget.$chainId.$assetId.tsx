@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
-import { isOpenInWeb } from '@/common/telegram';
-import { BackButton } from '@/common/telegram/BackButton.tsx';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
-import { pickAsset, runMercuryoWidget } from '@/common/utils';
+import { isWebPlatform } from '@/common/telegram';
+import { BackButton } from '@/common/telegram/BackButton';
+import { MainButton } from '@/common/telegram/MainButton';
 import { MediumTitle } from '@/components';
+import { networkModel, telegramModel, walletModel } from '@/models';
+import { runMercuryoWidget, toAddress } from '@/shared/helpers';
 
 export type SearchParams = {
   type: 'buy' | 'sell';
@@ -40,8 +41,11 @@ const Page = () => {
   const { chainId, assetId, mercuryoSecret, mercuryoWidgetId, type } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
-  const { assets } = useGlobalContext();
+
+  const chains = useUnit(networkModel.$chains);
+  const assets = useUnit(networkModel.$assets);
+  const wallet = useUnit(walletModel.$wallet);
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const [done, setDone] = useState(false);
@@ -50,19 +54,20 @@ const Page = () => {
   const [amount, setAmount] = useState('');
   const [destination, setDestination] = useState('');
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const typedChainId = chainId as ChainId;
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!selectedAsset || isOpenInWeb(webApp!.platform) || !root) return;
+    if (!wallet?.publicKey || !selectedAsset || isWebPlatform(webApp!.platform) || !root || !type) return;
 
     runMercuryoWidget({
       root,
       returnPage: $path('/dashboard'),
       secret: mercuryoSecret,
       widgetId: mercuryoWidgetId,
+      address: toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix }),
       operationType: type,
-      address: selectedAsset.address,
-      symbol: selectedAsset.asset.symbol,
+      symbol: selectedAsset.symbol,
       handleStatus,
       handleSell,
     });
@@ -95,16 +100,18 @@ const Page = () => {
     }
   };
 
+  if (!selectedAsset) return null;
+
   return (
     <>
       <MainButton
-        text={`Send ${selectedAsset?.asset?.symbol} to sell`}
+        text={`Send ${selectedAsset.symbol} to sell`}
         hidden={!isSendBtnVisible}
         onClick={navigateToTransfer}
       />
       <BackButton onClick={navigateBack} />
-      <div ref={setRoot} className="w-full h-[95svh]" id="mercuryo-widget">
-        {isOpenInWeb(webApp?.platform) && (
+      <div ref={setRoot} className="h-[95svh] w-full" id="mercuryo-widget">
+        {isWebPlatform(webApp?.platform) && (
           <div>
             <MediumTitle align="center">
               Sorry, the widget is not supported in the web version. Proceed with the application.

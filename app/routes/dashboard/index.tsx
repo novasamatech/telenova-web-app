@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button, Divider } from '@nextui-org/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useBalances } from '@/common/balances';
-import { type Chain, useChainRegistry } from '@/common/chainRegistry';
-import { useGlobalContext, useTelegram } from '@/common/providers';
+import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
-import { getPrice, getTotalBalance, mapAssetAccountsFromChains, updateAssetsBalance } from '@/common/utils';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
   AssetsList,
@@ -18,78 +16,39 @@ import {
   Icon,
   IconButton,
   LargeTitleText,
+  LinkButton,
   MediumTitle,
   Plate,
   Price,
   TextBase,
   TitleText,
 } from '@/components';
+import { balancesModel, networkModel, telegramModel } from '@/models';
+import { getPrice, getTotalBalance } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { getAllChains } = useChainRegistry();
-  const { subscribeBalance, unsubscribeBalance } = useBalances();
-  const { publicKey, assets, assetsPrices, setAssets, setAssetsPrices } = useGlobalContext();
-  const { user } = useTelegram();
+  const { assetsPrices, setAssetsPrices } = useGlobalContext();
 
-  const [chains, setChains] = useState<Chain[]>([]);
+  const balances = useUnit(balancesModel.$balances);
+  const [chains, assets] = useUnit([networkModel.$chains, networkModel.$sortedAssets]);
+  const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
 
-  function clearWallet(clearLocal?: boolean) {
-    resetWallet(clearLocal);
-    navigate($path('/onboarding'));
-  }
-
-  // Fetching chains
   useEffect(() => {
-    if (!getMnemonic()) {
-      clearWallet(true);
+    if (!webApp || getMnemonic(webApp)) return;
 
-      return;
-    }
-
-    let mounted = true;
-    getAllChains().then(chains => {
-      if (mounted) {
-        console.info(`Found all ${chains.length} chains`);
-        setChains(chains);
-      }
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // Mapping assets
-  useEffect(() => {
-    if (publicKey) {
-      setAssets(mapAssetAccountsFromChains(chains, publicKey));
-    }
-  }, [chains, publicKey]);
-
-  // Subscribing balances
-  useEffect(() => {
-    if (publicKey) {
-      const assets = mapAssetAccountsFromChains(chains, publicKey);
-      const unsubscribeIds = assets.map(asset =>
-        subscribeBalance(asset, balance => {
-          setAssets(prevAssets => updateAssetsBalance(prevAssets, asset.chainId, balance));
-        }),
-      );
-
-      return () => unsubscribeIds.forEach(unsubscribeBalance);
-    }
-
-    return undefined;
-  }, [chains, publicKey]);
+    clearWallet(true);
+  }, [webApp]);
 
   // Fetching prices
   useEffect(() => {
-    if (!chains.length) return;
+    if (Object.keys(chains).length === 0) return;
 
     const abortController = new AbortController();
     getPrice({
-      ids: chains.flatMap(chain => chain.assets.map(a => a.priceId)).filter(priceId => priceId !== undefined),
+      ids: Object.values(chains)
+        .flatMap(chain => chain.assets.map(a => a.priceId))
+        .filter(priceId => priceId !== undefined),
       abortSignal: abortController.signal,
     }).then(setAssetsPrices);
 
@@ -98,14 +57,21 @@ const Page = () => {
     };
   }, [chains]);
 
+  const clearWallet = (clearLocal?: boolean) => {
+    resetWallet(clearLocal);
+    navigate($path('/onboarding'));
+  };
+
+  const totalBalance = getTotalBalance(chains, balances, assetsPrices);
+
   return (
     <>
       <BackButton hidden />
       <div className="flex flex-col break-words">
-        <div className="grid grid-cols-[auto,1fr,auto] gap-2 mb-6 items-center">
+        <div className="mb-6 grid grid-cols-[auto,1fr,auto] items-center gap-2">
           <Avatar
             src={user?.photo_url}
-            className="w-10 h-10"
+            className="h-10 w-10"
             name={user?.first_name.charAt(0)}
             classNames={{
               base: 'bg-[--tg-theme-button-color]',
@@ -115,34 +81,46 @@ const Page = () => {
           <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
           <Button
             isIconOnly
-            className="bg-transparent overflow-visible drop-shadow-button"
+            className="overflow-visible bg-transparent drop-shadow-button"
             onClick={() => navigate($path('/settings'))}
           >
             <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
           </Button>
         </div>
-        <div className="flex flex-col mt-4 items-center">
-          <HeadlineText className="text-text-hint mb-1">Total Balance</HeadlineText>
+
+        <div className="mt-4 flex flex-col items-center">
+          <HeadlineText className="mb-1 text-text-hint">Total Balance</HeadlineText>
           <LargeTitleText>
-            <Price amount={getTotalBalance(assets, assetsPrices)} decimalSize={32} />
+            <Price amount={totalBalance} decimalSize="lg" />
           </LargeTitleText>
-          <div className="grid grid-cols-3 w-full mt-7 gap-2">
+          <div className="mt-7 grid w-full grid-cols-3 gap-2">
             <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
             <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
             <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate($path('/exchange'))} />
           </div>
         </div>
+
         <CreatedGiftPlate />
-        <Plate className="flex flex-col my-2 rounded-3xl">
+
+        <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
           <TitleText align="left">Assets</TitleText>
-          <div className="flex flex-col gap-6 mt-4">
-            <AssetsList className="m-1" assets={assets} showPrice animate />
+          <div className="mt-4 flex flex-col gap-y-6">
+            <AssetsList showPrice animate className="m-1" chains={chains} assets={assets} balances={balances} />
           </div>
         </Plate>
+
+        <LinkButton
+          className="mx-auto my-5"
+          href={$path('/assets')}
+          prefixIcon={<Icon className="text-inherit" name="Plus" size={16} />}
+        >
+          Manage tokens
+        </LinkButton>
+
         <GiftModal />
 
         {import.meta.env.DEV && (
-          <div className="p-4 flex flex-col gap-2 justify-center bg-warning rounded-lg">
+          <div className="flex flex-col justify-center gap-2 rounded-lg bg-warning p-4">
             <TextBase className="text-amber-50">DEV MODE</TextBase>
             <Divider className="bg-amber-200" />
             <Button variant="faded" onClick={() => clearWallet()}>

@@ -1,36 +1,48 @@
-import type { GetExistentialDeposit, GetExistentialDepositStatemine } from './types';
+import { useUnit } from 'effector-react';
 
-import { useExtrinsicService } from '@/common/extrinsicService';
-import { type Address, type ChainId } from '@/common/types';
+import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
-interface ExtrinsicService {
-  getExistentialDeposit: GetExistentialDeposit;
-  getExistentialDepositStatemine: GetExistentialDepositStatemine;
-  assetConversion: (chainId: ChainId, amount: number, assetId: string) => Promise<number>;
-  getFreeBalance: (address: Address, chainId: ChainId) => Promise<string>;
-  getFreeBalanceStatemine: (address: Address, chainId: ChainId, assetId: string) => Promise<string>;
-}
+import { networkModel } from '@/models';
+import { type OrmlAccountData } from '@/shared/api/balances/types.ts';
+import { assetUtils } from '@/shared/helpers';
+import { type Asset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 
-export const useQueryService = (): ExtrinsicService => {
-  const { prepareApi } = useExtrinsicService();
+export const useQueryService = () => {
+  const connections = useUnit(networkModel.$connections);
 
-  async function getExistentialDeposit(chainId: ChainId): Promise<string> {
-    const api = await prepareApi(chainId);
+  async function getExistentialDeposit(chainId: ChainId, asset: Asset): Promise<BN> {
+    const DEPOSIT_BY_TYPE: Record<Asset['type'], () => Promise<BN> | BN> = {
+      native: () => getExistentialDepositNative(chainId),
+      statemine: () => getExistentialDepositStatemine(chainId, asset as StatemineAsset),
+      orml: () => getExistentialDepositOrml(asset as OrmlAsset),
+    };
 
-    return api.consts.balances.existentialDeposit.toString();
+    return DEPOSIT_BY_TYPE[asset.type]();
   }
 
-  async function getExistentialDepositStatemine(chainId: ChainId, assetId: string): Promise<string> {
-    const api = await prepareApi(chainId);
-    const balance = await api.query.assets.asset(assetId);
+  async function getExistentialDepositNative(chainId: ChainId): Promise<BN> {
+    const api = connections[chainId].api;
 
-    return balance.value.minBalance.toString();
+    return api!.consts.balances.existentialDeposit.toBn();
   }
 
-  async function assetConversion(chainId: ChainId, amount: number, assetId: string): Promise<number> {
-    const api = await prepareApi(chainId);
+  async function getExistentialDepositStatemine(chainId: ChainId, asset: StatemineAsset): Promise<BN> {
+    const api = connections[chainId].api;
+    const assetId = assetUtils.getAssetId(asset);
+    const balance = await api!.query.assets.asset(assetId);
 
-    const convertedFee = await api.call.assetConversionApi.quotePriceTokensForExactTokens(
+    return balance.value.minBalance.toBn();
+  }
+
+  function getExistentialDepositOrml(asset: OrmlAsset): BN {
+    // existentialDeposit includes asset precision
+    return new BN(asset.typeExtras.existentialDeposit);
+  }
+
+  async function assetConversion(chainId: ChainId, amount: BN, assetId: string): Promise<BN> {
+    const api = connections[chainId].api;
+
+    const convertedFee = await api!.call.assetConversionApi.quotePriceTokensForExactTokens(
       {
         // Token MultiLocation
         // @ts-expect-error type error
@@ -51,29 +63,41 @@ export const useQueryService = (): ExtrinsicService => {
       true,
     );
 
-    return Number(convertedFee);
+    return convertedFee.isNone ? BN_ZERO : convertedFee.unwrap().toBn();
   }
 
-  async function getFreeBalance(address: Address, chainId: ChainId): Promise<string> {
-    const api = await prepareApi(chainId);
-
+  async function getFreeBalance(address: Address, chainId: ChainId): Promise<BN> {
+    const api = connections[chainId].api!;
     const balance = await api.query.system.account(address);
 
-    return balance.data.free.toString();
+    return balance.data.free.toBn();
   }
 
-  async function getFreeBalanceStatemine(address: Address, chainId: ChainId, assetId: string): Promise<string> {
-    const api = await prepareApi(chainId);
-    const balance = await api.query.assets.account(assetId, address);
+  async function getFreeBalanceOrml(address: Address, chainId: ChainId, asset: OrmlAsset): Promise<BN> {
+    const api = connections[chainId].api!;
+    const method = api.query['tokens']?.['accounts'] as any;
 
-    return balance.isNone ? '0' : balance.unwrap().balance.toString();
+    const ormlAssetId = assetUtils.getAssetId(asset);
+    const currencyIdType = asset.typeExtras.currencyIdType;
+    const assetId = api.createType(currencyIdType, hexToU8a(ormlAssetId));
+
+    const balance = await method(address, assetId);
+
+    return (balance as OrmlAccountData).free.toBn();
+  }
+
+  async function getFreeBalanceStatemine(address: Address, chainId: ChainId, assetId: string): Promise<BN> {
+    const api = connections[chainId].api;
+    const balance = await api!.query.assets.account(assetId, address);
+
+    return balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn();
   }
 
   return {
     getExistentialDeposit,
-    getExistentialDepositStatemine,
     assetConversion,
     getFreeBalance,
+    getFreeBalanceOrml,
     getFreeBalanceStatemine,
   };
 };

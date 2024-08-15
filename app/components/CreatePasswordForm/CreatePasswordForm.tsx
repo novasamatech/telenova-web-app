@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { cnTw } from '@/common/utils/twMerge';
-import { BodyText, Input } from '@/components';
+import { Input } from '../Input/Input';
+import { BodyText } from '../Typography';
+
+import { cnTw } from '@/shared/helpers/twMerge';
 
 type Variants = 'error' | 'success' | 'default';
 
@@ -50,7 +52,7 @@ export const CreatePasswordForm = ({ password, onStatusChange, onChange }: Props
   const hintColor = touched ? (isPasswordValid ? 'success' : 'error') : 'default';
 
   return (
-    <form className="flex flex-col mt-8 gap-4 w-full items-center">
+    <form className="mt-8 flex w-full flex-col items-center gap-4">
       <Input
         isClearable
         variant="flat"
@@ -76,8 +78,8 @@ export const CreatePasswordForm = ({ password, onStatusChange, onChange }: Props
         onValueChange={setConfirmPassword}
         onClear={() => setConfirmPassword('')}
       />
-      <BodyText align="left" as="span" className={cnTw('self-start mt-4', VariantStyles[hintColor])}>
-        <ul className="list-disc space-y-1 ml-5 mb-1">
+      <BodyText align="left" as="span" className={cnTw('mt-4 self-start', VariantStyles[hintColor])}>
+        <ul className="mb-1 ml-5 list-disc space-y-1">
           <li className={password.length >= 8 ? VariantStyles.success : ''}>8 characters minimum</li>
           <li className={cnTw(/\d/.test(password) && VariantStyles.success)}>Include at least 1 number (0-9)</li>
           <li className={cnTw(/[a-zA-Z]/.test(password) && VariantStyles.success)}>Include at least 1 letter (A-z)</li>

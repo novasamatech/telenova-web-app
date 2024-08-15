@@ -1,47 +1,52 @@
+import { type BN, BN_ZERO } from '@polkadot/util';
+
+import { Price } from '../Price/Price';
+import { Shimmering } from '../Shimmering/Shimmering';
+import { BodyText } from '../Typography';
+
 import { useGlobalContext } from '@/common/providers/contextProvider';
-import { cnTw } from '@/common/utils';
-import { formatBalance } from '@/common/utils/balance';
-import { BodyText, Price, Shimmering } from '@/components';
+import { cnTw } from '@/shared/helpers';
+import { toFormattedBalance } from '@/shared/helpers/balance';
+import { type Asset } from '@/types/substrate';
 
 type Props = {
-  balance?: string;
-  priceId?: string;
-  precision?: number;
+  balance?: BN;
+  asset: Asset;
   showBalance?: boolean;
   className?: string;
 };
 
-const TokenPrice = ({ priceId, balance, precision, showBalance = true, className }: Props) => {
+export const TokenPrice = ({ balance = BN_ZERO, asset, showBalance = true, className }: Props) => {
   const { assetsPrices } = useGlobalContext();
-  const price = priceId ? assetsPrices?.[priceId] : { price: 0 };
-  const { formattedValue, suffix } = formatBalance(balance, precision);
+
+  const price = asset.priceId ? assetsPrices?.[asset.priceId] : { price: 0 };
 
   if (!price) {
     return <Shimmering width={100} height={20} />;
   }
 
+  const total = balance.muln(price.price);
+  const { value, suffix } = toFormattedBalance(total, asset.precision);
+
   const isGrow = price.change && price.change >= 0;
   const changeToShow = price.change && `${isGrow ? '+' : ''}${price.change.toFixed(2)}%`;
-  const changeStyle = isGrow ? 'text-text-positive' : 'text-text-danger';
-  const total = price.price * Number(formattedValue);
 
   return (
     <div className={cnTw('flex items-center justify-between', className)}>
       <BodyText className="text-text-hint" align="left">
         <Price amount={price.price} />
         {price.change && (
-          <BodyText as="span" className={`ml-1 ${changeStyle}`}>
+          <BodyText as="span" className={cnTw('ml-1', isGrow ? 'text-text-positive' : 'text-text-danger')}>
             {changeToShow}
           </BodyText>
         )}
       </BodyText>
       {showBalance && (
         <BodyText className="text-text-hint" align="right">
-          <Price amount={total} />
+          <Price amount={Number(value)} />
           {suffix}
         </BodyText>
       )}
     </div>
   );
 };
-export default TokenPrice;

@@ -1,7 +1,5 @@
 import { type WebApp } from '@twa-dev/types';
 
-import { type HexString } from '@/common/types';
-
 import { getTelegramBotApi } from './bot-api';
 import { type TgLink } from './types';
 
@@ -21,17 +19,23 @@ export const completeOnboarding = async ({ publicKey, webApp, baseUrl }: Complet
 };
 
 type CreateTgLinkParams = {
-  secret: string;
-  symbol: string;
-  amount: string;
   botUrl: string;
   appName: string;
+  amount: string;
+  secret: string;
+  chainIndex?: string | number;
+  symbol: string;
 };
 
-export const createTgLink = ({ secret, symbol, amount, botUrl, appName }: CreateTgLinkParams): TgLink => {
-  const text = `\nHey, I have sent you ${+amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
+export const createTgLink = ({ botUrl, appName, amount, secret, chainIndex, symbol }: CreateTgLinkParams): TgLink => {
+  const text = `\nHey, I have sent you ${amount} ${symbol} as a Gift in the Telenova app, tap on the link to claim it!`;
   const url = new URL(`/${botUrl}/${appName}`, 'https://t.me');
-  url.searchParams.set('startapp', `${secret}_${symbol}`);
+
+  if (chainIndex === undefined || chainIndex === '') {
+    url.searchParams.set('startapp', `${secret}_${symbol}`);
+  } else {
+    url.searchParams.set('startapp', `${secret}_${chainIndex}_${symbol}`);
+  }
 
   return { url: url.toString(), text };
 };
@@ -48,7 +52,7 @@ export const openLink = (link: string, webApp: WebApp) => {
   webApp.close();
 };
 
-export const isOpenInWeb = (platform?: string): boolean => {
+export const isWebPlatform = (platform?: string): boolean => {
   if (!platform) return true;
 
   return ['web', 'weba', 'webk'].includes(platform);

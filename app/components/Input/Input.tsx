@@ -1,4 +1,3 @@
-// import { type InputProps } from '@nextui-org/input';
 import { type InputProps, Input as NextUiInput } from '@nextui-org/react';
 
 export const Input = (props: Omit<InputProps, 'classNames'>) => {

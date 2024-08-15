@@ -1,30 +1,37 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { BACKUP_DATE } from '@/common/utils';
-import { getStoreName } from '@/common/wallet';
 import { BodyText, LinkCard, TitleText } from '@/components';
+import { telegramModel } from '@/models';
+import { telegramApi } from '@/shared/api';
+import { BACKUP_DATE } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();
 
+  const webApp = useUnit(telegramModel.$webApp);
+
   const [backupDate, setBackupDate] = useState('');
 
   useEffect(() => {
-    const storeDate = localStorage.getItem(getStoreName(BACKUP_DATE));
+    if (!webApp) return;
+
+    const storeDate = localStorage.getItem(telegramApi.getStoreName(webApp, BACKUP_DATE));
     const date = storeDate ? new Date(+storeDate).toUTCString() : '';
+
     setBackupDate(date);
-  }, []);
+  }, [webApp]);
 
   return (
     <>
       <BackButton onClick={() => navigate($path('/settings'))} />
       <div className="flex flex-col items-start gap-2">
         <TitleText>Cloud Backup</TitleText>
-        <BodyText className="text-text-hint mb-2" align="left">
+        <BodyText className="mb-2 text-text-hint" align="left">
           Your password protects your wallet and your assets. Make sure to keep your password safe (don&apos;t forget
           it!) and never share it with anyone!
         </BodyText>
@@ -34,9 +41,9 @@ const Page = () => {
           text="Change Password"
           showArrow
         />
-        {backupDate && <BodyText className="text-text-hint self-start">Last Changed: {backupDate}</BodyText>}
+        {backupDate && <BodyText className="self-start text-text-hint">Last Changed: {backupDate}</BodyText>}
         <TitleText className="mt-4">Manual Backup</TitleText>
-        <BodyText className="text-text-hint mb-2" align="left">
+        <BodyText className="mb-2 text-text-hint" align="left">
           You can manually write down your recovery phrase to be sure that everything is safe
         </BodyText>
         <LinkCard

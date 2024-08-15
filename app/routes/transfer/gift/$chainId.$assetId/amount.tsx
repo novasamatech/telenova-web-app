@@ -2,14 +2,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button, Progress } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { pickAsset } from '@/common/utils';
 import { AmountDetails, HeadlineText, Icon } from '@/components';
+import { balancesModel, networkModel } from '@/models';
+import { toFormattedBalance } from '@/shared/helpers';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/gift/:chainId/:assetId/amount', params);
@@ -18,80 +19,88 @@ export const clientLoader = (({ params }) => {
 const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
-  const { assets } = useGlobalContext();
   const navigate = useNavigate();
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const assets = useUnit(networkModel.$assets);
+  const balances = useUnit(balancesModel.$balances);
+
+  const typedChainId = chainId as ChainId;
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
+  const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
 
   const {
-    handleMaxSend,
-    handleChange,
+    onMaxAmount,
+    onAmountChange,
     setIsAmountValid,
     getIsAccountToBeReaped,
     isPending,
     deposit,
     amount,
     fee,
-    maxAmountToSend,
+    maxAmount,
     isAmountValid,
-    touched,
-    transferAll,
-  } = useAmountLogic({ selectedAsset, isGift: true });
+    isTouched,
+    isTransferAll,
+  } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: true, balance });
 
   const handleMaxGiftSend = () => {
-    handleMaxSend();
-    setIsAmountValid(Boolean(maxAmountToSend) && +maxAmountToSend >= deposit);
+    onMaxAmount();
+    setIsAmountValid(!maxAmount.isZero() && maxAmount.gte(deposit));
   };
 
   const navigateToCreate = () => {
     const params = { chainId, assetId };
-    const query = { amount, fee: (fee || '0').toString(), all: transferAll };
+    const query = { amount: amount.toString(), fee: fee.toString(), all: isTransferAll };
 
     navigate($path('/transfer/gift/:chainId/:assetId/create', params, query));
   };
 
-  const isAboveDeposit = Boolean(deposit) && +amount >= deposit;
+  const isAboveDeposit = amount.gte(deposit);
+
+  if (!selectedAsset) return null;
 
   return (
     <>
       <MainButton
         text="Create gift"
-        disabled={!isAmountValid || !isAboveDeposit || !Number(fee) || getIsAccountToBeReaped() || isPending}
+        disabled={!isAmountValid || !isAboveDeposit || fee.isZero() || getIsAccountToBeReaped() || isPending}
         progress={isPending}
         onClick={navigateToCreate}
       />
       <BackButton onClick={() => navigate($path('/transfer/gift/token-select'))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
-        <Icon name="Gift" className="w-8 h-8 text-bg-icon-accent-primary" />
+        <Icon name="Gift" className="h-8 w-8 text-bg-icon-accent-primary" />
         <HeadlineText>Preparing Gift</HeadlineText>
         <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxGiftSend}>
           <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
-          {maxAmountToSend ? (
-            <HeadlineText className="flex items-center text-text-link">{maxAmountToSend}</HeadlineText>
-          ) : (
-            <div className="shrink-0 w-[7ch]">
+          {maxAmount.isZero() ? (
+            <div className="w-[7ch] shrink-0">
               <Progress size="md" isIndeterminate />
             </div>
+          ) : (
+            <HeadlineText className="flex items-center text-text-link">
+              {toFormattedBalance(maxAmount, selectedAsset.precision).formatted}
+            </HeadlineText>
           )}
-          <HeadlineText className="flex items-center text-text-link">{selectedAsset?.asset?.symbol}</HeadlineText>
+          <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
         </Button>
       </div>
 
       <AmountDetails
-        selectedAsset={selectedAsset}
+        asset={selectedAsset}
         amount={amount}
-        isAmountValid={!touched || (isAmountValid && isAboveDeposit)}
-        maxAmountToSend={maxAmountToSend}
+        isAmountValid={!isTouched || (isAmountValid && isAboveDeposit)}
+        maxAmount={maxAmount}
         isPending={isPending}
         deposit={deposit}
         isAccountToBeReaped={getIsAccountToBeReaped()}
-        handleChange={handleChange}
+        onAmountChange={onAmountChange}
       >
-        {touched && !isAboveDeposit && (
+        {isTouched && !isAboveDeposit && (
           <>
             Your gift should remain above the minimal
             <br />
-            network deposit {deposit} {selectedAsset?.asset?.symbol}
+            network deposit {toFormattedBalance(deposit, selectedAsset.precision).value} {selectedAsset.symbol}
           </>
         )}
       </AmountDetails>

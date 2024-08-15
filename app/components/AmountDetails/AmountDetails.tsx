@@ -1,64 +1,81 @@
-import { type PropsWithChildren } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 
-import { type TransferAsset } from '@/common/types';
-import { AmountInput, BodyText, Icon, LargeTitleText, TokenPrice } from '@/components';
-import { type IconNames } from '@/components/Icon/types';
+import { type BN } from '@polkadot/util';
+
+import { AmountInput } from '../AmountInput/AmountInput';
+import { Icon } from '../Icon/Icon';
+import { TokenPrice } from '../Price/TokenPrice';
+import { BodyText, LargeTitleText } from '../Typography';
+
+import { AssetIcon } from '@/components';
+import { toFormattedBalance } from '@/shared/helpers';
+import { type Asset } from '@/types/substrate';
 
 //TODO: Change layout mobile text
 type Props = {
-  selectedAsset?: Partial<TransferAsset | null>;
-  amount: string;
+  asset: Asset;
+  amount: BN;
+  deposit: BN;
+  maxAmount: BN;
   isAmountValid: boolean;
-  maxAmountToSend: string;
   isPending: boolean;
-  deposit: number;
   isAccountToBeReaped: boolean;
-  handleChange: (value: string) => void;
+  onAmountChange: (value: string) => void;
 };
 
 export const AmountDetails = ({
-  selectedAsset,
+  asset,
   amount,
-  isAmountValid,
-  maxAmountToSend,
-  isPending,
   deposit,
+  maxAmount,
+  isPending,
   isAccountToBeReaped,
-  handleChange,
+  isAmountValid,
+  onAmountChange,
   children,
 }: PropsWithChildren<Props>) => {
-  const shouldShowPrice = !isNaN(+amount) && isAmountValid && !isPending;
+  const [inputAmount, setInputAmount] = useState(toFormattedBalance(amount, asset.precision).value);
+
+  useEffect(() => {
+    if (maxAmount.isZero() || amount.isZero() || !maxAmount.eq(amount)) return;
+
+    setInputAmount(toFormattedBalance(maxAmount, asset.precision).value);
+  }, [amount, maxAmount]);
+
+  const handleAmountChange = (value: string) => {
+    setInputAmount(value);
+    onAmountChange(value);
+  };
 
   return (
     <>
-      <div className="mb-6 mt-5 grid grid-cols-[40px,1fr,auto] gap-x-2 items-center">
-        <Icon name={selectedAsset?.asset?.symbol as IconNames} size={40} />
-        <LargeTitleText>{selectedAsset?.asset?.symbol}</LargeTitleText>
-        <div className="px-1">
-          <AmountInput className="max-w-[7ch]" value={amount} isValid={isAmountValid} onChange={handleChange} />
+      <div className="-ml-1.5 mb-6 mt-5 flex items-center gap-x-2">
+        <AssetIcon src={asset.icon} size={46} />
+        <LargeTitleText>{asset.symbol}</LargeTitleText>
+        <div className="ml-auto px-1">
+          <AmountInput
+            className="max-w-[7ch]"
+            value={inputAmount}
+            isValid={isAmountValid}
+            onChange={handleAmountChange}
+          />
         </div>
       </div>
 
-      {shouldShowPrice && (
-        <TokenPrice
-          className="col-span-2"
-          priceId={selectedAsset?.asset?.priceId}
-          balance={amount || '0'}
-          showBalance={!isNaN(+amount) && isAmountValid && !isPending}
-        />
-      )}
+      {isAmountValid && !isPending && <TokenPrice showBalance className="col-span-2" balance={amount} asset={asset} />}
       {!isAmountValid && (
         <BodyText align="right" className="text-text-danger">
-          {+amount > +maxAmountToSend ? 'Insufficient balance' : 'Invalid amount'} <br />
+          {amount.gt(maxAmount) ? 'Insufficient balance' : 'Invalid amount'} <br />
           {children}
         </BodyText>
       )}
       {isAccountToBeReaped && (
-        <div className="mt-4 p-4 bg-[#FFE2E0] border border-border-danger rounded-lg grid grid-cols-[auto,1fr]">
+        <div className="mt-4 grid grid-cols-[auto,1fr] rounded-lg border border-border-danger bg-[#FFE2E0] p-4">
           <Icon name="ExclamationMark" size={28} />
           <BodyText align="left" className="text-text-danger">
-            The balance that remains after sending your amount is less than the minimal network deposit ({deposit}{' '}
-            {selectedAsset?.asset?.symbol}), please choose a different amount or use Max instead.
+            The balance that remains after sending your amount is less than the minimal network deposit (
+            {toFormattedBalance(deposit, asset.precision).value} {asset.symbol}), please choose a different amount or
+            use Max instead.
           </BodyText>
         </div>
       )}

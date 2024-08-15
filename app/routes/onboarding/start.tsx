@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers/telegramProvider';
 import { MainButton } from '@/common/telegram/MainButton';
-import Icon from '@/components/Icon/Icon';
-import { type IconNames } from '@/components/Icon/types';
-import { BodyText, MediumTitle, TitleText } from '@/components/Typography';
+import { BodyText, Icon, MediumTitle, TitleText } from '@/components';
+import { type IconNames } from '@/components/types';
+import { telegramModel } from '@/models';
 
 const welcomeData = [
   {
@@ -28,7 +28,8 @@ const welcomeData = [
 
 const Page = () => {
   const navigate = useNavigate();
-  const { user, startParam } = useTelegram();
+
+  const [user, startParam] = useUnit([telegramModel.$user, telegramModel.$startParam]);
 
   const headerText = startParam
     ? `Hey ${user?.first_name || 'friend'}!\nYou have received a gift!`
@@ -40,21 +41,21 @@ const Page = () => {
       <div className="flex flex-col items-center text-center">
         <Icon name="Welcome" size={128} className="mx-auto" />
         <pre>
-          <TitleText className="mt-4 mb-2">{headerText}</TitleText>
+          <TitleText className="mb-2 mt-4">{headerText}</TitleText>
         </pre>
         {startParam && (
-          <BodyText className="text-text-hint px-4 mb-2">
+          <BodyText className="mb-2 px-4 text-text-hint">
             To claim it, let’s create a wallet. It’s super quick.
           </BodyText>
         )}
         {welcomeData.map(({ title, text, icon }) => (
-          <div key={title} className="flex gap-4 px-4 mt-6">
+          <div key={title} className="mt-6 flex gap-4 px-4">
             <span>
               <Icon name={icon as IconNames} size={48} />
             </span>
             <div>
               <MediumTitle>{title}</MediumTitle>
-              <BodyText className="text-text-hint mt-1" align="left">
+              <BodyText className="mt-1 text-text-hint" align="left">
                 {text}
               </BodyText>
             </div>

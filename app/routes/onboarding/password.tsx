@@ -2,38 +2,42 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Avatar } from '@nextui-org/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
 import { MainButton } from '@/common/telegram/MainButton';
-import { backupMnemonic, createWallet, generateWalletMnemonic } from '@/common/wallet';
+import { backupMnemonic, generateWalletMnemonic } from '@/common/wallet';
 import { BodyText, CreatePasswordForm, TitleText } from '@/components';
+import { telegramModel, walletModel } from '@/models';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { user, startParam } = useTelegram();
-  const { setPublicKey } = useGlobalContext();
+
+  const webApp = useUnit(telegramModel.$webApp);
+  const user = useUnit(telegramModel.$user);
+  const startParam = useUnit(telegramModel.$startParam);
 
   const [password, setPassword] = useState('');
   const [valid, setValid] = useState(false);
 
-  const submit = () => {
-    const mnemonic = generateWalletMnemonic();
-    const wallet = createWallet(mnemonic as string);
+  if (!webApp || !password) return null;
 
-    setPublicKey(wallet?.publicKey);
-    backupMnemonic(mnemonic, password);
+  const onSubmit = () => {
+    const mnemonic = generateWalletMnemonic();
+
+    walletModel.input.walletCreated(mnemonic);
+    backupMnemonic(webApp, mnemonic, password);
     navigate($path('/onboarding/create-wallet'));
   };
 
   return (
     <>
-      <MainButton disabled={!valid} onClick={submit} />
+      <MainButton disabled={!valid} onClick={onSubmit} />
       <div className="flex flex-col items-center text-center">
         <Avatar
           src={user?.photo_url}
           size="lg"
-          className="w-[64px] h-[64px]"
+          className="h-[64px] w-[64px]"
           classNames={{
             base: 'bg-[--tg-theme-button-color]',
             name: 'font-manrope font-black text-base text-white',
@@ -43,7 +47,7 @@ const Page = () => {
         <TitleText className="my-4">
           {!startParam && `Hey ${user?.first_name || 'friend'}! `}Let’s set a password to secure your new wallet
         </TitleText>
-        <BodyText className="text-text-hint px-4">
+        <BodyText className="px-4 text-text-hint">
           You should set a strong password to secure your wallet. The password you choose will keep your assets safe and
           sound
         </BodyText>

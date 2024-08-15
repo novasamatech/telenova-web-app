@@ -1,7 +1,7 @@
 import { Identicon as PolkadotIdenticon } from '@polkadot/react-identicon';
 import { type IconTheme } from '@polkadot/react-identicon/types';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 type Props = {
   address?: string;
@@ -11,12 +11,11 @@ type Props = {
   className?: string;
 };
 
-const Identicon = ({ address, theme = 'polkadot', background = true, size = 32, className }: Props) => {
+export const Identicon = ({ address, theme = 'polkadot', background = true, size = 32, className }: Props) => {
   return (
     <div
-      className={cnTw('relative flex justify-center items-center', background && 'bg-white rounded-full', className)}
+      className={cnTw('relative flex items-center justify-center', background && 'rounded-full bg-white', className)}
       style={{ width: size, height: size }}
-      data-testid={`identicon-${address}`}
     >
       <PolkadotIdenticon
         theme={theme}
@@ -27,5 +26,3 @@ const Identicon = ({ address, theme = 'polkadot', background = true, size = 32, 
     </div>
   );
 };
-
-export default Identicon;

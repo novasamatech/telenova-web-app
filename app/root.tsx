@@ -1,19 +1,16 @@
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { type LinksFunction, type MetaFunction } from '@remix-run/node';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react';
-import { $path } from 'remix-routes';
+import { type LinksFunction, type LoaderFunction, type MetaFunction, json } from '@remix-run/node';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
-import { BalanceProvider } from '@/common/balances';
-import { ChainRegistry } from '@/common/chainRegistry';
 import { ExtrinsicProvider } from '@/common/extrinsicService';
-import { GlobalStateProvider, useGlobalContext } from '@/common/providers/contextProvider';
-import { TelegramProvider } from '@/common/providers/telegramProvider';
-import { getWallet } from '@/common/wallet';
+import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import { ErrorScreen } from '@/components';
+import * as models from '@/models';
 
 import stylesheet from './tailwind.css?url';
 
@@ -62,52 +59,47 @@ export const Layout = ({ children }: PropsWithChildren) => (
   </html>
 );
 
+export const loader = (() => {
+  return json({
+    file: process.env.PUBLIC_CHAINS_FILE,
+  });
+}) satisfies LoaderFunction;
+
 const DataContext = ({ children }: PropsWithChildren) => {
-  const [loading, setLoading] = useState(true);
+  const { file } = useLoaderData<typeof loader>();
+
+  const navigate = useNavigate();
+
+  const webAppError = useUnit(models.telegramModel.$error);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    cryptoWaitReady().then(() => setLoading(false));
+    models.navigationModel.input.navigatorChanged(navigate);
+  }, [navigate]);
+
+  useEffect(() => {
+    models.telegramModel.input.webAppStarted();
+    models.networkModel.input.networkStarted(file);
+
+    cryptoWaitReady().finally(() => setIsLoading(false));
   }, []);
 
-  if (loading) return null;
+  if (isLoading) return null;
+
+  if (webAppError) return <ErrorScreen error={webAppError.message} />;
 
   return (
     <GlobalStateProvider>
-      <TelegramProvider>
-        <ChainRegistry>
-          <ExtrinsicProvider>
-            <BalanceProvider>{children}</BalanceProvider>
-          </ExtrinsicProvider>
-        </ChainRegistry>
-      </TelegramProvider>
+      <ExtrinsicProvider>{children}</ExtrinsicProvider>
     </GlobalStateProvider>
   );
 };
 
 const App = () => {
-  const [error, setError] = useState<string | null>(null);
-  const { setPublicKey } = useGlobalContext();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    getWallet()
-      .then(wallet => {
-        if (!wallet) {
-          return navigate($path('/onboarding'), { replace: true });
-        }
-        setPublicKey(wallet?.publicKey);
-        navigate($path('/dashboard'), { replace: true });
-      })
-      .catch(e => setError(e?.toString?.()));
-  }, []);
-
-  if (error) {
-    return <ErrorScreen error={error} />;
-  }
-
   return (
-    <main className="font-manrope flex justify-center">
-      <div className="min-h-screen p-4 w-full overflow-x-auto break-words">
+    <main className="flex justify-center font-manrope">
+      <div className="min-h-screen w-full overflow-x-auto break-words p-4">
         <Outlet />
       </div>
     </main>

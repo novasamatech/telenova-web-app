@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 
-import { useTelegram } from '@/common/providers';
+import { useUnit } from 'effector-react';
+
+import { telegramModel } from '@/models';
 
 type Props = {
   text?: string;
@@ -15,7 +17,7 @@ type Props = {
 let hideButtonTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export const MainButton = ({ disabled, progress, hidden, color, textColor, text = 'Continue', onClick }: Props) => {
-  const { webApp } = useTelegram();
+  const webApp = useUnit(telegramModel.$webApp);
 
   const cbRef = useRef(onClick);
   cbRef.current = onClick;

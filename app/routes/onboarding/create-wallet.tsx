@@ -5,12 +5,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext, useTelegram } from '@/common/providers';
 import { completeOnboarding } from '@/common/telegram';
 import { MainButton } from '@/common/telegram/MainButton';
 import { BodyText, HeadlineText, LottiePlayer, TitleText } from '@/components';
+import { telegramModel, walletModel } from '@/models';
 
 export const loader = () => {
   return json({
@@ -22,13 +23,14 @@ const Page = () => {
   const { botApiUrl } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
-  const { publicKey } = useGlobalContext();
+
+  const webApp = useUnit(telegramModel.$webApp);
+  const wallet = useUnit(walletModel.$wallet);
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!publicKey) {
+    if (!wallet?.publicKey) {
       console.error("Can't create wallet when public key is missing");
 
       return;
@@ -41,7 +43,7 @@ const Page = () => {
     }
 
     // TODO: Handle errors here and display retry page maybe
-    completeOnboarding({ publicKey, webApp, baseUrl: botApiUrl }).catch(() => {
+    completeOnboarding({ webApp, publicKey: wallet.publicKey, baseUrl: botApiUrl }).catch(() => {
       console.warn('Onboarding failed');
     });
   }, []);
@@ -55,28 +57,28 @@ const Page = () => {
   return (
     <>
       <MainButton text="Get started" hidden={isLoading} onClick={() => navigate($path('/dashboard'))} />
-      <div className="flex flex-col justify-center items-center h-[95vh]">
+      <div className="flex h-[95vh] flex-col items-center justify-center">
         <LottiePlayer
-          src="/gifs/create-wallet.json"
+          sources={['/assets/lottie/Create-wallet.json']}
           keepLastFrame
           autoplay
-          className="player w-[256px] h-[256px] mb-4"
+          className="player mb-4 h-[256px] w-[256px]"
           onEvent={event => handleOnEvent(event)}
         />
         <div className="h-[150px]">
           {isLoading ? (
             <>
-              <div className="opacity-0 animate-text mt-5">
+              <div className="animate-text mt-5 opacity-0">
                 <HeadlineText className="text-text-hint" align="center">
                   Creating your wallet...
                 </HeadlineText>
               </div>
-              <div className="mt-3 opacity-0 delay-1">
+              <div className="delay-1 mt-3 opacity-0">
                 <HeadlineText className="text-text-hint" align="center">
                   Encrypting your wallets keys
                 </HeadlineText>
               </div>
-              <div className="opacity-0 delay-2">
+              <div className="delay-2 opacity-0">
                 <HeadlineText className="text-text-hint" align="center">
                   Backing up keys in your Telegram cloud
                 </HeadlineText>
@@ -85,7 +87,7 @@ const Page = () => {
           ) : (
             <>
               <TitleText>Your wallet has been created!</TitleText>
-              <BodyText className="text-text-hint m-3">
+              <BodyText className="m-3 text-text-hint">
                 Your Telenova wallet is now ready to use! You can now begin exploring Polkadot ecosystem assets with
                 ease!
               </BodyText>

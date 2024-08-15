@@ -1,7 +1,5 @@
 import { type WebApp } from '@twa-dev/types';
 
-import { type HexString } from '../types';
-
 import { getMessageFactory } from './message-factory';
 import { type ITelegramBotApi } from './types';
 

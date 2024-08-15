@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { Divider, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers';
 import { openLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/components';
+import { telegramModel } from '@/models';
 
 export const loader = () => {
   return json({
@@ -21,10 +22,13 @@ const Page = () => {
   const { version } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
+
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [isPopoverCurrencyOpen, setIsPopoverCurrencyOpen] = useState(false);
   const [isPopoverLanguageOpen, setIsPopoverLanguageOpen] = useState(false);
+
+  if (!webApp) return null;
 
   const handleOpenChange = (stateFunc: (state: boolean) => void) => {
     stateFunc(true);
@@ -37,7 +41,7 @@ const Page = () => {
   return (
     <>
       <BackButton onClick={() => navigate($path('/dashboard'))} />
-      <div className="flex flex-col items-center gap-4 min-h-[95vh]">
+      <div className="flex min-h-[95vh] flex-col items-center gap-4">
         <LinkCard
           text="Manage Backup"
           iconName="Backup"
@@ -57,7 +61,7 @@ const Page = () => {
             onOpenChange={() => handleOpenChange(setIsPopoverLanguageOpen)}
           >
             <PopoverTrigger>
-              <button className="w-full h-full hover:bg-unset active:bg-unset outline-none">
+              <button className="hover:bg-unset active:bg-unset h-full w-full outline-none">
                 <LinkCard
                   text="Wallet Language"
                   iconName="Language"
@@ -72,7 +76,7 @@ const Page = () => {
               <MediumTitle className="text-white">Coming soon</MediumTitle>
             </PopoverContent>
           </Popover>
-          <Divider className="h-[0.5px] ml-14 w-auto" />
+          <Divider className="ml-14 h-[0.5px] w-auto" />
           <Popover
             offset={-25}
             placement="top"
@@ -84,7 +88,7 @@ const Page = () => {
             onOpenChange={() => handleOpenChange(setIsPopoverCurrencyOpen)}
           >
             <PopoverTrigger>
-              <button className="w-full hover:bg-unset active:bg-unset outline-none">
+              <button className="hover:bg-unset active:bg-unset w-full outline-none">
                 <LinkCard
                   text="Default Currency"
                   iconName="Currency"
@@ -102,14 +106,14 @@ const Page = () => {
         </Plate>
 
         <button
-          className="w-full min-h-[150px] bg-[url('/images/nova.png')] bg-cover rounded-2xl relative"
-          onClick={() => openLink('https://novawallet.io', webApp!)}
+          className="relative min-h-[150px] w-full rounded-2xl bg-[url('/assets/misc/nova-wallet.webp')] bg-cover"
+          onClick={() => openLink('https://novawallet.io', webApp)}
         >
-          <div className="absolute right-[5%] top-[10%] break-words w-[60%]">
-            <TextBase as="p" align="right" className="text-body-bold text-white mb-4">
+          <div className="absolute right-[5%] top-[10%] w-[60%] break-words">
+            <TextBase as="p" align="right" className="mb-4 text-body-bold text-white">
               Upgrade to Nova Wallet!
             </TextBase>
-            <HelpText className="text-white font-semibold">
+            <HelpText className="font-semibold text-white">
               Earn up to <b>20% APY</b> using the Polkadot’s best wallet
             </HelpText>
           </div>
@@ -121,22 +125,22 @@ const Page = () => {
             textClassName="text-text-link"
             wrapperClassName="rounded-b-none"
             showArrow
-            onClick={() => openLink('https://novasama.io/telenova/privacy', webApp!)}
+            onClick={() => openLink('https://novasama.io/telenova/privacy', webApp)}
           />
-          <Divider className="h-[0.5px] ml-4 w-auto border-solid" />
+          <Divider className="ml-4 h-[0.5px] w-auto border-solid" />
           <LinkCard
             text="Terms & Conditions"
             className="grid-cols-[1fr,auto]"
             textClassName="text-text-link"
             wrapperClassName="rounded-t-none"
             showArrow
-            onClick={() => openLink('https://novasama.io/telenova/terms', webApp!)}
+            onClick={() => openLink('https://novasama.io/telenova/terms', webApp)}
           />
         </Plate>
         <div className="mt-auto flex flex-col items-center">
-          <HelpText className="text-icon-neutral text-[10px] mb-2">Telenova v{version}</HelpText>
-          <HelpText className="text-icon-neutral text-[10px] mb-4">Developed with love by</HelpText>
-          <Icon name="Novasama" className="w-[66px] h-[50px]" />
+          <HelpText className="mb-2 text-[10px] text-icon-neutral">Telenova v{version}</HelpText>
+          <HelpText className="mb-4 text-[10px] text-icon-neutral">Developed with love by</HelpText>
+          <Icon name="Novasama" className="h-[50px] w-[66px]" />
         </div>
       </div>
     </>

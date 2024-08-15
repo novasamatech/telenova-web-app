@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { useTelegram } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { validateAddress } from '@/common/utils';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
+import { telegramModel } from '@/models';
+import { validateAddress } from '@/shared/helpers';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/address', params);
@@ -19,7 +20,8 @@ const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { webApp } = useTelegram();
+
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [address, setAddress] = useState('');
   const [isAddressValid, setIsAddressValid] = useState(true);
@@ -30,7 +32,9 @@ const Page = () => {
   };
 
   const handleQrCode = () => {
-    webApp?.showScanQrPopup({ text: 'Scan QR code' }, value => {
+    if (!webApp) return;
+
+    webApp.showScanQrPopup({ text: 'Scan QR code' }, value => {
       setAddress(value);
       setIsAddressValid(validateAddress(value));
       webApp.closeScanQrPopup();
@@ -59,16 +63,16 @@ const Page = () => {
         />
         {address &&
           (isAddressValid ? (
-            <div className="flex gap-2 items-center mt-4 break-all">
+            <div className="mt-4 flex items-center gap-2 break-all">
               <Identicon address={address} />
               <BodyText> {address}</BodyText>
             </div>
           ) : (
-            <HelpText className="text-text-hint mt-1">Invalid address, enter a correct one</HelpText>
+            <HelpText className="mt-1 text-text-hint">Invalid address, enter a correct one</HelpText>
           ))}
         {!address && (
-          <Button variant="light" className="text-text-link mt-4 gap-0 self-start" onClick={handleQrCode}>
-            <Icon name="ScanQr" className="w-5 h-5 mr-2" />
+          <Button variant="light" className="mt-4 gap-0 self-start text-text-link" onClick={handleQrCode}>
+            <Icon name="ScanQr" className="mr-2 h-5 w-5" />
             Scan QR code
           </Button>
         )}

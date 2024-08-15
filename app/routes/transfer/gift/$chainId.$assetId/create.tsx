@@ -1,21 +1,22 @@
 import type { PlayerEvent } from '@lottiefiles/react-lottie-player';
-import type { WebApp } from '@twa-dev/types';
 
 import { useEffect, useState } from 'react';
 
 import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 import { $params } from 'remix-routes';
 
-import { useExtrinsic } from '@/common/extrinsicService';
-import { useGlobalContext, useTelegram } from '@/common/providers';
-import { createTgLink } from '@/common/telegram';
-import { type TgLink } from '@/common/telegram/types.ts';
-import { backupGifts, pickAsset } from '@/common/utils';
-import { createGiftWallet } from '@/common/wallet';
-import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
+import { BN } from '@polkadot/util';
 
-// Query params for /transfer/gift/:chainId/:assetId/create?amount=_&fee=_&all=_
+import { useExtrinsic } from '@/common/extrinsicService';
+import { createTgLink } from '@/common/telegram';
+import { type TgLink } from '@/common/telegram/types';
+import { createGiftWallet, getKeyringPair } from '@/common/wallet';
+import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
+import { networkModel, telegramModel } from '@/models';
+import { backupGifts, toFormattedBalance } from '@/shared/helpers';
+
 export type SearchParams = {
   amount: string;
   fee: string;
@@ -36,7 +37,7 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
   const data = {
     ...$params('/transfer/gift/:chainId/:assetId/create', params),
     amount: url.searchParams.get('amount') || '',
-    fee: Number(url.searchParams.get('fee') || 0),
+    fee: url.searchParams.get('fee') || '0',
     all: url.searchParams.get('all') === 'true',
   };
 
@@ -46,42 +47,56 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 const Page = () => {
   const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const { webApp } = useTelegram();
   const { sendGift } = useExtrinsic();
-  const { assets } = useGlobalContext();
+
+  const chains = useUnit(networkModel.$chains);
+  const assets = useUnit(networkModel.$assets);
+  const webApp = useUnit(telegramModel.$webApp);
 
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
 
-  const selectedAsset = pickAsset(chainId, assetId, assets);
+  const typedChainId = chainId as ChainId;
+  const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!selectedAsset) return;
+    if (!webApp || !selectedAsset || !chains[typedChainId]) return;
 
-    const giftWallet = createGiftWallet(selectedAsset.addressPrefix);
-    const assetParams = { ...selectedAsset, transferAll: all, amount, fee };
+    const keyringPair = getKeyringPair(webApp);
+    if (!keyringPair) return;
 
-    sendGift(assetParams, giftWallet.address)
+    const selectedChain = chains[typedChainId];
+    const giftWallet = createGiftWallet(selectedChain.addressPrefix);
+
+    sendGift(keyringPair, giftWallet.address, {
+      chainId: typedChainId,
+      asset: selectedAsset,
+      amount: new BN(amount),
+      fee: new BN(fee),
+      transferAll: all,
+    })
       .then(() => {
-        backupGifts({
-          chainId: selectedAsset.chainId,
-          assetId: selectedAsset.asset.assetId,
+        backupGifts(webApp, {
+          chainId: typedChainId,
+          assetId: selectedAsset.assetId,
           address: giftWallet.address,
           secret: giftWallet.secret,
           balance: amount,
+          chainIndex: selectedChain.chainIndex,
         });
         const tgLink = createTgLink({
           botUrl,
           appName,
-          amount,
+          amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
           secret: giftWallet.secret,
-          symbol: selectedAsset.asset.symbol,
+          chainIndex: selectedChain.chainIndex,
+          symbol: selectedAsset.symbol,
         });
 
         setLink(tgLink);
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
-  }, [selectedAsset]);
+  }, [webApp, selectedAsset, chains]);
 
   const handleLottieEvent = (event: PlayerEvent) => {
     if (event === 'complete') {
@@ -89,41 +104,39 @@ const Page = () => {
     }
   };
 
+  if (!selectedAsset) return null;
+
   return (
-    <>
-      <div className="grid items-end justify-center h-[93vh]">
-        <LottiePlayer
-          className="mb-3"
-          src={`/gifs/Gift_Packing_${selectedAsset?.asset?.symbol}.json`}
-          autoplay
-          keepLastFrame
-          onEvent={handleLottieEvent}
-        />
-        {loading || !link ? (
-          <>
-            <div className="h-[100px] mb-auto">
-              <div className="opacity-0 animate-text mt-3">
-                <HeadlineText className="text-text-hint" align="center">
-                  Adding tokens...
-                </HeadlineText>
-              </div>
-              <div className="mt-5 opacity-0 delay-1">
-                <HeadlineText className="text-text-hint delay-1" align="center">
-                  Sprinkling confetti
-                </HeadlineText>
-              </div>
-              <div className="opacity-0 delay-2 m-[-10px]">
-                <HeadlineText className="text-text-hint delay-2" align="center">
-                  Wrapping up the gift box
-                </HeadlineText>
-              </div>
-            </div>
-          </>
-        ) : (
-          <GiftDetails link={link} webApp={webApp as WebApp} />
-        )}
-      </div>
-    </>
+    <div className="grid h-[93vh] items-end justify-center">
+      <LottiePlayer
+        className="mb-3"
+        sources={[`/assets/lottie/${selectedAsset.symbol}_packing.json`, '/assets/lottie/Default_packing.json']}
+        autoplay
+        keepLastFrame
+        onEvent={handleLottieEvent}
+      />
+      {loading || !link ? (
+        <div className="mb-auto h-[100px]">
+          <div className="animate-text mt-3 opacity-0">
+            <HeadlineText className="text-text-hint" align="center">
+              Adding tokens...
+            </HeadlineText>
+          </div>
+          <div className="delay-1 mt-5 opacity-0">
+            <HeadlineText className="delay-1 text-text-hint" align="center">
+              Sprinkling confetti
+            </HeadlineText>
+          </div>
+          <div className="delay-2 m-[-10px] opacity-0">
+            <HeadlineText className="delay-2 text-text-hint" align="center">
+              Wrapping up the gift box
+            </HeadlineText>
+          </div>
+        </div>
+      ) : (
+        <GiftDetails link={link} webApp={webApp!} />
+      )}
+    </div>
   );
 };
 

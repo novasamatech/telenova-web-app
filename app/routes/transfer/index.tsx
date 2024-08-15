@@ -11,7 +11,7 @@ const Page = () => {
   return (
     <>
       <BackButton onClick={() => navigate($path('/dashboard'))} />
-      <TitleText className="mt-6 mb-10">How to send tokens</TitleText>
+      <TitleText className="mb-10 mt-6">How to send tokens</TitleText>
       <LinkCard
         href={$path('/transfer/gift/token-select')}
         text="Send as Gift in Telegram"

@@ -1,27 +1,31 @@
-import { cnTw } from '@/common/utils/twMerge';
-import { Shimmering } from '@/components';
+import { Shimmering } from '../Shimmering/Shimmering';
+
+import { cnTw } from '@/shared/helpers';
 
 type Props = {
   amount?: number;
-  decimalSize?: number;
   symbol?: string;
+  decimalSize?: 'sm' | 'lg';
 };
 
-const Price = ({ amount, decimalSize, symbol = '$' }: Props) => {
+const SIZE: Record<NonNullable<Props['decimalSize']>, string> = {
+  sm: 'text-inherit',
+  lg: 'text-3xl',
+};
+
+export const Price = ({ amount, symbol = '$', decimalSize = 'sm' }: Props) => {
   if (amount === undefined) {
     return <Shimmering width={50} height={30} />;
   }
+
   const value = amount === 0 ? '0.00' : parseFloat(amount.toFixed(3));
   const [integerPart, decimalPart] = value.toString().split('.');
-  // decimalSize don't apply dynamically
-  const style = decimalSize && `text-3xl`;
 
   return (
     <>
-      <span className="text-text-hint inline-block">{symbol}</span>
+      <span className="inline-block text-text-hint">{symbol}</span>
       <span className="inline-block"> {integerPart}</span>
-      {decimalPart && <span className={cnTw('text-text-hint inline-block', style)}>.{decimalPart}</span>}
+      {decimalPart && <span className={cnTw('inline-block text-text-hint', SIZE[decimalSize])}>.{decimalPart}</span>}
     </>
   );
 };
-export default Price;

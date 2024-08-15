@@ -1,15 +1,15 @@
 import { createElement } from 'react';
 
-import { cnTw } from '@/common/utils/twMerge';
+import { cnTw } from '@/shared/helpers/twMerge';
 
 import { type TypographyProps } from './types';
 
-const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyProps) => {
+export const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyProps) => {
   return createElement(
     as,
     {
       className: cnTw(
-        `text-text-primary font-manrope antialiased`,
+        `font-manrope text-text-primary antialiased`,
         {
           'text-left': align === 'left',
           'text-right': align === 'right',
@@ -21,7 +21,3 @@ const TextBase = ({ as = 'p', align = 'left', className, children }: TypographyP
     children,
   );
 };
-
-export type TextBaseType = typeof TextBase;
-
-export default TextBase;

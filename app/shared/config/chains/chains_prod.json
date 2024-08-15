@@ -1,0 +1,1310 @@
+[
+  {
+    "name": "Polkadot",
+    "chainIndex": 0,
+    "addressPrefix": 0,
+    "chainId": "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Polkadot.svg",
+    "assets": [
+      {
+        "name": "Polkadot",
+        "assetId": 0,
+        "chainId": "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3",
+        "symbol": "DOT",
+        "precision": 10,
+        "type": "native",
+        "priceId": "polkadot",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Polkadot_(DOT).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc-polkadot.novasamatech.org",
+        "name": "Novasama node"
+      },
+      {
+        "url": "wss://apps-rpc.polkadot.io",
+        "name": "Public node"
+      },
+      {
+        "url": "wss://polkadot-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://dot-rpc.stakeworld.io",
+        "name": "Stakeworld node"
+      },
+      {
+        "url": "wss://polkadot.public.curie.radiumblock.co/ws",
+        "name": "Radium node"
+      },
+      {
+        "url": "wss://1rpc.io/dot",
+        "name": "Automata 1RPC node"
+      },
+      {
+        "url": "wss://rpc-polkadot.luckyfriday.io",
+        "name": "LuckyFriday node"
+      },
+      {
+        "url": "wss://rpc.ibp.network/polkadot",
+        "name": "IBP network node"
+      },
+      {
+        "url": "wss://rpc.dotters.network/polkadot",
+        "name": "Dotters Net node"
+      }
+    ]
+  },
+  {
+    "name": "Kusama",
+    "chainIndex": 1,
+    "addressPrefix": 2,
+    "chainId": "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Kusama.svg",
+    "assets": [
+      {
+        "name": "Kusama",
+        "assetId": 0,
+        "chainId": "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe",
+        "symbol": "KSM",
+        "precision": 12,
+        "type": "native",
+        "priceId": "kusama",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Kusama_(KSM).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc-kusama.novasamatech.org",
+        "name": "Novasama node"
+      },
+      {
+        "url": "wss://apps-kusama-rpc.polkadot.io",
+        "name": "Public node"
+      },
+      {
+        "url": "wss://kusama-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://rpc-kusama.luckyfriday.io",
+        "name": "LuckyFriday node"
+      },
+      {
+        "url": "wss://1rpc.io/ksm",
+        "name": "Automata 1RPC node"
+      },
+      {
+        "url": "wss://rpc.ibp.network/kusama",
+        "name": "IBP network node"
+      },
+      {
+        "url": "wss://rpc.dotters.network/kusama",
+        "name": "Dotters Net node"
+      },
+      {
+        "url": "wss://kusama.public.curie.radiumblock.co/ws",
+        "name": "Radium node"
+      },
+      {
+        "url": "wss://kusama.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Westend",
+    "chainIndex": 2,
+    "addressPrefix": 42,
+    "chainId": "0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Westend_Testnet.svg",
+    "assets": [
+      {
+        "name": "Westend",
+        "assetId": 0,
+        "chainId": "0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e",
+        "symbol": "WND",
+        "precision": 12,
+        "type": "native",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Westend_(WND).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://westend-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://rpc.ibp.network/westend",
+        "name": "IBP network node"
+      },
+      {
+        "url": "wss://rpc.dotters.network/westend",
+        "name": "Dotters Net node"
+      },
+      {
+        "url": "wss://westend.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://westend.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Karura",
+    "chainIndex": 3,
+    "addressPrefix": 8,
+    "chainId": "0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Karura.svg",
+    "assets": [
+      {
+        "name": "Karura",
+        "assetId": 0,
+        "chainId": "0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b",
+        "symbol": "KAR",
+        "precision": 12,
+        "type": "native",
+        "priceId": "karura",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Karura_(KAR).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://karura-rpc-0.aca-api.network",
+        "name": "Acala Foundation 0 node"
+      },
+      {
+        "url": "wss://karura-rpc-1.aca-api.network",
+        "name": "Acala Foundation 1 node"
+      },
+      {
+        "url": "wss://karura-rpc-2.aca-api.network/ws",
+        "name": "Acala Foundation 2 node"
+      },
+      {
+        "url": "wss://karura-rpc-3.aca-api.network/ws",
+        "name": "Acala Foundation 3 node"
+      },
+      {
+        "url": "wss://karura.api.onfinality.io/public-ws",
+        "name": "Onfinality node"
+      }
+    ]
+  },
+  {
+    "name": "Moonriver",
+    "chainIndex": 4,
+    "addressPrefix": 1285,
+    "chainId": "0x401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/moonriver.svg",
+    "assets": [
+      {
+        "name": "Moonriver",
+        "assetId": 0,
+        "chainId": "0x401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b",
+        "symbol": "MOVR",
+        "precision": 18,
+        "type": "native",
+        "priceId": "moonriver",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Moonriver_(MOVR).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://wss.api.moonriver.moonbeam.network",
+        "name": "Moonbeam Foundation node"
+      },
+      {
+        "url": "wss://moonriver.public.blastapi.io",
+        "name": "Blast node"
+      },
+      {
+        "url": "wss://moonriver.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://moonriver-rpc.dwellir.com",
+        "name": "Dwellir node"
+      }
+    ]
+  },
+  {
+    "name": "Shiden",
+    "chainIndex": 5,
+    "addressPrefix": 5,
+    "chainId": "0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Shiden.svg",
+    "assets": [
+      {
+        "name": "Shiden",
+        "assetId": 0,
+        "chainId": "0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108",
+        "symbol": "SDN",
+        "precision": 18,
+        "type": "native",
+        "priceId": "shiden",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Shiden_(SDN).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.shiden.astar.network",
+        "name": "StakeTechnologies node"
+      },
+      {
+        "url": "wss://shiden-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://shiden.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://shiden.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Bifrost Kusama",
+    "chainIndex": 6,
+    "addressPrefix": 6,
+    "chainId": "0x9f28c6a68e0fc9646eff64935684f6eeeece527e37bbe1f213d22caa1d9d6bed",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Bifrost_Kusama.svg",
+    "assets": [
+      {
+        "name": "Bifrost",
+        "assetId": 0,
+        "chainId": "0x9f28c6a68e0fc9646eff64935684f6eeeece527e37bbe1f213d22caa1d9d6bed",
+        "symbol": "BNC",
+        "precision": 12,
+        "type": "native",
+        "priceId": "bifrost-native-coin",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Bifrost_(BNC).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://bifrost-rpc.liebi.com/ws",
+        "name": "Liebi node"
+      },
+      {
+        "url": "wss://bifrost-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://bifrost-parachain.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Kintsugi",
+    "chainIndex": 7,
+    "addressPrefix": 2092,
+    "chainId": "0x9af9a64e6e4da8e3073901c3ff0cc4c3aad9563786d89daf6ad820b6e14a0b8b",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Kintsugi.svg",
+    "assets": [
+      {
+        "name": "Kintsugi",
+        "assetId": 0,
+        "chainId": "0x9af9a64e6e4da8e3073901c3ff0cc4c3aad9563786d89daf6ad820b6e14a0b8b",
+        "symbol": "KINT",
+        "precision": 12,
+        "type": "orml",
+        "priceId": "kintsugi",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Kintsugi_(KINT).svg",
+        "typeExtras": {
+          "currencyIdScale": "0x000c",
+          "currencyIdType": "InterbtcPrimitivesCurrencyId",
+          "existentialDeposit": "0",
+          "transfersEnabled": true
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://api-kusama.interlay.io/parachain",
+        "name": "Kintsugi Labs node"
+      }
+    ]
+  },
+  {
+    "name": "Parallel Heiko",
+    "chainIndex": 8,
+    "addressPrefix": 110,
+    "chainId": "0x64a1c658a48b2e70a7fb1ad4c39eea35022568c20fc44a6e2e3d0a57aee6053b",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/ParallelHeiko.svg",
+    "assets": [
+      {
+        "name": "Parallel Heiko",
+        "assetId": 0,
+        "chainId": "0x64a1c658a48b2e70a7fb1ad4c39eea35022568c20fc44a6e2e3d0a57aee6053b",
+        "symbol": "HKO",
+        "precision": 12,
+        "type": "native",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/HKO.svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://heiko-rpc.parallel.fi",
+        "name": "Parallel node"
+      }
+    ]
+  },
+  {
+    "name": "Basilisk",
+    "chainIndex": 9,
+    "addressPrefix": 10041,
+    "chainId": "0xa85cfb9b9fd4d622a5b28289a02347af987d8f73fa3108450e2b4a11c1ce5755",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Basilisk.svg",
+    "assets": [
+      {
+        "name": "Basilisk",
+        "assetId": 0,
+        "chainId": "0xa85cfb9b9fd4d622a5b28289a02347af987d8f73fa3108450e2b4a11c1ce5755",
+        "symbol": "BSX",
+        "precision": 12,
+        "type": "native",
+        "priceId": "basilisk",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Basilisk_(BSX).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.basilisk.cloud",
+        "name": "Basilisk node"
+      },
+      {
+        "url": "wss://basilisk-rpc.dwellir.com",
+        "name": "Dwellir node"
+      }
+    ]
+  },
+  {
+    "name": "Altair",
+    "chainIndex": 10,
+    "addressPrefix": 136,
+    "chainId": "0xaa3876c1dc8a1afcc2e9a685a49ff7704cfd36ad8c90bf2702b9d1b00cc40011",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Altair.svg",
+    "assets": [
+      {
+        "name": "Altair",
+        "assetId": 0,
+        "chainId": "0xaa3876c1dc8a1afcc2e9a685a49ff7704cfd36ad8c90bf2702b9d1b00cc40011",
+        "symbol": "AIR",
+        "precision": 18,
+        "type": "native",
+        "priceId": "altair",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Altair_(AIR).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://altair.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Khala",
+    "chainIndex": 11,
+    "addressPrefix": 30,
+    "chainId": "0xd43540ba6d3eb4897c28a77d48cb5b729fea37603cbbfc7a86a73b72adb3be8d",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Khala.svg",
+    "assets": [
+      {
+        "name": "Phala",
+        "assetId": 0,
+        "chainId": "0xd43540ba6d3eb4897c28a77d48cb5b729fea37603cbbfc7a86a73b72adb3be8d",
+        "symbol": "PHA",
+        "precision": 12,
+        "type": "native",
+        "priceId": "pha",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Phala_(PHA).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://khala-api.phala.network/ws",
+        "name": "Phala node"
+      },
+      {
+        "url": "wss://khala-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://khala.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://khala.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "KILT",
+    "chainIndex": 12,
+    "addressPrefix": 38,
+    "chainId": "0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/KILT_Spiritnet.svg",
+    "assets": [
+      {
+        "name": "KILT Spiritnet",
+        "assetId": 0,
+        "chainId": "0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21",
+        "symbol": "KILT",
+        "precision": 15,
+        "type": "native",
+        "priceId": "kilt-protocol",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Kilt_(KILT).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://kilt-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://spiritnet.kilt.io/",
+        "name": "KILT Protocol node"
+      },
+      {
+        "url": "wss://spiritnet.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "QUARTZ",
+    "chainIndex": 13,
+    "addressPrefix": 255,
+    "chainId": "0xcd4d732201ebe5d6b014edda071c4203e16867305332301dc8d092044b28e554",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Quartz.svg",
+    "assets": [
+      {
+        "name": "QUARTZ",
+        "assetId": 0,
+        "chainId": "0xcd4d732201ebe5d6b014edda071c4203e16867305332301dc8d092044b28e554",
+        "symbol": "QTZ",
+        "precision": 18,
+        "type": "native",
+        "priceId": "quartz",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Quartz_(QTZ).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://quartz.unique.network",
+        "name": "Unique node"
+      },
+      {
+        "url": "wss://eu-ws-quartz.unique.network",
+        "name": "Unique Europe node"
+      },
+      {
+        "url": "wss://us-ws-quartz.unique.network",
+        "name": "Unique US node"
+      },
+      {
+        "url": "wss://asia-ws-quartz.unique.network",
+        "name": "Unique Asia node"
+      }
+    ]
+  },
+  {
+    "name": "Acala",
+    "chainIndex": 14,
+    "addressPrefix": 10,
+    "chainId": "0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Acala.svg",
+    "assets": [
+      {
+        "name": "Acala",
+        "assetId": 0,
+        "chainId": "0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c",
+        "symbol": "ACA",
+        "precision": 12,
+        "type": "native",
+        "priceId": "acala",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Acala_(ACA).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc-acala.luckyfriday.io",
+        "name": "LuckyFriday node"
+      },
+      {
+        "url": "wss://acala-polkadot.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      },
+      {
+        "url": "wss://acala-rpc-0.aca-api.network",
+        "name": "Acala Foundation 0 node"
+      },
+      {
+        "url": "wss://acala-rpc-1.aca-api.network",
+        "name": "Acala Foundation 1 node"
+      },
+      {
+        "url": "wss://acala-rpc-2.aca-api.network/ws",
+        "name": "Acala Foundation 2 node"
+      },
+      {
+        "url": "wss://acala-rpc-3.aca-api.network/ws",
+        "name": "Acala Foundation 3 node"
+      },
+      {
+        "url": "wss://acala.polkawallet.io",
+        "name": "Polkawallet node"
+      },
+      {
+        "url": "wss://acala-rpc.dwellir.com",
+        "name": "Dwellir node"
+      }
+    ]
+  },
+  {
+    "name": "Moonbeam",
+    "chainIndex": 15,
+    "addressPrefix": 1284,
+    "chainId": "0xfe58ea77779b7abda7da4ec526d14db9b1e9cd40a217c34892af80a9b332b76d",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/moonbeam.svg",
+    "assets": [
+      {
+        "name": "Moonbeam",
+        "assetId": 0,
+        "chainId": "0xfe58ea77779b7abda7da4ec526d14db9b1e9cd40a217c34892af80a9b332b76d",
+        "symbol": "GLMR",
+        "precision": 18,
+        "type": "native",
+        "priceId": "moonbeam",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Moonbeam_(GLMR).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://wss.api.moonbeam.network",
+        "name": "Moonbeam Foundation node"
+      },
+      {
+        "url": "wss://moonbeam.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://moonbeam.public.blastapi.io",
+        "name": "Blast node"
+      }
+    ]
+  },
+  {
+    "name": "Astar",
+    "chainIndex": 16,
+    "addressPrefix": 5,
+    "chainId": "0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Astar.svg",
+    "assets": [
+      {
+        "name": "Astar",
+        "assetId": 0,
+        "chainId": "0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6",
+        "symbol": "ASTR",
+        "precision": 18,
+        "type": "native",
+        "priceId": "astar",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Astar_(ASTR).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.astar.network",
+        "name": "Astar node"
+      },
+      {
+        "url": "wss://astar.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://astar.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Parallel",
+    "chainIndex": 17,
+    "addressPrefix": 172,
+    "chainId": "0xe61a41c53f5dcd0beb09df93b34402aada44cb05117b71059cce40a2723a4e97",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Parallel.svg",
+    "assets": [
+      {
+        "name": "Parallel",
+        "assetId": 0,
+        "chainId": "0xe61a41c53f5dcd0beb09df93b34402aada44cb05117b71059cce40a2723a4e97",
+        "symbol": "PARA",
+        "precision": 12,
+        "type": "native",
+        "priceId": "parallel-finance",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/PARA.svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://parallel-rpc.dwellir.com",
+        "name": "Dwellir node"
+      }
+    ]
+  },
+  {
+    "name": "Polkadot Asset Hub",
+    "chainIndex": 18,
+    "addressPrefix": 0,
+    "chainId": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Polkadot_Asset_Hub.svg",
+    "assets": [
+      {
+        "name": "USD Tether",
+        "assetId": 1,
+        "chainId": "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f",
+        "symbol": "USDT",
+        "precision": 6,
+        "type": "statemine",
+        "priceId": "tether",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/USDT.svg",
+        "typeExtras": {
+          "assetId": "1984"
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://sys.ibp.network/statemint",
+        "name": "IBP network node"
+      },
+      {
+        "url": "wss://sys.dotters.network/statemint",
+        "name": "Dotters Net node"
+      },
+      {
+        "url": "wss://statemint-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://statemint.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Robonomics",
+    "chainIndex": 19,
+    "addressPrefix": 32,
+    "chainId": "0x631ccc82a078481584041656af292834e1ae6daab61d2875b4dd0c14bb9b17bc",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Robonomics.svg",
+    "assets": [
+      {
+        "name": "Robonomics",
+        "assetId": 0,
+        "chainId": "0x631ccc82a078481584041656af292834e1ae6daab61d2875b4dd0c14bb9b17bc",
+        "symbol": "XRT",
+        "precision": 9,
+        "type": "native",
+        "priceId": "robonomics-network",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Robonomics_(XRT).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://kusama.rpc.robonomics.network/",
+        "name": "Airalab node"
+      },
+      {
+        "url": "wss://robonomics.0xsamsara.com",
+        "name": "Samsara node"
+      }
+    ]
+  },
+  {
+    "name": "Zeitgeist",
+    "chainIndex": 20,
+    "addressPrefix": 73,
+    "chainId": "0x1bf2a2ecb4a868de66ea8610f2ce7c8c43706561b6476031315f6640fe38e060",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Zeitgeist.svg",
+    "assets": [
+      {
+        "name": "Zeitgeist",
+        "assetId": 0,
+        "chainId": "0x1bf2a2ecb4a868de66ea8610f2ce7c8c43706561b6476031315f6640fe38e060",
+        "symbol": "ZTG",
+        "precision": 10,
+        "type": "native",
+        "priceId": "zeitgeist",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Zeitgeist_(ZTG).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://main.rpc.zeitgeist.pm/ws",
+        "name": "Zeitgeist node"
+      },
+      {
+        "url": "wss://zeitgeist.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Litmus",
+    "chainIndex": 21,
+    "addressPrefix": 131,
+    "chainId": "0xda5831fbc8570e3c6336d0d72b8c08f8738beefec812df21ef2afc2982ede09c",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Litmus.svg",
+    "assets": [
+      {
+        "name": "Litmus",
+        "assetId": 0,
+        "chainId": "0xda5831fbc8570e3c6336d0d72b8c08f8738beefec812df21ef2afc2982ede09c",
+        "symbol": "LIT",
+        "precision": 12,
+        "type": "native",
+        "priceId": "litentry",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Litentry_(LIT).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.litmus-parachain.litentry.io",
+        "name": "Litentry node"
+      }
+    ]
+  },
+  {
+    "name": "Subsocial",
+    "chainIndex": 22,
+    "addressPrefix": 28,
+    "chainId": "0x4a12be580bb959937a1c7a61d5cf24428ed67fa571974b4007645d1886e7c89f",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Subsocial_Parachain.svg",
+    "assets": [
+      {
+        "name": "Subsocial",
+        "assetId": 0,
+        "chainId": "0x4a12be580bb959937a1c7a61d5cf24428ed67fa571974b4007645d1886e7c89f",
+        "symbol": "SUB",
+        "precision": 10,
+        "type": "native",
+        "priceId": "subsocial",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Subsocial_(SUB).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://para.f3joule.space",
+        "name": "Subsocial node"
+      },
+      {
+        "url": "wss://para.subsocial.network",
+        "name": "Dappforce node"
+      }
+    ]
+  },
+  {
+    "name": "Integritee Parachain",
+    "chainIndex": 23,
+    "addressPrefix": 13,
+    "chainId": "0xcdedc8eadbfa209d3f207bba541e57c3c58a667b05a2e1d1e86353c9000758da",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Integritee.svg",
+    "assets": [
+      {
+        "name": "Integritee Parachain",
+        "assetId": 0,
+        "chainId": "0xcdedc8eadbfa209d3f207bba541e57c3c58a667b05a2e1d1e86353c9000758da",
+        "symbol": "TEER",
+        "precision": 12,
+        "type": "native",
+        "priceId": "integritee",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Integritee_Parachain_(TEER).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://kusama.api.integritee.network",
+        "name": "Integritee node"
+      },
+      {
+        "url": "wss://integritee-kusama.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Centrifuge Parachain",
+    "chainIndex": 24,
+    "addressPrefix": 36,
+    "chainId": "0xb3db41421702df9a7fcac62b53ffeac85f7853cc4e689e0b93aeb3db18c09d82",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Centrifuge.svg",
+    "assets": [
+      {
+        "name": "Centrifuge Parachain",
+        "assetId": 0,
+        "chainId": "0xb3db41421702df9a7fcac62b53ffeac85f7853cc4e689e0b93aeb3db18c09d82",
+        "symbol": "CFG",
+        "precision": 18,
+        "type": "native",
+        "priceId": "centrifuge",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Centrifuge_(CFG).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://centrifuge-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://centrifuge-parachain.api.onfinality.io/public-ws",
+        "name": "Onfinality node"
+      }
+    ]
+  },
+  {
+    "name": "Hydration",
+    "chainIndex": 25,
+    "addressPrefix": 63,
+    "chainId": "0xafdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Hydration.svg",
+    "assets": [
+      {
+        "name": "HydraDX",
+        "assetId": 0,
+        "chainId": "0xafdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d",
+        "symbol": "HDX",
+        "precision": 12,
+        "type": "native",
+        "priceId": "hydradx",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Hydration_(HDX).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://hydradx-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://rpc.hydradx.cloud",
+        "name": "Galactic Council node"
+      },
+      {
+        "url": "wss://hydradx.paras.ibp.network",
+        "name": "IBP1 node"
+      },
+      {
+        "url": "wss://hydradx.paras.dotters.network",
+        "name": "IBP2 node"
+      }
+    ]
+  },
+  {
+    "name": "Interlay",
+    "chainIndex": 26,
+    "addressPrefix": 2032,
+    "chainId": "0xbf88efe70e9e0e916416e8bed61f2b45717f517d7f3523e33c7b001e5ffcbc72",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Interlay.svg",
+    "assets": [
+      {
+        "name": "Interlay",
+        "assetId": 0,
+        "chainId": "0xbf88efe70e9e0e916416e8bed61f2b45717f517d7f3523e33c7b001e5ffcbc72",
+        "symbol": "INTR",
+        "precision": 10,
+        "type": "orml",
+        "priceId": "interlay",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Interlay_(INTR).svg",
+        "typeExtras": {
+          "currencyIdScale": "0x0002",
+          "currencyIdType": "InterbtcPrimitivesCurrencyId",
+          "existentialDeposit": "0",
+          "transfersEnabled": true
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://api.interlay.io/parachain",
+        "name": "Kintsugi Labs node"
+      },
+      {
+        "url": "wss://interlay-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://rpc-interlay.luckyfriday.io/",
+        "name": "LuckyFriday node"
+      }
+    ]
+  },
+  {
+    "name": "Phala",
+    "chainIndex": 27,
+    "addressPrefix": 30,
+    "chainId": "0x1bb969d85965e4bb5a651abbedf21a54b6b31a21f66b5401cc3f1e286268d736",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Phala.svg",
+    "assets": [
+      {
+        "name": "Phala",
+        "assetId": 0,
+        "chainId": "0x1bb969d85965e4bb5a651abbedf21a54b6b31a21f66b5401cc3f1e286268d736",
+        "symbol": "PHA",
+        "precision": 12,
+        "type": "native",
+        "priceId": "pha",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Phala_(PHA).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://phala-rpc.dwellir.com",
+        "name": "Dwellir node"
+      },
+      {
+        "url": "wss://api.phala.network/ws",
+        "name": "Phala node"
+      },
+      {
+        "url": "wss://phala.public.curie.radiumblock.co/ws",
+        "name": "RadiumBlock node"
+      },
+      {
+        "url": "wss://phala.api.onfinality.io/public-ws",
+        "name": "OnFinality node"
+      }
+    ]
+  },
+  {
+    "name": "Turing",
+    "chainIndex": 28,
+    "addressPrefix": 51,
+    "chainId": "0x0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Turing.svg",
+    "assets": [
+      {
+        "name": "Turing",
+        "assetId": 0,
+        "chainId": "0x0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d",
+        "symbol": "TUR",
+        "precision": 10,
+        "type": "native",
+        "priceId": "turing-network",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Turing_(TUR).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.turing.oak.tech",
+        "name": "Turing node"
+      },
+      {
+        "url": "wss://turing-rpc.dwellir.com",
+        "name": "Dwellir node"
+      }
+    ]
+  },
+  {
+    "name": "Aleph Zero",
+    "chainIndex": 29,
+    "addressPrefix": 42,
+    "chainId": "0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/AlephZero.svg",
+    "assets": [
+      {
+        "name": "Aleph Zero",
+        "assetId": 0,
+        "chainId": "0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e",
+        "symbol": "AZERO",
+        "precision": 12,
+        "type": "native",
+        "priceId": "aleph-zero",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Aleph_Zero_(AZERO).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://ws.azero.dev",
+        "name": "Aleph Zero node"
+      }
+    ]
+  },
+  {
+    "name": "Bifrost Polkadot",
+    "chainIndex": 30,
+    "addressPrefix": 6,
+    "chainId": "0x262e1b2ad728475fd6fe88e62d34c200abe6fd693931ddad144059b1eb884e5b",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Bifrost_Polkadot.svg",
+    "assets": [
+      {
+        "name": "Bifrost",
+        "assetId": 0,
+        "chainId": "0x262e1b2ad728475fd6fe88e62d34c200abe6fd693931ddad144059b1eb884e5b",
+        "symbol": "BNC",
+        "precision": 12,
+        "type": "native",
+        "priceId": "bifrost-native-coin",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Bifrost_(BNC).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://hk.p.bifrost-rpc.liebi.com/ws",
+        "name": "Liebi node"
+      }
+    ]
+  },
+  {
+    "name": "Litentry",
+    "chainIndex": 31,
+    "addressPrefix": 31,
+    "chainId": "0x2fc8bb6ed7c0051bdcf4866c322ed32b6276572713607e3297ccf411b8f14aa9",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Litentry.svg",
+    "assets": [
+      {
+        "name": "Litentry",
+        "assetId": 0,
+        "chainId": "0x2fc8bb6ed7c0051bdcf4866c322ed32b6276572713607e3297ccf411b8f14aa9",
+        "symbol": "LIT",
+        "precision": 12,
+        "type": "native",
+        "priceId": "litentry",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Litentry_(LIT).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.litentry-parachain.litentry.io",
+        "name": "Litentry node"
+      },
+      {
+        "url": "wss://litentry-rpc.dwellir.com",
+        "name": "Dwellir node"
+      }
+    ]
+  },
+  {
+    "name": "Mangata X",
+    "chainIndex": 32,
+    "addressPrefix": 42,
+    "chainId": "0xd611f22d291c5b7b69f1e105cca03352984c344c4421977efaa4cbdd1834e2aa",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/MangataX.svg",
+    "assets": [
+      {
+        "name": "Mangata X",
+        "assetId": 0,
+        "chainId": "0xd611f22d291c5b7b69f1e105cca03352984c344c4421977efaa4cbdd1834e2aa",
+        "symbol": "MGX",
+        "precision": 18,
+        "type": "orml",
+        "priceId": "mangata-x",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Mangata_X_(MGX).svg",
+        "typeExtras": {
+          "currencyIdScale": "0x00000000",
+          "currencyIdType": "u32",
+          "existentialDeposit": "0",
+          "transfersEnabled": true
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://kusama-rpc.mangata.online",
+        "name": "Mangata node"
+      },
+      {
+        "url": "wss://kusama-archive.mangata.online",
+        "name": "Mangata archive node"
+      }
+    ]
+  },
+  {
+    "name": "Imbue",
+    "chainIndex": 33,
+    "addressPrefix": 42,
+    "chainId": "0xca93a37c913a25fa8fdb33c7f738afc39379cb71d37874a16d4c091a5aef9f89",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Imbue.svg",
+    "assets": [
+      {
+        "name": "Imbue",
+        "assetId": 0,
+        "chainId": "0xca93a37c913a25fa8fdb33c7f738afc39379cb71d37874a16d4c091a5aef9f89",
+        "symbol": "IMBU",
+        "precision": 12,
+        "type": "native",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Imbue_(IMBU).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://kusama.imbuenetwork.com",
+        "name": "Imbue node"
+      }
+    ]
+  },
+  {
+    "name": "Tinkernet",
+    "chainIndex": 34,
+    "addressPrefix": 117,
+    "chainId": "0xd42e9606a995dfe433dc7955dc2a70f495f350f373daa200098ae84437816ad2",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Tinkernet.svg",
+    "assets": [
+      {
+        "name": "Tinkernet",
+        "assetId": 0,
+        "chainId": "0xd42e9606a995dfe433dc7955dc2a70f495f350f373daa200098ae84437816ad2",
+        "symbol": "TNKR",
+        "precision": 12,
+        "type": "native",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Tinkernet_(TNKR).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://tinkernet-rpc.dwellir.com",
+        "name": "Dwellir node"
+      }
+    ]
+  },
+  {
+    "name": "Amplitude",
+    "chainIndex": 35,
+    "addressPrefix": 57,
+    "chainId": "0xcceae7f3b9947cdb67369c026ef78efa5f34a08fe5808d373c04421ecf4f1aaf",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Amplitude.svg",
+    "assets": [
+      {
+        "name": "Amplitude",
+        "assetId": 0,
+        "chainId": "0xcceae7f3b9947cdb67369c026ef78efa5f34a08fe5808d373c04421ecf4f1aaf",
+        "symbol": "AMPE",
+        "precision": 12,
+        "type": "native",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Amplitude_(AMPE).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc-amplitude.pendulumchain.tech",
+        "name": "PendulumChain node"
+      }
+    ]
+  },
+  {
+    "name": "Pendulum",
+    "chainIndex": 36,
+    "addressPrefix": 56,
+    "chainId": "0x5d3c298622d5634ed019bf61ea4b71655030015bde9beb0d6a24743714462c86",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Pendulum.svg",
+    "assets": [
+      {
+        "name": "Pendulum",
+        "assetId": 0,
+        "chainId": "0x5d3c298622d5634ed019bf61ea4b71655030015bde9beb0d6a24743714462c86",
+        "symbol": "PEN",
+        "precision": 12,
+        "type": "native",
+        "priceId": "pendulum-chain",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Pendulum_(PEN).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc-pendulum.prd.pendulumchain.tech",
+        "name": "Pendulum node"
+      }
+    ]
+  },
+  {
+    "name": "Vara",
+    "chainIndex": 37,
+    "addressPrefix": 137,
+    "chainId": "0xfe1b4c55fd4d668101126434206571a7838a8b6b93a6d1b95d607e78e6c53763",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Vara.svg",
+    "assets": [
+      {
+        "name": "Vara",
+        "assetId": 0,
+        "chainId": "0xfe1b4c55fd4d668101126434206571a7838a8b6b93a6d1b95d607e78e6c53763",
+        "symbol": "VARA",
+        "precision": 12,
+        "type": "native",
+        "priceId": "vara-network",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Vara_(VARA).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.vara-network.io",
+        "name": "Gear Tech node"
+      }
+    ]
+  },
+  {
+    "name": "Polimec",
+    "chainIndex": 38,
+    "addressPrefix": 41,
+    "chainId": "0x7eb9354488318e7549c722669dcbdcdc526f1fef1420e7944667212f3601fdbd",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Polimec.svg",
+    "assets": [
+      {
+        "name": "Polimec",
+        "assetId": 0,
+        "chainId": "0x7eb9354488318e7549c722669dcbdcdc526f1fef1420e7944667212f3601fdbd",
+        "symbol": "PLMC",
+        "precision": 10,
+        "type": "native",
+        "priceId": "polimec",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Polimec_(PLMC).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://rpc.polimec.org",
+        "name": "Polimec node"
+      }
+    ]
+  },
+  {
+    "name": "Avail",
+    "chainIndex": 39,
+    "addressPrefix": 42,
+    "chainId": "0xb91746b45e0346cc2f815a520b9c6cb4d5c0902af848db0a80f85932d2e8276a",
+    "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/chains/Avail.svg",
+    "assets": [
+      {
+        "name": "Avail",
+        "assetId": 0,
+        "chainId": "0xb91746b45e0346cc2f815a520b9c6cb4d5c0902af848db0a80f85932d2e8276a",
+        "symbol": "AVAIL",
+        "precision": 18,
+        "type": "native",
+        "priceId": "avail",
+        "icon": "https://raw.githubusercontent.com/novasamatech/telenova-utils/main/icons/v1/assets/color/Avail_(AVAIL).svg"
+      }
+    ],
+    "nodes": [
+      {
+        "url": "wss://zeref-api.slowops.xyz/ws",
+        "name": "Turing node"
+      },
+      {
+        "url": "wss://avail-mainnet.public.blastapi.io/",
+        "name": "Blastapi node"
+      },
+      {
+        "url": "wss://avail.rpc.bountyblok.io",
+        "name": "Bountyblok node"
+      }
+    ]
+  }
+]
