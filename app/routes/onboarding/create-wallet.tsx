@@ -59,9 +59,9 @@ const Page = () => {
       <MainButton text="Get started" hidden={isLoading} onClick={() => navigate($path('/dashboard'))} />
       <div className="flex h-[95vh] flex-col items-center justify-center">
         <LottiePlayer
-          sources={['/assets/lottie/Create-wallet.json']}
-          keepLastFrame
           autoplay
+          keepLastFrame
+          sources={['/assets/lottie/Create-wallet.json']}
           className="player mb-4 h-[256px] w-[256px]"
           onEvent={event => handleOnEvent(event)}
         />

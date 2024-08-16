@@ -13,14 +13,12 @@ import { telegramModel, walletModel } from '@/models';
 const Page = () => {
   const navigate = useNavigate();
 
-  const webApp = useUnit(telegramModel.$webApp);
-  const user = useUnit(telegramModel.$user);
-  const startParam = useUnit(telegramModel.$startParam);
+  const [webApp, user, startParam] = useUnit([telegramModel.$webApp, telegramModel.$user, telegramModel.$startParam]);
 
   const [password, setPassword] = useState('');
-  const [valid, setValid] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
-  if (!webApp || !password) return null;
+  if (!webApp) return null;
 
   const onSubmit = () => {
     const mnemonic = generateWalletMnemonic();
@@ -32,7 +30,7 @@ const Page = () => {
 
   return (
     <>
-      <MainButton disabled={!valid} onClick={onSubmit} />
+      <MainButton disabled={!isValid} onClick={onSubmit} />
       <div className="flex flex-col items-center text-center">
         <Avatar
           src={user?.photo_url}
@@ -51,7 +49,7 @@ const Page = () => {
           You should set a strong password to secure your wallet. The password you choose will keep your assets safe and
           sound
         </BodyText>
-        <CreatePasswordForm password={password} onChange={setPassword} onStatusChange={setValid} />
+        <CreatePasswordForm password={password} onChange={setPassword} onStatusChange={setIsValid} />
       </div>
     </>
   );

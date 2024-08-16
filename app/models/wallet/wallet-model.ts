@@ -97,6 +97,12 @@ sample({
   }),
 });
 
+sample({
+  clock: publicKeySavedFx.done,
+  fn: ({ params }) => ({ publicKey: params.publicKey }),
+  target: $wallet,
+});
+
 export const walletModel = {
   $wallet: readonly($wallet),
 
