@@ -10,7 +10,9 @@ import { isWebPlatform } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { MediumTitle } from '@/components';
-import { networkModel, telegramModel, walletModel } from '@/models';
+import { networkModel } from '@/models/network';
+import { telegramModel } from '@/models/telegram';
+import { walletModel } from '@/models/wallet';
 import { runMercuryoWidget, toAddress } from '@/shared/helpers';
 
 export type SearchParams = {

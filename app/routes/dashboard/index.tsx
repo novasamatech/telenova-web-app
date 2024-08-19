@@ -5,7 +5,6 @@ import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { getMnemonic, resetWallet } from '@/common/wallet';
 import {
@@ -23,14 +22,17 @@ import {
   TextBase,
   TitleText,
 } from '@/components';
-import { balancesModel, networkModel, telegramModel } from '@/models';
-import { getPrice, getTotalBalance } from '@/shared/helpers';
+import { balancesModel } from '@/models/balances';
+import { networkModel } from '@/models/network';
+import { pricesModel } from '@/models/prices';
+import { telegramModel } from '@/models/telegram';
+import { getTotalBalance } from '@/shared/helpers';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { assetsPrices, setAssetsPrices } = useGlobalContext();
 
   const balances = useUnit(balancesModel.$balances);
+  const prices = useUnit(pricesModel.$prices);
   const [chains, assets] = useUnit([networkModel.$chains, networkModel.$sortedAssets]);
   const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
 
@@ -40,29 +42,12 @@ const Page = () => {
     clearWallet(true);
   }, [webApp]);
 
-  // Fetching prices
-  useEffect(() => {
-    if (Object.keys(chains).length === 0) return;
-
-    const abortController = new AbortController();
-    getPrice({
-      ids: Object.values(chains)
-        .flatMap(chain => chain.assets.map(a => a.priceId))
-        .filter(priceId => priceId !== undefined),
-      abortSignal: abortController.signal,
-    }).then(setAssetsPrices);
-
-    return () => {
-      abortController.abort();
-    };
-  }, [chains]);
-
   const clearWallet = (clearLocal?: boolean) => {
     resetWallet(clearLocal);
     navigate($path('/onboarding'));
   };
 
-  const totalBalance = getTotalBalance(chains, balances, assetsPrices);
+  const totalBalance = getTotalBalance(chains, balances, prices);
 
   return (
     <>
@@ -105,7 +90,15 @@ const Page = () => {
         <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
           <TitleText align="left">Assets</TitleText>
           <div className="mt-4 flex flex-col gap-y-6">
-            <AssetsList showPrice animate className="m-1" chains={chains} assets={assets} balances={balances} />
+            <AssetsList
+              showPrice
+              animate
+              className="m-1"
+              chains={chains}
+              assets={assets}
+              prices={prices}
+              balances={balances}
+            />
           </div>
         </Plate>
 

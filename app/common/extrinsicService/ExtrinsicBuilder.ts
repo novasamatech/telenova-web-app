@@ -4,7 +4,7 @@ import { useUnit } from 'effector-react';
 import { type ApiPromise } from '@polkadot/api';
 import { type SubmittableExtrinsic, type SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 
-import { networkModel } from '@/models';
+import { networkModel } from '@/models/network';
 
 import { BatchMode, type ExtrinsicBuilder, type ExtrinsicBuilderFactory, type ExtrinsicBuildingOptions } from './types';
 

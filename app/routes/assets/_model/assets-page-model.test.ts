@@ -1,7 +1,7 @@
 import { allSettled, fork } from 'effector';
 import { describe, expect, test, vi } from 'vitest';
 
-import { networkModel } from '@/models';
+import { networkModel } from '@/models/network/network-model';
 import type { ChainsMap } from '@/types/substrate';
 
 import { assetsPageModel } from './assets-page-model';

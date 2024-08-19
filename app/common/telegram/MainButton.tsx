@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { useUnit } from 'effector-react';
 
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 
 type Props = {
   text?: string;

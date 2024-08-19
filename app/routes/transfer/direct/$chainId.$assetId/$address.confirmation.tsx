@@ -21,7 +21,8 @@ import {
   Plate,
   TruncateAddress,
 } from '@/components';
-import { networkModel, telegramModel } from '@/models';
+import { networkModel } from '@/models/network';
+import { telegramModel } from '@/models/telegram';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {

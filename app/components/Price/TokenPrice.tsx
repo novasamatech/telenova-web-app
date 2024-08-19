@@ -4,22 +4,20 @@ import { Price } from '../Price/Price';
 import { Shimmering } from '../Shimmering/Shimmering';
 import { BodyText } from '../Typography';
 
-import { useGlobalContext } from '@/common/providers/contextProvider';
 import { cnTw } from '@/shared/helpers';
 import { toFormattedBalance } from '@/shared/helpers/balance';
-import { type Asset } from '@/types/substrate';
+import { type Asset, type AssetPrices } from '@/types/substrate';
 
 type Props = {
   balance?: BN;
+  prices: AssetPrices | null;
   asset: Asset;
   showBalance?: boolean;
   className?: string;
 };
 
-export const TokenPrice = ({ balance = BN_ZERO, asset, showBalance = true, className }: Props) => {
-  const { assetsPrices } = useGlobalContext();
-
-  const price = asset.priceId ? assetsPrices?.[asset.priceId] : { price: 0 };
+export const TokenPrice = ({ balance = BN_ZERO, prices, asset, showBalance = true, className }: Props) => {
+  const price = asset.priceId ? prices?.[asset.priceId] : { price: 0 };
 
   if (!price) {
     return <Shimmering width={100} height={20} />;

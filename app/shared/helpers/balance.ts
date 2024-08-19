@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash-es';
 
 import { BN, BN_TEN, BN_ZERO } from '@polkadot/util';
 
-import { type AssetPrice, type ChainBalances, type ChainsMap } from '@/types/substrate';
+import { type AssetPrices, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
 type Suffix = 'thousand' | 'million' | 'billion' | 'trillion';
 
@@ -110,7 +110,7 @@ export const toPrecisedBalance = (amount: string, precision: number): BN => {
   return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision));
 };
 
-export const getTotalBalance = (chains: ChainsMap, balances: ChainBalances, prices: AssetPrice | null): number => {
+export const getTotalBalance = (chains: ChainsMap, balances: ChainBalances, prices: AssetPrices | null): number => {
   if (isEmpty(balances) || !prices) return 0;
 
   let totalBalance = 0;

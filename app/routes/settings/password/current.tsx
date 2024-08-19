@@ -8,7 +8,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { initializeWalletFromCloud } from '@/common/wallet';
 import { Input, TitleText } from '@/components';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 
 const Page = () => {

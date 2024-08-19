@@ -6,7 +6,7 @@ import { $path } from 'remix-routes';
 import { MainButton } from '@/common/telegram/MainButton';
 import { BodyText, Icon, MediumTitle, TitleText } from '@/components';
 import { type IconNames } from '@/components/types';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 
 const welcomeData = [
   {

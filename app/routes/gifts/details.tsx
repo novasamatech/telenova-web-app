@@ -10,7 +10,7 @@ import { createTgLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { type TgLink } from '@/common/telegram/types';
 import { GiftDetails, Icon } from '@/components';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 
 export type SearchParams = {
   seed: string;

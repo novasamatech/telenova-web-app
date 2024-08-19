@@ -14,7 +14,8 @@ import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
 import { createGiftWallet, getKeyringPair } from '@/common/wallet';
 import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
-import { networkModel, telegramModel } from '@/models';
+import { networkModel } from '@/models/network';
+import { telegramModel } from '@/models/telegram';
 import { backupGifts, toFormattedBalance } from '@/shared/helpers';
 
 export type SearchParams = {

@@ -6,7 +6,7 @@ import { $params, $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
 import { Icon, Identicon, MediumTitle, TitleText } from '@/components';
-import { networkModel } from '@/models';
+import { networkModel } from '@/models/network';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 
 export type SearchParams = {

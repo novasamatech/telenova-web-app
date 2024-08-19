@@ -2,7 +2,7 @@ import { useUnit } from 'effector-react';
 
 import { hexToU8a } from '@polkadot/util';
 
-import { networkModel } from '@/models';
+import { networkModel } from '@/models/network';
 import { assetUtils } from '@/shared/helpers/assets';
 import { type Gift, type PersistentGift } from '@/types/substrate';
 

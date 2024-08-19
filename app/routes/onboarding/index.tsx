@@ -7,7 +7,7 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { LoadingScreen } from '@/components';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { telegramApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 

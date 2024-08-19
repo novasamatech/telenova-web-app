@@ -28,13 +28,13 @@ export interface OrmlAsset extends BaseAsset {
   };
 }
 
-export type Asset = NativeAsset | StatemineAsset | OrmlAsset;
-
-export type AssetPrice = Record<Currency, PriceItem>;
-
-export type PriceItem = {
-  price: number;
-  change?: number;
+export type AssetPrices = {
+  [priceId: Required<Asset>['priceId']]: {
+    price: number;
+    change?: number;
+  };
 };
+
+export type Asset = NativeAsset | StatemineAsset | OrmlAsset;
 
 export type AssetsMap = Record<ChainId, Record<AssetId, Asset>>;

@@ -6,7 +6,7 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { BodyText, LinkCard, TitleText } from '@/components';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 
