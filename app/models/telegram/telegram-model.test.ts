@@ -8,6 +8,7 @@ describe('models/telegram/telegram-model', () => {
   test('should init $webApp on webAppStarted', async () => {
     const spyReady = vi.fn();
     const spySetHeaderColor = vi.fn();
+    const spySetBackgroundColor = vi.fn();
     const spyExpand = vi.fn();
     const spyDisableClosingConfirmation = vi.fn();
 
@@ -18,6 +19,7 @@ describe('models/telegram/telegram-model', () => {
       },
       ready: spyReady,
       setHeaderColor: spySetHeaderColor,
+      setBackgroundColor: spySetBackgroundColor,
       expand: spyExpand,
       disableClosingConfirmation: spyDisableClosingConfirmation,
     };
@@ -29,6 +31,7 @@ describe('models/telegram/telegram-model', () => {
 
     expect(spyReady).toHaveBeenCalled();
     expect(spySetHeaderColor).toHaveBeenCalledWith('#f2f2f7');
+    expect(spySetBackgroundColor).toHaveBeenCalledWith('#f2f2f7');
     expect(spyExpand).toHaveBeenCalled();
     expect(spyDisableClosingConfirmation).toHaveBeenCalled();
 
