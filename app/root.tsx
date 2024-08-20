@@ -49,7 +49,7 @@ export const Layout = ({ children }: PropsWithChildren) => (
       <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
 
       <script defer src="https://telegram.org/js/telegram-web-app.js" />
-      <script async src="https://widget.mercuryo.io/embed.2.0.js" />
+      <script async src="https://widget.mercuryo.io/embed.2.1.js" />
     </head>
     <body>
       <DataContext>{children}</DataContext>
