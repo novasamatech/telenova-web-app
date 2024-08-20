@@ -61,7 +61,7 @@ export const RecoveryModal = ({ isOpen, onClose, onSubmit }: Props) => {
   return (
     <Modal isOpen={isOpen} size="xs" placement="center" isDismissable={false} onClose={onClose}>
       <ModalContent>
-        <ModalHeader className="">
+        <ModalHeader>
           <BigTitle>Read this carefully</BigTitle>
         </ModalHeader>
         <CheckboxGroup color="default" value={selected} onValueChange={setSelected}>

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
@@ -7,6 +8,16 @@ import { LinkCard, TitleText } from '@/components';
 
 const Page = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (document.getElementById('mercuryo_widget')) return;
+
+    const script = document.createElement('script');
+    script.id = 'mercuryo_widget';
+    script.src = 'https://widget.mercuryo.io/embed.2.1.js';
+
+    document.body.appendChild(script);
+  }, []);
 
   return (
     <>

@@ -15,6 +15,7 @@ export { LinkCard } from './LinkCard/LinkCard';
 export { LoadingScreen } from './LoadingScreen/LoadingScreen';
 export { LottiePlayer } from './LottiePlayer/LottiePlayer';
 export { GiftModal } from './Modals/GiftModal';
+export { MercuryoWarning } from './Modals/MercuryoWarning';
 export { ResetPasswordModal } from './Modals/ResetModal/ResetPasswordModal';
 export { PasswordForm } from './PasswordForm/PasswordForm';
 export { CreatedGiftPlate, GiftPlate, Plate } from './Plate';

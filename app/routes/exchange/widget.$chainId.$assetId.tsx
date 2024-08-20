@@ -6,11 +6,9 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { isWebPlatform } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { MediumTitle } from '@/components';
-import { networkModel, telegramModel, walletModel } from '@/models';
+import { networkModel, walletModel } from '@/models';
 import { runMercuryoWidget, toAddress } from '@/shared/helpers';
 
 export type SearchParams = {
@@ -45,7 +43,6 @@ const Page = () => {
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
   const wallet = useUnit(walletModel.$wallet);
-  const webApp = useUnit(telegramModel.$webApp);
 
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const [done, setDone] = useState(false);
@@ -58,7 +55,7 @@ const Page = () => {
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!wallet?.publicKey || !selectedAsset || isWebPlatform(webApp!.platform) || !root || !type) return;
+    if (!wallet?.publicKey || !selectedAsset || !root || !type) return;
 
     runMercuryoWidget({
       root,
@@ -110,15 +107,7 @@ const Page = () => {
         onClick={navigateToTransfer}
       />
       <BackButton onClick={navigateBack} />
-      <div ref={setRoot} className="h-[95svh] w-full" id="mercuryo-widget">
-        {isWebPlatform(webApp?.platform) && (
-          <div>
-            <MediumTitle align="center">
-              Sorry, the widget is not supported in the web version. Proceed with the application.
-            </MediumTitle>
-          </div>
-        )}
-      </div>
+      <div ref={setRoot} className="h-[95svh] w-full" id="mercuryo-widget" />
     </>
   );
 };
