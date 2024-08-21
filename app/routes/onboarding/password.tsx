@@ -7,8 +7,9 @@ import { $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
 import { backupMnemonic, generateWalletMnemonic } from '@/common/wallet';
-import { BodyText, CreatePasswordForm, TitleText } from '@/components';
 import { telegramModel, walletModel } from '@/models';
+import { BodyText, TitleText } from '@/ui/atoms';
+import { CreatePasswordForm } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();

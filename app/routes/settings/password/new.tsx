@@ -8,10 +8,11 @@ import { $path } from 'remix-routes';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { backupMnemonic } from '@/common/wallet';
-import { CreatePasswordForm, TitleText } from '@/components';
 import { telegramModel } from '@/models';
 import { telegramApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
+import { TitleText } from '@/ui/atoms';
+import { CreatePasswordForm } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
