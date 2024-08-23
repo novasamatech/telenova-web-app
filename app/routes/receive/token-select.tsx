@@ -5,10 +5,11 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { AssetsList, BodyText, Icon, Input, TitleText } from '@/components';
 import { balancesModel } from '@/models/balances';
 import { assetsFilterModel, networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
+import { BodyText, Icon, Input, TitleText } from '@/ui/atoms';
+import { AssetsList } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();

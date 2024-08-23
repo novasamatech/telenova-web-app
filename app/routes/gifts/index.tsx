@@ -5,11 +5,12 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { BodyText, GiftPlate, HelpText, Shimmering, TitleText } from '@/components';
 import { telegramModel } from '@/models/telegram';
 import { getGifts, toFormattedBalance } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
 import { type Gift } from '@/types/substrate';
+import { BodyText, HelpText, Shimmering, TitleText } from '@/ui/atoms';
+import { GiftPlate } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();

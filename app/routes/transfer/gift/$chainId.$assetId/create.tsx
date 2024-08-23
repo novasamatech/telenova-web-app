@@ -13,10 +13,11 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
 import { createGiftWallet, getKeyringPair } from '@/common/wallet';
-import { GiftDetails, HeadlineText, LottiePlayer } from '@/components';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { backupGifts, toFormattedBalance } from '@/shared/helpers';
+import { HeadlineText, LottiePlayer } from '@/ui/atoms';
+import { GiftDetails } from '@/ui/molecules';
 
 export type SearchParams = {
   amount: string;

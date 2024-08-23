@@ -8,12 +8,13 @@ import { $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
 import { initializeWalletFromCloud } from '@/common/wallet';
-import { BodyText, Input, ResetPasswordModal, TitleText } from '@/components';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
 import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
+import { BodyText, Input, TitleText } from '@/ui/atoms';
+import { PasswordReset } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
@@ -88,7 +89,8 @@ const Page = () => {
             <BodyText className="text-text-link">Forgot Password?</BodyText>
           </Button>
         </div>
-        <ResetPasswordModal isOpen={isModalOpen} onClose={toggleModal} />
+
+        <PasswordReset isOpen={isModalOpen} onClose={toggleModal} />
       </div>
     </>
   );

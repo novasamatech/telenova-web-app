@@ -8,9 +8,9 @@ import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { BodyText, HelpText, Icon, Identicon, Input } from '@/components';
 import { telegramModel } from '@/models/telegram';
 import { validateAddress } from '@/shared/helpers';
+import { BodyText, HelpText, Icon, Identicon, Input } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
   return $params('/transfer/direct/:chainId/:assetId/address', params);

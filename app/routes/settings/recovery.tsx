@@ -5,8 +5,9 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { getMnemonic } from '@/common/wallet';
-import { BodyText, RecoveryPhrase, TitleText } from '@/components';
 import { telegramModel } from '@/models/telegram';
+import { BodyText, TitleText } from '@/ui/atoms';
+import { RecoveryPhrase } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();

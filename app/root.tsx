@@ -9,16 +9,22 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import { ExtrinsicProvider } from '@/common/extrinsicService';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
-import { ErrorScreen } from '@/components';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
+import { ErrorScreen } from '@/ui/molecules';
 
 import stylesheet from './tailwind.css?url';
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesheet },
   { rel: 'shortcut icon', href: 'data:image/x-icon;,', type: 'image/x-icon' },
+
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+  { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+  { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap' },
+
+  { rel: 'prefetch', href: 'https://widget.mercuryo.io/embed.2.1.js', as: 'script' },
 ];
 
 export const meta: MetaFunction = () => [
@@ -45,13 +51,7 @@ export const Layout = ({ children }: PropsWithChildren) => (
     <head>
       <Meta />
       <Links />
-
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
-
       <script defer src="https://telegram.org/js/telegram-web-app.js" />
-      <script async src="https://widget.mercuryo.io/embed.2.0.js" />
     </head>
     <body>
       <DataContext>{children}</DataContext>

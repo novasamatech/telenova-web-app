@@ -8,7 +8,7 @@ import { getKeyringPairFromSeed } from '../../common/wallet';
 import { telegramApi } from '@/shared/api';
 import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
 
-import { GIFT_STORE } from './constants.ts';
+import { GIFT_STORE } from './constants';
 
 type BackupParams = {
   chainId: ChainId;

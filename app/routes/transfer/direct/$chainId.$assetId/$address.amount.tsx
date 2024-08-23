@@ -9,11 +9,12 @@ import { $params, $path } from 'remix-routes';
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { AmountDetails, HeadlineText, Identicon, TruncateAddress } from '@/components';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { toFormattedBalance } from '@/shared/helpers';
+import { Address, HeadlineText, Identicon } from '@/ui/atoms';
+import { AmountDetails } from '@/ui/molecules';
 
 export type SearchParams = {
   amount: string;
@@ -88,7 +89,7 @@ const Page = () => {
         <Identicon address={address} />
         <HeadlineText className="flex gap-1">
           Send to
-          <TruncateAddress address={address} className="max-w-[120px]" />
+          <Address address={address} className="max-w-[120px]" />
         </HeadlineText>
         <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={onMaxAmount}>
           <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>

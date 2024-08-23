@@ -14,7 +14,9 @@ const $filteredAssets = combine(
     sortedAssets: networkModel.$sortedAssets,
   },
   ({ query, sortedAssets }) => {
-    return sortedAssets.filter(([_, asset]) => asset.symbol.toLowerCase().includes(query));
+    return sortedAssets.filter(([_, asset]) => {
+      return asset.symbol.toLowerCase().includes(query.toLowerCase());
+    });
   },
 );
 

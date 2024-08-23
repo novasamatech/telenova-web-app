@@ -16,6 +16,7 @@ const webAppStartedFx = createEffect((): WebApp | never => {
 
   webApp.ready();
   webApp.setHeaderColor('#f2f2f7');
+  webApp.setBackgroundColor('#f2f2f7');
   webApp.expand();
   webApp.disableClosingConfirmation();
 
