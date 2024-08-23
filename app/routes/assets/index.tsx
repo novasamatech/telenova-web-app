@@ -5,6 +5,9 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
+import { networkModel } from '@/models/network';
+import { DUAL_SYMBOLS } from '@/shared/helpers';
+import { type Asset, type Chain, type ChainsMap } from '@/types/substrate';
 import { AssetIcon, BodyText, Icon, Input, MediumTitle, Plate, Switch, TitleText } from '@/ui/atoms';
 
 import { assetsPageModel } from './_model/assets-page-model';
@@ -12,12 +15,21 @@ import { assetsPageModel } from './_model/assets-page-model';
 const Page = () => {
   const navigate = useNavigate();
 
-  const query = useUnit(assetsPageModel.$query);
-  const assets = useUnit(assetsPageModel.$assets);
+  const chains = useUnit(networkModel.$chains);
+  const [query, assets] = useUnit([assetsPageModel.$query, assetsPageModel.$assets]);
 
   useEffect(() => {
     assetsPageModel.input.pageMounted();
   }, []);
+
+  const getParentChain = (chains: ChainsMap, chainId: ChainId, asset: Asset): Chain | undefined => {
+    if (!DUAL_SYMBOLS.includes(asset.symbol)) return;
+
+    const parentChainId = chains[chainId].parentId;
+    if (!parentChainId) return;
+
+    return chains[parentChainId];
+  };
 
   const toggleAsset = (chainId: ChainId, assetId: AssetId) => (selected: boolean) => {
     assetsPageModel.input.assetToggled({ chainId, assetId, selected });
@@ -48,9 +60,14 @@ const Page = () => {
                 className="flex items-center gap-x-3 px-2.5 py-2"
               >
                 <AssetIcon src={asset.icon} size={48} />
-                <MediumTitle as="span" className="uppercase">
-                  {asset.symbol}
-                </MediumTitle>
+                <div className="flex flex-col">
+                  <MediumTitle as="span" className="uppercase">
+                    {asset.symbol}
+                  </MediumTitle>
+                  <BodyText as="span" className="text-text-hint">
+                    {getParentChain(chains, chainId, asset)?.name}
+                  </BodyText>
+                </div>
                 <Switch className="ml-auto" isSelected={isActive} onValueChange={toggleAsset(chainId, asset.assetId)} />
               </Plate>
             ))}

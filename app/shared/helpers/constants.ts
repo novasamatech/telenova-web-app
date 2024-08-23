@@ -11,6 +11,8 @@ export const FAKE_ACCOUNT_ID = '0x' + '1'.repeat(64);
 
 export const SS58_DEFAULT_PREFIX = 42;
 
+export const DUAL_SYMBOLS = ['BNC', 'LIT', 'PHA'];
+
 // TODO: take json from nova-helpers
 export const ASSET_LOCATION: Record<string, SignerOptions> = {
   1984: {

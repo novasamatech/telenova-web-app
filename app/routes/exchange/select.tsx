@@ -52,12 +52,12 @@ const Page = () => {
             to={$path('/exchange/widget/:chainId/:assetId', { chainId, assetId: asset.assetId }, { type })}
           >
             <AssetBalance
+              showArrow
               className="w-full rounded-lg bg-white px-4 py-3 hover:bg-bg-item-pressed active:bg-bg-item-pressed"
               asset={asset}
               balance={balances[chainId]?.[asset.assetId]?.balance.total}
               prices={prices}
-              name={chains[chainId].name}
-              showArrow
+              chainName={chains[chainId].name}
             />
           </Link>
         ))}

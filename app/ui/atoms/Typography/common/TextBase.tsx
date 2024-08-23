@@ -3,6 +3,8 @@ import { cnTw } from '@/shared/helpers/twMerge';
 import { type TypographyProps } from './types';
 
 export const TextBase = ({ as: Component = 'p', align = 'left', className, children }: TypographyProps) => {
+  if (!children) return null;
+
   return (
     <Component
       className={cnTw(

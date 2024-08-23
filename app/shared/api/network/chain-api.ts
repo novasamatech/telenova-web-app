@@ -14,7 +14,8 @@ type DataParams = {
   sort?: boolean;
 };
 async function getChainsData({ file, sort }: DataParams): Promise<Chain[]> {
-  const chains = (await import(`../../config/chains/${file}.json`)).default;
+  const url = `https://raw.githubusercontent.com/novasamatech/telenova-utils/main/chains/v1/${file}.json`;
+  const chains = await fetch(url).then(response => response.json());
 
   return sort ? sortChains(chains) : chains;
 }
