@@ -5,7 +5,7 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { AssetIcon, BodyText, Icon, Input, MediumTitle, Plate, Switch, TitleText } from '@/components';
+import { AssetIcon, BodyText, Icon, Input, MediumTitle, Plate, Switch, TitleText } from '@/ui/atoms';
 
 import { assetsPageModel } from './_model/assets-page-model';
 
@@ -42,7 +42,11 @@ const Page = () => {
         {assets.length > 0 && (
           <ul className="flex flex-col gap-y-2">
             {assets.map(([chainId, asset, isActive]) => (
-              <Plate as="li" key={`${chainId}_${asset.assetId}`} className="flex items-center gap-x-3 px-2.5 py-2">
+              <Plate
+                component="li"
+                key={`${chainId}_${asset.assetId}`}
+                className="flex items-center gap-x-3 px-2.5 py-2"
+              >
                 <AssetIcon src={asset.icon} size={48} />
                 <MediumTitle as="span" className="uppercase">
                   {asset.symbol}

@@ -3,7 +3,7 @@ import { useUnit } from 'effector-react';
 import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
 import { networkModel } from '@/models';
-import { type OrmlAccountData } from '@/shared/api/balances/types.ts';
+import { type OrmlAccountData } from '@/shared/api/balances/types';
 import { assetUtils } from '@/shared/helpers';
 import { type Asset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 

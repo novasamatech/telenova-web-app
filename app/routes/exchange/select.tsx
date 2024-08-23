@@ -5,9 +5,10 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { AssetBalance, TitleText } from '@/components';
 import { balancesModel, networkModel } from '@/models';
-import { KUSAMA, POLKADOT } from '@/shared/helpers/chains.ts';
+import { KUSAMA, POLKADOT } from '@/shared/helpers/chains';
+import { TitleText } from '@/ui/atoms';
+import { AssetBalance } from '@/ui/molecules';
 
 export type SearchParams = {
   type: 'buy' | 'sell';

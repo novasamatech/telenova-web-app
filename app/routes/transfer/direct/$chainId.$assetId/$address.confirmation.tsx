@@ -11,18 +11,9 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { getKeyringPair } from '@/common/wallet';
-import {
-  AssetIcon,
-  BodyText,
-  HeadlineText,
-  Identicon,
-  LargeTitleText,
-  MediumTitle,
-  Plate,
-  TruncateAddress,
-} from '@/components';
 import { networkModel, telegramModel } from '@/models';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
+import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
 export type SearchParams = {
   amount: string;
@@ -119,7 +110,7 @@ const Page = () => {
         <Identicon address={address} />
         <HeadlineText className="flex gap-1">
           Send to
-          <TruncateAddress address={address} className="max-w-[130px]" />
+          <Address address={address} className="max-w-[130px]" />
         </HeadlineText>
       </div>
       <div className="my-6 grid grid-cols-[40px,1fr,auto] items-center gap-2">

@@ -9,8 +9,8 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import { ExtrinsicProvider } from '@/common/extrinsicService';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
-import { ErrorScreen } from '@/components';
 import * as models from '@/models';
+import { ErrorScreen } from '@/ui/molecules';
 
 import stylesheet from './tailwind.css?url';
 

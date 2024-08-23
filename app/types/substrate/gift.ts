@@ -1,6 +1,6 @@
 import { type Asset } from './asset';
 
-// HINT: old gifts don't have chainIndex
+// Old gifts don't have chainIndex
 export type PersistentGift = {
   status: 'Claimed' | 'Unclaimed';
   chainId: ChainId;

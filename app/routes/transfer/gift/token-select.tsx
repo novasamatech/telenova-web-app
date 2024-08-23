@@ -5,8 +5,9 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { AssetsList, BodyText, Icon, Input, TitleText } from '@/components';
 import { assetsFilterModel, balancesModel, networkModel } from '@/models';
+import { BodyText, Icon, Input, TitleText } from '@/ui/atoms';
+import { AssetsList } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();

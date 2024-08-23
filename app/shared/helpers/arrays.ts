@@ -1,4 +1,4 @@
-import { type KeysOfType } from './utility.ts';
+import { type KeysOfType } from './utility';
 
 /**
  * Create dictionary with given key and value Keys can only be type of string,

@@ -8,25 +8,22 @@ import { $path } from 'remix-routes';
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { getMnemonic, resetWallet } from '@/common/wallet';
+import { balancesModel, networkModel, telegramModel } from '@/models';
+import { getPrice, getTotalBalance } from '@/shared/helpers';
+import { useToggle } from '@/shared/hooks';
 import {
-  AssetsList,
-  CreatedGiftPlate,
-  GiftModal,
   HeadlineText,
   Icon,
   IconButton,
   LargeTitleText,
   LinkButton,
   MediumTitle,
-  MercuryoWarning,
   Plate,
   Price,
   TextBase,
   TitleText,
-} from '@/components';
-import { balancesModel, networkModel, telegramModel } from '@/models';
-import { getPrice, getTotalBalance } from '@/shared/helpers';
-import { useToggle } from '@/shared/hooks';
+} from '@/ui/atoms';
+import { AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
@@ -131,7 +128,7 @@ const Page = () => {
           Manage tokens
         </LinkButton>
 
-        <GiftModal />
+        <GiftClaim />
         <MercuryoWarning isOpen={isWarningOpen} onClose={toggleWarning} />
 
         {import.meta.env.DEV && (
