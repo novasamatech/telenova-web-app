@@ -5,7 +5,9 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { assetsFilterModel, balancesModel, networkModel } from '@/models';
+import { balancesModel } from '@/models/balances';
+import { assetsFilterModel, networkModel } from '@/models/network';
+import { pricesModel } from '@/models/prices';
 import { BodyText, Icon, Input, TitleText } from '@/ui/atoms';
 import { AssetsList } from '@/ui/molecules';
 
@@ -14,8 +16,8 @@ const Page = () => {
 
   const chains = useUnit(networkModel.$chains);
   const balances = useUnit(balancesModel.$balances);
-  const query = useUnit(assetsFilterModel.$query);
-  const assets = useUnit(assetsFilterModel.$assets);
+  const prices = useUnit(pricesModel.$prices);
+  const [query, assets] = useUnit([assetsFilterModel.$query, assetsFilterModel.$assets]);
 
   useEffect(() => {
     assetsFilterModel.input.pageMounted();
@@ -54,6 +56,7 @@ const Page = () => {
               chains={chains}
               assets={assets}
               balances={balances}
+              prices={prices}
               onClick={navigateToAddress}
             />
           </div>

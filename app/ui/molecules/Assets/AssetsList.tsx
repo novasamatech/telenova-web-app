@@ -1,7 +1,7 @@
 import { type ComponentProps } from 'react';
 
 import { cnTw } from '@/shared/helpers';
-import { type Asset, type ChainBalances, type ChainsMap } from '@/types/substrate';
+import { type Asset, type AssetPrices, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
 import { AssetBalance as AssetBalanceItem } from './AssetBalance';
 
@@ -9,6 +9,7 @@ type Props = Pick<ComponentProps<typeof AssetBalanceItem>, 'animate' | 'showArro
   chains: ChainsMap;
   assets: [ChainId, Asset][];
   balances: ChainBalances;
+  prices: AssetPrices | null;
   onClick?: (chainId: ChainId, assetId: AssetId) => void;
 };
 

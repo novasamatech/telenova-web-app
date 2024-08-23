@@ -7,7 +7,8 @@ import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { networkModel, walletModel } from '@/models';
+import { networkModel } from '@/models/network';
+import { walletModel } from '@/models/wallet';
 import { shareQrAddress, toAddress } from '@/shared/helpers';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/ui/atoms';
 

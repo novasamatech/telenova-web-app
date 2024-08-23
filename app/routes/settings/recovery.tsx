@@ -5,7 +5,7 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { getMnemonic } from '@/common/wallet';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { RecoveryPhrase } from '@/ui/molecules';
 

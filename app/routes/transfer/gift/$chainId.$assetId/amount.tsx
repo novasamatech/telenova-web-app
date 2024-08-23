@@ -8,7 +8,9 @@ import { $params, $path } from 'remix-routes';
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { balancesModel, networkModel } from '@/models';
+import { balancesModel } from '@/models/balances';
+import { networkModel } from '@/models/network';
+import { pricesModel } from '@/models/prices';
 import { toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, Icon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
@@ -24,6 +26,7 @@ const Page = () => {
 
   const assets = useUnit(networkModel.$assets);
   const balances = useUnit(balancesModel.$balances);
+  const prices = useUnit(pricesModel.$prices);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
@@ -90,6 +93,7 @@ const Page = () => {
       <AmountDetails
         asset={selectedAsset}
         amount={amount}
+        prices={prices}
         isAmountValid={!isTouched || (isAmountValid && isAboveDeposit)}
         maxAmount={maxAmount}
         isPending={isPending}

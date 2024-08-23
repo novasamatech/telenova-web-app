@@ -3,13 +3,14 @@ import { type PropsWithChildren, useEffect, useState } from 'react';
 import { type BN } from '@polkadot/util';
 
 import { toFormattedBalance } from '@/shared/helpers';
-import { type Asset } from '@/types/substrate';
+import { type Asset, type AssetPrices } from '@/types/substrate';
 import { AmountInput, AssetIcon, BodyText, Icon, LargeTitleText, TokenPrice } from '@/ui/atoms';
 
 //TODO: Change layout mobile text
 type Props = {
   asset: Asset;
   amount: BN;
+  prices: AssetPrices | null;
   deposit: BN;
   maxAmount: BN;
   isAmountValid: boolean;
@@ -21,6 +22,7 @@ type Props = {
 export const AmountDetails = ({
   asset,
   amount,
+  prices,
   deposit,
   maxAmount,
   isPending,
@@ -57,7 +59,9 @@ export const AmountDetails = ({
         </div>
       </div>
 
-      {isAmountValid && !isPending && <TokenPrice showBalance className="col-span-2" balance={amount} asset={asset} />}
+      {isAmountValid && !isPending && (
+        <TokenPrice showBalance className="col-span-2" balance={amount} prices={prices} asset={asset} />
+      )}
       {!isAmountValid && (
         <BodyText align="right" className="text-text-danger">
           {amount.gt(maxAmount) ? 'Insufficient balance' : 'Invalid amount'} <br />

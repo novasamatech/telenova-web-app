@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { telegramApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 import { LoadingScreen } from '@/ui/molecules';

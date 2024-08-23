@@ -4,7 +4,7 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { BodyText, Icon, MediumTitle, TitleText } from '@/ui/atoms';
 import { type IconNames } from '@/ui/atoms/types';
 

@@ -5,7 +5,7 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { getGifts, toFormattedBalance } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
 import { type Gift } from '@/types/substrate';

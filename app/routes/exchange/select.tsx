@@ -5,7 +5,9 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { balancesModel, networkModel } from '@/models';
+import { balancesModel } from '@/models/balances';
+import { networkModel } from '@/models/network';
+import { pricesModel } from '@/models/prices';
 import { KUSAMA, POLKADOT } from '@/shared/helpers/chains';
 import { TitleText } from '@/ui/atoms';
 import { AssetBalance } from '@/ui/molecules';
@@ -35,6 +37,7 @@ const Page = () => {
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$sortedAssets);
   const balances = useUnit(balancesModel.$balances);
+  const prices = useUnit(pricesModel.$prices);
 
   const exchangeAssets = assets.filter(([chainId, asset]) => SUPPORTED_ASSETS[chainId] === asset.assetId);
 
@@ -49,9 +52,10 @@ const Page = () => {
             to={$path('/exchange/widget/:chainId/:assetId', { chainId, assetId: asset.assetId }, { type })}
           >
             <AssetBalance
+              className="w-full rounded-lg bg-white px-4 py-3 hover:bg-bg-item-pressed active:bg-bg-item-pressed"
               asset={asset}
               balance={balances[chainId]?.[asset.assetId]?.balance.total}
-              className="w-full rounded-lg bg-white px-4 py-3 hover:bg-bg-item-pressed active:bg-bg-item-pressed"
+              prices={prices}
               name={chains[chainId].name}
               showArrow
             />

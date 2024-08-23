@@ -8,7 +8,8 @@ import { $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
 import { initializeWalletFromCloud } from '@/common/wallet';
-import { telegramModel, walletModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
+import { walletModel } from '@/models/wallet';
 import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';

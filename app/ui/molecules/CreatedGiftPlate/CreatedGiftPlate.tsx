@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { networkModel, telegramModel } from '@/models';
+import { networkModel } from '@/models/network';
+import { telegramModel } from '@/models/telegram';
 import { getGifts } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
 import { type Gift } from '@/types/substrate';

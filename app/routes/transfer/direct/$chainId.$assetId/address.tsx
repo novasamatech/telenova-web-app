@@ -8,7 +8,7 @@ import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { validateAddress } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/ui/atoms';
 

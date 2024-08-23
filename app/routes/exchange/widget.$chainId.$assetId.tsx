@@ -8,7 +8,8 @@ import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { networkModel, walletModel } from '@/models';
+import { networkModel } from '@/models/network';
+import { walletModel } from '@/models/wallet';
 import { runMercuryoWidget, toAddress } from '@/shared/helpers';
 
 export type SearchParams = {

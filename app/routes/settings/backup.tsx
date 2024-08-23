@@ -5,7 +5,7 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { BodyText, TitleText } from '@/ui/atoms';

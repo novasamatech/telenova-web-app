@@ -9,7 +9,7 @@ import { $path } from 'remix-routes';
 
 import { openLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
-import { telegramModel } from '@/models';
+import { telegramModel } from '@/models/telegram';
 import { HelpText, Icon, MediumTitle, Plate, TextBase } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 

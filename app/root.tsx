@@ -9,7 +9,9 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import { ExtrinsicProvider } from '@/common/extrinsicService';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
-import * as models from '@/models';
+import { navigationModel } from '@/models/navigation';
+import { networkModel } from '@/models/network';
+import { telegramModel } from '@/models/telegram';
 import { ErrorScreen } from '@/ui/molecules';
 
 import stylesheet from './tailwind.css?url';
@@ -70,17 +72,17 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
   const navigate = useNavigate();
 
-  const webAppError = useUnit(models.telegramModel.$error);
+  const webAppError = useUnit(telegramModel.$error);
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    models.navigationModel.input.navigatorChanged(navigate);
+    navigationModel.input.navigatorChanged(navigate);
   }, [navigate]);
 
   useEffect(() => {
-    models.telegramModel.input.webAppStarted();
-    models.networkModel.input.networkStarted(file);
+    telegramModel.input.webAppStarted();
+    networkModel.input.networkStarted(file);
 
     cryptoWaitReady().finally(() => setIsLoading(false));
   }, []);

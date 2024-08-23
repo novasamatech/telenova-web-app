@@ -11,7 +11,8 @@ import { useExtrinsic } from '@/common/extrinsicService';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { getKeyringPair } from '@/common/wallet';
-import { networkModel, telegramModel } from '@/models';
+import { networkModel } from '@/models/network';
+import { telegramModel } from '@/models/telegram';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
