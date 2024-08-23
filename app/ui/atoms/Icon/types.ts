@@ -15,6 +15,7 @@ import Send from '@/assets/svg/Send.svg';
 import Star from '@/assets/svg/Star.svg';
 import Success from '@/assets/svg/Success.svg';
 import User from '@/assets/svg/User.svg';
+import WarningWindow from '@/assets/svg/WarningWindow.svg';
 import ArrowBold from '@/assets/svg/arrows/arrow-bold.svg';
 import ArrowUp from '@/assets/svg/arrows/arrow-up.svg';
 import ChevronForward from '@/assets/svg/arrows/chevron-forward.svg';
@@ -74,6 +75,7 @@ export const AllIcons = {
   NoResult,
   Search,
   Plus,
+  WarningWindow,
 };
 
 export type IconNames = keyof typeof AllIcons;

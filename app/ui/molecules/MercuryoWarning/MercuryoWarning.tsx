@@ -24,17 +24,17 @@ export const MercuryoWarning = ({ isOpen, onClose }: Props) => {
         <ModalHeader>
           <BigTitle>Mercuryo is unavailable</BigTitle>
         </ModalHeader>
-        <ModalBody className="gap-4 px-4">
-          <Icon name="ResetPassword" size={96} className="self-center" />
+        <ModalBody className="gap-y-4 px-4">
+          <Icon name="WarningWindow" size={128} className="self-center" />
           <BodyText className="text-balance text-text-hint">
-            Buy & Sell with Mercuryo widget is not supported in web version.
+            Web version does not support Buy&nbsp;&&nbsp;Sell feature with Mercuryo widget
             <br />
-            Proceed with desktop or mobile application.
+            Proceed with desktop or mobile application
           </BodyText>
         </ModalBody>
         <ModalFooter className="justify-center">
           <Button color="primary" className="h-[50px] w-full rounded-full" onPress={onClose}>
-            <MediumTitle className="text-white">Confirm</MediumTitle>
+            <MediumTitle className="text-white">Okay</MediumTitle>
           </Button>
         </ModalFooter>
       </ModalContent>
