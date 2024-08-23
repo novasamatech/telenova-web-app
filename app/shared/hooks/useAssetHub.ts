@@ -3,7 +3,7 @@ import { type BN, BN_ZERO } from '@polkadot/util';
 import { assetUtils } from '../helpers';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
-import { useQueryService } from '@/common/queryService/QueryService.ts';
+import { useQueryService } from '@/common/queryService/QueryService';
 import { type StatemineAsset } from '@/types/substrate';
 
 type AssetHubFeeParam = {

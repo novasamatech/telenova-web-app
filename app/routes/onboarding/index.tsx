@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { LoadingScreen } from '@/components';
 import { telegramModel } from '@/models';
 import { telegramApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
+import { LoadingScreen } from '@/ui/molecules';
 
 function delay(ttl: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ttl));

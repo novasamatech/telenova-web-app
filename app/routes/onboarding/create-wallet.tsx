@@ -10,8 +10,8 @@ import { $path } from 'remix-routes';
 
 import { completeOnboarding } from '@/common/telegram';
 import { MainButton } from '@/common/telegram/MainButton';
-import { BodyText, HeadlineText, LottiePlayer, TitleText } from '@/components';
 import { telegramModel, walletModel } from '@/models';
+import { BodyText, HeadlineText, LottiePlayer, TitleText } from '@/ui/atoms';
 
 export const loader = () => {
   return json({

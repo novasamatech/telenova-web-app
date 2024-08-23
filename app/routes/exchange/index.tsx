@@ -1,12 +1,24 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { LinkCard, TitleText } from '@/components';
+import { TitleText } from '@/ui/atoms';
+import { LinkCard } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (document.getElementById('mercuryo_widget')) return;
+
+    const script = document.createElement('script');
+    script.id = 'mercuryo_widget';
+    script.src = 'https://widget.mercuryo.io/embed.2.1.js';
+
+    document.body.appendChild(script);
+  }, []);
 
   return (
     <>

@@ -1,3 +1,4 @@
+# IDE
 .idea
 .vscode
 
@@ -20,3 +21,6 @@ vite.config.ts.timestamp*
 coverage
 build
 node_modules
+
+# misc
+.DS_Store

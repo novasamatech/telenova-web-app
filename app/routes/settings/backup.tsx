@@ -5,10 +5,11 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { BodyText, LinkCard, TitleText } from '@/components';
 import { telegramModel } from '@/models';
 import { telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
+import { BodyText, TitleText } from '@/ui/atoms';
+import { LinkCard } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();

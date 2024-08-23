@@ -9,8 +9,9 @@ import { $path } from 'remix-routes';
 import { createTgLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { type TgLink } from '@/common/telegram/types';
-import { GiftDetails, Icon } from '@/components';
 import { telegramModel } from '@/models';
+import { Icon } from '@/ui/atoms';
+import { GiftDetails } from '@/ui/molecules';
 
 export type SearchParams = {
   seed: string;

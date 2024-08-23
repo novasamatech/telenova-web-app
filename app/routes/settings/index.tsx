@@ -9,8 +9,9 @@ import { $path } from 'remix-routes';
 
 import { openLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
-import { HelpText, Icon, LinkCard, MediumTitle, Plate, TextBase } from '@/components';
 import { telegramModel } from '@/models';
+import { HelpText, Icon, MediumTitle, Plate, TextBase } from '@/ui/atoms';
+import { LinkCard } from '@/ui/molecules';
 
 export const loader = () => {
   return json({

@@ -8,10 +8,10 @@ import { $path } from 'remix-routes';
 import { useGlobalContext } from '@/common/providers';
 import { BackButton } from '@/common/telegram/BackButton';
 import { getMnemonic, resetWallet } from '@/common/wallet';
+import { balancesModel, networkModel, telegramModel } from '@/models';
+import { getPrice, getTotalBalance } from '@/shared/helpers';
+import { useToggle } from '@/shared/hooks';
 import {
-  AssetsList,
-  CreatedGiftPlate,
-  GiftModal,
   HeadlineText,
   Icon,
   IconButton,
@@ -22,9 +22,8 @@ import {
   Price,
   TextBase,
   TitleText,
-} from '@/components';
-import { balancesModel, networkModel, telegramModel } from '@/models';
-import { getPrice, getTotalBalance } from '@/shared/helpers';
+} from '@/ui/atoms';
+import { AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
@@ -33,6 +32,8 @@ const Page = () => {
   const balances = useUnit(balancesModel.$balances);
   const [chains, assets] = useUnit([networkModel.$chains, networkModel.$sortedAssets]);
   const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
+
+  const [isWarningOpen, toggleWarning] = useToggle();
 
   useEffect(() => {
     if (!webApp || getMnemonic(webApp)) return;
@@ -60,6 +61,16 @@ const Page = () => {
   const clearWallet = (clearLocal?: boolean) => {
     resetWallet(clearLocal);
     navigate($path('/onboarding'));
+  };
+
+  const navigateToMercuryo = () => {
+    if (!webApp) return;
+
+    if (webApp.platform === 'weba' || webApp.platform === 'webk') {
+      toggleWarning();
+    } else {
+      navigate($path('/exchange'));
+    }
   };
 
   const totalBalance = getTotalBalance(chains, balances, assetsPrices);
@@ -96,7 +107,7 @@ const Page = () => {
           <div className="mt-7 grid w-full grid-cols-3 gap-2">
             <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
             <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
-            <IconButton text="Buy/Sell" iconName="BuySell" onClick={() => navigate($path('/exchange'))} />
+            <IconButton text="Buy/Sell" iconName="BuySell" onClick={navigateToMercuryo} />
           </div>
         </div>
 
@@ -117,7 +128,8 @@ const Page = () => {
           Manage tokens
         </LinkButton>
 
-        <GiftModal />
+        <GiftClaim />
+        <MercuryoWarning isOpen={isWarningOpen} onClose={toggleWarning} />
 
         {import.meta.env.DEV && (
           <div className="flex flex-col justify-center gap-2 rounded-lg bg-warning p-4">
