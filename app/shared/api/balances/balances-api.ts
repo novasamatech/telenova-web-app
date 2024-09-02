@@ -18,15 +18,17 @@ export const balancesApi = {
 const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain, asset, publicKey, callback) => {
   const address = toAddress(publicKey, { prefix: chain.addressPrefix });
 
-  return api.query.balances.account(address, accountInfo => {
-    let frozen = accountInfo.frozen?.toBn();
-    const free = accountInfo.free.toBn();
-    const reserved = accountInfo.reserved.toBn();
+  return api.query.system.account(address, frameAccountInfo => {
+    let frozen = frameAccountInfo.data.frozen?.toBn();
+    const free = frameAccountInfo.data.free.toBn();
+    const reserved = frameAccountInfo.data.reserved.toBn();
 
     // Some chains still use "feeFrozen" or "miscFrozen" (HKO, PARA, XRT, ZTG, SUB)
-    const data = accountInfo as unknown as AccountData;
-    if (data.feeFrozen || data.miscFrozen) {
-      frozen = data.miscFrozen.gt(data.feeFrozen) ? data.miscFrozen.toBn() : data.feeFrozen.toBn();
+    const accountData = frameAccountInfo.data as unknown as AccountData;
+    if (accountData.feeFrozen || accountData.miscFrozen) {
+      frozen = accountData.miscFrozen.gt(accountData.feeFrozen)
+        ? accountData.miscFrozen.toBn()
+        : accountData.feeFrozen.toBn();
     }
 
     callback({

@@ -7,7 +7,7 @@ import { useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { openLink } from '@/common/telegram';
+import { telegramOpenLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { telegramModel } from '@/models/telegram';
 import { HelpText, Icon, MediumTitle, Plate, TextBase } from '@/ui/atoms';
@@ -108,7 +108,7 @@ const Page = () => {
 
         <button
           className="relative min-h-[150px] w-full rounded-2xl bg-[url('/assets/misc/nova-wallet.webp')] bg-cover"
-          onClick={() => openLink('https://novawallet.io', webApp)}
+          onClick={() => telegramOpenLink('https://novawallet.io', webApp)}
         >
           <div className="absolute right-[5%] top-[10%] w-[60%] break-words">
             <TextBase as="p" align="right" className="mb-4 text-body-bold text-white">
@@ -126,7 +126,7 @@ const Page = () => {
             textClassName="text-text-link"
             wrapperClassName="rounded-b-none"
             showArrow
-            onClick={() => openLink('https://novasama.io/telenova/privacy', webApp)}
+            onClick={() => telegramOpenLink('https://novasama.io/telenova/privacy', webApp)}
           />
           <Divider className="ml-4 h-[0.5px] w-auto border-solid" />
           <LinkCard
@@ -135,7 +135,7 @@ const Page = () => {
             textClassName="text-text-link"
             wrapperClassName="rounded-t-none"
             showArrow
-            onClick={() => openLink('https://novasama.io/telenova/terms', webApp)}
+            onClick={() => telegramOpenLink('https://novasama.io/telenova/terms', webApp)}
           />
         </Plate>
         <div className="mt-auto flex flex-col items-center">
