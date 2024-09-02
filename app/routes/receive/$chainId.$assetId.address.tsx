@@ -9,7 +9,7 @@ import { $params, $path } from 'remix-routes';
 import { BackButton } from '@/common/telegram/BackButton';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
-import { shareQrAddress, toAddress } from '@/shared/helpers';
+import { copyToClipboard, shareQrAddress, toAddress } from '@/shared/helpers';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
@@ -51,7 +51,7 @@ const Page = () => {
             id={`qrcode_${selectedAsset.symbol}`}
           />
           <BodyText className="text-text-hint">{chains[typedChainId].name} address</BodyText>
-          <HeadlineText className="text-text-hint" align="center">
+          <HeadlineText id="address-copy" className="text-text-hint" align="center">
             {address}
           </HeadlineText>
         </Plate>
@@ -60,8 +60,7 @@ const Page = () => {
             <Button
               color="primary"
               className="min-h-[50px] w-[200px] rounded-full"
-              // navigator.clipboard is undefined in web version of Telegram
-              onClick={() => navigator.clipboard?.writeText(address)}
+              onClick={() => copyToClipboard('address-copy', address)}
             >
               <MediumTitle as="span" className="text-white">
                 Copy address
