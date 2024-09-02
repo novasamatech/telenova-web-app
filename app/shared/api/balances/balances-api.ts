@@ -2,6 +2,7 @@ import noop from 'lodash/noop';
 
 import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
+import { type AccountData } from '@polkadot/types/interfaces';
 import { BN_ZERO, hexToU8a } from '@polkadot/util';
 
 import { assetUtils, toAddress } from '@/shared/helpers';
@@ -17,10 +18,16 @@ export const balancesApi = {
 const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain, asset, publicKey, callback) => {
   const address = toAddress(publicKey, { prefix: chain.addressPrefix });
 
-  return api.query.system.account(address, accountInfo => {
-    const free = accountInfo.data.free.toBn();
-    const reserved = accountInfo.data.reserved.toBn();
-    const frozen = accountInfo.data.frozen.toBn();
+  return api.query.balances.account(address, accountInfo => {
+    let frozen = accountInfo.frozen?.toBn();
+    const free = accountInfo.free.toBn();
+    const reserved = accountInfo.reserved.toBn();
+
+    // Some chains still use "feeFrozen" or "miscFrozen" (HKO, PARA, XRT, ZTG, SUB)
+    const data = accountInfo as unknown as AccountData;
+    if (data.feeFrozen || data.miscFrozen) {
+      frozen = data.miscFrozen.gt(data.feeFrozen) ? data.miscFrozen.toBn() : data.feeFrozen.toBn();
+    }
 
     callback({
       publicKey,

@@ -47,19 +47,6 @@ describe('models/balances/balances-model', () => {
     });
   });
 
-  test('should update $activeAssets on assetToUnsubSet', async () => {
-    const scope = fork({
-      values: [[balancesModel._internal.$activeAssets, { '0x001': { 0: true } }]],
-    });
-
-    await allSettled(balancesModel.input.assetToUnsubSet, {
-      scope,
-      params: { chainId: '0x001', assetId: 0 },
-    });
-
-    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({ '0x001': undefined });
-  });
-
   test('should update $subscriptions on assetToUnsubSet', async () => {
     const mockedSubscriptions = { '0x001': { 0: Promise.resolve(noop), 1: Promise.resolve(noop) } };
 
@@ -70,52 +57,6 @@ describe('models/balances/balances-model', () => {
     await allSettled(balancesModel.input.assetToUnsubSet, { scope, params: { chainId: '0x001', assetId: 1 } });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 0: Promise.resolve(noop) } });
-  });
-
-  test('should remove asset from $activeAssets on networkModel.output.assetChanged', async () => {
-    const scope = fork({
-      values: [[balancesModel._internal.$activeAssets, { '0x001': { 0: true } }]],
-    });
-
-    await allSettled(networkModel.output.assetChanged, {
-      scope,
-      params: { chainId: '0x001', assetId: 0, status: 'off' },
-    });
-
-    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({ '0x001': undefined });
-  });
-
-  test('should update $activeAssets on assetToSubSet', async () => {
-    const scope = fork({
-      values: [
-        [balancesModel._internal.$activeAssets, { '0x001': { 0: true } }],
-        [walletModel._internal.$wallet, { publicKey: '0x999' }],
-      ],
-    });
-
-    await allSettled(balancesModel.input.assetToSubSet, {
-      scope,
-      params: { chainId: '0x001', assetId: 1 },
-    });
-
-    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({
-      '0x001': { 0: true, 1: true },
-    });
-  });
-
-  test('should add asset to $activeAssets on networkModel.output.assetChanged', async () => {
-    const scope = fork({
-      values: [[balancesModel._internal.$activeAssets, { '0x001': { 0: true } }]],
-    });
-
-    await allSettled(networkModel.output.assetChanged, {
-      scope,
-      params: { chainId: '0x001', assetId: 1, status: 'on' },
-    });
-
-    expect(scope.getState(balancesModel._internal.$activeAssets)).toEqual({
-      '0x001': { 0: true, 1: true },
-    });
   });
 
   test('should unsub all $subscriptions for chainId if assetId is absent', async () => {
@@ -157,7 +98,7 @@ describe('models/balances/balances-model', () => {
 
     const scope = fork({
       values: [
-        [balancesModel._internal.$activeAssets, { '0x001': { 0: true } }],
+        [networkModel._internal.$assets, { '0x001': { 0: {} } }],
         [balancesModel._internal.$subscriptions, { '0x001': { 0: Promise.resolve(spyUnsub) } }],
       ],
     });
@@ -177,7 +118,7 @@ describe('models/balances/balances-model', () => {
 
     const scope = fork({
       values: [
-        [balancesModel._internal.$activeAssets, { '0x003': { 0: true } }],
+        [networkModel._internal.$assets, { '0x003': { 0: {} } }],
         [balancesModel._internal.$subscriptions, { '0x003': { 0: unsubPromise } }],
         [walletModel._internal.$wallet, { publicKey: '0x999' }],
         [networkModel._internal.$chains, mockedChains],
@@ -195,14 +136,14 @@ describe('models/balances/balances-model', () => {
     });
   });
 
-  test('should subscribe $activeAssets for chainId on networkModel.output.connectionChanged', async () => {
+  test('should subscribe $assets for chainId on networkModel.output.connectionChanged', async () => {
     const unsubPromise = Promise.resolve(noop);
     vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(unsubPromise);
 
     const scope = fork({
       values: [
-        [balancesModel._internal.$activeAssets, { '0x001': { 1: true }, '0x003': { 0: true, 1: true } }],
         [walletModel._internal.$wallet, { publicKey: '0x999' }],
+        [networkModel._internal.$assets, { '0x001': { 1: {} }, '0x003': { 0: {}, 1: {} } }],
         [networkModel._internal.$chains, mockedChains],
         [
           networkModel._internal.$connections,
@@ -224,13 +165,13 @@ describe('models/balances/balances-model', () => {
     });
   });
 
-  test('should unsubscribe $activeAssets for chainId on networkModel.output.connectionChanged', async () => {
+  test('should unsubscribe $assets for chainId on networkModel.output.connectionChanged', async () => {
     const spyUnsub = vi.fn();
     vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(Promise.resolve(spyUnsub));
 
     const scope = fork({
       values: [
-        [balancesModel._internal.$activeAssets, { '0x001': { 1: true }, '0x003': { 0: true, 1: true } }],
+        [networkModel._internal.$assets, { '0x001': { 1: {} }, '0x003': { 0: {}, 1: {} } }],
         [walletModel._internal.$wallet, { publicKey: '0x999' }],
         [networkModel._internal.$chains, mockedChains],
         [
@@ -261,7 +202,7 @@ describe('models/balances/balances-model', () => {
 
     const scope = fork({
       values: [
-        [balancesModel._internal.$activeAssets, { '0x001': { 0: true }, '0x003': { 0: true, 1: true } }],
+        [networkModel._internal.$assets, { '0x001': { 0: {} }, '0x003': { 0: {}, 1: {} } }],
         [networkModel._internal.$chains, mockedChains],
         [
           networkModel._internal.$connections,
