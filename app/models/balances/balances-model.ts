@@ -10,7 +10,7 @@ import { walletModel } from '../wallet/wallet-model';
 import { balancesApi } from '@/shared/api';
 import { type Asset, type AssetBalance, type Chain, type ChainBalances } from '@/types/substrate';
 
-import { type ActiveAssets, type Subscriptions } from './types';
+import { type Subscriptions } from './types';
 
 const assetToUnsubSet = createEvent<{ chainId: ChainId; assetId: AssetId }>();
 const assetToSubSet = createEvent<{ chainId: ChainId; assetId: AssetId }>();
@@ -19,7 +19,6 @@ const balanceUpdated = createEvent<AssetBalance>();
 const $balances = createStore<ChainBalances>({});
 
 const $subscriptions = createStore<Subscriptions>({});
-const $activeAssets = createStore<ActiveAssets>({});
 
 type UnsubAssetParams = {
   chainId: ChainId;
@@ -118,34 +117,9 @@ sample({
 
 sample({
   clock: assetToUnsubSet,
-  source: $activeAssets,
-  fn: (activeAssets, { chainId, assetId }) => {
-    const { [chainId]: activeChainAssets, ...restChains } = activeAssets;
-    if (!activeChainAssets) return restChains;
-
-    const { [assetId]: _, ...restAssets } = activeChainAssets;
-
-    return { ...restChains, [chainId]: isEmpty(restAssets) ? undefined : restChains };
-  },
-  target: $activeAssets,
-});
-
-sample({
-  clock: assetToUnsubSet,
   source: $subscriptions,
   fn: (subscriptions, { chainId, assetId }) => ({ chainId, assetId, subscriptions }),
   target: unsubscribeChainAssetsFx,
-});
-
-sample({
-  clock: assetToSubSet,
-  source: $activeAssets,
-  fn: (activeAssets, { chainId, assetId }) => {
-    const { [chainId]: activeChainAssets, ...restChains } = activeAssets;
-
-    return { ...restChains, [chainId]: { ...activeChainAssets, [assetId]: true } };
-  },
-  target: $activeAssets,
 });
 
 sample({
@@ -192,8 +166,8 @@ sample({
   source: {
     wallet: walletModel.$wallet,
     connections: networkModel.$connections,
+    activeAssets: networkModel.$assets,
     chains: networkModel.$chains,
-    activeAssets: $activeAssets,
   },
   filter: ({ wallet }, { status }) => {
     const isAccountExist = Boolean(wallet?.publicKey);
@@ -229,9 +203,9 @@ sample({
 sample({
   clock: walletModel.$wallet.updates,
   source: {
-    connections: networkModel.$connections,
     chains: networkModel.$chains,
-    activeAssets: $activeAssets,
+    connections: networkModel.$connections,
+    activeAssets: networkModel.$assets,
   },
   filter: ({ connections, activeAssets }, wallet) => {
     const isAccountExist = Boolean(wallet?.publicKey);
@@ -270,7 +244,6 @@ export const balancesModel = {
   /* Internal API (tests only) */
   _internal: {
     $subscriptions,
-    $activeAssets,
     $balances,
 
     balanceUpdated,

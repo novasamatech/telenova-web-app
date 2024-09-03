@@ -6,6 +6,7 @@ export type Align = 'left' | 'right' | 'center';
 
 type Props = {
   as?: Tags;
+  id?: string;
   align?: Align;
   className?: string;
 };

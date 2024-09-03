@@ -13,6 +13,7 @@ import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { ErrorScreen } from '@/ui/molecules';
+import '@/models/prices';
 
 import stylesheet from './tailwind.css?url';
 

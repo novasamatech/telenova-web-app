@@ -29,9 +29,7 @@ export function useExtrinsicService(): ExtrinsicService {
       return api.tx.assets.transfer(asset, dest, value);
     },
     [TransactionType.TRANSFER_ORML]: ({ dest, value, asset }, api) => {
-      return api.tx['tokens']
-        ? api.tx['tokens']['transfer'](dest, asset, value)
-        : api.tx['currencies']['transfer'](dest, asset, value);
+      return api.tx['tokens']['transfer'](dest, asset, value);
     },
     [TransactionType.TRANSFER_ALL]: ({ dest }, api) => {
       return api.tx.balances.transferAll(dest, false);

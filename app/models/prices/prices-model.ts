@@ -46,9 +46,7 @@ sample({
 sample({
   clock: requestTick,
   source: networkModel.$chains,
-  filter: chains => {
-    return !isEmpty(chains);
-  },
+  filter: chains => !isEmpty(chains),
   fn: chains => {
     const priceIds = Object.values(chains).flatMap(chain => chain.assets.map(a => a.priceId));
 
