@@ -7,4 +7,5 @@ export * from './gift';
 export * from './functions';
 export * from './arrays';
 export * from './utility';
+export * from './browser';
 export { assetUtils } from './assets';
