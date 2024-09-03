@@ -20,18 +20,28 @@ async function createConnector(
   listeners: ProviderListeners,
 ): Promise<{ provider: ProviderWithMetadata; api: ApiPromise }> {
   const provider = createProvider(params, listeners);
-  const api = await createApi(chainId, provider);
 
-  return { provider, api };
+  try {
+    const api = await createApi(chainId, provider);
+
+    return { provider, api };
+  } catch (error) {
+    // API does not support the chain being connected to - https://polkadot.js.org/docs/api/start/create#failures
+    console.error(`ApiPromise error for chain ${chainId}`, error);
+
+    throw error;
+  }
 }
 
 function createApi(chainId: ChainId, provider: ProviderInterface): Promise<ApiPromise> {
-  return ApiPromise.create({
+  const api = new ApiPromise({
     provider,
     throwOnConnect: true,
     throwOnUnknown: true,
     ...EXTENSIONS[chainId],
   });
+
+  return api.isReady;
 }
 
 type ProviderParams = {

@@ -7,10 +7,10 @@ import { useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { openLink } from '@/common/telegram';
+import { telegramOpenLink } from '@/common/telegram';
 import { BackButton } from '@/common/telegram/BackButton';
 import { telegramModel } from '@/models/telegram';
-import { HelpText, Icon, MediumTitle, Plate, TextBase } from '@/ui/atoms';
+import { BodyText, HelpText, Icon, MediumTitle, Plate } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 
 export const loader = () => {
@@ -107,14 +107,12 @@ const Page = () => {
         </Plate>
 
         <button
-          className="relative min-h-[150px] w-full rounded-2xl bg-[url('/assets/misc/nova-wallet.webp')] bg-cover"
-          onClick={() => openLink('https://novawallet.io', webApp)}
+          className="flex w-full items-center rounded-2xl bg-[url('/assets/misc/nova-wallet.webp')] bg-cover"
+          onClick={() => telegramOpenLink('https://novawallet.io', webApp)}
         >
-          <div className="absolute right-[5%] top-[10%] w-[60%] break-words">
-            <TextBase as="p" align="right" className="mb-4 text-body-bold text-white">
-              Upgrade to Nova Wallet!
-            </TextBase>
-            <HelpText className="font-semibold text-white">
+          <div className="ml-auto mr-[8%] flex w-[190px] flex-col gap-y-4 py-5">
+            <BodyText className="-indent-1 text-body-bold text-white">Upgrade to Nova Wallet!</BodyText>
+            <HelpText className="text-balance font-semibold text-white">
               Earn up to <b>20% APY</b> using the Polkadot’s best wallet
             </HelpText>
           </div>
@@ -126,7 +124,7 @@ const Page = () => {
             textClassName="text-text-link"
             wrapperClassName="rounded-b-none"
             showArrow
-            onClick={() => openLink('https://novasama.io/telenova/privacy', webApp)}
+            onClick={() => telegramOpenLink('https://novasama.io/telenova/privacy', webApp)}
           />
           <Divider className="ml-4 h-[0.5px] w-auto border-solid" />
           <LinkCard
@@ -135,7 +133,7 @@ const Page = () => {
             textClassName="text-text-link"
             wrapperClassName="rounded-t-none"
             showArrow
-            onClick={() => openLink('https://novasama.io/telenova/terms', webApp)}
+            onClick={() => telegramOpenLink('https://novasama.io/telenova/terms', webApp)}
           />
         </Plate>
         <div className="mt-auto flex flex-col items-center">

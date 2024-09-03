@@ -392,6 +392,23 @@ sample({
   }),
 });
 
+// Disconnect for failed Provider/ApiPromise initialization
+sample({
+  clock: createProviderFx.fail,
+  source: $connections,
+  fn: (connections, { params }) => {
+    const chainId = params.chainId;
+    const event = { chainId, status: 'disconnected' as const };
+    const data = { ...connections, [chainId]: { status: 'disconnected' as const } };
+
+    return { event, data };
+  },
+  target: spread({
+    data: $connections,
+    event: connectionChanged,
+  }),
+});
+
 // Updates connection status, provider and api are the same
 sample({
   clock: connected,
@@ -537,6 +554,9 @@ export const networkModel = {
 
   // All available chains with connection statuses
   $connections: readonly($connections),
+
+  // Flag for loading chains
+  isChainsLoading: requestChainsFx.pending,
 
   input: {
     networkStarted,

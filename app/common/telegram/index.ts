@@ -40,14 +40,15 @@ export const createTgLink = ({ botUrl, appName, amount, secret, chainIndex, symb
   return { url: url.toString(), text };
 };
 
-export const navigateTransferById = (webApp: WebApp, link: TgLink) => {
+export const telegramShareLink = (webApp: WebApp, link: TgLink, callback?: () => void) => {
   const tgLink = `https://t.me/share/url?url=${encodeURIComponent(link.url)}&text=${encodeURIComponent(link.text)}`;
 
+  // Application will be closed in Web version
   webApp.openTelegramLink(tgLink);
-  webApp.close();
+  callback?.();
 };
 
-export const openLink = (link: string, webApp: WebApp) => {
+export const telegramOpenLink = (link: string, webApp: WebApp) => {
   webApp.openLink(link);
   webApp.close();
 };

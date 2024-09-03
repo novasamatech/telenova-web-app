@@ -3,7 +3,7 @@ import { type Asset } from './asset';
 export type Chain = {
   chainId: ChainId;
   chainIndex: ChainIndex;
-  parentId?: HexString;
+  parentId?: ChainId;
   specName: string;
   name: string;
   assets: Asset[];

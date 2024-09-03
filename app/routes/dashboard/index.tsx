@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
+import { isEmpty } from 'lodash-es';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
@@ -14,6 +15,7 @@ import { telegramModel } from '@/models/telegram';
 import { getTotalBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
+  BodyText,
   HeadlineText,
   Icon,
   IconButton,
@@ -22,18 +24,23 @@ import {
   MediumTitle,
   Plate,
   Price,
+  Shimmering,
   TextBase,
   TitleText,
 } from '@/ui/atoms';
-import { AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning } from '@/ui/molecules';
+import { AssetSkeleton, AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
 
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
-  const [chains, assets] = useUnit([networkModel.$chains, networkModel.$sortedAssets]);
   const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
+  const [chains, assets, isChainsLoading] = useUnit([
+    networkModel.$chains,
+    networkModel.$sortedAssets,
+    networkModel.isChainsLoading,
+  ]);
 
   const [isWarningOpen, toggleWarning] = useToggle();
 
@@ -98,34 +105,52 @@ const Page = () => {
 
         <CreatedGiftPlate />
 
-        <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
-          <TitleText align="left">Assets</TitleText>
-          <div className="mt-4 flex flex-col gap-y-6">
-            <AssetsList
-              showPrice
-              animate
-              className="m-1"
-              chains={chains}
-              assets={assets}
-              prices={prices}
-              balances={balances}
-            />
-          </div>
-        </Plate>
+        {isChainsLoading && (
+          <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
+            <Shimmering width={100} height={32} />
+            <div className="mt-6 flex flex-col gap-y-6">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <AssetSkeleton key={index} />
+              ))}
+            </div>
+          </Plate>
+        )}
 
-        <LinkButton
-          className="mx-auto my-5"
-          href={$path('/assets')}
-          prefixIcon={<Icon className="text-inherit" name="Plus" size={16} />}
-        >
-          Manage tokens
-        </LinkButton>
+        {!isChainsLoading && !isEmpty(chains) && (
+          <>
+            <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
+              <TitleText align="left">Assets</TitleText>
+              <div className="mt-6 flex flex-col gap-y-6">
+                <AssetsList showPrice animate chains={chains} assets={assets} prices={prices} balances={balances} />
+              </div>
+            </Plate>
+
+            <LinkButton
+              className="mx-auto my-5"
+              href={$path('/assets')}
+              prefixIcon={<Icon className="text-inherit" name="Plus" size={16} />}
+            >
+              Manage tokens
+            </LinkButton>
+          </>
+        )}
+
+        {!isChainsLoading && isEmpty(chains) && (
+          <div className="mt-10 flex flex-col items-center gap-y-4">
+            <Icon name="NoResult" size={180} />
+            <BodyText className="max-w-[225px] text-text-hint">
+              Failed to load assets
+              <br />
+              Try to reopen the application
+            </BodyText>
+          </div>
+        )}
 
         <GiftClaim />
         <MercuryoWarning isOpen={isWarningOpen} onClose={toggleWarning} />
 
         {import.meta.env.DEV && (
-          <div className="flex flex-col justify-center gap-2 rounded-lg bg-warning p-4">
+          <div className="mt-10 flex flex-col justify-center gap-2 rounded-lg bg-warning p-4">
             <TextBase className="text-amber-50">DEV MODE</TextBase>
             <Divider className="bg-amber-200" />
             <Button variant="faded" onClick={() => clearWallet()}>

@@ -5,6 +5,8 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
+import { networkModel } from '@/models/network';
+import { getParentChain } from '@/shared/helpers/chains';
 import { AssetIcon, BodyText, Icon, Input, MediumTitle, Plate, Switch, TitleText } from '@/ui/atoms';
 
 import { assetsPageModel } from './_model/assets-page-model';
@@ -12,8 +14,8 @@ import { assetsPageModel } from './_model/assets-page-model';
 const Page = () => {
   const navigate = useNavigate();
 
-  const query = useUnit(assetsPageModel.$query);
-  const assets = useUnit(assetsPageModel.$assets);
+  const chains = useUnit(networkModel.$chains);
+  const [query, assets] = useUnit([assetsPageModel.$query, assetsPageModel.$assets]);
 
   useEffect(() => {
     assetsPageModel.input.pageMounted();
@@ -48,9 +50,14 @@ const Page = () => {
                 className="flex items-center gap-x-3 px-2.5 py-2"
               >
                 <AssetIcon src={asset.icon} size={48} />
-                <MediumTitle as="span" className="uppercase">
-                  {asset.symbol}
-                </MediumTitle>
+                <div className="flex flex-col">
+                  <MediumTitle as="span" className="uppercase">
+                    {asset.symbol}
+                  </MediumTitle>
+                  <BodyText as="span" className="text-text-hint">
+                    {getParentChain(chains, chainId, asset)?.name}
+                  </BodyText>
+                </div>
                 <Switch className="ml-auto" isSelected={isActive} onValueChange={toggleAsset(chainId, asset.assetId)} />
               </Plate>
             ))}
@@ -60,7 +67,7 @@ const Page = () => {
         {assets.length === 0 && (
           <div className="mt-[70px] flex flex-col items-center gap-y-4">
             <Icon name="NoResult" size={180} />
-            <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search </BodyText>
+            <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search</BodyText>
           </div>
         )}
       </div>

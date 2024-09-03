@@ -2,6 +2,7 @@ export { AmountDetails } from './AmountDetails/AmountDetails';
 export { TotalBalance } from './TotalBalance/TotalBalance.tsx';
 export { AssetBalance } from './Assets/AssetBalance';
 export { AssetsList } from './Assets/AssetsList';
+export { AssetSkeleton } from './Assets/AssetSkeleton';
 export { CreatedGiftPlate } from './CreatedGiftPlate/CreatedGiftPlate';
 export { CreatePasswordForm } from './CreatePasswordForm/CreatePasswordForm';
 export { ErrorScreen } from './ErrorScreen/ErrorScreen';

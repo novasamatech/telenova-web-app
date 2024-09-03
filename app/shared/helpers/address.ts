@@ -86,26 +86,3 @@ export const validateAddress = (address?: Address | PublicKey): boolean => {
     return false;
   }
 };
-
-export async function shareQrAddress(symbol: string, address: string) {
-  const canvasElement = document.getElementById(`qrcode_${symbol}`) as HTMLCanvasElement | null;
-
-  if (!canvasElement || !('toDataURL' in canvasElement)) {
-    throw new Error(`Element qrcode_${symbol} is not a canvas element`);
-  }
-
-  const dataUrl = canvasElement.toDataURL();
-  const blob = await (await fetch(dataUrl)).blob();
-
-  const file = new File([blob], 'qrcode.png', {
-    type: blob.type,
-    lastModified: new Date().getTime(),
-  });
-
-  const shareData = {
-    files: [file],
-    text: address,
-  };
-
-  navigator.share(shareData).catch(error => console.warn(error));
-}
