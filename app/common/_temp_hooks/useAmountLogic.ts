@@ -29,6 +29,7 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
 
   const [isTouched, setIsTouched] = useState(false);
   const [isPending, setPending] = useState(false);
+  const [isMaxPending, setIsMaxPending] = useState(true);
   const [isTransferAll, setIsTransferAll] = useState(false);
   const [isAmountValid, setIsAmountValid] = useState(true);
 
@@ -49,7 +50,9 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   useEffect(() => {
     if (!asset) return;
 
-    getMaxAmount(chainId, asset, balance?.transferable).then(setMaxAmount);
+    getMaxAmount(chainId, asset, balance?.transferable)
+      .then(setMaxAmount)
+      .finally(() => setIsMaxPending(false));
   }, []);
 
   useEffect(() => {
@@ -116,7 +119,6 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
     onAmountChange,
     setIsAmountValid,
     getIsAccountToBeReaped,
-    isPending,
     deposit,
     amount,
     fee,
@@ -124,5 +126,7 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
     isAmountValid,
     isTouched,
     isTransferAll,
+    isPending,
+    isMaxPending,
   };
 };

@@ -2,7 +2,7 @@ import { combine, createEvent, createStore, restore, sample, split } from 'effec
 import { isEmpty, orderBy } from 'lodash-es';
 import { readonly } from 'patronum';
 
-import { networkModel } from '@/models/network/network-model';
+import { networkModel } from '@/models/network';
 import { nonNullable } from '@/shared/helpers';
 import { DEFAULT_CONNECTED_CHAINS } from '@/shared/helpers/chains';
 import { type Asset } from '@/types/substrate';
