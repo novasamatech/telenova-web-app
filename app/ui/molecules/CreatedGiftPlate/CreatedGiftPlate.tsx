@@ -32,7 +32,7 @@ export const CreatedGiftPlate = () => {
   }, [webApp, connections]);
 
   return (
-    <Plate className="mt-4 h-[90px] w-full rounded-3xl active:bg-bg-item-pressed">
+    <Plate className="mt-4 h-[90px] w-full rounded-3xl border-1 border-border-neutral active:bg-bg-item-pressed">
       <Link to={$path('/gifts')} className="grid w-full grid-cols-[auto,1fr,auto] items-center gap-4">
         <Icon name="Present" size={60} />
         <div className="grid">

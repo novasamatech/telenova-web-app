@@ -8,6 +8,7 @@ import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { networkModel } from '@/models/network';
+import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
 import { copyToClipboard, shareQrAddress, toAddress } from '@/shared/helpers';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/ui/atoms';
@@ -21,16 +22,17 @@ const Page = () => {
 
   const navigate = useNavigate();
 
-  const chains = useUnit(networkModel.$chains);
-  const assets = useUnit(networkModel.$assets);
   const wallet = useUnit(walletModel.$wallet);
+  const webApp = useUnit(telegramModel.$webApp);
+  const [chains, assets] = useUnit([networkModel.$chains, networkModel.$assets]);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!selectedAsset || !wallet?.publicKey || !chains[typedChainId]) return null;
+  if (!selectedAsset || !wallet?.publicKey || !chains[typedChainId] || !webApp) return null;
 
   const address = toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix });
+  const isTelegramWeb = webApp.platform === 'weba' || webApp.platform === 'webk';
 
   return (
     <>
@@ -39,6 +41,7 @@ const Page = () => {
       <div className="flex flex-col items-center">
         <Plate className="my-6 flex h-[344px] w-[232px] flex-col items-center gap-3 break-all">
           <QRCode
+            enableCORS
             size={200}
             quietZone={0}
             eyeRadius={30}
@@ -70,12 +73,12 @@ const Page = () => {
           <PopoverContent>Address copied</PopoverContent>
         </Popover>
         {/* @ts-expect-error share functionality doesn't exist in Mozilla */}
-        {navigator.canShare && (
+        {!isTelegramWeb && navigator.canShare && (
           <Button
             color="primary"
             variant="flat"
             className="mt-4 min-h-[50px] w-[200px] rounded-full"
-            onClick={() => shareQrAddress(selectedAsset.symbol, address)}
+            onClick={() => shareQrAddress(`qrcode_${selectedAsset.symbol}`, address)}
           >
             <Icon name="ArrowUp" size={24} className="text-text-on-button-bold" />
             <MediumTitle as="span" className="text-text-on-button-bold">

@@ -35,3 +35,35 @@ export function copyToClipboard(id: string, text: string) {
     fallback(id);
   }
 }
+
+/**
+ * Share Address and QR image
+ *
+ * @param canvasId Element id
+ * @param address Account's address
+ *
+ * @returns {Promise}
+ */
+export async function shareQrAddress(canvasId: string, address: string): Promise<void> {
+  const canvasElement = document.getElementById(canvasId) as HTMLCanvasElement | null;
+
+  if (!canvasElement || !('toDataURL' in canvasElement)) {
+    throw new Error(`Element ${canvasId} is not a canvas element`);
+  }
+
+  try {
+    const dataUrl = canvasElement.toDataURL();
+    const blob = await (await fetch(dataUrl)).blob();
+
+    const file = new File([blob], 'qrcode.png', {
+      type: blob.type,
+      lastModified: new Date().getTime(),
+    });
+
+    navigator.share({ files: [file], text: address }).catch(error => {
+      console.info('Failed to share QR code with address', error);
+    });
+  } catch (error) {
+    console.error('Error within Share API', error);
+  }
+}
