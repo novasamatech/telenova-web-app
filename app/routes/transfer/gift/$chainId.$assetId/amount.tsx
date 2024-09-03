@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Progress } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
@@ -38,6 +38,7 @@ const Page = () => {
     setIsAmountValid,
     getIsAccountToBeReaped,
     isPending,
+    isMaxPending,
     deposit,
     amount,
     fee,
@@ -75,18 +76,14 @@ const Page = () => {
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
         <Icon name="Gift" className="h-8 w-8 text-bg-icon-accent-primary" />
         <HeadlineText>Preparing Gift</HeadlineText>
-        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={handleMaxGiftSend}>
-          <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
-          {maxAmount.isZero() ? (
-            <div className="w-[7ch] shrink-0">
-              <Progress size="md" isIndeterminate />
-            </div>
-          ) : (
-            <HeadlineText className="flex items-center text-text-link">
-              {toFormattedBalance(maxAmount, selectedAsset.precision).formatted}
-            </HeadlineText>
-          )}
-          <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
+        <Button
+          variant="light"
+          size="md"
+          className="flex items-center gap-x-1 p-2"
+          isLoading={isMaxPending}
+          onClick={handleMaxGiftSend}
+        >
+          <HeadlineText className="flex items-center text-text-link">Use MAX</HeadlineText>
         </Button>
       </div>
 

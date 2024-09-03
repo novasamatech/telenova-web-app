@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Progress } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
@@ -12,7 +12,6 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { toFormattedBalance } from '@/shared/helpers';
 import { Address, HeadlineText, Identicon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
 
@@ -46,6 +45,7 @@ const Page = () => {
     onAmountChange,
     getIsAccountToBeReaped,
     isPending,
+    isMaxPending,
     deposit,
     amount,
     fee,
@@ -91,18 +91,14 @@ const Page = () => {
           Send to
           <Address address={address} className="max-w-[120px]" />
         </HeadlineText>
-        <Button variant="light" size="md" className="flex items-center gap-x-1 p-2" onClick={onMaxAmount}>
-          <HeadlineText className="flex items-center text-text-link">Max:</HeadlineText>
-          {maxAmount.isZero() ? (
-            <div className="w-[7ch] shrink-0">
-              <Progress size="md" isIndeterminate />
-            </div>
-          ) : (
-            <HeadlineText className="flex items-center text-text-link">
-              {toFormattedBalance(maxAmount, selectedAsset.precision).formatted}
-            </HeadlineText>
-          )}
-          <HeadlineText className="flex items-center text-text-link">{selectedAsset.symbol}</HeadlineText>
+        <Button
+          variant="light"
+          size="md"
+          className="flex items-center gap-x-1 p-2"
+          isLoading={isMaxPending}
+          onClick={onMaxAmount}
+        >
+          <HeadlineText className="flex items-center text-text-link">Use MAX</HeadlineText>
         </Button>
       </div>
       <AmountDetails
