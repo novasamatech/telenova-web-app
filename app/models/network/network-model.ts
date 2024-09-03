@@ -538,6 +538,9 @@ export const networkModel = {
   // All available chains with connection statuses
   $connections: readonly($connections),
 
+  // Flag for loading chains
+  isChainsLoading: requestChainsFx.pending,
+
   input: {
     networkStarted,
     assetConnected,

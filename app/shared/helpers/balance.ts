@@ -110,8 +110,12 @@ export const toPrecisedBalance = (amount: string, precision: number): BN => {
   return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision));
 };
 
-export const getTotalBalance = (chains: ChainsMap, balances: ChainBalances, prices: AssetPrices | null): number => {
-  if (isEmpty(balances) || !prices) return 0;
+export const getTotalBalance = (
+  chains: ChainsMap,
+  balances: ChainBalances,
+  prices: AssetPrices | null,
+): number | undefined => {
+  if (isEmpty(chains) || isEmpty(balances) || !prices) return undefined;
 
   let totalBalance = 0;
 

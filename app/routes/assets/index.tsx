@@ -6,8 +6,7 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { networkModel } from '@/models/network';
-import { DUAL_SYMBOLS } from '@/shared/helpers';
-import { type Asset, type Chain, type ChainsMap } from '@/types/substrate';
+import { getParentChain } from '@/shared/helpers/chains';
 import { AssetIcon, BodyText, Icon, Input, MediumTitle, Plate, Switch, TitleText } from '@/ui/atoms';
 
 import { assetsPageModel } from './_model/assets-page-model';
@@ -21,15 +20,6 @@ const Page = () => {
   useEffect(() => {
     assetsPageModel.input.pageMounted();
   }, []);
-
-  const getParentChain = (chains: ChainsMap, chainId: ChainId, asset: Asset): Chain | undefined => {
-    if (!DUAL_SYMBOLS.includes(asset.symbol)) return;
-
-    const parentChainId = chains[chainId].parentId;
-    if (!parentChainId) return;
-
-    return chains[parentChainId];
-  };
 
   const toggleAsset = (chainId: ChainId, assetId: AssetId) => (selected: boolean) => {
     assetsPageModel.input.assetToggled({ chainId, assetId, selected });
@@ -77,7 +67,7 @@ const Page = () => {
         {assets.length === 0 && (
           <div className="mt-[70px] flex flex-col items-center gap-y-4">
             <Icon name="NoResult" size={180} />
-            <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search </BodyText>
+            <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search</BodyText>
           </div>
         )}
       </div>

@@ -65,7 +65,7 @@ const Page = () => {
         {assets.length === 0 && (
           <div className="mt-[70px] flex flex-col items-center gap-y-4">
             <Icon name="NoResult" size={180} />
-            <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search </BodyText>
+            <BodyText className="max-w-[225px] text-text-hint">Nothing to show here based on your search</BodyText>
           </div>
         )}
       </div>
