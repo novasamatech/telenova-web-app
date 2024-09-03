@@ -30,21 +30,12 @@ const mockedChains = {
   },
 } as unknown as ChainsMap;
 
-const mockedAssets = [
-  ['0x006', { assetId: 2, symbol: 'GLMR_0' }],
-  ['0x006', { assetId: 3, symbol: 'GLMR_1' }],
-  ['0x005', { assetId: 0, symbol: 'KAR_0' }],
-  ['0x005', { assetId: 1, symbol: 'KAR_1' }],
-  ['0x005', { assetId: 2, symbol: 'KAR_2' }],
-];
-
 // These assets should not appear in any list on Assets page
 vi.mock('@/shared/helpers/chains', () => ({
   DEFAULT_CONNECTED_CHAINS: {
     '0x001': [0], // POLKADOT
     '0x002': [0], // KUSAMA
     '0x003': [1], // DOT_ASSET_HUB
-    '0x004': [0], // WESTEND
   },
 }));
 
@@ -54,7 +45,14 @@ describe('routes/assets/_model/assets-page-model', () => {
 
     await allSettled(networkModel._internal.$chains, { scope, params: mockedChains });
 
-    expect(scope.getState(assetsPageModel._internal.$sortedAssets)).toEqual(mockedAssets);
+    expect(scope.getState(assetsPageModel._internal.$sortedAssets)).toEqual([
+      ['0x006', { assetId: 2, symbol: 'GLMR_0' }],
+      ['0x006', { assetId: 3, symbol: 'GLMR_1' }],
+      ['0x005', { assetId: 0, symbol: 'KAR_0' }],
+      ['0x005', { assetId: 1, symbol: 'KAR_1' }],
+      ['0x005', { assetId: 2, symbol: 'KAR_2' }],
+      ['0x004', { assetId: 0, symbol: 'WND' }],
+    ]);
   });
 
   test('should set $filteredAssets on pageMounted', async () => {
@@ -80,6 +78,7 @@ describe('routes/assets/_model/assets-page-model', () => {
       ['0x005', { assetId: 0, symbol: 'KAR_0' }, false],
       ['0x005', { assetId: 1, symbol: 'KAR_1' }, false],
       ['0x005', { assetId: 2, symbol: 'KAR_2' }, false],
+      ['0x004', { assetId: 0, symbol: 'WND' }, false],
     ]);
   });
 

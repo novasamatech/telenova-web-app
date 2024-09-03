@@ -119,7 +119,6 @@ describe('@/common/network/network-model', () => {
       [mockedChains[0].chainId]: { 0: { assetId: 0 } },
       [mockedChains[1].chainId]: { 0: { assetId: 0 } },
       [mockedChains[3].chainId]: { 1: { assetId: 1 } },
-      [mockedChains[4].chainId]: { 0: { assetId: 0 } },
     });
 
     const connection = { provider: expect.any(Object), api: expect.any(Object) };
@@ -128,7 +127,7 @@ describe('@/common/network/network-model', () => {
       [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
       [mockedChains[2].chainId]: { status: 'disconnected' }, // Karura
       [mockedChains[3].chainId]: { ...connection, status: 'connected' }, // Polkadot Asset Hub
-      [mockedChains[4].chainId]: { ...connection, status: 'connected' }, // Westend
+      [mockedChains[4].chainId]: { status: 'disconnected' }, // Westend
     });
   });
 
@@ -151,7 +150,6 @@ describe('@/common/network/network-model', () => {
       [mockedChains[1].chainId]: { 0: { assetId: 0 } },
       [mockedChains[2].chainId]: { 0: { assetId: 0 }, 2: { assetId: 2 } },
       [mockedChains[3].chainId]: { 1: { assetId: 1 } },
-      [mockedChains[4].chainId]: { 0: { assetId: 0 } },
     });
 
     const connection = { provider: expect.any(Object), api: expect.any(Object) };
@@ -160,7 +158,7 @@ describe('@/common/network/network-model', () => {
       [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
       [mockedChains[2].chainId]: { ...connection, status: 'connected' }, // Karura
       [mockedChains[3].chainId]: { ...connection, status: 'connected' }, // Polkadot Asset Hub
-      [mockedChains[4].chainId]: { ...connection, status: 'connected' }, // Westend
+      [mockedChains[4].chainId]: { status: 'disconnected' }, // Westend
     });
   });
 
