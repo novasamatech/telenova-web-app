@@ -1,15 +1,13 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
+import { navigationModel } from '@/models/navigation';
 import { TitleText } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 
 const Page = () => {
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (document.getElementById('mercuryo_widget')) return;
 
@@ -22,7 +20,9 @@ const Page = () => {
 
   return (
     <>
-      <BackButton onClick={() => navigate($path('/dashboard'))} />
+      <BackButton
+        onClick={() => navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/dashboard') })}
+      />
       <TitleText className="mb-10 mt-6">How to send tokens</TitleText>
       <LinkCard
         href={$path('/exchange/select', { type: 'buy' })}
