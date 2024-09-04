@@ -24,6 +24,8 @@ export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
   { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap' },
+
+  { rel: 'prefetch', href: 'https://widget.mercuryo.io/embed.2.1.js', as: 'script' },
 ];
 
 export const meta: MetaFunction = () => [

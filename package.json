@@ -77,7 +77,6 @@
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-json": "4.0.1",
     "eslint-plugin-react": "7.35.0",
-    "express-csp-header": "5.2.1",
     "husky": "9.1.4",
     "jsdom": "24.1.1",
     "postcss": "8.4.41",
