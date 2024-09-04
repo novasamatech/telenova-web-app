@@ -12,6 +12,7 @@ import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { telegramModel } from '@/models/telegram';
+import { telegramApi } from '@/shared/api';
 import { getTotalBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
@@ -58,7 +59,7 @@ const Page = () => {
   const navigateToMercuryo = () => {
     if (!webApp) return;
 
-    if (webApp.platform === 'weba' || webApp.platform === 'webk') {
+    if (telegramApi.isWebPlatform(webApp)) {
       toggleWarning();
     } else {
       navigate($path('/exchange'));
