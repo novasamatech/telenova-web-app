@@ -5,7 +5,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 
 import { getKeyringPairFromSeed } from '../../common/wallet';
 
-import { telegramApi } from '@/shared/api';
+import { chainsApi, telegramApi } from '@/shared/api';
 import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
 
 import { GIFT_STORE } from './constants';
@@ -70,7 +70,7 @@ export const getGiftInfo = (chains: Chain[], publicKey: PublicKey, startParam: s
 
   if (!chain || !asset || !symbol) return undefined;
 
-  const keyring = getKeyringPairFromSeed(seed);
+  const keyring = getKeyringPairFromSeed(seed, chainsApi.isEvmChain(chain));
   const address = encodeAddress(publicKey, chain.addressPrefix);
   const giftAddress = encodeAddress(keyring.publicKey, chain.addressPrefix);
 

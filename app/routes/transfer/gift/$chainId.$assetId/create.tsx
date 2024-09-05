@@ -15,6 +15,7 @@ import { type TgLink } from '@/common/telegram/types';
 import { createGiftWallet, getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
+import { chainsApi } from '@/shared/api';
 import { backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
@@ -64,11 +65,11 @@ const Page = () => {
   useEffect(() => {
     if (!webApp || !selectedAsset || !chains[typedChainId]) return;
 
-    const keyringPair = getKeyringPair(webApp);
+    const keyringPair = getKeyringPair(webApp, chainsApi.isEvmChain(chains[typedChainId]));
     if (!keyringPair) return;
 
     const selectedChain = chains[typedChainId];
-    const giftWallet = createGiftWallet(selectedChain.addressPrefix);
+    const giftWallet = createGiftWallet(selectedChain.addressPrefix, chainsApi.isEvmChain(selectedChain));
 
     sendGift(keyringPair, giftWallet.address, {
       chainId: typedChainId,

@@ -10,7 +10,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { telegramApi } from '@/shared/api';
+import { chainsApi, telegramApi } from '@/shared/api';
 import { copyToClipboard, shareQrAddress, toAddress } from '@/shared/helpers';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/ui/atoms';
 
@@ -32,7 +32,10 @@ const Page = () => {
 
   if (!selectedAsset || !wallet?.publicKey || !chains[typedChainId] || !webApp) return null;
 
-  const address = toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix });
+  const address = toAddress(wallet.publicKey, {
+    prefix: chains[typedChainId].addressPrefix,
+    evm: chainsApi.isEvmChain(chains[typedChainId]),
+  });
 
   return (
     <>

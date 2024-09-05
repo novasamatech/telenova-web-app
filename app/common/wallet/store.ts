@@ -6,22 +6,12 @@ import scryptJS from 'scrypt-js';
 
 import Keyring from '@polkadot/keyring';
 import { type KeyringPair } from '@polkadot/keyring/types';
-import { u8aToHex } from '@polkadot/util';
-import {
-  encodeAddress,
-  mnemonicGenerate,
-  mnemonicToMiniSecret,
-  randomAsHex,
-  sr25519PairFromSeed,
-} from '@polkadot/util-crypto';
+import { encodeAddress, mnemonicGenerate, randomAsHex } from '@polkadot/util-crypto';
 
 import { telegramApi } from '@/shared/api';
-import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/shared/helpers';
-import { type Wallet } from '@/types/substrate';
+import { BACKUP_DATE, MNEMONIC_STORE } from '@/shared/helpers';
 
 import { type GiftWallet } from './types';
-
-const keyring = new Keyring({ type: 'sr25519' });
 
 const SALT_SIZE_BYTES = 16;
 
@@ -69,19 +59,6 @@ export const generateWalletMnemonic = (): string => {
   return mnemonicGenerate();
 };
 
-export const createWallet = (webApp: WebApp, mnemonic: string | null): Wallet | null => {
-  if (!mnemonic) return null;
-
-  const seed = mnemonicToMiniSecret(mnemonic);
-  const keypair = sr25519PairFromSeed(seed);
-  const publicKey = u8aToHex(keypair.publicKey);
-
-  localStorage.setItem(telegramApi.getStoreName(webApp, PUBLIC_KEY_STORE), publicKey);
-  secureLocalStorage.setItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE), mnemonic);
-
-  return { publicKey };
-};
-
 export const backupMnemonic = (webApp: WebApp, mnemonic: string, password: string) => {
   const encryptedMnemonicWithSalt = encryptMnemonic(mnemonic, password);
   const date = Date.now().toString();
@@ -99,12 +76,12 @@ export const getMnemonic = (webApp: WebApp): string | null => {
  * Returns decrypted keyring pair for user's wallet Make sure to call lock()
  * after pair was used to clean up secret!
  */
-export const getKeyringPair = (webApp: WebApp): KeyringPair | undefined => {
+export const getKeyringPair = (webApp: WebApp, evm: boolean): KeyringPair | undefined => {
   try {
     const mnemonic = getMnemonic(webApp);
     if (mnemonic === null) return undefined;
 
-    return getKeyringPairFromSeed(mnemonic);
+    return getKeyringPairFromSeed(mnemonic, evm);
   } catch (e) {
     console.warn(e);
 
@@ -112,7 +89,11 @@ export const getKeyringPair = (webApp: WebApp): KeyringPair | undefined => {
   }
 };
 
-export const getKeyringPairFromSeed = (seed: string): KeyringPair => {
+export const getKeyringPairFromSeed = (seed: string, evm: boolean): KeyringPair => {
+  const keyring = new Keyring({ type: evm ? 'ecdsa' : 'sr25519' });
+
+  // jelly coast judge vehicle push nerve art ginger man damp quiz include
+  // const pair = keyring.addFromSeed() createFromUri(seed);
   return keyring.createFromUri(seed);
 };
 
@@ -135,9 +116,9 @@ export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: 
   }
 };
 
-export const createGiftWallet = (addressPrefix: number): GiftWallet => {
+export const createGiftWallet = (addressPrefix: number, evm: boolean): GiftWallet => {
   const seed = randomAsHex(10).slice(2);
-  const keyringPair = getKeyringPairFromSeed(seed);
+  const keyringPair = getKeyringPairFromSeed(seed, evm);
 
   return {
     address: encodeAddress(keyringPair.publicKey, addressPrefix),

@@ -41,7 +41,7 @@ const Page = () => {
           {toFormattedBalance(amount, selectedAsset.precision).formatted} {selectedAsset.symbol} Sent to
         </TitleText>
         <div className="flex items-center gap-x-1">
-          <Identicon address={address} />
+          <Identicon address={address} className="flex-shrink-0" />
           <MediumTitle className="text-text-hint">{toShortAddress(address, 15)}</MediumTitle>
         </div>
         <MediumTitle className="text-text-hint" align="center">
