@@ -110,7 +110,7 @@ const Page = () => {
           className="flex h-[108px] w-full overflow-hidden rounded-2xl bg-[url('/assets/misc/gradient.avif')] bg-[25%_25%]"
           onClick={() => telegramOpenLink('https://novawallet.io', webApp)}
         >
-          <img src="/assets/misc/phone.avif" alt="" className="ml-6 mr-1 mt-1.5 w-[106px]" />
+          <img src="/assets/misc/phone.avif" alt="" className="ml-6 mt-1.5 w-[106px]" />
           <div className="mx-auto flex w-[190px] flex-col gap-y-4 self-center">
             <BodyText className="-indent-1 text-body-bold text-white">Upgrade to Nova Wallet!</BodyText>
             <HelpText className="text-balance font-semibold text-white">
