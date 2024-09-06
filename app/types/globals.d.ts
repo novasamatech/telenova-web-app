@@ -37,6 +37,11 @@ declare module '*.webp' {
   export default content;
 }
 
+declare module '*.avif' {
+  const content: string;
+  export default content;
+}
+
 declare module '*.webm' {
   const content: string;
   export default content;

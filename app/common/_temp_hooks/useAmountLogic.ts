@@ -66,7 +66,12 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
 
   const getFeeAmount = (chainId: ChainId, asset: Asset, transferAmount: BN): Promise<BN> => {
     const FEE_BY_TYPE: Record<Asset['type'], () => Promise<BN>> = {
-      native: () => getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount),
+      // TODO: refactor to a better TX service
+      native: async () => {
+        const fee = await getTransactionFee(chainId, TransactionType.TRANSFER, transferAmount);
+
+        return isGift ? fee.muln(2) : fee;
+      },
       statemine: () => getAssetHubFee(chainId, asset as StatemineAsset, transferAmount, isGift),
       orml: () => getOrmlFee(chainId, asset as OrmlAsset, transferAmount, isGift),
     };
@@ -92,20 +97,18 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   };
 
   const getIsAccountToBeReaped = (): boolean => {
-    if (amount.isZero() || fee.isZero() || !isTouched || isTransferAll || !maxAmount) return false;
+    if (amount.isZero() || fee.isZero() || !isTouched || isTransferAll) return false;
 
-    // We don't add fee to the amount because maxAmountToSend is already subtracted by fee
-    // getMaxAmount is responsible for that
+    // We don't add fee to the amount because maxAmount is already subtracted by fee
+    // Look into getMaxAmount for details
     return maxAmount.sub(amount).lt(deposit);
   };
 
   const onMaxAmount = () => {
-    if (maxAmount.isZero()) return;
-
+    setAmount(maxAmount);
     setIsTransferAll(true);
     setIsTouched(true);
-    setAmount(maxAmount);
-    setIsAmountValid(true);
+    setIsAmountValid(!maxAmount.isZero());
   };
 
   const onAmountChange = (amount: string) => {
