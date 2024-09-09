@@ -32,12 +32,10 @@ export const TokenPrice = ({ balance = BN_ZERO, prices, asset, showBalance = tru
   return (
     <div className={cnTw('flex items-center justify-between', className)}>
       <BodyText className="text-text-hint" align="left">
-        <Price amount={price.price} />
-        {price.change && (
-          <BodyText as="span" className={cnTw('ml-1', isGrow ? 'text-text-positive' : 'text-text-danger')}>
-            {changeToShow}
-          </BodyText>
-        )}
+        <Price full amount={price.price} />
+        <BodyText as="span" className={cnTw('ml-1', isGrow ? 'text-text-positive' : 'text-text-danger')}>
+          {changeToShow}
+        </BodyText>
       </BodyText>
       {showBalance && (
         <BodyText className="text-text-hint" align="right">
