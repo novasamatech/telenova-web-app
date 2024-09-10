@@ -5,6 +5,7 @@ export { Identicon } from './Identicon/Identicon';
 export { Switch } from './Switch/Switch';
 export { LottiePlayer } from './LottiePlayer/LottiePlayer';
 export { Price } from './Price/Price';
+export { AccountPrice } from './Price/AccountPrice';
 export { Plate } from './Plate/Plate';
 export { TokenPrice } from './Price/TokenPrice';
 export { Shimmering } from './Shimmering/Shimmering';

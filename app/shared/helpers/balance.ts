@@ -5,8 +5,6 @@ import { BN, BN_TEN, BN_ZERO } from '@polkadot/util';
 
 import { type AssetPrices, type ChainBalances, type ChainsMap } from '@/types/substrate';
 
-type Suffix = 'thousand' | 'million' | 'billion' | 'trillion';
-
 const Decimal = {
   SMALL_NUMBER: 5,
   BIG_NUMBER: 2,
@@ -20,20 +18,16 @@ type FormattedBalance = {
   formatted: string;
 };
 
-const defaultShorthands: Record<Suffix, boolean> = {
-  thousand: false,
-  million: true,
-  billion: true,
-  trillion: true,
-};
-
-export const toFormattedBalance = (
-  balance: string | BN = '0',
-  precision = 0,
-  shorthands?: Partial<Record<Suffix, boolean>>,
-): FormattedBalance => {
-  const mergedShorthands = shorthands ? Object.assign(defaultShorthands, shorthands) : defaultShorthands;
-
+/*
+ * Get formatted asset balance with suffixes (M, B, T)
+ *
+ * @param balance Asset balance
+ * @param precision Asset precision
+ * @param nonZeroDigits Number of digits to get in decimal part
+ *
+ * @returns {Object}
+ */
+export const toFormattedBalance = (balance: string | BN = '0', precision = 0, nonZeroDigits = 1): FormattedBalance => {
   const stringBalance = balance.toString();
 
   const BNWithConfig = BigNumber.clone();
@@ -45,72 +39,131 @@ export const toFormattedBalance = (
       groupSeparator: '',
     },
   });
+
   const TEN = new BNWithConfig(10);
   const bnPrecision = new BNWithConfig(precision);
   const bnBalance = new BNWithConfig(stringBalance).div(TEN.pow(bnPrecision));
+
   let divider = new BNWithConfig(1);
-  let decimalPlaces = 0;
+  let decimalPlaces;
   let suffix = '';
 
   if (bnBalance.lt(1)) {
-    decimalPlaces = Math.max(precision - stringBalance.length + 1, 5);
+    decimalPlaces = getDecimalPlaceForFirstNonZeroChar(bnBalance.toFixed(), nonZeroDigits);
   } else if (bnBalance.lt(10)) {
     decimalPlaces = Decimal.SMALL_NUMBER;
   } else if (bnBalance.lt(1_000_000)) {
     decimalPlaces = Decimal.BIG_NUMBER;
-    if (mergedShorthands.thousand) {
-      divider = TEN.pow(new BNWithConfig(3));
-      suffix = 'K';
-    }
+    // divider = TEN.pow(new BNWithConfig(3));
   } else if (bnBalance.lt(1_000_000_000)) {
     decimalPlaces = Decimal.BIG_NUMBER;
-    if (mergedShorthands.million) {
-      divider = TEN.pow(new BNWithConfig(6));
-      suffix = 'M';
-    }
+    divider = TEN.pow(new BNWithConfig(6));
+    suffix = 'M';
   } else if (bnBalance.lt(1_000_000_000_000)) {
     decimalPlaces = Decimal.BIG_NUMBER;
-    if (mergedShorthands.billion) {
-      divider = TEN.pow(new BNWithConfig(9));
-      suffix = 'B';
-    }
+    divider = TEN.pow(new BNWithConfig(9));
+    suffix = 'B';
   } else {
     decimalPlaces = Decimal.BIG_NUMBER;
-    if (mergedShorthands.trillion) {
-      divider = TEN.pow(new BNWithConfig(12));
-      suffix = 'T';
-    }
+    divider = TEN.pow(new BNWithConfig(12));
+    suffix = 'T';
   }
 
   const value = new BNWithConfig(bnBalance).div(divider).decimalPlaces(decimalPlaces);
 
   return {
-    value: value.toFormat(),
-    bn: new BN(balance),
     suffix,
     decimalPlaces,
+    value: value.toFormat(),
+    bn: new BN(balance),
     formatted: value.toFormat() + suffix,
   };
 };
 
-export const toPrecisedBalance = (amount: string, precision: number): BN => {
-  if (!amount || Number.isNaN(parseFloat(amount))) return BN_ZERO;
+/*
+ * Get fiat price for the asset balance
+ *
+ * @param balance Asset balance
+ * @param price Fiat price
+ * @param precision Asset precision
+ * @param nonZeroDigits Number of digits to get in decimal part
+ *
+ * @returns {Number}
+ */
+export const toRoundedFiat = (
+  balance: string | BN = '0',
+  price: number,
+  precision = 0,
+  nonZeroDigits?: number,
+): number => {
+  if (Number(balance) === 0 || isNaN(Number(balance))) return 0;
 
-  const isDecimalValue = amount.match(/^(\d+)\.(\d+)$/);
+  const stringBalance = balance.toString();
+
+  const BNWithConfig = BigNumber.clone();
+  BNWithConfig.config({
+    ROUNDING_MODE: BNWithConfig.ROUND_DOWN,
+  });
+
+  const TEN = new BNWithConfig(10);
+  const bnPrecision = new BNWithConfig(precision);
+  const fiatBalance = new BigNumber(stringBalance).multipliedBy(price);
+  const bnFiatBalance = new BNWithConfig(fiatBalance).div(TEN.pow(bnPrecision));
+
+  if (bnFiatBalance.gte(1) && bnFiatBalance.lt(10)) {
+    return bnFiatBalance.decimalPlaces(Decimal.SMALL_NUMBER).toNumber();
+  }
+  if (bnFiatBalance.gt(10)) {
+    return bnFiatBalance.decimalPlaces(Decimal.BIG_NUMBER).toNumber();
+  }
+
+  const decimalPlaces = getDecimalPlaceForFirstNonZeroChar(bnFiatBalance.toFixed(), nonZeroDigits);
+
+  return Number(bnFiatBalance.toFixed(decimalPlaces));
+};
+
+const getDecimalPlaceForFirstNonZeroChar = (value: string, nonZeroDigits = 3) => {
+  const decimalPart = value.toString().split('.')[1];
+
+  return Math.max((decimalPart || '').search(/[1-9]/) + nonZeroDigits, 5);
+};
+
+/*
+ * Get asset balance with precision
+ * Balance: 1, Precision 10 --> 1000000000
+ *
+ * @param balance Asset balance
+ * @param precision Asset precision
+ *
+ * @returns {BigNumber}
+ */
+export const toPreciseBalance = (balance: string, precision: number): BN => {
+  if (!balance || Number.isNaN(parseFloat(balance))) return BN_ZERO;
+
+  const isDecimalValue = balance.match(/^(\d+)\.(\d+)$/);
   const bnPrecision = new BN(precision);
 
   if (isDecimalValue) {
-    const div = new BN(amount.replace(/\.\d*$/, ''));
-    const modString = amount.replace(/^\d+\./, '').slice(0, precision);
+    const div = new BN(balance.replace(/\.\d*$/, ''));
+    const modString = balance.replace(/^\d+\./, '').slice(0, precision);
     const mod = new BN(modString);
 
     return div.mul(BN_TEN.pow(bnPrecision)).add(mod.mul(BN_TEN.pow(new BN(precision - modString.length))));
   }
 
-  return new BN(amount.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision));
+  return new BN(balance.replace(/\D/g, '')).mul(BN_TEN.pow(bnPrecision));
 };
 
-export const getTotalBalance = (
+/*
+ * Get total fiat balance for assets with prices
+ *
+ * @param chains Available chains
+ * @param balances Chains' balances
+ * @param prices Fiat prices
+ *
+ * @returns {Number | undefined}
+ */
+export const getTotalFiatBalance = (
   chains: ChainsMap,
   balances: ChainBalances,
   prices: AssetPrices | null,
@@ -124,9 +177,11 @@ export const getTotalBalance = (
 
     if (!asset?.priceId) continue;
 
-    const formatedBalance = toFormattedBalance(assetBalance[asset.assetId].balance.total, asset.precision).value;
-
-    totalBalance += parseFloat(formatedBalance) * (prices[asset.priceId].price || 0);
+    totalBalance += toRoundedFiat(
+      assetBalance[asset.assetId].balance.total,
+      prices[asset.priceId].price || 0,
+      asset.precision,
+    );
   }
 
   return totalBalance;

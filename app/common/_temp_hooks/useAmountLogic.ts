@@ -4,7 +4,7 @@ import { BN, BN_ZERO } from '@polkadot/util';
 
 import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useQueryService } from '@/common/queryService/QueryService';
-import { toPrecisedBalance } from '@/shared/helpers';
+import { toPreciseBalance } from '@/shared/helpers';
 import { useOrml } from '@/shared/hooks';
 import { useAssetHub } from '@/shared/hooks/useAssetHub';
 import type { Asset, Balance, OrmlAsset, StatemineAsset } from '@/types/substrate';
@@ -114,7 +114,7 @@ export const useAmountLogic = ({ chainId, asset, balance, isGift }: AmountLogicP
   const onAmountChange = (amount: string) => {
     setIsTransferAll(false);
     setIsTouched(true);
-    setAmount(toPrecisedBalance(amount, asset.precision));
+    setAmount(toPreciseBalance(amount, asset.precision));
   };
 
   return {
