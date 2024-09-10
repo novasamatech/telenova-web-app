@@ -4,8 +4,7 @@ import { Price } from '../Price/Price';
 import { Shimmering } from '../Shimmering/Shimmering';
 import { BodyText } from '../Typography';
 
-import { cnTw } from '@/shared/helpers';
-import { toFormattedBalance } from '@/shared/helpers/balance';
+import { cnTw, toFormattedBalance } from '@/shared/helpers';
 import { type Asset, type AssetPrices } from '@/types/substrate';
 
 type Props = {
@@ -23,8 +22,7 @@ export const TokenPrice = ({ balance = BN_ZERO, prices, asset, showBalance = tru
     return <Shimmering width={100} height={20} />;
   }
 
-  const total = balance.muln(price.price);
-  const { value, suffix } = toFormattedBalance(total, asset.precision);
+  const { value, suffix } = toFormattedBalance(balance.muln(price.price), asset.precision, 3);
 
   const isGrow = price.change && price.change >= 0;
   const changeToShow = price.change && `${isGrow ? '+' : ''}${price.change.toFixed(2)}%`;
@@ -32,14 +30,14 @@ export const TokenPrice = ({ balance = BN_ZERO, prices, asset, showBalance = tru
   return (
     <div className={cnTw('flex items-center justify-between', className)}>
       <BodyText className="text-text-hint" align="left">
-        <Price full amount={price.price} />
+        <Price amount={price.price} />
         <BodyText as="span" className={cnTw('ml-1', isGrow ? 'text-text-positive' : 'text-text-danger')}>
           {changeToShow}
         </BodyText>
       </BodyText>
       {showBalance && (
         <BodyText className="text-text-hint" align="right">
-          <Price amount={Number(value)} />
+          <Price amount={value} />
           {suffix}
         </BodyText>
       )}

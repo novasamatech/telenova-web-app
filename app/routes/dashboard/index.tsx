@@ -13,18 +13,17 @@ import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { telegramModel } from '@/models/telegram';
 import { telegramApi } from '@/shared/api';
-import { getTotalBalance } from '@/shared/helpers';
+import { getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
+  AccountPrice,
   BodyText,
   HeadlineText,
   Icon,
   IconButton,
-  LargeTitleText,
   LinkButton,
   MediumTitle,
   Plate,
-  Price,
   Shimmering,
   TextBase,
   TitleText,
@@ -66,8 +65,6 @@ const Page = () => {
     }
   };
 
-  const totalBalance = getTotalBalance(chains, balances, prices);
-
   return (
     <>
       <BackButton hidden />
@@ -94,9 +91,7 @@ const Page = () => {
 
         <div className="mt-4 flex flex-col items-center">
           <HeadlineText className="mb-1 text-text-hint">Total Balance</HeadlineText>
-          <LargeTitleText>
-            <Price amount={totalBalance} decimalSize="lg" />
-          </LargeTitleText>
+          <AccountPrice amount={getTotalFiatBalance(chains, balances, prices)?.toFixed(2)} />
           <div className="mt-7 grid w-full grid-cols-3 gap-2">
             <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
             <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
