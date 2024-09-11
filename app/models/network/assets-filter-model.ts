@@ -15,9 +15,10 @@ const $filteredAssets = combine(
   },
   ({ query, sortedAssets }) => {
     return sortedAssets.filter(([, asset]) => {
-      return asset.symbol.toLowerCase().split('').some(char => 
-        char.localeCompare(query, undefined, { sensitivity: 'accent' }) === 0
-      );
+      return asset.symbol
+        .toLowerCase()
+        .split('')
+        .some(char => char.localeCompare(query, undefined, { sensitivity: 'accent' }) === 0);
     });
   },
 );
