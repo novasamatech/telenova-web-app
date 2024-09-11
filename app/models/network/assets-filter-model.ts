@@ -14,8 +14,10 @@ const $filteredAssets = combine(
     sortedAssets: networkModel.$sortedAssets,
   },
   ({ query, sortedAssets }) => {
-    return sortedAssets.filter(([_, asset]) => {
-      return asset.symbol.toLowerCase().includes(query.toLowerCase());
+    return sortedAssets.filter(([, asset]) => {
+      return asset.symbol.toLowerCase().split('').some(char => 
+        char.localeCompare(query, undefined, { sensitivity: 'accent' }) === 0
+      );
     });
   },
 );
