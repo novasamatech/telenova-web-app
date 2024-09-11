@@ -51,7 +51,7 @@ sample({
     for (const tuple of assets) {
       const [chainId, asset] = tuple as [ChainId, Asset];
 
-      if (query && !asset.symbol.toLowerCase().includes(query)) continue;
+      if (query && !asset.symbol.toLowerCase().includes(query.toLowerCase())) continue;
 
       const isActive = Boolean(activeAssets[chainId]?.[asset.assetId]);
       const collection = isActive ? active : inactive;
