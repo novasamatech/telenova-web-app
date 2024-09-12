@@ -1,4 +1,4 @@
-import type { NavigateOptions } from 'react-router/dist/lib/context';
+import { type NavigateOptions } from 'react-router/dist/lib/context';
 
 import { type NavigateFunction, type To } from 'react-router-dom';
 

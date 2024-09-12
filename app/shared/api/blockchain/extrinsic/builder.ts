@@ -1,5 +1,5 @@
 import { type ApiPromise } from '@polkadot/api';
-import { type SubmittableExtrinsic, type SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
+import { type SubmittableExtrinsic, type SubmittableExtrinsicFunction } from '@polkadot/api/types';
 
 import { type BatchMode } from '../types';
 

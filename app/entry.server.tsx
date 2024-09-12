@@ -1,4 +1,4 @@
-import type { EntryContext } from '@remix-run/node';
+import { type EntryContext } from '@remix-run/node';
 
 import { PassThrough } from 'node:stream';
 

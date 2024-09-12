@@ -1,9 +1,8 @@
 import { type ApiPromise } from '@polkadot/api';
-import type { SignerOptions } from '@polkadot/api/types';
-import { type SubmittableExtrinsic } from '@polkadot/api-base/types';
-import type { KeyringPair } from '@polkadot/keyring/types';
-import type { Hash } from '@polkadot/types/interfaces';
-import type { BN } from '@polkadot/util';
+import { type SignerOptions, type SubmittableExtrinsic } from '@polkadot/api/types';
+import { type KeyringPair } from '@polkadot/keyring/types';
+import { type Hash } from '@polkadot/types/interfaces';
+import { type BN } from '@polkadot/util';
 
 import { type TransactionType } from '../types';
 

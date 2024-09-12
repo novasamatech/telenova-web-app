@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 
-import { type ITransfer } from '@/shared/api/blockchain/transfer/types';
+import { type ITransfer } from '@/shared/api/types';
 import { toPrecisedBalance } from '@/shared/helpers';
-import type { Asset, Balance } from '@/types/substrate';
+import { type Asset, type Balance } from '@/types/substrate';
 
 type AmountLogicParams = {
   service: ITransfer;
