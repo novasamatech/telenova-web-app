@@ -13,6 +13,7 @@ export const SS58_DEFAULT_PREFIX = 42;
 
 // TODO: take json from nova-helpers
 export const ASSET_LOCATION: Record<string, SignerOptions> = {
+  // USDT MultiLocation
   1984: {
     // @ts-expect-error type error
     parents: 0,
@@ -20,6 +21,7 @@ export const ASSET_LOCATION: Record<string, SignerOptions> = {
       X2: [{ PalletInstance: 50 }, { GeneralIndex: 1984 }],
     },
   },
+  // DOT MultiLocation
   0: {
     // @ts-expect-error type error
     parents: 1,

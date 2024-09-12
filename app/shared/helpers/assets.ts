@@ -13,8 +13,8 @@ function getAssetId(asset: Asset): string {
 
   const assetIds: Record<Asset['type'], string> = {
     native: defaultAssetId,
-    statemine: isStatemineAsset(asset) ? asset.typeExtras.assetId : defaultAssetId,
-    orml: isOrmlAsset(asset) ? asset.typeExtras.currencyIdScale : defaultAssetId,
+    statemine: (asset as StatemineAsset).typeExtras.assetId,
+    orml: (asset as OrmlAsset).typeExtras.currencyIdScale,
   };
 
   return assetIds[asset.type];

@@ -20,10 +20,10 @@
   "dependencies": {
     "@lottiefiles/react-lottie-player": "3.5.4",
     "@nextui-org/react": "2.4.2",
-    "@polkadot/api": "12.2.3",
+    "@polkadot/api": "13.0.1",
     "@polkadot/keyring": "13.0.2",
-    "@polkadot/react-identicon": "3.8.3",
-    "@polkadot/types": "12.2.3",
+    "@polkadot/react-identicon": "3.9.1",
+    "@polkadot/types": "13.0.1",
     "@polkadot/util": "13.0.2",
     "@polkadot/util-crypto": "13.0.2",
     "@remix-run/express": "2.9.2",

@@ -2,7 +2,7 @@ import { type WebApp } from '@twa-dev/types';
 import { $path } from 'remix-routes';
 
 import { telegramShareLink } from '@/common/telegram';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
+import { MainButton } from '@/common/telegram/MainButton';
 import { type TgLink } from '@/common/telegram/types';
 import { navigationModel } from '@/models/navigation';
 import { BodyText, TitleText } from '@/ui/atoms';

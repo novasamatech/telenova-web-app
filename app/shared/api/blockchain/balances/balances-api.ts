@@ -3,16 +3,17 @@ import noop from 'lodash/noop';
 import { type ApiPromise } from '@polkadot/api';
 import { type UnsubscribePromise } from '@polkadot/api/types';
 import { type AccountData } from '@polkadot/types/interfaces';
-import { BN_ZERO, hexToU8a } from '@polkadot/util';
+import { type BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
 import { assetUtils, toAddress } from '@/shared/helpers';
 import { type Asset, type Chain, type NativeAsset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
 import { type AssetBalance } from '@/types/substrate/balance';
 
-import { type ISubscribeBalance, type OrmlAccountData } from './types';
+import { type IFreeBalance, type ISubscribeBalance, type OrmlAccountData } from './types';
 
 export const balancesApi = {
   subscribeBalance,
+  getFreeBalance,
 };
 
 const subscribeNativeBalanceChange: ISubscribeBalance<NativeAsset> = (api, chain, asset, publicKey, callback) => {
@@ -116,3 +117,35 @@ function subscribeBalance(
 
   return actions[asset.type](api, chain, asset, publicKey, callback);
 }
+
+function getFreeBalance(api: ApiPromise, address: Address, asset: Asset): Promise<BN> {
+  const actions: Record<Asset['type'], IFreeBalance<any>> = {
+    native: getFreeBalanceNative,
+    statemine: getFreeBalanceStatemine,
+    orml: getFreeBalanceOrml,
+  };
+
+  return actions[asset.type](api, address, asset);
+}
+
+const getFreeBalanceNative: IFreeBalance<NativeAsset> = (api, address): Promise<BN> => {
+  return api.query.system.account(address).then(balance => balance.data.free.toBn());
+};
+
+const getFreeBalanceOrml: IFreeBalance<OrmlAsset> = async (api, address, asset): Promise<BN> => {
+  const method = api.query['tokens']?.['accounts'] as any;
+
+  const ormlAssetId = assetUtils.getAssetId(asset);
+  const currencyIdType = asset.typeExtras.currencyIdType;
+  const assetId = api.createType(currencyIdType, hexToU8a(ormlAssetId));
+
+  const balance = await method(address, assetId);
+
+  return (balance as OrmlAccountData).free.toBn();
+};
+
+const getFreeBalanceStatemine: IFreeBalance<StatemineAsset> = (api, address, asset): Promise<BN> => {
+  return api.query.assets.account(assetUtils.getAssetId(asset), address).then(balance => {
+    return balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn();
+  });
+};

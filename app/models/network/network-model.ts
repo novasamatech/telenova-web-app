@@ -5,7 +5,7 @@ import { combineEvents, readonly, spread } from 'patronum';
 import { type ApiPromise } from '@polkadot/api';
 
 import { chainsApi, metadataApi } from '@/shared/api';
-import { type ProviderWithMetadata, providerApi } from '@/shared/api/network/provider-api';
+import { type ProviderWithMetadata, providerApi } from '@/shared/api/blockchain/network/provider-api';
 import { CONNECTIONS_STORE, nonNullable } from '@/shared/helpers';
 import { DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS } from '@/shared/helpers/chains';
 import { type Asset, type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';

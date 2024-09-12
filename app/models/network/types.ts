@@ -1,6 +1,6 @@
 import type { ApiPromise } from '@polkadot/api';
 
-import { type ProviderWithMetadata } from '@/shared/api/network/provider-api';
+import { type ProviderWithMetadata } from '@/shared/api/blockchain/network/provider-api';
 
 export type Connection = {
   provider?: ProviderWithMetadata;

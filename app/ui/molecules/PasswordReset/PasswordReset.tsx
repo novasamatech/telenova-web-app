@@ -6,8 +6,8 @@ import { $path } from 'remix-routes';
 
 import { resetWallet } from '@/common/wallet';
 
-import { BackupDeleted } from './BackupDeleted.tsx';
-import { PasswordForgotten } from './PasswordForgotten.tsx';
+import { BackupDeleted } from './BackupDeleted';
+import { PasswordForgotten } from './PasswordForgotten';
 
 const enum Step {
   INIT,

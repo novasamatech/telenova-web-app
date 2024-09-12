@@ -11,6 +11,7 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
+import { transferFactory } from '@/shared/api';
 import { toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, Icon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
@@ -27,6 +28,7 @@ const Page = () => {
   const assets = useUnit(networkModel.$assets);
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
+  const connections = useUnit(networkModel.$connections);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
@@ -46,7 +48,12 @@ const Page = () => {
     isAmountValid,
     isTouched,
     isTransferAll,
-  } = useAmountLogic({ chainId: typedChainId, asset: selectedAsset!, isGift: true, balance });
+  } = useAmountLogic({
+    service: transferFactory.createService(connections[typedChainId].api!, selectedAsset),
+    asset: selectedAsset!,
+    isGift: true,
+    balance,
+  });
 
   const handleMaxGiftSend = () => {
     onMaxAmount();

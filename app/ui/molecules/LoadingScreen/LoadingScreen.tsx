@@ -1,4 +1,4 @@
-import { Icon } from '../../atoms/Icon/Icon.tsx';
+import { Icon } from '../../atoms/Icon/Icon';
 import { BodyText } from '../../atoms/Typography';
 
 export const LoadingScreen = () => {
