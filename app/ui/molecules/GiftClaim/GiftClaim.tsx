@@ -12,7 +12,7 @@ import { useGlobalContext } from '@/common/providers';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { balancesApi, transferFactory } from '@/shared/api';
+import { balancesFactory, transferFactory } from '@/shared/api';
 import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/ui/atoms';
@@ -74,7 +74,7 @@ export const GiftClaim = () => {
   }, [startParam, wallet, isGiftClaimed, connections]);
 
   const getGiftBalance = async (api: ApiPromise, giftAddress: Address, asset: Asset): Promise<BN> => {
-    const giftBalance = await balancesApi.getFreeBalance(api, giftAddress, asset);
+    const giftBalance = await balancesFactory.createService(api, asset).getFreeBalance(giftAddress);
     if (giftBalance.isZero()) return BN_ZERO;
 
     const fee = await transferFactory.createService(api, asset).getTransferFee({ transferAll: true });

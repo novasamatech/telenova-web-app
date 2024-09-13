@@ -7,7 +7,7 @@ import { BN_TEN } from '@polkadot/util';
 import { networkModel } from '../network/network-model';
 import { walletModel } from '../wallet/wallet-model';
 
-import { balancesApi } from '@/shared/api';
+import { balancesFactory } from '@/shared/api';
 import { type ChainsMap } from '@/types/substrate';
 
 import { balancesModel } from './balances-model';
@@ -114,7 +114,10 @@ describe('models/balances/balances-model', () => {
 
   test('should update $subscriptions on assetToSubSet', async () => {
     const unsubPromise = Promise.resolve(noop);
-    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(unsubPromise);
+    vi.spyOn(balancesFactory, 'createService').mockReturnValue({
+      subscribeBalance: vi.fn().mockResolvedValue(noop),
+      getFreeBalance: vi.fn(),
+    });
 
     const scope = fork({
       values: [
@@ -138,7 +141,10 @@ describe('models/balances/balances-model', () => {
 
   test('should subscribe $assets for chainId on networkModel.output.connectionChanged', async () => {
     const unsubPromise = Promise.resolve(noop);
-    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(unsubPromise);
+    vi.spyOn(balancesFactory, 'createService').mockReturnValue({
+      subscribeBalance: vi.fn().mockResolvedValue(noop),
+      getFreeBalance: vi.fn(),
+    });
 
     const scope = fork({
       values: [
@@ -167,7 +173,10 @@ describe('models/balances/balances-model', () => {
 
   test('should unsubscribe $assets for chainId on networkModel.output.connectionChanged', async () => {
     const spyUnsub = vi.fn();
-    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(Promise.resolve(spyUnsub));
+    vi.spyOn(balancesFactory, 'createService').mockReturnValue({
+      subscribeBalance: vi.fn().mockResolvedValue(spyUnsub),
+      getFreeBalance: vi.fn(),
+    });
 
     const scope = fork({
       values: [
@@ -198,7 +207,10 @@ describe('models/balances/balances-model', () => {
 
   test('should update $subscriptions when walletModel.$account updates', async () => {
     const unsubPromise = Promise.resolve(noop);
-    vi.spyOn(balancesApi, 'subscribeBalance').mockReturnValue(unsubPromise);
+    vi.spyOn(balancesFactory, 'createService').mockReturnValue({
+      subscribeBalance: vi.fn().mockResolvedValue(noop),
+      getFreeBalance: vi.fn(),
+    });
 
     const scope = fork({
       values: [
