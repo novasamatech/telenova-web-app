@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { BN, BN_ZERO } from '@polkadot/util';
 
 import { type ITransfer } from '@/shared/api/types';
-import { toPrecisedBalance } from '@/shared/helpers';
+import { toPreciseBalance } from '@/shared/helpers';
 import { type Asset, type Balance } from '@/types/substrate';
 
 type AmountLogicParams = {
@@ -67,25 +67,23 @@ export const useAmountLogic = ({ service, asset, balance, isGift }: AmountLogicP
   };
 
   const getIsAccountToBeReaped = (): boolean => {
-    if (amount.isZero() || fee.isZero() || maxAmount.isZero() || isTransferAll || !isTouched) return false;
+    if (amount.isZero() || fee.isZero() || !isTouched || isTransferAll) return false;
 
     // We don't add fee to the amount because maxAmount is already subtracted by fee
     return maxAmount.sub(amount).lt(deposit);
   };
 
   const onMaxAmount = () => {
-    if (maxAmount.isZero()) return;
-
+    setAmount(maxAmount);
     setIsTransferAll(true);
     setIsTouched(true);
-    setAmount(maxAmount);
-    setIsAmountValid(true);
+    setIsAmountValid(!maxAmount.isZero());
   };
 
   const onAmountChange = (amount: string) => {
     setIsTransferAll(false);
     setIsTouched(true);
-    setAmount(toPrecisedBalance(amount, asset.precision));
+    setAmount(toPreciseBalance(amount, asset.precision));
   };
 
   return {
