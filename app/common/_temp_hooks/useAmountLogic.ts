@@ -53,7 +53,7 @@ export const useAmountLogic = ({ service, asset, balance, isGift }: AmountLogicP
   useEffect(() => {
     if (!isTouched) return;
 
-    const isUnderMax = maxAmount.gt(amount);
+    const isUnderMax = amount.lte(maxAmount);
     const isOverDeposit = maxAmount.sub(amount).gte(deposit);
 
     setIsAmountValid(!amount.isZero() && isUnderMax && (isTransferAll || isOverDeposit));

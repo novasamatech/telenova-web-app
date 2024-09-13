@@ -51,8 +51,9 @@ export class OrmlTransferService implements ITransfer {
 
   async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
     const giftAccountFee = await this.getTransferFee({ ...rest, amount });
+    const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
 
-    return this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
+    return giftAccountFee.add(clientAccountFee);
   }
 
   getExistentialDeposit(): Promise<BN> {

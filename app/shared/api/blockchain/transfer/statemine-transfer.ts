@@ -59,8 +59,9 @@ export class StatemineTransferService implements ITransfer {
   async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
     const giftAccountFee = await this.getTransferFee({ ...rest, amount });
     const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
+    const totalFee = giftAccountFee.add(clientAccountFee);
 
-    return this.#assetConversion(clientAccountFee);
+    return this.#assetConversion(totalFee);
   }
 
   getExistentialDeposit(): Promise<BN> {
@@ -72,6 +73,7 @@ export class StatemineTransferService implements ITransfer {
   // Right now it's AssetHub only USDT/DOT
   async #assetConversion(amount: BN): Promise<BN> {
     const convertedFee = await this.#api!.call.assetConversionApi.quotePriceTokensForExactTokens(
+      // @ts-expect-error type error
       ASSET_LOCATION['1984'],
       ASSET_LOCATION['0'],
       amount,
