@@ -56,4 +56,8 @@ export class NativeBalanceService implements IBalance {
   getFreeBalance(address: Address): Promise<BN> {
     return this.#api.query.system.account(address).then(balance => balance.data.free.toBn());
   }
+
+  getExistentialDeposit(): Promise<BN> {
+    return Promise.resolve(this.#api.consts.balances.existentialDeposit.toBn());
+  }
 }

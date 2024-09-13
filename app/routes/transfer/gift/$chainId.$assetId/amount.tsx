@@ -11,7 +11,7 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { transferFactory } from '@/shared/api';
+import { balancesFactory, transferFactory } from '@/shared/api';
 import { toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, Icon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
@@ -49,7 +49,10 @@ const Page = () => {
     isTouched,
     isTransferAll,
   } = useAmountLogic({
-    service: transferFactory.createService(connections[typedChainId].api!, selectedAsset),
+    services: {
+      balanceService: balancesFactory.createService(connections[typedChainId].api!, selectedAsset),
+      transferService: transferFactory.createService(connections[typedChainId].api!, selectedAsset),
+    },
     asset: selectedAsset!,
     isGift: true,
     balance,

@@ -47,4 +47,10 @@ export class StatemineBalanceService implements IBalance {
       return balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn();
     });
   }
+
+  getExistentialDeposit(): Promise<BN> {
+    const assetId = assetUtils.getAssetId(this.#asset);
+
+    return this.#api.query.assets.asset(assetId).then(balance => balance.value.minBalance.toBn());
+  }
 }

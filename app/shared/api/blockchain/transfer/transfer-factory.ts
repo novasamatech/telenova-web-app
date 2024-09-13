@@ -2,7 +2,7 @@ import { type ApiPromise } from '@polkadot/api';
 
 import type { Asset, OrmlAsset, StatemineAsset } from '@/types/substrate';
 
-import { BalanceTransferService } from './balance-transfer';
+import { BalanceTransferService } from './native-transfer';
 import { OrmlTransferService } from './orml-transfer';
 import { StatemineTransferService } from './statemine-transfer';
 import { type ITransfer } from './types';

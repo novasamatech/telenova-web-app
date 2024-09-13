@@ -2,18 +2,21 @@ import { useEffect, useState } from 'react';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 
-import { type ITransfer } from '@/shared/api/types';
+import { type IBalance, type ITransfer } from '@/shared/api/types';
 import { toPreciseBalance } from '@/shared/helpers';
 import { type Asset, type Balance } from '@/types/substrate';
 
 type AmountLogicParams = {
-  service: ITransfer;
+  services: {
+    transferService: ITransfer;
+    balanceService: IBalance;
+  };
   asset: Asset;
   balance?: Balance;
   isGift: boolean;
 };
 
-export const useAmountLogic = ({ service, asset, balance, isGift }: AmountLogicParams) => {
+export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogicParams) => {
   const [fee, setFee] = useState(BN_ZERO);
   const [amount, setAmount] = useState(BN_ZERO);
   const [deposit, setDeposit] = useState(BN_ZERO);
@@ -25,6 +28,8 @@ export const useAmountLogic = ({ service, asset, balance, isGift }: AmountLogicP
   const [isTransferAll, setIsTransferAll] = useState(false);
   const [isAmountValid, setIsAmountValid] = useState(true);
 
+  const { balanceService, transferService } = services;
+
   useEffect(() => {
     if (amount.isZero()) return;
 
@@ -32,8 +37,8 @@ export const useAmountLogic = ({ service, asset, balance, isGift }: AmountLogicP
     const feeParams = { amount, transferAll: isTransferAll };
 
     Promise.all([
-      isGift ? service.getGiftTransferFee(feeParams) : service.getTransferFee(feeParams),
-      service.getExistentialDeposit(),
+      isGift ? transferService.getGiftTransferFee(feeParams) : transferService.getTransferFee(feeParams),
+      balanceService.getExistentialDeposit(),
     ])
       .then(([fee, deposit]) => {
         setFee(fee);
@@ -61,7 +66,9 @@ export const useAmountLogic = ({ service, asset, balance, isGift }: AmountLogicP
 
   const getMaxAmount = async (transferable = BN_ZERO): Promise<BN> => {
     const feeParams = { amount: transferable, transferAll: true };
-    const fee = isGift ? await service.getGiftTransferFee(feeParams) : await service.getTransferFee(feeParams);
+    const fee = isGift
+      ? await transferService.getGiftTransferFee(feeParams)
+      : await transferService.getTransferFee(feeParams);
 
     return BN.max(transferable.sub(fee), BN_ZERO);
   };

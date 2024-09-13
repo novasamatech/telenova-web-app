@@ -5,9 +5,10 @@ import { decodeAddress } from '@polkadot/util-crypto';
 
 import { extrinsicApi } from '../extrinsic/extrinsic-api';
 
-import { ASSET_LOCATION, FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
+import { FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
 import { type StatemineAsset } from '@/types/substrate';
 
+import { ASSET_LOCATION } from './constants';
 import { type FeeParams, type ITransfer, type SendTransferParams } from './types';
 
 export class StatemineTransferService implements ITransfer {
@@ -62,12 +63,6 @@ export class StatemineTransferService implements ITransfer {
     const totalFee = giftAccountFee.add(clientAccountFee);
 
     return this.#assetConversion(totalFee);
-  }
-
-  getExistentialDeposit(): Promise<BN> {
-    const assetId = assetUtils.getAssetId(this.#asset);
-
-    return this.#api.query.assets.asset(assetId).then(balance => balance.value.minBalance.toBn());
   }
 
   // Right now it's AssetHub only USDT/DOT

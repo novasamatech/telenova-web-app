@@ -1,9 +1,9 @@
 import noop from 'lodash/noop';
 
 import { type ApiPromise } from '@polkadot/api';
-import type { UnsubscribePromise } from '@polkadot/api/types';
+import { type UnsubscribePromise } from '@polkadot/api/types';
 import { type Balance } from '@polkadot/types/interfaces';
-import { type BN, BN_ZERO, hexToU8a } from '@polkadot/util';
+import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
 import { assetUtils, toAddress } from '@/shared/helpers';
 import { type AssetBalance, type Chain, type OrmlAsset } from '@/types/substrate';
@@ -70,5 +70,10 @@ export class OrmlBalanceService implements IBalance {
     const balance = await method(address, assetId);
 
     return (balance as OrmlAccountData).free.toBn();
+  }
+
+  getExistentialDeposit(): Promise<BN> {
+    // existentialDeposit includes asset precision
+    return Promise.resolve(new BN(this.#asset.typeExtras.existentialDeposit));
   }
 }

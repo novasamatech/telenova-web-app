@@ -1,6 +1,6 @@
 import { type ApiPromise } from '@polkadot/api';
 import { type Hash } from '@polkadot/types/interfaces';
-import { BN, BN_ZERO } from '@polkadot/util';
+import { type BN, BN_ZERO } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 
 import { extrinsicApi } from '../extrinsic/extrinsic-api';
@@ -54,10 +54,5 @@ export class OrmlTransferService implements ITransfer {
     const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
 
     return giftAccountFee.add(clientAccountFee);
-  }
-
-  getExistentialDeposit(): Promise<BN> {
-    // existentialDeposit includes asset precision
-    return Promise.resolve(new BN(this.#asset.typeExtras.existentialDeposit));
   }
 }

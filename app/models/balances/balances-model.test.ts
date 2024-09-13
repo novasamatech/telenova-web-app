@@ -117,6 +117,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(noop),
       getFreeBalance: vi.fn(),
+      getExistentialDeposit: vi.fn(),
     });
 
     const scope = fork({
@@ -144,6 +145,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(noop),
       getFreeBalance: vi.fn(),
+      getExistentialDeposit: vi.fn(),
     });
 
     const scope = fork({
@@ -176,6 +178,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(spyUnsub),
       getFreeBalance: vi.fn(),
+      getExistentialDeposit: vi.fn(),
     });
 
     const scope = fork({
@@ -210,6 +213,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(noop),
       getFreeBalance: vi.fn(),
+      getExistentialDeposit: vi.fn(),
     });
 
     const scope = fork({

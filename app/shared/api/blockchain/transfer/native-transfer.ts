@@ -50,8 +50,4 @@ export class BalanceTransferService implements ITransfer {
 
     return giftAccountFee.add(clientAccountFee);
   }
-
-  getExistentialDeposit(): Promise<BN> {
-    return Promise.resolve(this.#api.consts.balances.existentialDeposit.toBn());
-  }
 }

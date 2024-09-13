@@ -10,4 +10,5 @@ export interface IBalance {
     callback: (newBalance: AssetBalance) => void,
   ) => UnsubscribePromise;
   getFreeBalance: (address: Address) => Promise<BN>;
+  getExistentialDeposit: () => Promise<BN>;
 }
