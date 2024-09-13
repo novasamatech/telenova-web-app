@@ -13,6 +13,8 @@ import { BACKUP_DATE, MNEMONIC_STORE } from '@/shared/helpers';
 
 import { type GiftWallet } from './types';
 
+const keyring = new Keyring({ type: 'sr25519' });
+
 const SALT_SIZE_BYTES = 16;
 
 export function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {
@@ -76,12 +78,12 @@ export const getMnemonic = (webApp: WebApp): string | null => {
  * Returns decrypted keyring pair for user's wallet Make sure to call lock()
  * after pair was used to clean up secret!
  */
-export const getKeyringPair = (webApp: WebApp, evm: boolean): KeyringPair | undefined => {
+export const getKeyringPair = (webApp: WebApp): KeyringPair | undefined => {
   try {
     const mnemonic = getMnemonic(webApp);
     if (mnemonic === null) return undefined;
 
-    return getKeyringPairFromSeed(mnemonic, evm);
+    return getKeyringPairFromSeed(mnemonic);
   } catch (e) {
     console.warn(e);
 
@@ -89,11 +91,7 @@ export const getKeyringPair = (webApp: WebApp, evm: boolean): KeyringPair | unde
   }
 };
 
-export const getKeyringPairFromSeed = (seed: string, evm: boolean): KeyringPair => {
-  const keyring = new Keyring({ type: evm ? 'ecdsa' : 'sr25519' });
-
-  // jelly coast judge vehicle push nerve art ginger man damp quiz include
-  // const pair = keyring.addFromSeed() createFromUri(seed);
+export const getKeyringPairFromSeed = (seed: string): KeyringPair => {
   return keyring.createFromUri(seed);
 };
 
@@ -116,9 +114,9 @@ export const initializeWalletFromCloud = (password: string, encryptedMnemonic?: 
   }
 };
 
-export const createGiftWallet = (addressPrefix: number, evm: boolean): GiftWallet => {
+export const createGiftWallet = (addressPrefix: number): GiftWallet => {
   const seed = randomAsHex(10).slice(2);
-  const keyringPair = getKeyringPairFromSeed(seed, evm);
+  const keyringPair = getKeyringPairFromSeed(seed);
 
   return {
     address: encodeAddress(keyringPair.publicKey, addressPrefix),

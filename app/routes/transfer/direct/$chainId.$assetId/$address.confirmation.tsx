@@ -12,7 +12,7 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { chainsApi, transferFactory } from '@/shared/api';
+import { transferFactory } from '@/shared/api';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
@@ -55,7 +55,7 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
-    const keyringPair = getKeyringPair(webApp, chainsApi.isEvmChain(chains[typedChainId]));
+    const keyringPair = getKeyringPair(webApp);
     if (!keyringPair) return;
 
     transferFactory

@@ -1,6 +1,5 @@
-import Keyring from '@polkadot/keyring';
 import { isHex, isU8a, u8aToU8a } from '@polkadot/util';
-import { addressToEvm, base58Decode, checkAddressChecksum, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import { base58Decode, checkAddressChecksum, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import { SS58_DEFAULT_PREFIX } from '@/shared/helpers/constants';
 
@@ -16,39 +15,16 @@ const ACCOUNT_ID_LENGTH = 32;
  *
  * @returns {String}
  */
-export const toAddress = (
-  value: Address | PublicKey,
-  params?: {
-    chunk?: number;
-    prefix?: number;
-    evm?: boolean;
-  },
-): Address => {
+export const toAddress = (value: Address | PublicKey, params?: { chunk?: number; prefix?: number }): Address => {
   const chunkValue = params?.chunk;
   const prefixValue = params?.prefix ?? SS58_DEFAULT_PREFIX;
 
   let address = '';
   try {
-    address = params?.evm
-      ? encodeAddress(addressToEvm(value), prefixValue)
-      : encodeAddress(decodeAddress(value), prefixValue);
+    address = encodeAddress(decodeAddress(value), prefixValue);
   } catch {
     address = value;
   }
-  // 0x431621580885a1d9cf257Aaf0628D26Df3e9c591 - верным
-  // 0x02c10463c2defc4f0b112381292461d6683538b9 - неверным
-
-  // Import Ethereum account from mnemonic
-  const keyringECDSA = new Keyring({ type: 'ethereum' });
-  const mnemonic = 'jelly coast judge vehicle push nerve art ginger man damp quiz include';
-
-  // Define index of the derivation path and the derivation path
-  const index = 0;
-  const ethDerPath = "m/44'/60'/0'/0/" + index;
-
-  // Extract Ethereum address from mnemonic
-  const alice = keyringECDSA.addFromUri(`${mnemonic}/${ethDerPath}`);
-  console.log(`Derived Ethereum Address from Mnemonic: ${alice.address}`);
 
   return chunkValue ? toShortAddress(address, chunkValue) : address;
 };
