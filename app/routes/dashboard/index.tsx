@@ -7,12 +7,12 @@ import { isEmpty } from 'lodash-es';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { getMnemonic, resetWallet } from '@/common/wallet';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { telegramModel } from '@/models/telegram';
-import { telegramApi } from '@/shared/api';
+import { walletModel } from '@/models/wallet';
+import { cryptoApi, telegramApi } from '@/shared/api';
 import { getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
@@ -45,13 +45,13 @@ const Page = () => {
   const [isWarningOpen, toggleWarning] = useToggle();
 
   useEffect(() => {
-    if (!webApp || getMnemonic(webApp)) return;
+    if (!webApp || cryptoApi.getMnemonic(webApp)) return;
 
-    clearWallet(true);
+    clearWallet();
   }, [webApp]);
 
-  const clearWallet = (clearLocal?: boolean) => {
-    resetWallet(clearLocal);
+  const clearWallet = (clearRemote = false) => {
+    walletModel.input.walletCleared({ clearRemote });
     navigate($path('/onboarding'));
   };
 
@@ -149,10 +149,10 @@ const Page = () => {
           <div className="mt-10 flex flex-col justify-center gap-2 rounded-lg bg-warning p-4">
             <TextBase className="text-amber-50">DEV MODE</TextBase>
             <Divider className="bg-amber-200" />
-            <Button variant="faded" onClick={() => clearWallet()}>
+            <Button variant="faded" onClick={() => clearWallet(true)}>
               Reset Wallet
             </Button>
-            <Button variant="faded" onClick={() => clearWallet(true)}>
+            <Button variant="faded" onClick={() => clearWallet()}>
               Reset Wallet Local
             </Button>
           </div>

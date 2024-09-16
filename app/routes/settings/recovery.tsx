@@ -4,8 +4,8 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { getMnemonic } from '@/common/wallet';
 import { telegramModel } from '@/models/telegram';
+import { cryptoApi } from '@/shared/api';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { RecoveryPhrase } from '@/ui/molecules';
 
@@ -24,7 +24,7 @@ const Page = () => {
         <BodyText align="left" className="mb-2 text-text-hint">
           Do not use clipboard or screenshots on your mobile device, try to find secure methods for backup (e.g. paper)
         </BodyText>
-        <RecoveryPhrase mnemonic={getMnemonic(webApp)} />
+        <RecoveryPhrase mnemonic={cryptoApi.getMnemonic(webApp)} />
         <BodyText align="left" className="my-2 text-text-hint">
           Please make sure to write down your phrase correctly and legibly.
         </BodyText>

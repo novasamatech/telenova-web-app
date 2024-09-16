@@ -6,9 +6,9 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
-import { backupMnemonic, generateWalletMnemonic } from '@/common/wallet';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
+import { cryptoApi } from '@/shared/api';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { CreatePasswordForm } from '@/ui/molecules';
 
@@ -23,10 +23,10 @@ const Page = () => {
   if (!webApp) return null;
 
   const onSubmit = () => {
-    const mnemonic = generateWalletMnemonic();
+    const mnemonic = cryptoApi.generateMnemonic();
 
     walletModel.input.walletCreated(mnemonic);
-    backupMnemonic(webApp, mnemonic, password);
+    cryptoApi.backupMnemonic(webApp, mnemonic, password);
     navigate($path('/onboarding/create-wallet'));
   };
 

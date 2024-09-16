@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@nextui-org/react';
 
-import { resetWallet } from '@/common/wallet';
+import { walletModel } from '@/models/wallet';
 import { BigTitle, BodyText, Countdown, Icon, MediumTitle } from '@/ui/atoms';
 
 type Props = {
@@ -20,7 +20,7 @@ export const PasswordForgotten = ({ onClose, onSubmit }: Props) => {
 
   const handleSubmit = () => {
     setIsDisabled(true);
-    resetWallet();
+    walletModel.input.walletCleared({ clearRemote: true });
     onSubmit();
   };
 

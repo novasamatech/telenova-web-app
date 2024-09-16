@@ -8,13 +8,13 @@ import { useUnit } from 'effector-react';
 import { $params } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
+import { encodeAddress, randomAsHex } from '@polkadot/util-crypto';
 
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
-import { createGiftWallet, getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { transferFactory } from '@/shared/api';
+import { keyringApi, transferFactory } from '@/shared/api';
 import { backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
@@ -62,12 +62,18 @@ const Page = () => {
 
   useEffect(() => {
     if (!webApp || !selectedAsset || !chains[typedChainId]) return;
+    const selectedChain = chains[typedChainId];
 
-    const keyringPair = getKeyringPair(webApp);
+    const keyringPair = keyringApi.getKeyringPair(webApp, selectedChain);
     if (!keyringPair) return;
 
-    const selectedChain = chains[typedChainId];
-    const giftWallet = createGiftWallet(selectedChain.addressPrefix);
+    const seed = randomAsHex(10).slice(2);
+    const giftKeyringPair = keyringApi.getKeyringPairFromSeed(seed, selectedChain);
+
+    const giftWallet = {
+      address: encodeAddress(giftKeyringPair.publicKey, selectedChain.addressPrefix),
+      secret: seed,
+    };
 
     transferFactory
       .createService(connections[typedChainId].api!, selectedAsset)

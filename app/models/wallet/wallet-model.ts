@@ -11,11 +11,12 @@ import { mnemonicToMiniSecret, sr25519PairFromSeed } from '@polkadot/util-crypto
 import { navigationModel } from '../navigation/navigation-model';
 import { telegramModel } from '../telegram/telegram-model';
 
-import { telegramApi } from '@/shared/api';
+import { localStorageApi, telegramApi } from '@/shared/api';
 import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/shared/helpers';
 import { type Wallet } from '@/types/substrate';
 
 const walletCreated = createEvent<Mnemonic>();
+const walletCleared = createEvent<{ clearRemote: boolean }>();
 
 const $wallet = createStore<Wallet | null>(null);
 
@@ -33,11 +34,24 @@ const getWalletFx = createEffect(async (webApp: WebApp): Promise<PublicKey | und
   }
 });
 
-const walletCreatedFx = createEffect((mnemonic: Mnemonic): PublicKey => {
+const createWalletFx = createEffect((mnemonic: Mnemonic): PublicKey => {
   const seed = mnemonicToMiniSecret(mnemonic);
   const keypair = sr25519PairFromSeed(seed);
 
   return u8aToHex(keypair.publicKey);
+});
+
+type ClearParams = {
+  webApp: WebApp;
+  clearRemote: boolean;
+};
+const clearWalletFx = createEffect(({ webApp, clearRemote }: ClearParams): Promise<boolean> => {
+  localStorageApi.clear();
+  secureLocalStorage.clear();
+
+  return clearRemote
+    ? telegramApi.removeCloudStorageItems(webApp, [MNEMONIC_STORE, BACKUP_DATE])
+    : Promise.resolve(true);
 });
 
 type SavePublicKeyParams = {
@@ -80,11 +94,11 @@ sample({
 
 sample({
   clock: walletCreated,
-  target: walletCreatedFx,
+  target: createWalletFx,
 });
 
 sample({
-  clock: walletCreatedFx.done,
+  clock: createWalletFx.done,
   source: telegramModel.$webApp,
   filter: (webApp: WebApp | null): webApp is WebApp => Boolean(webApp),
   fn: (webApp, { result: publicKey, params: mnemonic }) => ({
@@ -103,11 +117,20 @@ sample({
   target: $wallet,
 });
 
+sample({
+  clock: walletCleared,
+  source: telegramModel.$webApp,
+  filter: (webApp: WebApp | null): webApp is WebApp => Boolean(webApp),
+  fn: (webApp, { clearRemote }) => ({ webApp, clearRemote }),
+  target: clearWalletFx,
+});
+
 export const walletModel = {
   $wallet: readonly($wallet),
 
   input: {
     walletCreated,
+    walletCleared,
   },
 
   /* Internal API (tests only) */

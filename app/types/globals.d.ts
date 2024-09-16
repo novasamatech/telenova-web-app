@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 declare namespace NodeJS {
-  export interface ProcessEnv {
+  interface ProcessEnv {
     readonly PUBLIC_WIDGET_SECRET: string;
     readonly PUBLIC_WIDGET_ID: string;
     readonly PUBLIC_BOT_ADDRESS: string;

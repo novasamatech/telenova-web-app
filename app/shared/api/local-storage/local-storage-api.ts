@@ -1,6 +1,7 @@
 export const localStorageApi = {
   getFromStorage,
   saveToStorage,
+  clear,
 };
 
 function getFromStorage<T>(key: string, defaultValue: T): T {
@@ -21,4 +22,8 @@ function saveToStorage<T>(key: string, value: T): T {
   localStorage.setItem(key, JSON.stringify(value));
 
   return value;
+}
+
+function clear() {
+  localStorage.clear();
 }

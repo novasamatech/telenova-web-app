@@ -9,10 +9,9 @@ import { BN } from '@polkadot/util';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { transferFactory } from '@/shared/api';
+import { keyringApi, transferFactory } from '@/shared/api';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
@@ -55,7 +54,7 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
-    const keyringPair = getKeyringPair(webApp);
+    const keyringPair = keyringApi.getKeyringPair(webApp, chains[typedChainId]);
     if (!keyringPair) return;
 
     transferFactory

@@ -6,8 +6,8 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { initializeWalletFromCloud } from '@/common/wallet';
 import { telegramModel } from '@/models/telegram';
+import { cryptoApi, telegramApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 import { Input, TitleText } from '@/ui/atoms';
 
@@ -29,16 +29,24 @@ const Page = () => {
     setIsValidMnemonic(true);
     setIsPending(true);
 
-    webApp.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
-      const decryptedMnemonic = initializeWalletFromCloud(password, value);
-      if (decryptedMnemonic) {
-        navigate($path('/settings/password/new'));
-      } else {
+    telegramApi
+      .getCloudStorageItem(webApp, MNEMONIC_STORE)
+      .then(mnemonic => {
+        const decryptedMnemonic = cryptoApi.getDecryptedMnemonic(mnemonic, password);
+
+        if (decryptedMnemonic) {
+          navigate($path('/settings/password/new'));
+        } else {
+          throw new Error('Could not decrypt mnemonic');
+        }
+      })
+      .catch(error => {
+        console.error('Error while requesting Telegram Mnemonic_Store', error);
+
         setIsValidMnemonic(false);
         setIsPending(false);
         setIsChecked(true);
-      }
-    });
+      });
   };
 
   const shouldShowError = isChecked && !isValidMnemonic;
