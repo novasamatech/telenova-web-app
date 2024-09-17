@@ -7,7 +7,7 @@ import { type ApiPromise } from '@polkadot/api';
 import { networkModel } from '../network/network-model';
 import { walletModel } from '../wallet/wallet-model';
 
-import { balancesApi } from '@/shared/api';
+import { balancesFactory } from '@/shared/api';
 import { type Asset, type AssetBalance, type Chain, type ChainBalances } from '@/types/substrate';
 
 import { type Subscriptions } from './types';
@@ -75,7 +75,8 @@ const pureSubscribeChainsAssetsFx = createEffect(
       const assetsSubscriptions = subscriptions[chain.chainId] || {};
 
       assets[index].forEach(asset => {
-        assetsSubscriptions[asset.assetId] = balancesApi.subscribeBalance(api, chain, asset, publicKey, boundUpdate);
+        const service = balancesFactory.createService(api, asset);
+        assetsSubscriptions[asset.assetId] = service.subscribeBalance(chain, publicKey, boundUpdate);
       });
 
       newChainSubscriptions[chain.chainId] = assetsSubscriptions;

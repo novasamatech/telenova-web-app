@@ -5,17 +5,16 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from
 import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
 
+import { type ApiPromise } from '@polkadot/api';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
-import { useQueryService } from '@/common/queryService/QueryService';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
+import { balancesFactory, transferFactory } from '@/shared/api';
 import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
-import { useAssetHub, useOrml } from '@/shared/hooks';
-import { type Asset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
+import { type Asset } from '@/types/substrate';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/ui/atoms';
 
 type GiftStatus = 'claimed' | 'notClaimed';
@@ -30,10 +29,6 @@ const GIFTS: Record<GiftStatus, { text: string; btnText: string }> = {
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export const GiftClaim = () => {
-  const { getFreeBalance } = useQueryService();
-  const { getGiftBalanceStatemine } = useAssetHub();
-  const { getOrmlGiftBalance } = useOrml();
-  const { sendTransfer, getTransactionFee } = useExtrinsic();
   const { isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
 
   const wallet = useUnit(walletModel.$wallet);
@@ -66,13 +61,7 @@ export const GiftClaim = () => {
       return;
     }
 
-    const balanceRequest: Record<Asset['type'], (chainId: ChainId, address: Address, asset?: Asset) => Promise<BN>> = {
-      native: (chainId, address) => getGiftBalance(chainId, address),
-      orml: (chainId, address) => getOrmlGiftBalance(chainId, address, asset as OrmlAsset),
-      statemine: (chainId, address, asset) => getGiftBalanceStatemine(chainId, address, asset as StatemineAsset),
-    };
-
-    balanceRequest[asset.type](chainId, giftAddress, asset).then(balance => {
+    getGiftBalance(connections[chainId].api!, giftAddress, asset).then(balance => {
       setGiftStatus(balance.isZero() ? 'claimed' : 'notClaimed');
       setGiftSymbol(balance.isZero() ? '' : symbol);
       setGiftBalance(balance);
@@ -84,11 +73,11 @@ export const GiftClaim = () => {
     };
   }, [startParam, wallet, isGiftClaimed, connections]);
 
-  const getGiftBalance = async (chainId: ChainId, giftAddress: string): Promise<BN> => {
-    const giftBalance = await getFreeBalance(giftAddress, chainId);
+  const getGiftBalance = async (api: ApiPromise, giftAddress: Address, asset: Asset): Promise<BN> => {
+    const giftBalance = await balancesFactory.createService(api, asset).getFreeBalance(giftAddress);
     if (giftBalance.isZero()) return BN_ZERO;
 
-    const fee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
+    const fee = await transferFactory.createService(api, asset).getTransferFee({ transferAll: true });
     const rawBalance = giftBalance.sub(fee);
 
     return rawBalance.isNeg() ? BN_ZERO : rawBalance;
@@ -119,14 +108,14 @@ export const GiftClaim = () => {
       lottie.play();
     }
 
-    sendTransfer({
-      chainId: giftInfo.chainId,
-      asset: giftInfo.asset,
-      destinationAddress: giftInfo.address,
-      transferAmount: giftBalance,
-      transferAll: true,
-      keyringPair: giftInfo.keyring,
-    })
+    transferFactory
+      .createService(connections[giftInfo.chainId].api!, giftInfo.asset)
+      .sendTransfer({
+        keyringPair: giftInfo.keyring,
+        amount: giftBalance,
+        destination: giftInfo.address,
+        transferAll: true,
+      })
       .catch(() => {
         webApp?.showAlert('Something went wrong. Failed to claim gift');
         handleClose();

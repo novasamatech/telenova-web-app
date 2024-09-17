@@ -61,15 +61,17 @@ const Page = () => {
           onValueChange={handleChange}
           onClear={() => setAddress('')}
         />
-        {address &&
-          (isAddressValid ? (
-            <div className="mt-4 flex items-center gap-2 break-all">
-              <Identicon address={address} />
-              <BodyText> {address}</BodyText>
-            </div>
-          ) : (
-            <HelpText className="mt-1 text-text-hint">Invalid address, enter a correct one</HelpText>
-          ))}
+        {address && isAddressValid && (
+          <div className="mt-4 flex items-center gap-x-2 break-all">
+            <Identicon className="flex-shrink-0" address={address} />
+            <BodyText>{address}</BodyText>
+          </div>
+        )}
+
+        {address && !isAddressValid && (
+          <HelpText className="mt-1 text-text-hint">Invalid address, enter a correct one</HelpText>
+        )}
+
         {!address && (
           <Button variant="light" className="mt-4 gap-0 self-start text-text-link" onClick={handleQrCode}>
             <Icon name="ScanQr" className="mr-2 h-5 w-5" />

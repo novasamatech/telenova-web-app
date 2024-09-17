@@ -6,6 +6,7 @@ import { type Chain } from '@/types/substrate';
 
 export const chainsApi = {
   getChainsData,
+  isEvmChain,
   sortChains,
 };
 
@@ -13,6 +14,7 @@ type DataParams = {
   file: 'chains_dev' | 'chains_prod';
   sort?: boolean;
 };
+
 async function getChainsData({ file, sort }: DataParams): Promise<Chain[]> {
   const url = `https://raw.githubusercontent.com/novasamatech/telenova-utils/main/chains/v1/${file}.json`;
   const chains = await fetch(url)
@@ -20,6 +22,10 @@ async function getChainsData({ file, sort }: DataParams): Promise<Chain[]> {
     .catch(() => ({}));
 
   return sort ? sortChains(chains) : chains;
+}
+
+function isEvmChain(chain: Chain): boolean {
+  return Boolean(chain.options?.includes('evm'));
 }
 
 function sortChains(chains: Chain[]): Chain[] {

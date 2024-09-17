@@ -9,12 +9,12 @@ import { $params } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
 
-import { useExtrinsic } from '@/common/extrinsicService';
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
 import { createGiftWallet, getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
+import { transferFactory } from '@/shared/api';
 import { backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
@@ -49,10 +49,9 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 const Page = () => {
   const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const { sendGift } = useExtrinsic();
-
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
+  const connections = useUnit(networkModel.$connections);
   const webApp = useUnit(telegramModel.$webApp);
 
   const [loading, setLoading] = useState(true);
@@ -70,13 +69,14 @@ const Page = () => {
     const selectedChain = chains[typedChainId];
     const giftWallet = createGiftWallet(selectedChain.addressPrefix);
 
-    sendGift(keyringPair, giftWallet.address, {
-      chainId: typedChainId,
-      asset: selectedAsset,
-      amount: new BN(amount),
-      fee: new BN(fee),
-      transferAll: all,
-    })
+    transferFactory
+      .createService(connections[typedChainId].api!, selectedAsset)
+      .sendTransfer({
+        keyringPair,
+        amount: new BN(amount).add(new BN(fee)),
+        destination: giftWallet.address,
+        transferAll: all,
+      })
       .then(() => {
         backupGifts(webApp, {
           chainId: typedChainId,

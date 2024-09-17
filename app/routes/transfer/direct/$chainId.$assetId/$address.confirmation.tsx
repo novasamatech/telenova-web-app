@@ -7,12 +7,12 @@ import { $params, $path } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
 
-import { useExtrinsic } from '@/common/extrinsicService';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
+import { transferFactory } from '@/shared/api';
 import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
@@ -37,10 +37,10 @@ const Page = () => {
   const { chainId, assetId, address, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
   const navigate = useNavigate();
-  const { sendTransfer } = useExtrinsic();
 
   const chains = useUnit(networkModel.$chains);
   const assets = useUnit(networkModel.$assets);
+  const connections = useUnit(networkModel.$connections);
   const webApp = useUnit(telegramModel.$webApp);
 
   const typedChainId = chainId as ChainId;
@@ -58,14 +58,14 @@ const Page = () => {
     const keyringPair = getKeyringPair(webApp);
     if (!keyringPair) return;
 
-    sendTransfer({
-      keyringPair,
-      chainId: typedChainId,
-      asset: selectedAsset,
-      transferAmount: bnAmount,
-      destinationAddress: address,
-      transferAll: all,
-    })
+    transferFactory
+      .createService(connections[typedChainId].api!, selectedAsset)
+      .sendTransfer({
+        keyringPair,
+        amount: bnAmount,
+        destination: address,
+        transferAll: all,
+      })
       .then(() => {
         const params = { chainId, assetId, address };
         const query = { amount };
@@ -80,7 +80,7 @@ const Page = () => {
       title: 'Recipients address',
       value: (
         <div className="flex items-center gap-x-1">
-          <Identicon address={address} />
+          <Identicon address={address} className="flex-shrink-0" />
           <MediumTitle>{toShortAddress(address, 15)}</MediumTitle>
         </div>
       ),

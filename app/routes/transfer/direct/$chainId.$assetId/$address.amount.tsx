@@ -12,6 +12,7 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
+import { balancesFactory, transferFactory } from '@/shared/api';
 import { Address, HeadlineText, Identicon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
 
@@ -36,6 +37,7 @@ const Page = () => {
   const assets = useUnit(networkModel.$assets);
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
+  const connections = useUnit(networkModel.$connections);
 
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
   const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
@@ -54,7 +56,10 @@ const Page = () => {
     isTouched,
     isTransferAll,
   } = useAmountLogic({
-    chainId: typedChainId,
+    services: {
+      balanceService: balancesFactory.createService(connections[typedChainId].api!, selectedAsset),
+      transferService: transferFactory.createService(connections[typedChainId].api!, selectedAsset),
+    },
     asset: selectedAsset!,
     isGift: false,
     balance,

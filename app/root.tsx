@@ -7,7 +7,6 @@ import { useUnit } from 'effector-react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
-import { ExtrinsicProvider } from '@/common/extrinsicService';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
@@ -92,11 +91,7 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
   if (webAppError) return <ErrorScreen error={webAppError.message} />;
 
-  return (
-    <GlobalStateProvider>
-      <ExtrinsicProvider>{children}</ExtrinsicProvider>
-    </GlobalStateProvider>
-  );
+  return <GlobalStateProvider>{children}</GlobalStateProvider>;
 };
 
 const App = () => {

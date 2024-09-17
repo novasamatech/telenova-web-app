@@ -6,18 +6,10 @@ import scryptJS from 'scrypt-js';
 
 import Keyring from '@polkadot/keyring';
 import { type KeyringPair } from '@polkadot/keyring/types';
-import { u8aToHex } from '@polkadot/util';
-import {
-  encodeAddress,
-  mnemonicGenerate,
-  mnemonicToMiniSecret,
-  randomAsHex,
-  sr25519PairFromSeed,
-} from '@polkadot/util-crypto';
+import { encodeAddress, mnemonicGenerate, randomAsHex } from '@polkadot/util-crypto';
 
 import { telegramApi } from '@/shared/api';
-import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/shared/helpers';
-import { type Wallet } from '@/types/substrate';
+import { BACKUP_DATE, MNEMONIC_STORE } from '@/shared/helpers';
 
 import { type GiftWallet } from './types';
 
@@ -67,19 +59,6 @@ export function decryptMnemonic(encryptedMnemonicWithSalt: string, password: str
 
 export const generateWalletMnemonic = (): string => {
   return mnemonicGenerate();
-};
-
-export const createWallet = (webApp: WebApp, mnemonic: string | null): Wallet | null => {
-  if (!mnemonic) return null;
-
-  const seed = mnemonicToMiniSecret(mnemonic);
-  const keypair = sr25519PairFromSeed(seed);
-  const publicKey = u8aToHex(keypair.publicKey);
-
-  localStorage.setItem(telegramApi.getStoreName(webApp, PUBLIC_KEY_STORE), publicKey);
-  secureLocalStorage.setItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE), mnemonic);
-
-  return { publicKey };
 };
 
 export const backupMnemonic = (webApp: WebApp, mnemonic: string, password: string) => {

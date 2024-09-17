@@ -9,8 +9,7 @@ import { telegramModel } from '@/models/telegram';
 import { getGifts } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
 import { type Gift } from '@/types/substrate';
-import { BigTitle, BodyText, Icon, Shimmering } from '@/ui/atoms';
-import { Plate } from '@/ui/atoms/Plate/Plate.tsx';
+import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/ui/atoms';
 
 export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();

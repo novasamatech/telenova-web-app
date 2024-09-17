@@ -1,3 +1,5 @@
+import '@polkadot/api-augment';
+
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { type ProviderInterface, type ProviderInterfaceEmitCb } from '@polkadot/rpc-provider/types';
 
@@ -53,6 +55,7 @@ type ProviderListeners = {
   onDisconnected: ProviderInterfaceEmitCb;
   onError: ProviderInterfaceEmitCb;
 };
+
 function createProvider(params: ProviderParams, listeners: ProviderListeners): ProviderWithMetadata | never {
   const provider = createWebsocketProvider(params);
 

@@ -1,9 +1,8 @@
-import type { NavigateOptions } from 'react-router/dist/lib/context';
-
 import { type NavigateFunction, type To } from 'react-router-dom';
 
 import { createEffect, createEvent, restore, sample } from 'effector';
 import noop from 'lodash/noop';
+import { type NavigateOptions } from 'react-router/dist/lib/context';
 
 type PushParams = { type: 'navigate'; to: To; options?: NavigateOptions } | { type: 'history'; delta: number };
 
