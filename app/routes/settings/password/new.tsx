@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import secureLocalStorage from 'react-secure-storage';
 
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
@@ -8,8 +7,7 @@ import { $path } from 'remix-routes';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { telegramModel } from '@/models/telegram';
-import { cryptoApi, telegramApi } from '@/shared/api';
-import { MNEMONIC_STORE } from '@/shared/helpers';
+import { cryptoApi } from '@/shared/api';
 import { TitleText } from '@/ui/atoms';
 import { CreatePasswordForm } from '@/ui/molecules';
 
@@ -23,9 +21,9 @@ const Page = () => {
 
   const onSubmit = () => {
     if (!webApp) return;
-    const mnemonic = secureLocalStorage.getItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE));
+    const mnemonic = cryptoApi.getMnemonic(webApp);
 
-    if (typeof mnemonic === 'string') {
+    if (mnemonic) {
       cryptoApi.backupMnemonic(webApp, mnemonic, password);
       navigate($path('/settings/password/confirmation'));
     }

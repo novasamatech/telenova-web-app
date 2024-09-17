@@ -1,6 +1,6 @@
 import { allSettled, fork } from 'effector';
 import noop from 'lodash/noop';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
 import { BN_TEN } from '@polkadot/util';
 
@@ -29,10 +29,6 @@ describe('models/balances/balances-model', () => {
     '0x002': { name: 'Kusama', chainId: '0x002', assets: [{ assetId: 1 }] },
     '0x003': { name: 'Karura', chainId: '0x003', assets: [{ assetId: 0 }, { assetId: 1 }, { assetId: 2 }] },
   } as unknown as ChainsMap;
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
 
   test('should update $balance on balanceUpdated', async () => {
     const defaultBalance = {

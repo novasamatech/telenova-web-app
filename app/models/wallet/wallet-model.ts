@@ -20,12 +20,12 @@ const $wallet = createStore<Wallet | null>(null);
 
 const getWalletFx = createEffect(async (webApp: WebApp): Promise<Wallet | null> => {
   try {
-    const backupLocalDate = localStorage.getItem(telegramApi.getStoreName(webApp, BACKUP_DATE));
+    const backupStore = telegramApi.getStoreName(webApp, BACKUP_DATE);
+    const backupLocalDate = localStorageApi.getItem(backupStore, '');
     const backupCloudDate = await telegramApi.getCloudStorageItem(webApp, BACKUP_DATE);
     const mnemonic = await telegramApi.getCloudStorageItem(webApp, MNEMONIC_STORE);
 
-    const isSameBackupDate = backupCloudDate === backupLocalDate;
-    if (!isSameBackupDate) return null;
+    if (backupCloudDate !== backupLocalDate) return null;
 
     return new Wallet(mnemonic);
   } catch {
@@ -55,7 +55,9 @@ type SaveMnemonicParams = {
   mnemonic: Mnemonic;
 };
 const mnemonicSavedFx = createEffect(({ webApp, mnemonic }: SaveMnemonicParams) => {
-  secureLocalStorage.setItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE), mnemonic);
+  const storeName = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
+
+  secureLocalStorage.setItem(storeName, mnemonic);
 });
 
 sample({
@@ -66,14 +68,15 @@ sample({
 
 sample({
   clock: getWalletFx.doneData,
+  filter: (wallet): wallet is Wallet => Boolean(wallet),
   target: $wallet,
 });
 
 sample({
   clock: getWalletFx.doneData,
-  fn: publicKey => ({
+  fn: wallet => ({
     type: 'navigate' as const,
-    to: publicKey ? $path('/dashboard') : $path('/onboarding'),
+    to: wallet ? $path('/dashboard') : $path('/onboarding'),
     options: { replace: true },
   }),
   target: navigationModel.input.navigatorPushed,

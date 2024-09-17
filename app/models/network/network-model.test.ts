@@ -1,6 +1,6 @@
 import { allSettled, fork } from 'effector';
 import { keyBy } from 'lodash-es';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
 import { type ApiPromise } from '@polkadot/api';
 
@@ -70,10 +70,6 @@ describe('@/common/network/network-model', () => {
       data: () => vi.fn().mockResolvedValue(mockedChainsMap),
     },
   };
-
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
 
   test('should populate $chains on networkStarted event', async () => {
     const fakeRequestFx = effectMocks.requestChainsFx.data();

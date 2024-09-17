@@ -61,6 +61,8 @@ export const telegramModel = {
 
   /* Internal API (tests only) */
   _internal: {
+    $webApp,
+
     webAppStartedFx,
   },
 };
