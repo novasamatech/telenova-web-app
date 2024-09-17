@@ -5,8 +5,8 @@ import { createEffect, createEvent, createStore, sample } from 'effector';
 import { readonly } from 'patronum';
 import { $path } from 'remix-routes';
 
-import { navigationModel } from '../navigation/navigation-model';
-import { telegramModel } from '../telegram/telegram-model';
+import { navigationModel } from '../navigation';
+import { telegramModel } from '../telegram';
 
 import { localStorageApi, telegramApi } from '@/shared/api';
 import { BACKUP_DATE, MNEMONIC_STORE } from '@/shared/helpers';
@@ -19,9 +19,8 @@ const walletCleared = createEvent<{ clearRemote: boolean }>();
 const $wallet = createStore<Wallet | null>(null);
 
 const getWalletFx = createEffect(async (webApp: WebApp): Promise<Wallet | null> => {
-  const backupLocalDate = localStorage.getItem(telegramApi.getStoreName(webApp, BACKUP_DATE));
-
   try {
+    const backupLocalDate = localStorage.getItem(telegramApi.getStoreName(webApp, BACKUP_DATE));
     const backupCloudDate = await telegramApi.getCloudStorageItem(webApp, BACKUP_DATE);
     const mnemonic = await telegramApi.getCloudStorageItem(webApp, MNEMONIC_STORE);
 
