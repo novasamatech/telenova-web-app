@@ -6,7 +6,7 @@ import type { AssetBalance, Chain } from '@/types/substrate';
 export interface IBalance {
   subscribeBalance: (
     chain: Chain,
-    publicKey: PublicKey,
+    address: Address,
     callback: (newBalance: AssetBalance) => void,
   ) => UnsubscribePromise;
   getFreeBalance: (address: Address) => Promise<BN>;

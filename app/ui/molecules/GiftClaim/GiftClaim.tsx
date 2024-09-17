@@ -47,10 +47,10 @@ export const GiftClaim = () => {
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
-    if (isGiftClaimed || !startParam || !wallet?.publicKey) return;
+    if (isGiftClaimed || !startParam || !wallet) return;
     setIsOpen(true);
 
-    const giftInfo = getGiftInfo(Object.values(chains), wallet.publicKey, startParam);
+    const giftInfo = getGiftInfo(Object.values(chains), wallet, startParam);
     if (!giftInfo) return;
 
     const { chainId, asset, giftAddress, symbol } = giftInfo;
@@ -93,7 +93,7 @@ export const GiftClaim = () => {
   };
 
   const handleGiftClaim = () => {
-    const giftInfo = getGiftInfo(Object.values(chains), wallet!.publicKey!, startParam!);
+    const giftInfo = getGiftInfo(Object.values(chains), wallet!, startParam!);
     if (!giftInfo) return;
 
     setIsDisabled(true);

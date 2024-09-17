@@ -3,7 +3,6 @@ import type { UnsubscribePromise } from '@polkadot/api/types';
 import { type AccountData } from '@polkadot/types/interfaces';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { toAddress } from '@/shared/helpers';
 import { type AssetBalance, type Chain, type NativeAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
@@ -19,11 +18,9 @@ export class NativeBalanceService implements IBalance {
 
   async subscribeBalance(
     chain: Chain,
-    publicKey: PublicKey,
+    address: Address,
     callback: (newBalance: AssetBalance) => void,
   ): UnsubscribePromise {
-    const address = toAddress(publicKey, { prefix: chain.addressPrefix });
-
     return this.#api.query.system.account(address, frameAccountInfo => {
       let frozen = frameAccountInfo.data.frozen?.toBn();
       const free = frameAccountInfo.data.free.toBn();
@@ -38,7 +35,7 @@ export class NativeBalanceService implements IBalance {
       }
 
       callback({
-        publicKey,
+        address,
         chainId: chain.chainId,
         assetId: this.#asset.assetId,
         balance: {

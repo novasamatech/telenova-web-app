@@ -11,7 +11,7 @@ import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
 import { telegramApi } from '@/shared/api';
-import { copyToClipboard, shareQrAddress, toAddress } from '@/shared/helpers';
+import { copyToClipboard, shareQrAddress } from '@/shared/helpers';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
@@ -30,9 +30,9 @@ const Page = () => {
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!selectedAsset || !wallet?.publicKey || !chains[typedChainId] || !webApp) return null;
+  if (!selectedAsset || !wallet || !chains[typedChainId] || !webApp) return null;
 
-  const address = toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix });
+  const address = wallet.toAddress(chains[typedChainId]);
 
   return (
     <>

@@ -2,6 +2,7 @@ import { type WebApp } from '@twa-dev/types';
 
 import Keyring from '@polkadot/keyring';
 import { type KeyringPair } from '@polkadot/keyring/types';
+import { u8aToHex } from '@polkadot/util';
 import { type KeypairType } from '@polkadot/util-crypto/types';
 
 import { chainsApi } from '../blockchain/network/chain-api';
@@ -10,15 +11,25 @@ import { type Chain } from '@/types/substrate';
 
 import { cryptoApi } from './crypto-api';
 
+type SupportedPairs = Extract<KeypairType, 'sr25519' | 'ethereum'>;
+
 export const keyringApi = {
   getKeyringPair,
   getKeyringPairFromSeed,
+  getKeyringPairsFromSeed,
 };
 
-function getKeyringPairFromSeed(seed: string, chain: Chain): KeyringPair {
-  const type = chainsApi.isEvmChain(chain) ? 'sr25519' : 'ethereum';
+function getKeyringPairsFromSeed(seed: string): Record<SupportedPairs, KeyringPair> {
+  return {
+    sr25519: getSubstrateKeyringPair(seed),
+    ethereum: getEvmKeyringPair(seed),
+  };
+}
 
-  const KEYPAIR_TYPES: Record<Extract<KeypairType, 'sr25519' | 'ethereum'>, (seed: string) => KeyringPair> = {
+function getKeyringPairFromSeed(seed: string, chain: Chain): KeyringPair {
+  const type = chainsApi.isEvmChain(chain) ? 'ethereum' : 'sr25519';
+
+  const KEYPAIR_TYPES: Record<SupportedPairs, (seed: string) => KeyringPair> = {
     sr25519: getSubstrateKeyringPair,
     ethereum: getEvmKeyringPair,
   };
@@ -27,7 +38,10 @@ function getKeyringPairFromSeed(seed: string, chain: Chain): KeyringPair {
 }
 
 function getSubstrateKeyringPair(seed: string): KeyringPair {
-  return new Keyring({ type: 'sr25519' }).createFromUri(seed);
+  const x = new Keyring({ type: 'sr25519' }).addFromUri(seed);
+  console.log(`=== Substrate Address from Mnemonic: ${x.address} & ${u8aToHex(x.publicKey)}`);
+
+  return new Keyring({ type: 'sr25519' }).addFromUri(seed);
 }
 
 function getEvmKeyringPair(seed: string): KeyringPair {
@@ -41,7 +55,7 @@ function getEvmKeyringPair(seed: string): KeyringPair {
   const ethDerPath = "m/44'/60'/0'/0/" + index;
 
   const alice = keyring.addFromUri(`${seed}/${ethDerPath}`);
-  console.log(`Derived Ethereum Address from Mnemonic: ${alice.address} & ${alice.publicKey.toString()}`);
+  console.log(`=== Ethereum Address from Mnemonic: ${alice.address} & ${u8aToHex(alice.publicKey)}`);
 
   return alice;
 }

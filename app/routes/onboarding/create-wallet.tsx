@@ -31,23 +31,13 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!wallet?.publicKey) {
-      console.error("Can't create wallet when public key is missing");
-
-      return;
-    }
-
-    if (!webApp) {
-      console.error("Can't create wallet when web app is missing");
-
-      return;
-    }
+    if (!wallet || !webApp) return;
 
     // TODO: Handle errors here and display retry page maybe
-    completeOnboarding({ webApp, publicKey: wallet.publicKey, baseUrl: botApiUrl }).catch(() => {
+    completeOnboarding(webApp, wallet, botApiUrl).catch(() => {
       console.warn('Onboarding failed');
     });
-  }, []);
+  }, [wallet, webApp]);
 
   const handleOnEvent = (event: PlayerEvent) => {
     if (event === 'complete') {

@@ -1,18 +1,14 @@
 import { type WebApp } from '@twa-dev/types';
 
+import { type Wallet } from '@/models/wallet';
+
 import { getTelegramBotApi } from './bot-api';
 import { type TgLink } from './types';
 
-type CompleteOnboardingParams = {
-  publicKey: HexString;
-  webApp: WebApp;
-  baseUrl: string;
-};
-
-export const completeOnboarding = async ({ publicKey, webApp, baseUrl }: CompleteOnboardingParams): Promise<void> => {
+export const completeOnboarding = async (webApp: WebApp, wallet: Wallet, baseUrl: string): Promise<void> => {
   try {
     const botApi = getTelegramBotApi(webApp, baseUrl);
-    await botApi.submitWallet(publicKey);
+    await botApi.submitWallet(wallet);
   } catch (error) {
     console.error(error);
   }

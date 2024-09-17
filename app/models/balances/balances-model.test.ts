@@ -1,16 +1,27 @@
 import { allSettled, fork } from 'effector';
 import noop from 'lodash/noop';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 import { BN_TEN } from '@polkadot/util';
 
-import { networkModel } from '../network/network-model';
-import { walletModel } from '../wallet/wallet-model';
+import { networkModel } from '../network';
+import { Wallet, walletModel } from '../wallet';
 
 import { balancesFactory } from '@/shared/api';
 import { type ChainsMap } from '@/types/substrate';
 
 import { balancesModel } from './balances-model';
+
+vi.mock('../wallet', async () => {
+  return {
+    ...(await vi.importActual('../wallet')),
+
+    Wallet: vi.fn().mockImplementation((value: string) => ({
+      getPublicKey: vi.fn().mockReturnValue(value),
+      toAddress: vi.fn().mockReturnValue(value),
+    })),
+  };
+});
 
 describe('models/balances/balances-model', () => {
   const mockedChains = {
@@ -19,14 +30,14 @@ describe('models/balances/balances-model', () => {
     '0x003': { name: 'Karura', chainId: '0x003', assets: [{ assetId: 0 }, { assetId: 1 }, { assetId: 2 }] },
   } as unknown as ChainsMap;
 
-  beforeEach(() => {
-    vi.restoreAllMocks();
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   test('should update $balance on balanceUpdated', async () => {
     const defaultBalance = {
       chainId: '0x002',
-      publicKey: '0x999',
+      address: '123',
       balance: { total: BN_TEN, transferable: BN_TEN },
     };
 
@@ -87,7 +98,7 @@ describe('models/balances/balances-model', () => {
 
     await allSettled(balancesModel._internal.subscribeChainsAssetsFx, {
       scope,
-      params: { apis: {}, chains: [], assets: [], publicKey: '0x999' },
+      params: { apis: {}, chains: [], assets: [], wallet: new Wallet('123') },
     });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 1: Promise.resolve(noop) } });
@@ -124,7 +135,7 @@ describe('models/balances/balances-model', () => {
       values: [
         [networkModel._internal.$assets, { '0x003': { 0: {} } }],
         [balancesModel._internal.$subscriptions, { '0x003': { 0: unsubPromise } }],
-        [walletModel._internal.$wallet, { publicKey: '0x999' }],
+        [walletModel._internal.$wallet, new Wallet('123')],
         [networkModel._internal.$chains, mockedChains],
         [networkModel._internal.$connections, { '0x003': { api: {}, status: 'connected' } }],
       ],
@@ -150,7 +161,7 @@ describe('models/balances/balances-model', () => {
 
     const scope = fork({
       values: [
-        [walletModel._internal.$wallet, { publicKey: '0x999' }],
+        [walletModel._internal.$wallet, new Wallet('123')],
         [networkModel._internal.$assets, { '0x001': { 1: {} }, '0x003': { 0: {}, 1: {} } }],
         [networkModel._internal.$chains, mockedChains],
         [
@@ -184,7 +195,7 @@ describe('models/balances/balances-model', () => {
     const scope = fork({
       values: [
         [networkModel._internal.$assets, { '0x001': { 1: {} }, '0x003': { 0: {}, 1: {} } }],
-        [walletModel._internal.$wallet, { publicKey: '0x999' }],
+        [walletModel._internal.$wallet, new Wallet('123')],
         [networkModel._internal.$chains, mockedChains],
         [
           balancesModel._internal.$subscriptions,
@@ -208,7 +219,7 @@ describe('models/balances/balances-model', () => {
     });
   });
 
-  test('should update $subscriptions when walletModel.$account updates', async () => {
+  test('should update $subscriptions when walletModel.$wallet updates', async () => {
     const unsubPromise = Promise.resolve(noop);
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(noop),
@@ -230,7 +241,7 @@ describe('models/balances/balances-model', () => {
       ],
     });
 
-    await allSettled(walletModel._internal.$wallet, { scope, params: { publicKey: '0x999' } });
+    await allSettled(walletModel._internal.$wallet, { scope, params: new Wallet('123') });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
       '0x001': { 0: unsubPromise },
