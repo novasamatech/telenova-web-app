@@ -29,7 +29,6 @@ export const CreatePasswordForm = ({ password, onStatusChange, onChange }: Props
   }, [password, confirmPassword, isPasswordValid, onStatusChange]);
 
   const validatePassword = (value: string) => {
-    // Password validation logic
     const regex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
     setIsPasswordValid(regex.test(value));
   };

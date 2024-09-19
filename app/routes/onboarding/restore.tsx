@@ -38,10 +38,13 @@ const Page = () => {
     }
 
     const decryptedMnemonic = initializeWalletFromCloud(password, location.state.mnemonic);
-    if (!decryptedMnemonic) return;
+    if (!decryptedMnemonic) {
+      setIsPasswordValid(false);
+
+      return;
+    }
 
     walletModel.input.walletCreated(decryptedMnemonic);
-    setIsPasswordValid(true);
     setIsPending(true);
 
     telegramApi
@@ -81,9 +84,15 @@ const Page = () => {
             type="password"
             value={password}
             isInvalid={!isPasswordValid}
-            errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}
-            onValueChange={setPassword}
-            onClear={() => setPassword('')}
+            errorMessage={!isPasswordValid && 'It seems your password is incorrect'}
+            onValueChange={value => {
+              setPassword(value);
+              setIsPasswordValid(true);
+            }}
+            onClear={() => {
+              setPassword('');
+              setIsPasswordValid(true);
+            }}
           />
           <Button aria-label="Reset Password" className="self-baseline bg-transparent p-0" onClick={toggleModal}>
             <BodyText className="text-text-link">Forgot Password?</BodyText>
