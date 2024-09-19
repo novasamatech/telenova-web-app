@@ -7,7 +7,7 @@ import { $path } from 'remix-routes';
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { telegramModel } from '@/models/telegram';
-import { cryptoApi } from '@/shared/api';
+import { walletModel } from '@/models/wallet';
 import { TitleText } from '@/ui/atoms';
 import { CreatePasswordForm } from '@/ui/molecules';
 
@@ -21,12 +21,9 @@ const Page = () => {
 
   const onSubmit = () => {
     if (!webApp) return;
-    const mnemonic = cryptoApi.getMnemonic(webApp);
 
-    if (mnemonic) {
-      cryptoApi.backupMnemonic(webApp, mnemonic, password);
-      navigate($path('/settings/password/confirmation'));
-    }
+    walletModel.input.mnemonicChanged({ password });
+    navigate($path('/settings/password/confirmation'));
   };
 
   return (

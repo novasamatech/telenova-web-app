@@ -11,8 +11,8 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { keyringApi, transferFactory } from '@/shared/api';
-import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
+import { keyringApi, telegramApi, transferFactory } from '@/shared/api';
+import { MNEMONIC_STORE, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
 export type SearchParams = {
@@ -54,16 +54,18 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
-    const keyringPair = keyringApi.getKeyringPair(webApp, chains[typedChainId]);
-    if (!keyringPair) return;
+    telegramApi
+      .getItem(webApp, MNEMONIC_STORE)
+      .then(mnemonic => {
+        const keyringPair = keyringApi.getKeyringPairFromSeed(mnemonic, chains[typedChainId]);
+        if (!keyringPair) return;
 
-    transferFactory
-      .createService(connections[typedChainId].api!, selectedAsset)
-      .sendTransfer({
-        keyringPair,
-        amount: bnAmount,
-        destination: address,
-        transferAll: all,
+        return transferFactory.createService(connections[typedChainId].api!, selectedAsset).sendTransfer({
+          keyringPair,
+          amount: bnAmount,
+          destination: address,
+          transferAll: all,
+        });
       })
       .then(() => {
         const params = { chainId, assetId, address };

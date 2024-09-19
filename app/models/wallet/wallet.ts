@@ -1,7 +1,7 @@
 import { u8aToHex } from '@polkadot/util';
 
-import { chainsApi, keyringApi } from '@/shared/api';
-import { toAddress } from '@/shared/helpers';
+import { keyringApi } from '@/shared/api';
+import { isEvmChain, toAddress } from '@/shared/helpers';
 import { type Chain } from '@/types/substrate';
 
 export class Wallet {
@@ -16,7 +16,7 @@ export class Wallet {
   }
 
   getPublicKey(chain?: Chain): PublicKey {
-    return chain && chainsApi.isEvmChain(chain) ? this.#evmPublicKey : this.#substratePublicKey;
+    return chain && isEvmChain(chain) ? this.#evmPublicKey : this.#substratePublicKey;
   }
 
   toAddress(chain: Chain): Address {

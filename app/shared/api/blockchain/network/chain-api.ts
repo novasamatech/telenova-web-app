@@ -1,13 +1,10 @@
 import { concat, sortBy } from 'lodash-es';
 
-import { nonNullable } from '@/shared/helpers';
-import { KUSAMA, POLKADOT } from '@/shared/helpers/chains';
+import { isChainStartsWithNumber, isKusama, isPolkadot, nonNullable } from '@/shared/helpers';
 import { type Chain } from '@/types/substrate';
 
 export const chainsApi = {
   getChainsData,
-  isEvmChain,
-  sortChains,
 };
 
 type DataParams = {
@@ -67,10 +64,6 @@ async function getChainsData({ file, sort }: DataParams): Promise<Chain[]> {
   return sort ? sortChains(chains) : chains;
 }
 
-function isEvmChain(chain: Chain): boolean {
-  return Boolean(chain.options?.includes('evm'));
-}
-
 function sortChains(chains: Chain[]): Chain[] {
   let polkadot;
   let kusama;
@@ -80,21 +73,9 @@ function sortChains(chains: Chain[]): Chain[] {
   chains.forEach(chain => {
     if (isPolkadot(chain)) polkadot = chain;
     else if (isKusama(chain)) kusama = chain;
-    else if (isNameStartsWithNumber(chain)) numberchains.push(chain);
+    else if (isChainStartsWithNumber(chain)) numberchains.push(chain);
     else parachains.push(chain);
   });
 
   return concat([polkadot, kusama].filter(nonNullable), sortBy(parachains, 'name'), sortBy(numberchains, 'name'));
-}
-
-function isPolkadot(chain: Chain): boolean {
-  return chain.chainId === POLKADOT;
-}
-
-function isKusama(chain: Chain): boolean {
-  return chain.chainId === KUSAMA;
-}
-
-function isNameStartsWithNumber(chain: Chain): boolean {
-  return /^[0-9]+/.test(chain.name);
 }

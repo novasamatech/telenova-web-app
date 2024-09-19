@@ -2,18 +2,35 @@ import { type WebApp } from '@twa-dev/types';
 
 export const telegramApi = {
   getStoreName,
-  getCloudStorageItem,
+  getItem,
+  setItem,
   removeCloudStorageItems,
   isWebPlatform,
 };
 
-function getCloudStorageItem(webApp: WebApp, store: string): Promise<string> {
+function getItem(webApp: WebApp, store: string): Promise<string> {
+  const tgStoreName = getStoreName(webApp, store);
+
   return new Promise((resolve, reject) => {
-    webApp.CloudStorage.getItem(store, (error, value) => {
-      if (error || value === undefined) {
+    webApp.CloudStorage.getItem(tgStoreName, (error, result) => {
+      if (error || result === undefined) {
         reject(error);
       } else {
-        resolve(value);
+        resolve(result);
+      }
+    });
+  });
+}
+
+function setItem(webApp: WebApp, store: string, value: string): Promise<boolean> {
+  const tgStoreName = getStoreName(webApp, store);
+
+  return new Promise((resolve, reject) => {
+    webApp.CloudStorage.setItem(tgStoreName, value, (error, result) => {
+      if (error || result === undefined) {
+        reject(error);
+      } else {
+        resolve(result);
       }
     });
   });

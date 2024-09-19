@@ -5,8 +5,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { type ApiPromise } from '@polkadot/api';
 
 import { chainsApi } from '@/shared/api';
-import { CONNECTIONS_STORE } from '@/shared/helpers';
-import { KUSAMA, POLKADOT, POLKADOT_ASSET_HUB } from '@/shared/helpers/chains';
+import { CONNECTIONS_STORE, KUSAMA, POLKADOT, POLKADOT_ASSET_HUB } from '@/shared/helpers';
 import { type AssetsMap, type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkModel } from './network-model';

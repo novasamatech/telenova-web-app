@@ -1,20 +1,14 @@
-import { type WebApp } from '@twa-dev/types';
-
 import Keyring from '@polkadot/keyring';
 import { type KeyringPair } from '@polkadot/keyring/types';
 import { u8aToHex } from '@polkadot/util';
 import { type KeypairType } from '@polkadot/util-crypto/types';
 
-import { chainsApi } from '../blockchain/network/chain-api';
-
+import { isEvmChain } from '@/shared/helpers';
 import { type Chain } from '@/types/substrate';
-
-import { cryptoApi } from './crypto-api';
 
 type SupportedPairs = Extract<KeypairType, 'sr25519' | 'ethereum'>;
 
 export const keyringApi = {
-  getKeyringPair,
   getKeyringPairFromSeed,
   getKeyringPairsFromSeed,
 };
@@ -27,7 +21,7 @@ function getKeyringPairsFromSeed(seed: string): Record<SupportedPairs, KeyringPa
 }
 
 function getKeyringPairFromSeed(seed: string, chain: Chain): KeyringPair {
-  const type = chainsApi.isEvmChain(chain) ? 'ethereum' : 'sr25519';
+  const type = isEvmChain(chain) ? 'ethereum' : 'sr25519';
 
   const KEYPAIR_TYPES: Record<SupportedPairs, (seed: string) => KeyringPair> = {
     sr25519: getSubstrateKeyringPair,
@@ -58,21 +52,4 @@ function getEvmKeyringPair(seed: string): KeyringPair {
   console.log(`=== Ethereum Address from Mnemonic: ${alice.address} & ${u8aToHex(alice.publicKey)}`);
 
   return alice;
-}
-
-/**
- * Returns decrypted keyring pair for user's wallet Make sure to call lock()
- * after pair was used to clean up secret!
- */
-function getKeyringPair(webApp: WebApp, chain: Chain): KeyringPair | undefined {
-  try {
-    const mnemonic = cryptoApi.getMnemonic(webApp);
-    if (mnemonic === null) return undefined;
-
-    return getKeyringPairFromSeed(mnemonic, chain);
-  } catch (error) {
-    console.warn('Error while getting KeyringPair from seed', error);
-
-    return undefined;
-  }
 }

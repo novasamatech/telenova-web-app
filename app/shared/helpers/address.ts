@@ -4,7 +4,8 @@ import { base58Decode, checkAddressChecksum, decodeAddress, encodeAddress } from
 import { SS58_DEFAULT_PREFIX } from '@/shared/helpers/constants';
 
 const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
-const ACCOUNT_ID_LENGTH = 32;
+const PUBLIC_KEY_LENGTH_BYTES = 32;
+const ETHEREUM_PUBLIC_KEY_LENGTH_BYTES = 20;
 
 /**
  * Format address or publicKey with prefix and chunk size Example: chunk = 6,
@@ -65,19 +66,15 @@ export const truncate = (text: string, start = 5, end = 5): string => {
  * @returns {Boolean}
  */
 export const validateAddress = (address?: Address | PublicKey): boolean => {
-  if (!address) {
-    return false;
-  }
+  if (!address) return false;
 
   if (isU8a(address) || isHex(address)) {
-    return u8aToU8a(address).length === ACCOUNT_ID_LENGTH;
+    return [ETHEREUM_PUBLIC_KEY_LENGTH_BYTES, PUBLIC_KEY_LENGTH_BYTES].includes(u8aToU8a(address).length);
   }
 
   try {
     const decoded = base58Decode(address);
-    if (!ADDRESS_ALLOWED_ENCODED_LENGTHS.includes(decoded.length)) {
-      return false;
-    }
+    if (!ADDRESS_ALLOWED_ENCODED_LENGTHS.includes(decoded.length)) return false;
 
     const [isValid, endPos, ss58Length] = checkAddressChecksum(decoded);
 

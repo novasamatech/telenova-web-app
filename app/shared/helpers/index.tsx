@@ -8,4 +8,5 @@ export * from './functions';
 export * from './arrays';
 export * from './utility';
 export * from './browser';
+export * from './chains';
 export { assetUtils } from './assets';

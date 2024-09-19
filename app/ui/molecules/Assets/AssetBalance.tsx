@@ -2,7 +2,7 @@ import { type BN } from '@polkadot/util';
 
 import { TotalBalance } from '../TotalBalance/TotalBalance';
 
-import { DUAL_SYMBOLS } from '@/shared/helpers/chains';
+import { DUAL_SYMBOLS } from '@/shared/helpers';
 import { cnTw } from '@/shared/helpers/twMerge';
 import { type Asset, type AssetPrices } from '@/types/substrate';
 import { AssetIcon, Icon, MediumTitle, TokenPrice } from '@/ui/atoms';

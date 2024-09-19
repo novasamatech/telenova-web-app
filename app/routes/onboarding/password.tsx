@@ -26,7 +26,7 @@ const Page = () => {
     const mnemonic = cryptoApi.generateMnemonic();
 
     walletModel.input.walletCreated(mnemonic);
-    cryptoApi.backupMnemonic(webApp, mnemonic, password);
+    walletModel.input.mnemonicChanged({ mnemonic, password });
     navigate($path('/onboarding/create-wallet'));
   };
 

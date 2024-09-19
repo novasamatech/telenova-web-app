@@ -44,7 +44,7 @@ const Page = () => {
     setIsPending(true);
 
     telegramApi
-      .getCloudStorageItem(webApp, BACKUP_DATE)
+      .getItem(webApp, BACKUP_DATE)
       .then(backupDate => {
         localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), backupDate);
         navigate($path('/dashboard'));

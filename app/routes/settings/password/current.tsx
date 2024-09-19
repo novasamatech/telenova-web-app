@@ -30,7 +30,7 @@ const Page = () => {
     setIsPending(true);
 
     telegramApi
-      .getCloudStorageItem(webApp, MNEMONIC_STORE)
+      .getItem(webApp, MNEMONIC_STORE)
       .then(mnemonic => {
         const decryptedMnemonic = cryptoApi.getDecryptedMnemonic(mnemonic, password);
 

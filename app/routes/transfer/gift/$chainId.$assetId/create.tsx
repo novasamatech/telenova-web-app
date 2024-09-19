@@ -14,8 +14,8 @@ import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { keyringApi, transferFactory } from '@/shared/api';
-import { backupGifts, toFormattedBalance } from '@/shared/helpers';
+import { keyringApi, telegramApi, transferFactory } from '@/shared/api';
+import { MNEMONIC_STORE, backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
@@ -62,48 +62,50 @@ const Page = () => {
 
   useEffect(() => {
     if (!webApp || !selectedAsset || !chains[typedChainId]) return;
-    const selectedChain = chains[typedChainId];
 
-    const keyringPair = keyringApi.getKeyringPair(webApp, selectedChain);
-    if (!keyringPair) return;
+    telegramApi.getItem(webApp, MNEMONIC_STORE).then(mnemonic => {
+      const selectedChain = chains[typedChainId];
+      const keyringPair = keyringApi.getKeyringPairFromSeed(mnemonic, selectedChain);
+      if (!keyringPair) return;
 
-    const seed = randomAsHex(10).slice(2);
-    const giftKeyringPair = keyringApi.getKeyringPairFromSeed(seed, selectedChain);
+      const seed = randomAsHex(10).slice(2);
+      const giftKeyringPair = keyringApi.getKeyringPairFromSeed(seed, selectedChain);
 
-    const giftWallet = {
-      address: encodeAddress(giftKeyringPair.publicKey, selectedChain.addressPrefix),
-      secret: seed,
-    };
+      const giftWallet = {
+        address: encodeAddress(giftKeyringPair.publicKey, selectedChain.addressPrefix),
+        secret: seed,
+      };
 
-    transferFactory
-      .createService(connections[typedChainId].api!, selectedAsset)
-      .sendTransfer({
-        keyringPair,
-        amount: new BN(amount).add(new BN(fee)),
-        destination: giftWallet.address,
-        transferAll: all,
-      })
-      .then(() => {
-        backupGifts(webApp, {
-          chainId: typedChainId,
-          assetId: selectedAsset.assetId,
-          address: giftWallet.address,
-          secret: giftWallet.secret,
-          balance: amount,
-          chainIndex: selectedChain.chainIndex,
-        });
-        const tgLink = createTgLink({
-          botUrl,
-          appName,
-          amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
-          secret: giftWallet.secret,
-          chainIndex: selectedChain.chainIndex,
-          symbol: selectedAsset.symbol,
-        });
+      transferFactory
+        .createService(connections[typedChainId].api!, selectedAsset)
+        .sendTransfer({
+          keyringPair,
+          amount: new BN(amount).add(new BN(fee)),
+          destination: giftWallet.address,
+          transferAll: all,
+        })
+        .then(() => {
+          backupGifts(webApp, {
+            chainId: typedChainId,
+            assetId: selectedAsset.assetId,
+            address: giftWallet.address,
+            secret: giftWallet.secret,
+            balance: amount,
+            chainIndex: selectedChain.chainIndex,
+          });
+          const tgLink = createTgLink({
+            botUrl,
+            appName,
+            amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
+            secret: giftWallet.secret,
+            chainIndex: selectedChain.chainIndex,
+            symbol: selectedAsset.symbol,
+          });
 
-        setLink(tgLink);
-      })
-      .catch(error => alert(`Error: ${error.message}\nTry to reload`));
+          setLink(tgLink);
+        })
+        .catch(error => alert(`Error: ${error.message}\nTry to reload`));
+    });
   }, [webApp, selectedAsset, chains]);
 
   const handleLottieEvent = (event: PlayerEvent) => {

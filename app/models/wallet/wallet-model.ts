@@ -1,5 +1,3 @@
-import secureLocalStorage from 'react-secure-storage';
-
 import { type WebApp } from '@twa-dev/types';
 import { createEffect, createEvent, createStore, sample } from 'effector';
 import { readonly } from 'patronum';
@@ -8,22 +6,22 @@ import { $path } from 'remix-routes';
 import { navigationModel } from '../navigation';
 import { telegramModel } from '../telegram';
 
-import { localStorageApi, telegramApi } from '@/shared/api';
+import { cryptoApi, localStorageApi, telegramApi } from '@/shared/api';
 import { BACKUP_DATE, MNEMONIC_STORE } from '@/shared/helpers';
 
 import { Wallet } from './wallet';
 
 const walletCreated = createEvent<Mnemonic>();
 const walletCleared = createEvent<{ clearRemote: boolean }>();
+const mnemonicChanged = createEvent<{ mnemonic?: Mnemonic; password: string }>();
 
 const $wallet = createStore<Wallet | null>(null);
 
 const getWalletFx = createEffect(async (webApp: WebApp): Promise<Wallet | null> => {
   try {
-    const backupStore = telegramApi.getStoreName(webApp, BACKUP_DATE);
-    const backupLocalDate = localStorageApi.getItem(backupStore, '');
-    const backupCloudDate = await telegramApi.getCloudStorageItem(webApp, BACKUP_DATE);
-    const mnemonic = await telegramApi.getCloudStorageItem(webApp, MNEMONIC_STORE);
+    const mnemonic = await telegramApi.getItem(webApp, MNEMONIC_STORE);
+    const backupCloudDate = await telegramApi.getItem(webApp, BACKUP_DATE);
+    const backupLocalDate = localStorageApi.getItem(BACKUP_DATE, '');
 
     if (backupCloudDate !== backupLocalDate) return null;
 
@@ -43,7 +41,6 @@ type ClearParams = {
 };
 const clearWalletFx = createEffect(({ webApp, clearRemote }: ClearParams): Promise<boolean> => {
   localStorageApi.clear();
-  secureLocalStorage.clear();
 
   return clearRemote
     ? telegramApi.removeCloudStorageItems(webApp, [MNEMONIC_STORE, BACKUP_DATE])
@@ -52,12 +49,18 @@ const clearWalletFx = createEffect(({ webApp, clearRemote }: ClearParams): Promi
 
 type SaveMnemonicParams = {
   webApp: WebApp;
-  mnemonic: Mnemonic;
+  mnemonic?: Mnemonic;
+  password: string;
 };
-const mnemonicSavedFx = createEffect(({ webApp, mnemonic }: SaveMnemonicParams) => {
-  const storeName = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
+const changeMnemonicFx = createEffect(async ({ webApp, mnemonic, password }: SaveMnemonicParams): Promise<void> => {
+  const newMnemonic = mnemonic || (await telegramApi.getItem(webApp, MNEMONIC_STORE));
 
-  secureLocalStorage.setItem(storeName, mnemonic);
+  const encryptedMnemonicWithSalt = cryptoApi.getEncryptedMnemonic(newMnemonic, password);
+  const date = Date.now().toString();
+
+  await telegramApi.setItem(webApp, MNEMONIC_STORE, encryptedMnemonicWithSalt);
+  await telegramApi.setItem(webApp, BACKUP_DATE, date);
+  localStorageApi.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), date);
 });
 
 sample({
@@ -93,11 +96,11 @@ sample({
 });
 
 sample({
-  clock: createWalletFx.done,
+  clock: mnemonicChanged,
   source: telegramModel.$webApp,
   filter: (webApp: WebApp | null): webApp is WebApp => Boolean(webApp),
-  fn: (webApp, { params: mnemonic }) => ({ webApp, mnemonic }),
-  target: mnemonicSavedFx,
+  fn: (webApp, { mnemonic, password }) => ({ webApp, mnemonic, password }),
+  target: changeMnemonicFx,
 });
 
 sample({
@@ -114,6 +117,7 @@ export const walletModel = {
   input: {
     walletCreated,
     walletCleared,
+    mnemonicChanged,
   },
 
   /* Internal API (tests only) */

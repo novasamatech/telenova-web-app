@@ -12,8 +12,8 @@ import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { cryptoApi, telegramApi } from '@/shared/api';
-import { getTotalFiatBalance } from '@/shared/helpers';
+import { telegramApi } from '@/shared/api';
+import { MNEMONIC_STORE, getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
   AccountPrice,
@@ -45,9 +45,9 @@ const Page = () => {
   const [isWarningOpen, toggleWarning] = useToggle();
 
   useEffect(() => {
-    if (!webApp || cryptoApi.getMnemonic(webApp)) return;
+    if (!webApp) return;
 
-    clearWallet();
+    telegramApi.getItem(webApp, MNEMONIC_STORE).catch(clearWallet);
   }, [webApp]);
 
   const clearWallet = (clearRemote = false) => {
