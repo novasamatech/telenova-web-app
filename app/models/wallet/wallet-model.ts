@@ -21,7 +21,9 @@ const getWalletFx = createEffect(async (webApp: WebApp): Promise<Wallet | null> 
   try {
     const mnemonic = await telegramApi.getItem(webApp, MNEMONIC_STORE);
     const backupCloudDate = await telegramApi.getItem(webApp, BACKUP_DATE);
-    const backupLocalDate = localStorageApi.getItem(BACKUP_DATE, '');
+
+    const backupStore = telegramApi.getStoreName(webApp, BACKUP_DATE);
+    const backupLocalDate = localStorageApi.getItem(backupStore, '');
 
     if (backupCloudDate !== backupLocalDate) return null;
 
@@ -42,9 +44,7 @@ type ClearParams = {
 const clearWalletFx = createEffect(({ webApp, clearRemote }: ClearParams): Promise<boolean> => {
   localStorageApi.clear();
 
-  return clearRemote
-    ? telegramApi.removeCloudStorageItems(webApp, [MNEMONIC_STORE, BACKUP_DATE])
-    : Promise.resolve(true);
+  return clearRemote ? telegramApi.removeItems(webApp, [MNEMONIC_STORE, BACKUP_DATE]) : Promise.resolve(true);
 });
 
 type SaveMnemonicParams = {
@@ -60,7 +60,9 @@ const changeMnemonicFx = createEffect(async ({ webApp, mnemonic, password }: Sav
 
   await telegramApi.setItem(webApp, MNEMONIC_STORE, encryptedMnemonicWithSalt);
   await telegramApi.setItem(webApp, BACKUP_DATE, date);
-  localStorageApi.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), date);
+
+  const backupStore = telegramApi.getStoreName(webApp, BACKUP_DATE);
+  localStorageApi.setItem(backupStore, date);
 });
 
 sample({

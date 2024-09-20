@@ -17,15 +17,11 @@ const Page = () => {
   const webApp = useUnit(telegramModel.$webApp);
 
   const [mnemonic, setMnemonic] = useState<Mnemonic | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!webApp) return;
 
-    telegramApi
-      .getItem(webApp, MNEMONIC_STORE)
-      .then(setMnemonic)
-      .finally(() => setIsLoading(false));
+    telegramApi.getItem(webApp, MNEMONIC_STORE).then(setMnemonic);
   }, [webApp]);
 
   return (
@@ -36,9 +32,7 @@ const Page = () => {
         <BodyText align="left" className="mb-2 text-text-hint">
           Do not use clipboard or screenshots on your mobile device, try to find secure methods for backup (e.g. paper)
         </BodyText>
-        {/* TODO: Add shimmering */}
-        {isLoading && <div>loading</div>}
-        {!isLoading && <RecoveryPhrase mnemonic={mnemonic} />}
+        <RecoveryPhrase mnemonic={mnemonic} />
         <BodyText align="left" className="my-2 text-text-hint">
           Please make sure to write down your phrase correctly and legibly.
         </BodyText>

@@ -1,7 +1,10 @@
 import { isHex, isU8a, u8aToU8a } from '@polkadot/util';
-import { base58Decode, checkAddressChecksum, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import { base58Decode, checkAddressChecksum, encodeAddress, isEthereumChecksum } from '@polkadot/util-crypto';
+import { ethereumEncode } from '@polkadot/util-crypto/ethereum/encode';
 
+import { isEvmChain } from '@/shared/helpers/chains.ts';
 import { SS58_DEFAULT_PREFIX } from '@/shared/helpers/constants';
+import { type Chain } from '@/types/substrate';
 
 const ADDRESS_ALLOWED_ENCODED_LENGTHS = [35, 36, 37, 38];
 const PUBLIC_KEY_LENGTH_BYTES = 32;
@@ -9,30 +12,31 @@ const ETHEREUM_PUBLIC_KEY_LENGTH_BYTES = 20;
 
 /**
  * Format address or publicKey with prefix and chunk size Example: chunk = 6,
- * would produce address like 1ChFWe...X7iTVZ
+ * would produce address for Substrate - 1ChFWe...X7iTVZ or Ethereum -
+ * 0x2Gs34b...Hg4aSx
  *
- * @param value Account address or publicKey
- * @param params Chunk and prefix (default is 42)
+ * @param value Address or PublicKey
+ * @param params Chain and chunk
  *
  * @returns {String}
  */
-export const toAddress = (value: Address | PublicKey, params?: { chunk?: number; prefix?: number }): Address => {
-  const chunkValue = params?.chunk;
-  const prefixValue = params?.prefix ?? SS58_DEFAULT_PREFIX;
-
+export const toAddress = (value: Address | PublicKey, params: { chain: Chain; chunk?: number }): Address => {
   let address = '';
+
+  const prefixValue = params.chain.addressPrefix ?? SS58_DEFAULT_PREFIX;
   try {
-    address = encodeAddress(decodeAddress(value), prefixValue);
+    address = isEvmChain(params.chain) ? ethereumEncode(value) : encodeAddress(value, prefixValue);
   } catch {
     address = value;
   }
 
-  return chunkValue ? toShortAddress(address, chunkValue) : address;
+  return params.chunk ? toShortAddress(address, params.chunk) : address;
 };
 
 /**
  * Get short address representation
  * `5DXYNRXmNmFLFxxUjMXSzKh3vqHRDfDGGbY3BnSdQcta1SkX --> 5DXYNR...ta1SkX`
+ * `0x629C0eC6B23D0E3A2f67c2753660971faa9A1907 --> 0x629C0e...9A1907`
  *
  * @param address Value to make short
  * @param chunk How many letters should be visible from start/end
@@ -40,7 +44,9 @@ export const toAddress = (value: Address | PublicKey, params?: { chunk?: number;
  * @returns {String}
  */
 export const toShortAddress = (address: Address, chunk = 6): string => {
-  return address.length < 13 ? address : truncate(address, chunk, chunk);
+  const start = isHex(address) ? chunk + 2 : chunk;
+
+  return address.length < 13 ? address : truncate(address, start, chunk);
 };
 
 /**
@@ -52,7 +58,7 @@ export const toShortAddress = (address: Address, chunk = 6): string => {
  *
  * @returns {String}
  */
-export const truncate = (text: string, start = 5, end = 5): string => {
+export const truncate = (text: string, start = 6, end = 6): string => {
   if (text.length <= start + end) return text;
 
   return `${text.slice(0, start)}...${text.slice(-1 * end)}`;
@@ -69,7 +75,9 @@ export const validateAddress = (address?: Address | PublicKey): boolean => {
   if (!address) return false;
 
   if (isU8a(address) || isHex(address)) {
-    return [ETHEREUM_PUBLIC_KEY_LENGTH_BYTES, PUBLIC_KEY_LENGTH_BYTES].includes(u8aToU8a(address).length);
+    return u8aToU8a(address).length === ETHEREUM_PUBLIC_KEY_LENGTH_BYTES
+      ? isEthereumChecksum(address)
+      : u8aToU8a(address).length === PUBLIC_KEY_LENGTH_BYTES;
   }
 
   try {

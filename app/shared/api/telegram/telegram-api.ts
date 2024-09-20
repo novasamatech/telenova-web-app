@@ -4,15 +4,13 @@ export const telegramApi = {
   getStoreName,
   getItem,
   setItem,
-  removeCloudStorageItems,
+  removeItems,
   isWebPlatform,
 };
 
 function getItem(webApp: WebApp, store: string): Promise<string> {
-  const tgStoreName = getStoreName(webApp, store);
-
   return new Promise((resolve, reject) => {
-    webApp.CloudStorage.getItem(tgStoreName, (error, result) => {
+    webApp.CloudStorage.getItem(store, (error, result) => {
       if (error || result === undefined) {
         reject(error);
       } else {
@@ -23,10 +21,8 @@ function getItem(webApp: WebApp, store: string): Promise<string> {
 }
 
 function setItem(webApp: WebApp, store: string, value: string): Promise<boolean> {
-  const tgStoreName = getStoreName(webApp, store);
-
   return new Promise((resolve, reject) => {
-    webApp.CloudStorage.setItem(tgStoreName, value, (error, result) => {
+    webApp.CloudStorage.setItem(store, value, (error, result) => {
       if (error || result === undefined) {
         reject(error);
       } else {
@@ -42,7 +38,7 @@ function getStoreName(webApp: WebApp, key: string): string {
   return userId ? `${userId}_${key}` : '';
 }
 
-function removeCloudStorageItems(webApp: WebApp, keys: string[]): Promise<boolean> {
+function removeItems(webApp: WebApp, keys: string[]): Promise<boolean> {
   return new Promise((resolve, reject) => {
     webApp.CloudStorage.removeItems(keys, (error, result) => {
       if (error || result === undefined) {

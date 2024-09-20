@@ -20,6 +20,6 @@ export class Wallet {
   }
 
   toAddress(chain: Chain): Address {
-    return toAddress(this.getPublicKey(chain), { prefix: chain.addressPrefix });
+    return toAddress(this.getPublicKey(chain), { chain });
   }
 }
