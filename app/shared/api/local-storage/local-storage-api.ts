@@ -12,7 +12,7 @@ function getItem<T>(key: string, defaultValue: T): T {
   try {
     return storageItem ? JSON.parse(storageItem) : defaultValue;
   } catch {
-    console.error(`🔸LocalStorageService - Could not retrieve item by key - ${key}`);
+    console.error(`🔸LocalStorageApi - Could not retrieve item by key - ${key}`);
 
     return defaultValue;
   }

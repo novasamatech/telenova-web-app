@@ -8,53 +8,62 @@ import { toAddress, validateAddress } from '../address';
 import { type Chain } from '@/types/substrate';
 
 describe('shared/helpers/address#validateAddress', () => {
+  const substrateChain = {} as Chain;
+  const evmChain = { options: ['evm'] } as Chain;
+
   test('should fail validation for short address', () => {
-    const result = validateAddress('0x00');
+    const result = validateAddress('0x00', substrateChain);
     expect(result).toEqual(false);
   });
 
   test('should fail validation for invalid public key', () => {
-    const result = validateAddress('0xf5d5714c08vc112843aca74f8c498da06cc5a2d63153b825189baa51043b1f0b');
+    const result = validateAddress(
+      '0xf5d5714c08vc112843aca74f8c498da06cc5a2d63153b825189baa51043b1f0b',
+      substrateChain,
+    );
     expect(result).toEqual(false);
   });
 
   test('should fail validation for incorrect ss58 address', () => {
-    const result = validateAddress('16fL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD');
+    const result = validateAddress('16fL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD', substrateChain);
     expect(result).toEqual(false);
   });
 
   test('should pass validation for valid public key', () => {
-    const result = validateAddress('0xf5d5714c084c112843aca74f8c498da06cc5a2d63153b825189baa51043b1f0b');
+    const result = validateAddress(
+      '0xf5d5714c084c112843aca74f8c498da06cc5a2d63153b825189baa51043b1f0b',
+      substrateChain,
+    );
     expect(result).toEqual(true);
   });
 
   test('should pass validation for valid ss58 address', () => {
-    const result = validateAddress('16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD');
+    const result = validateAddress('16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD', substrateChain);
     expect(result).toEqual(true);
   });
 
   test('should pass validation for valid H160 address', () => {
-    const result = validateAddress('0x629C0eC6B23D0E3A2f67c2753660971faa9A1907');
+    const result = validateAddress('0x629C0eC6B23D0E3A2f67c2753660971faa9A1907', evmChain);
     expect(result).toEqual(true);
   });
 
   test('should not pass validation for invalid H160 address', () => {
-    const result = validateAddress('0x431621580885a1d9cf257cAf0628D26Df3e9c592');
+    const result = validateAddress('0x431621580885a1d9cf257cAf0628D26Df3e9c592', evmChain);
     expect(result).toEqual(false);
   });
 
   test('should fail validation for short random set of bytes', () => {
-    const result = validateAddress('0x00010200102');
+    const result = validateAddress('0x00010200102', substrateChain);
     expect(result).toEqual(false);
   });
 
   test('should fail validation for invalid set of chars', () => {
-    const result = validateAddress('randomaddress');
+    const result = validateAddress('randomaddress', substrateChain);
     expect(result).toEqual(false);
   });
 
   test('short address is not valid', () => {
-    const result = validateAddress('F7NZ');
+    const result = validateAddress('F7NZ', substrateChain);
     expect(result).toEqual(false);
   });
 });

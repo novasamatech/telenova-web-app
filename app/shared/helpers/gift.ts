@@ -1,10 +1,10 @@
 import { type WebApp } from '@twa-dev/types';
 
 import { type KeyringPair } from '@polkadot/keyring/types';
-import { encodeAddress } from '@polkadot/util-crypto';
 
 import { type Wallet } from '@/models/wallet';
 import { keyringApi, telegramApi } from '@/shared/api';
+import { toAddress } from '@/shared/helpers/address.ts';
 import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
 
 import { GIFT_STORE } from './constants';
@@ -70,15 +70,13 @@ export const getGiftInfo = (chains: Chain[], wallet: Wallet, startParam: string)
   if (!chain || !asset || !symbol) return undefined;
 
   const keyring = keyringApi.getKeyringPairFromSeed(seed, chain);
-  const address = encodeAddress(wallet.getPublicKey(chain), chain.addressPrefix);
-  const giftAddress = encodeAddress(keyring.publicKey, chain.addressPrefix);
 
   return {
     keyring,
-    address,
-    giftAddress,
     asset,
     symbol,
+    address: wallet.toAddress(chain),
+    giftAddress: toAddress(keyring.publicKey, { chain }),
     chainId: chain.chainId,
   };
 };

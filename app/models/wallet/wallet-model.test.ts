@@ -1,3 +1,5 @@
+import secureLocalStorage from 'react-secure-storage';
+
 import { type WebApp } from '@twa-dev/types';
 import { allSettled, fork } from 'effector';
 import { describe, expect, test, vi } from 'vitest';
@@ -43,8 +45,9 @@ describe('models/wallet/wallet-model', () => {
   });
 
   test('should construct wallet from Telegram CloudStorage mnemonic', async () => {
+    vi.spyOn(secureLocalStorage, 'getItem').mockReturnValue('mnemonic');
     vi.spyOn(localStorageApi, 'getItem').mockReturnValue('backup_date');
-    vi.spyOn(telegramApi, 'getItem').mockResolvedValueOnce('mnemonic').mockResolvedValueOnce('backup_date');
+    vi.spyOn(telegramApi, 'getItem').mockResolvedValue('backup_date');
 
     const scope = fork();
 

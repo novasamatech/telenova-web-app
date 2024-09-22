@@ -8,8 +8,9 @@ import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
+import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { validateAddress } from '@/shared/helpers';
+import { isEvmChain, validateAddress } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
@@ -22,13 +23,14 @@ const Page = () => {
   const navigate = useNavigate();
 
   const webApp = useUnit(telegramModel.$webApp);
+  const chains = useUnit(networkModel.$chains);
 
   const [address, setAddress] = useState('');
   const [isAddressValid, setIsAddressValid] = useState(true);
 
   const handleChange = (value: string) => {
     setAddress(value);
-    setIsAddressValid(validateAddress(value));
+    setIsAddressValid(validateAddress(value, chains[chainId as ChainId]));
   };
 
   const handleQrCode = () => {
@@ -36,7 +38,7 @@ const Page = () => {
 
     webApp.showScanQrPopup({ text: 'Scan QR code' }, value => {
       setAddress(value);
-      setIsAddressValid(validateAddress(value));
+      setIsAddressValid(validateAddress(value, chains[chainId as ChainId]));
       webApp.closeScanQrPopup();
     });
   };
@@ -63,7 +65,11 @@ const Page = () => {
         />
         {address && isAddressValid && (
           <div className="mt-4 flex items-center gap-x-2 break-all">
-            <Identicon className="flex-shrink-0" address={address} />
+            <Identicon
+              className="flex-shrink-0"
+              address={address}
+              theme={isEvmChain(chains[chainId as ChainId]) ? 'ethereum' : 'polkadot'}
+            />
             <BodyText>{address}</BodyText>
           </div>
         )}

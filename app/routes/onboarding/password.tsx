@@ -27,7 +27,7 @@ const Page = () => {
 
     walletModel.input.walletCreated(mnemonic);
     walletModel.input.mnemonicChanged({ mnemonic, password });
-    navigate($path('/onboarding/create-wallet'));
+    navigate($path('/onboarding/complete'));
   };
 
   return (
@@ -49,7 +49,7 @@ const Page = () => {
         </TitleText>
         <BodyText className="px-4 text-text-hint">
           You should set a strong password to secure your wallet. The password you choose will keep your assets safe and
-          sound
+          sound.
         </BodyText>
         <CreatePasswordForm password={password} onChange={setPassword} onStatusChange={setIsValid} />
       </div>

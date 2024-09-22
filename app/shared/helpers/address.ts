@@ -20,14 +20,17 @@ const ETHEREUM_PUBLIC_KEY_LENGTH_BYTES = 20;
  *
  * @returns {String}
  */
-export const toAddress = (value: Address | PublicKey, params: { chain: Chain; chunk?: number }): Address => {
+export const toAddress = (
+  value: Address | PublicKey | Uint8Array,
+  params: { chain: Chain; chunk?: number },
+): Address => {
   let address = '';
 
   const prefixValue = params.chain.addressPrefix ?? SS58_DEFAULT_PREFIX;
   try {
     address = isEvmChain(params.chain) ? ethereumEncode(value) : encodeAddress(value, prefixValue);
   } catch {
-    address = value;
+    address = isU8a(value) ? '' : value;
   }
 
   return params.chunk ? toShortAddress(address, params.chunk) : address;
@@ -68,19 +71,20 @@ export const truncate = (text: string, start = 6, end = 6): string => {
  * Check is account's address valid
  *
  * @param address Account's address
+ * @param chain Chain to operate
  *
  * @returns {Boolean}
  */
-export const validateAddress = (address?: Address | PublicKey): boolean => {
-  if (!address) return false;
-
-  if (isU8a(address) || isHex(address)) {
-    return u8aToU8a(address).length === ETHEREUM_PUBLIC_KEY_LENGTH_BYTES
-      ? isEthereumChecksum(address)
-      : u8aToU8a(address).length === PUBLIC_KEY_LENGTH_BYTES;
-  }
-
+export const validateAddress = (address: Address | PublicKey, chain: Chain): boolean => {
   try {
+    if ((isU8a(address) || isHex(address)) && isEvmChain(chain)) {
+      return u8aToU8a(address).length === ETHEREUM_PUBLIC_KEY_LENGTH_BYTES && isEthereumChecksum(address);
+    }
+
+    if ((isU8a(address) || isHex(address)) && !isEvmChain(chain)) {
+      return u8aToU8a(address).length === PUBLIC_KEY_LENGTH_BYTES;
+    }
+
     const decoded = base58Decode(address);
     if (!ADDRESS_ALLOWED_ENCODED_LENGTHS.includes(decoded.length)) return false;
 

@@ -1,3 +1,4 @@
+import { type KeyringPair } from '@polkadot/keyring/types';
 import { u8aToHex } from '@polkadot/util';
 
 import { keyringApi } from '@/shared/api';
@@ -5,18 +6,22 @@ import { isEvmChain, toAddress } from '@/shared/helpers';
 import { type Chain } from '@/types/substrate';
 
 export class Wallet {
-  readonly #substratePublicKey: PublicKey;
-  readonly #evmPublicKey: PublicKey;
+  readonly #substrateKeyringPair: KeyringPair;
+  readonly #evmKeyringPair: KeyringPair;
 
   constructor(mnemonic: Mnemonic) {
     const keyringPairs = keyringApi.getKeyringPairsFromSeed(mnemonic);
 
-    this.#substratePublicKey = u8aToHex(keyringPairs.sr25519.publicKey);
-    this.#evmPublicKey = u8aToHex(keyringPairs.ethereum.publicKey);
+    this.#substrateKeyringPair = keyringPairs.sr25519;
+    this.#evmKeyringPair = keyringPairs.ethereum;
   }
 
   getPublicKey(chain?: Chain): PublicKey {
-    return chain && isEvmChain(chain) ? this.#evmPublicKey : this.#substratePublicKey;
+    return u8aToHex(this.getKeyringPair(chain).publicKey);
+  }
+
+  getKeyringPair(chain?: Chain): KeyringPair {
+    return chain && isEvmChain(chain) ? this.#evmKeyringPair : this.#substrateKeyringPair;
   }
 
   toAddress(chain: Chain): Address {

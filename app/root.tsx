@@ -11,7 +11,7 @@ import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { ErrorScreen } from '@/ui/molecules';
+import { ErrorScreen, LoadingScreen } from '@/ui/molecules';
 import '@/models/prices';
 import '@/models/balances';
 
@@ -88,7 +88,7 @@ const DataContext = ({ children }: PropsWithChildren) => {
     cryptoWaitReady().finally(() => setIsLoading(false));
   }, []);
 
-  if (isLoading) return null;
+  if (isLoading) return <LoadingScreen />;
 
   if (webAppError) return <ErrorScreen error={webAppError.message} />;
 

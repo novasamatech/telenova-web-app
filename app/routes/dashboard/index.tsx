@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
@@ -8,6 +7,7 @@ import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { balancesModel } from '@/models/balances';
+import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { telegramModel } from '@/models/telegram';
@@ -31,8 +31,6 @@ import {
 import { AssetSkeleton, AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning } from '@/ui/molecules';
 
 const Page = () => {
-  const navigate = useNavigate();
-
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
   const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
@@ -52,7 +50,7 @@ const Page = () => {
 
   const clearWallet = (clearRemote = false) => {
     walletModel.input.walletCleared({ clearRemote });
-    navigate($path('/onboarding'));
+    navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/onboarding') });
   };
 
   const navigateToMercuryo = () => {
@@ -61,7 +59,7 @@ const Page = () => {
     if (telegramApi.isWebPlatform(webApp)) {
       toggleWarning();
     } else {
-      navigate($path('/exchange'));
+      navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/exchange') });
     }
   };
 
@@ -83,7 +81,7 @@ const Page = () => {
           <Button
             isIconOnly
             className="overflow-visible bg-transparent drop-shadow-button"
-            onClick={() => navigate($path('/settings'))}
+            onClick={() => navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/settings') })}
           >
             <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
           </Button>
@@ -93,8 +91,18 @@ const Page = () => {
           <HeadlineText className="mb-1 text-text-hint">Total Balance</HeadlineText>
           <AccountPrice amount={getTotalFiatBalance(chains, balances, prices)?.toFixed(2)} />
           <div className="mt-7 grid w-full grid-cols-3 gap-2">
-            <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
-            <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
+            <IconButton
+              text="Send"
+              iconName="Send"
+              onClick={() => navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/transfer') })}
+            />
+            <IconButton
+              text="Receive"
+              iconName="Receive"
+              onClick={() =>
+                navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/receive/token-select') })
+              }
+            />
             <IconButton text="Buy/Sell" iconName="BuySell" onClick={navigateToMercuryo} />
           </div>
         </div>
