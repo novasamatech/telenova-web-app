@@ -48,7 +48,6 @@ async function submitExtrinsic({
 }: SubmitExtrinsicParams): Promise<Hash> {
   const extrinsic = prepareExtrinsic(api, transaction, options);
 
-  keyringPair.unlock();
   await extrinsic.signAsync(keyringPair, signOptions);
   keyringPair.lock();
 

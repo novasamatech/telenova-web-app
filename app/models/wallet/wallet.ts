@@ -6,22 +6,25 @@ import { isEvmChain, toAddress } from '@/shared/helpers';
 import { type Chain } from '@/types/substrate';
 
 export class Wallet {
-  readonly #substrateKeyringPair: KeyringPair;
-  readonly #evmKeyringPair: KeyringPair;
+  readonly #substratePublicKey: PublicKey;
+  readonly #evmPublicKey: PublicKey;
 
   constructor(mnemonic: Mnemonic) {
     const keyringPairs = keyringApi.getKeyringPairsFromSeed(mnemonic);
 
-    this.#substrateKeyringPair = keyringPairs.sr25519;
-    this.#evmKeyringPair = keyringPairs.ethereum;
+    this.#substratePublicKey = u8aToHex(keyringPairs.sr25519.publicKey);
+    this.#evmPublicKey = u8aToHex(keyringPairs.ethereum.publicKey);
+
+    keyringPairs.sr25519.lock();
+    keyringPairs.ethereum.lock();
   }
 
   getPublicKey(chain?: Chain): PublicKey {
-    return u8aToHex(this.getKeyringPair(chain).publicKey);
+    return chain && isEvmChain(chain) ? this.#evmPublicKey : this.#substratePublicKey;
   }
 
-  getKeyringPair(chain?: Chain): KeyringPair {
-    return chain && isEvmChain(chain) ? this.#evmKeyringPair : this.#substrateKeyringPair;
+  getKeyringPair(mnemonic: Mnemonic, chain: Chain): KeyringPair {
+    return keyringApi.getKeyringPairFromSeed(mnemonic, chain);
   }
 
   toAddress(chain: Chain): Address {

@@ -11,8 +11,8 @@ import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { transferFactory } from '@/shared/api';
-import { isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
+import { localStorageApi, telegramApi, transferFactory } from '@/shared/api';
+import { MNEMONIC_STORE, isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
 export type SearchParams = {
@@ -55,15 +55,20 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
+    const mnemonicStore = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
+    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
+
     transferFactory
       .createService(connections[typedChainId].api!, selectedAsset)
       .sendTransfer({
-        keyringPair: wallet.getKeyringPair(chains[typedChainId]),
+        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
         amount: bnAmount,
         destination: address,
         transferAll: all,
       })
-      .then(() => {
+      .then(hash => {
+        console.log('🟢 Transaction hash - ', hash.toHex());
+
         const params = { chainId, assetId, address };
         const query = { amount };
 

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
@@ -8,9 +7,10 @@ import { $params, $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
+import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { isEvmChain, validateAddress } from '@/shared/helpers';
+import { isEvmChain, toAddress, validateAddress } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
@@ -19,8 +19,6 @@ export const clientLoader = (({ params }) => {
 
 const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
-
-  const navigate = useNavigate();
 
   const webApp = useUnit(telegramModel.$webApp);
   const chains = useUnit(networkModel.$chains);
@@ -43,16 +41,30 @@ const Page = () => {
     });
   };
 
+  const navigate = () => {
+    const params = {
+      address: toAddress(address, { chain: chains[chainId as ChainId] }),
+      assetId,
+      chainId,
+    };
+
+    navigationModel.input.navigatorPushed({
+      type: 'navigate',
+      to: $path('/transfer/direct/:chainId/:assetId/:address/amount', params),
+    });
+  };
+
+  const navigateBack = () => {
+    navigationModel.input.navigatorPushed({
+      type: 'navigate',
+      to: $path('/transfer/direct/token-select'),
+    });
+  };
+
   return (
     <>
-      <MainButton
-        hidden={!address.length}
-        disabled={!isAddressValid}
-        onClick={() => {
-          navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { address, chainId, assetId }));
-        }}
-      />
-      <BackButton onClick={() => navigate($path('/transfer/direct/token-select'))} />
+      <MainButton hidden={!address.length} disabled={!isAddressValid} onClick={navigate} />
+      <BackButton onClick={navigateBack} />
       <div className="flex flex-col">
         <Input
           isClearable

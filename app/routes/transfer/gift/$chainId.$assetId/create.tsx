@@ -15,8 +15,8 @@ import { type TgLink } from '@/common/telegram/types';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { Wallet, walletModel } from '@/models/wallet';
-import { transferFactory } from '@/shared/api';
-import { backupGifts, toFormattedBalance } from '@/shared/helpers';
+import { localStorageApi, telegramApi, transferFactory } from '@/shared/api';
+import { MNEMONIC_STORE, backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
@@ -71,15 +71,20 @@ const Page = () => {
     const giftSeed = randomAsHex(10).slice(2); // TODO: not sure about slice(2)
     const giftWallet = new Wallet(giftSeed);
 
+    const mnemonicStore = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
+    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
+
     transferFactory
       .createService(connections[typedChainId].api!, selectedAsset)
       .sendTransfer({
-        keyringPair: wallet.getKeyringPair(selectedChain),
+        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
         amount: new BN(amount).add(new BN(fee)),
         destination: giftWallet.toAddress(selectedChain),
         transferAll: all,
       })
-      .then(() => {
+      .then(hash => {
+        console.log('🟢 Transaction hash - ', hash.toHex());
+
         backupGifts(webApp, {
           chainId: typedChainId,
           assetId: selectedAsset.assetId,

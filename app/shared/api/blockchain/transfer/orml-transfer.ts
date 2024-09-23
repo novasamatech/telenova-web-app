@@ -1,7 +1,6 @@
 import { type ApiPromise } from '@polkadot/api';
 import { type Hash } from '@polkadot/types/interfaces';
 import { type BN, BN_ZERO } from '@polkadot/util';
-import { decodeAddress } from '@polkadot/util-crypto';
 
 import { extrinsicApi } from '../extrinsic/extrinsic-api';
 
@@ -27,7 +26,7 @@ export class OrmlTransferService implements ITransfer {
       transaction: {
         type: 'TRANSFER_ORML',
         args: {
-          dest: decodeAddress(destination),
+          dest: destination,
           value: amount,
           asset: assetUtils.getAssetId(this.#asset),
         },
@@ -41,7 +40,7 @@ export class OrmlTransferService implements ITransfer {
       transaction: {
         type: 'TRANSFER_ORML',
         args: {
-          dest: decodeAddress(FAKE_ACCOUNT_ID),
+          dest: FAKE_ACCOUNT_ID,
           value: amount,
           asset: assetUtils.getAssetId(this.#asset),
         },
