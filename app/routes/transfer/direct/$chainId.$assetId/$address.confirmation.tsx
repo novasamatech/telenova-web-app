@@ -123,7 +123,7 @@ const Page = () => {
         <Identicon address={address} theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'} />
         <HeadlineText className="flex gap-1">
           Send to
-          <Address address={address} className="max-w-[130px]" />
+          <Address address={address} className="max-w-[120px]" />
         </HeadlineText>
       </div>
       <div className="my-6 grid grid-cols-[40px,1fr,auto] items-center gap-2">

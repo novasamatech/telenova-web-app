@@ -10,7 +10,7 @@ import { MainButton } from '@/common/telegram/MainButton';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { isEvmChain, toAddress, validateAddress } from '@/shared/helpers';
+import { isEvmChain, toAddress, toShortAddress, validateAddress } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
@@ -72,6 +72,7 @@ const Page = () => {
           placeholder="Enter address"
           className="font-manrope"
           value={address}
+          isInvalid={!isAddressValid}
           onValueChange={handleChange}
           onClear={() => setAddress('')}
         />
@@ -82,12 +83,12 @@ const Page = () => {
               address={address}
               theme={isEvmChain(chains[chainId as ChainId]) ? 'ethereum' : 'polkadot'}
             />
-            <BodyText>{address}</BodyText>
+            <BodyText>{toShortAddress(address, 15)}</BodyText>
           </div>
         )}
 
         {address && !isAddressValid && (
-          <HelpText className="mt-1 text-text-hint">Invalid address, enter a correct one</HelpText>
+          <HelpText className="mt-1 text-text-danger">Invalid address, enter a correct one</HelpText>
         )}
 
         {!address && (

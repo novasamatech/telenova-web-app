@@ -61,7 +61,7 @@ export const toShortAddress = (address: Address, chunk = 6): string => {
  *
  * @returns {String}
  */
-export const truncate = (text: string, start = 6, end = 6): string => {
+const truncate = (text: string, start = 6, end = 6): string => {
   if (text.length <= start + end) return text;
 
   return `${text.slice(0, start)}...${text.slice(-1 * end)}`;
@@ -76,12 +76,12 @@ export const truncate = (text: string, start = 6, end = 6): string => {
  * @returns {Boolean}
  */
 export const validateAddress = (address: Address | PublicKey, chain: Chain): boolean => {
-  try {
-    if ((isU8a(address) || isHex(address)) && isEvmChain(chain)) {
-      return u8aToU8a(address).length === ETHEREUM_PUBLIC_KEY_LENGTH_BYTES && isEthereumChecksum(address);
-    }
+  return isEvmChain(chain) ? validateEvmAddress(address) : validateSubstrateAddress(address);
+};
 
-    if ((isU8a(address) || isHex(address)) && !isEvmChain(chain)) {
+function validateSubstrateAddress(address: Address | PublicKey): boolean {
+  try {
+    if (isU8a(address) || isHex(address)) {
       return u8aToU8a(address).length === PUBLIC_KEY_LENGTH_BYTES;
     }
 
@@ -94,4 +94,14 @@ export const validateAddress = (address: Address | PublicKey, chain: Chain): boo
   } catch {
     return false;
   }
-};
+}
+
+function validateEvmAddress(address: Address | PublicKey): boolean {
+  try {
+    if (!isU8a(address) && !isHex(address)) return false;
+
+    return u8aToU8a(address).length === ETHEREUM_PUBLIC_KEY_LENGTH_BYTES && isEthereumChecksum(address);
+  } catch {
+    return false;
+  }
+}

@@ -205,7 +205,7 @@ declare module 'remix-routes' {
     | 'routes/gifts/details'
     | 'routes/gifts/index'
     | 'routes/onboarding'
-    | 'routes/onboarding/create-wallet'
+    | 'routes/onboarding/complete'
     | 'routes/onboarding/index'
     | 'routes/onboarding/password'
     | 'routes/onboarding/restore'
