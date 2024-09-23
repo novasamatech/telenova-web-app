@@ -68,7 +68,7 @@ const Page = () => {
     if (!wallet || !webApp || !selectedAsset || !chains[typedChainId]) return;
 
     const selectedChain = chains[typedChainId];
-    const giftSeed = randomAsHex(10).slice(2); // TODO: not sure about slice(2)
+    const giftSeed = randomAsHex(10).slice(2);
     const giftWallet = new Wallet(giftSeed);
 
     const mnemonicStore = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
