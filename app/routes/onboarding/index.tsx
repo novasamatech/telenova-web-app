@@ -27,7 +27,7 @@ const Page = () => {
     if (!webApp) return;
 
     let mounted = true;
-    Promise.all([telegramApi.getCloudStorageItem(webApp, MNEMONIC_STORE), delay(1000)]).then(([mnemonic]) => {
+    Promise.all([telegramApi.getItem(webApp, MNEMONIC_STORE), delay(1000)]).then(([mnemonic]) => {
       if (!mounted) return;
 
       if (mnemonic) {

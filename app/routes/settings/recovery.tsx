@@ -1,11 +1,13 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
-import { getMnemonic } from '@/common/wallet';
 import { telegramModel } from '@/models/telegram';
+import { telegramApi } from '@/shared/api';
+import { MNEMONIC_STORE } from '@/shared/helpers';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { RecoveryPhrase } from '@/ui/molecules';
 
@@ -14,7 +16,13 @@ const Page = () => {
 
   const webApp = useUnit(telegramModel.$webApp);
 
-  if (!webApp) return null;
+  const [mnemonic, setMnemonic] = useState<Mnemonic | null>(null);
+
+  useEffect(() => {
+    if (!webApp) return;
+
+    telegramApi.getItem(webApp, MNEMONIC_STORE).then(setMnemonic);
+  }, [webApp]);
 
   return (
     <>
@@ -24,7 +32,7 @@ const Page = () => {
         <BodyText align="left" className="mb-2 text-text-hint">
           Do not use clipboard or screenshots on your mobile device, try to find secure methods for backup (e.g. paper)
         </BodyText>
-        <RecoveryPhrase mnemonic={getMnemonic(webApp)} />
+        <RecoveryPhrase mnemonic={mnemonic} />
         <BodyText align="left" className="my-2 text-text-hint">
           Please make sure to write down your phrase correctly and legibly.
         </BodyText>

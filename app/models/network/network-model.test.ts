@@ -1,12 +1,11 @@
 import { allSettled, fork } from 'effector';
 import { keyBy } from 'lodash-es';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
 import { type ApiPromise } from '@polkadot/api';
 
 import { chainsApi } from '@/shared/api';
-import { CONNECTIONS_STORE } from '@/shared/helpers';
-import { KUSAMA, POLKADOT, POLKADOT_ASSET_HUB } from '@/shared/helpers/chains';
+import { CONNECTIONS_STORE, KUSAMA, POLKADOT, POLKADOT_ASSET_HUB } from '@/shared/helpers';
 import { type AssetsMap, type Chain, type ChainMetadata } from '@/types/substrate';
 
 import { networkModel } from './network-model';
@@ -70,10 +69,6 @@ describe('@/common/network/network-model', () => {
       data: () => vi.fn().mockResolvedValue(mockedChainsMap),
     },
   };
-
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
 
   test('should populate $chains on networkStarted event', async () => {
     const fakeRequestFx = effectMocks.requestChainsFx.data();

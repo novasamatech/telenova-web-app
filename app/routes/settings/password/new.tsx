@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import secureLocalStorage from 'react-secure-storage';
 
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
-import { backupMnemonic } from '@/common/wallet';
 import { telegramModel } from '@/models/telegram';
-import { telegramApi } from '@/shared/api';
-import { MNEMONIC_STORE } from '@/shared/helpers';
+import { walletModel } from '@/models/wallet';
 import { TitleText } from '@/ui/atoms';
 import { CreatePasswordForm } from '@/ui/molecules';
 
@@ -24,12 +21,9 @@ const Page = () => {
 
   const onSubmit = () => {
     if (!webApp) return;
-    const mnemonic = secureLocalStorage.getItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE));
 
-    if (typeof mnemonic === 'string') {
-      backupMnemonic(webApp, mnemonic, password);
-      navigate($path('/settings/password/confirmation'));
-    }
+    walletModel.input.mnemonicChanged({ password });
+    navigate($path('/settings/password/confirmation'));
   };
 
   return (

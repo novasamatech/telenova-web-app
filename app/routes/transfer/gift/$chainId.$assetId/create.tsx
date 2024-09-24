@@ -8,14 +8,15 @@ import { useUnit } from 'effector-react';
 import { $params } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
+import { randomAsHex } from '@polkadot/util-crypto';
 
 import { createTgLink } from '@/common/telegram';
 import { type TgLink } from '@/common/telegram/types';
-import { createGiftWallet, getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
-import { transferFactory } from '@/shared/api';
-import { backupGifts, toFormattedBalance } from '@/shared/helpers';
+import { Wallet, walletModel } from '@/models/wallet';
+import { localStorageApi, telegramApi, transferFactory } from '@/shared/api';
+import { MNEMONIC_STORE, backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
@@ -49,10 +50,13 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 const Page = () => {
   const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const chains = useUnit(networkModel.$chains);
-  const assets = useUnit(networkModel.$assets);
-  const connections = useUnit(networkModel.$connections);
   const webApp = useUnit(telegramModel.$webApp);
+  const wallet = useUnit(walletModel.$wallet);
+  const [chains, assets, connections] = useUnit([
+    networkModel.$chains,
+    networkModel.$assets,
+    networkModel.$connections,
+  ]);
 
   const [loading, setLoading] = useState(true);
   const [link, setLink] = useState<TgLink | null>(null);
@@ -61,28 +65,31 @@ const Page = () => {
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!webApp || !selectedAsset || !chains[typedChainId]) return;
-
-    const keyringPair = getKeyringPair(webApp);
-    if (!keyringPair) return;
+    if (!wallet || !webApp || !selectedAsset || !chains[typedChainId]) return;
 
     const selectedChain = chains[typedChainId];
-    const giftWallet = createGiftWallet(selectedChain.addressPrefix);
+    const giftSeed = randomAsHex(10).slice(2);
+    const giftWallet = new Wallet(giftSeed);
+
+    const mnemonicStore = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
+    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
 
     transferFactory
       .createService(connections[typedChainId].api!, selectedAsset)
       .sendTransfer({
-        keyringPair,
+        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
         amount: new BN(amount).add(new BN(fee)),
-        destination: giftWallet.address,
+        destination: giftWallet.toAddress(selectedChain),
         transferAll: all,
       })
-      .then(() => {
+      .then(hash => {
+        console.log('🟢 Transaction hash - ', hash.toHex());
+
         backupGifts(webApp, {
           chainId: typedChainId,
           assetId: selectedAsset.assetId,
-          address: giftWallet.address,
-          secret: giftWallet.secret,
+          address: giftWallet.toAddress(selectedChain),
+          secret: giftSeed,
           balance: amount,
           chainIndex: selectedChain.chainIndex,
         });
@@ -90,7 +97,7 @@ const Page = () => {
           botUrl,
           appName,
           amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
-          secret: giftWallet.secret,
+          secret: giftSeed,
           chainIndex: selectedChain.chainIndex,
           symbol: selectedAsset.symbol,
         });

@@ -10,7 +10,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { MainButton } from '@/common/telegram/MainButton';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
-import { runMercuryoWidget, toAddress } from '@/shared/helpers';
+import { runMercuryoWidget } from '@/shared/helpers';
 
 export type SearchParams = {
   type: 'buy' | 'sell';
@@ -56,14 +56,14 @@ const Page = () => {
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!wallet?.publicKey || !selectedAsset || !root || !type) return;
+    if (!wallet || !selectedAsset || !root || !type) return;
 
     runMercuryoWidget({
       root,
       returnPage: $path('/dashboard'),
       secret: mercuryoSecret,
       widgetId: mercuryoWidgetId,
-      address: toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix }),
+      address: wallet.toAddress(chains[typedChainId]),
       operationType: type,
       symbol: selectedAsset.symbol,
       handleStatus,

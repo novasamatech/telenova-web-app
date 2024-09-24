@@ -7,10 +7,9 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { MainButton } from '@/common/telegram/MainButton';
-import { initializeWalletFromCloud } from '@/common/wallet';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { telegramApi } from '@/shared/api';
+import { cryptoApi, telegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import { BodyText, Input, TitleText } from '@/ui/atoms';
@@ -37,7 +36,7 @@ const Page = () => {
       return;
     }
 
-    const decryptedMnemonic = initializeWalletFromCloud(password, location.state.mnemonic);
+    const decryptedMnemonic = cryptoApi.getDecryptedMnemonic(location.state.mnemonic, password);
     if (!decryptedMnemonic) {
       setIsPasswordValid(false);
 
@@ -48,7 +47,7 @@ const Page = () => {
     setIsPending(true);
 
     telegramApi
-      .getCloudStorageItem(webApp, BACKUP_DATE)
+      .getItem(webApp, BACKUP_DATE)
       .then(backupDate => {
         localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), backupDate);
         navigate($path('/dashboard'));

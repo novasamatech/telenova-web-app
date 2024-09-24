@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal, ModalContent } from '@nextui-org/react';
 import { $path } from 'remix-routes';
 
-import { resetWallet } from '@/common/wallet';
+import { walletModel } from '@/models/wallet';
 
 import { BackupDeleted } from './BackupDeleted';
 import { PasswordForgotten } from './PasswordForgotten';
@@ -29,7 +29,7 @@ export const PasswordReset = ({ isOpen, onClose }: Props) => {
   }
 
   const handleSubmit = () => {
-    resetWallet();
+    walletModel.input.walletCleared({ clearRemote: true });
     setStep(Step.BACKUP_DELETED);
   };
 

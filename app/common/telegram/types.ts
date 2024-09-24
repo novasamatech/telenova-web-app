@@ -1,5 +1,7 @@
 import { type Telegram } from '@twa-dev/types';
 
+import { type Wallet } from '@/models/wallet';
+
 declare global {
   interface Window {
     Telegram?: Telegram;
@@ -11,7 +13,7 @@ export interface ITelegramMessageFactory {
 }
 
 export interface ITelegramBotApi {
-  submitWallet: (publicKey: HexString) => Promise<void>;
+  submitWallet: (wallet: Wallet) => Promise<void>;
 }
 
 export type TgLink = {

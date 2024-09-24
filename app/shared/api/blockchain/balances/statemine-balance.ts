@@ -2,7 +2,7 @@ import { type ApiPromise } from '@polkadot/api';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { assetUtils, toAddress } from '@/shared/helpers';
+import { assetUtils } from '@/shared/helpers';
 import { type AssetBalance, type Chain, type StatemineAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
@@ -18,16 +18,14 @@ export class StatemineBalanceService implements IBalance {
 
   async subscribeBalance(
     chain: Chain,
-    publicKey: PublicKey,
+    address: Address,
     callback: (newBalance: AssetBalance) => void,
   ): UnsubscribePromise {
-    const address = toAddress(publicKey, { prefix: chain.addressPrefix });
-
     return this.#api.query.assets.account(assetUtils.getAssetId(this.#asset), address, accountInfo => {
       const free = accountInfo.isNone ? BN_ZERO : accountInfo.unwrap().balance.toBn();
 
       callback({
-        publicKey,
+        address,
         chainId: chain.chainId,
         assetId: this.#asset.assetId,
         balance: {

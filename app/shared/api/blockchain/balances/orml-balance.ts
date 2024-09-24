@@ -5,7 +5,7 @@ import { type UnsubscribePromise } from '@polkadot/api/types';
 import { type Balance } from '@polkadot/types/interfaces';
 import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
-import { assetUtils, toAddress } from '@/shared/helpers';
+import { assetUtils } from '@/shared/helpers';
 import { type AssetBalance, type Chain, type OrmlAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
@@ -27,7 +27,7 @@ export class OrmlBalanceService implements IBalance {
 
   async subscribeBalance(
     chain: Chain,
-    publicKey: PublicKey,
+    address: Address,
     callback: (newBalance: AssetBalance) => void,
   ): UnsubscribePromise {
     const method = this.#api.query['tokens']?.['accounts'] as any;
@@ -38,13 +38,11 @@ export class OrmlBalanceService implements IBalance {
     const currencyIdType = this.#asset.typeExtras.currencyIdType;
     const assetId = this.#api.createType(currencyIdType, hexToU8a(ormlAssetId));
 
-    const address = toAddress(publicKey, { prefix: chain.addressPrefix });
-
     return method(address, assetId, (accountInfo: OrmlAccountData) => {
       const free = accountInfo.free.toBn();
 
       callback({
-        publicKey,
+        address,
         chainId: chain.chainId,
         assetId: this.#asset.assetId,
         balance: {

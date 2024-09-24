@@ -8,10 +8,11 @@ export type Chain = {
   name: string;
   assets: Asset[];
   nodes: RpcNode[];
-  options: 'evm'[];
+  options?: ChainOptions[];
   icon: string;
   addressPrefix: number;
 };
+type ChainOptions = 'evm';
 
 export type RpcNode = {
   url: string;

@@ -8,7 +8,7 @@ import { BackButton } from '@/common/telegram/BackButton';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { KUSAMA, POLKADOT } from '@/shared/helpers/chains';
+import { KUSAMA, POLKADOT } from '@/shared/helpers';
 import { TitleText } from '@/ui/atoms';
 import { AssetBalance } from '@/ui/molecules';
 

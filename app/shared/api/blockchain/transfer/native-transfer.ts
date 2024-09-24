@@ -1,7 +1,6 @@
 import { type ApiPromise } from '@polkadot/api';
 import { type Hash } from '@polkadot/types/interfaces';
 import { type BN, BN_ZERO } from '@polkadot/util';
-import { decodeAddress } from '@polkadot/util-crypto';
 
 import { extrinsicApi } from '../extrinsic/extrinsic-api';
 
@@ -24,7 +23,7 @@ export class BalanceTransferService implements ITransfer {
       transaction: {
         type: transferAll ? 'TRANSFER_ALL' : 'TRANSFER',
         args: {
-          dest: decodeAddress(destination),
+          dest: destination,
           value: amount,
         },
       },
@@ -37,7 +36,7 @@ export class BalanceTransferService implements ITransfer {
       transaction: {
         type: transferAll ? 'TRANSFER_ALL' : 'TRANSFER',
         args: {
-          dest: decodeAddress(FAKE_ACCOUNT_ID),
+          dest: FAKE_ACCOUNT_ID,
           value: amount,
         },
       },

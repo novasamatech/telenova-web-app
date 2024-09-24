@@ -6,8 +6,7 @@ import { type ApiPromise } from '@polkadot/api';
 
 import { chainsApi, metadataApi, providerApi } from '@/shared/api';
 import { type ProviderWithMetadata } from '@/shared/api/types';
-import { CONNECTIONS_STORE, nonNullable } from '@/shared/helpers';
-import { DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS } from '@/shared/helpers/chains';
+import { CONNECTIONS_STORE, DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS, nonNullable } from '@/shared/helpers';
 import { type Asset, type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
 
 import { type Connection } from './types';

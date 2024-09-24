@@ -13,6 +13,7 @@ import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { balancesFactory, transferFactory } from '@/shared/api';
+import { isEvmChain } from '@/shared/helpers';
 import { Address, HeadlineText, Identicon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
 
@@ -35,6 +36,7 @@ const Page = () => {
 
   const typedChainId = chainId as ChainId;
   const assets = useUnit(networkModel.$assets);
+  const chains = useUnit(networkModel.$chains);
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
   const connections = useUnit(networkModel.$connections);
@@ -91,7 +93,7 @@ const Page = () => {
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
-        <Identicon address={address} />
+        <Identicon address={address} theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'} />
         <HeadlineText className="flex gap-1">
           Send to
           <Address address={address} className="max-w-[120px]" />
