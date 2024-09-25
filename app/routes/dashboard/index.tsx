@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { isEmpty } from 'lodash-es';
@@ -11,7 +9,7 @@ import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { walletModel } from '@/models/wallet';
 import { BackButton, TelegramApi } from '@/shared/api';
-import { MNEMONIC_STORE, getTotalFiatBalance } from '@/shared/helpers';
+import { getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
   AccountPrice,
@@ -41,13 +39,11 @@ const Page = () => {
 
   const user = TelegramApi.initDataUnsafe.user;
 
-  useEffect(() => {
-    TelegramApi.getItem(MNEMONIC_STORE).catch(clearWallet);
-  }, []);
-
   const clearWallet = (clearRemote = false) => {
     walletModel.input.walletCleared({ clearRemote });
-    navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/onboarding') });
+
+    const path = clearRemote ? $path('/onboarding') : $path('/onboarding/restore');
+    navigationModel.input.navigatorPushed({ type: 'navigate', to: path });
   };
 
   const navigateToMercuryo = () => {

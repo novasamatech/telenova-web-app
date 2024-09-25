@@ -111,7 +111,7 @@ sample({
   clock: requestMnemonicFx.failData,
   fn: () => ({
     type: 'navigate' as const,
-    to: $path('/onboarding/start'),
+    to: $path('/onboarding'),
     options: { replace: true },
   }),
   target: navigationModel.input.navigatorPushed,

@@ -35,8 +35,9 @@ export const PasswordReset = ({ isOpen, onClose }: Props) => {
 
   const handleClose = () => {
     onClose();
+
     if (step === Step.BACKUP_DELETED) {
-      navigate($path('/onboarding/start'));
+      navigate($path('/onboarding'));
     }
   };
 
