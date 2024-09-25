@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 
-import { useUnit } from 'effector-react';
+import { type LinksFunction } from '@remix-run/node';
 import { $path } from 'remix-routes';
 
-import { MainButton } from '@/common/telegram/MainButton';
-import { telegramModel } from '@/models/telegram';
+import { MainButton, TelegramApi } from '@/shared/api';
 import { BodyText, Icon, MediumTitle, TitleText } from '@/ui/atoms';
 import { type IconNames } from '@/ui/atoms/types';
+
+// Create-wallet.json is heavy ~410Kb, nice to prefetch
+export const links: LinksFunction = () => [{ rel: 'prefetch', href: '/assets/lottie/Create-wallet.json', as: 'fetch' }];
 
 const welcomeData = [
   {
@@ -29,10 +31,8 @@ const welcomeData = [
 const Page = () => {
   const navigate = useNavigate();
 
-  const [user, startParam] = useUnit([telegramModel.$user, telegramModel.$startParam]);
-
-  const headerText = startParam
-    ? `Hey ${user?.first_name || 'friend'}!\nYou have received a gift!`
+  const headerText = TelegramApi.initDataUnsafe.start_param
+    ? `Hey ${TelegramApi.initDataUnsafe.user?.first_name || 'friend'}!\nYou have received a gift!`
     : 'Welcome to Telenova!';
 
   return (
@@ -43,7 +43,7 @@ const Page = () => {
         <pre>
           <TitleText className="mb-2 mt-4">{headerText}</TitleText>
         </pre>
-        {startParam && (
+        {TelegramApi.initDataUnsafe.start_param && (
           <BodyText className="mb-2 px-4 text-text-hint">
             To claim it, let’s create a wallet. It’s super quick.
           </BodyText>

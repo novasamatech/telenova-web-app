@@ -6,12 +6,10 @@ import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { balancesFactory, transferFactory } from '@/shared/api';
+import { BackButton, MainButton, balancesFactory, transferFactory } from '@/shared/api';
 import { toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, Icon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';

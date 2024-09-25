@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { createTgLink } from '@/common/telegram';
-import { BackButton } from '@/common/telegram/BackButton';
-import { type TgLink } from '@/common/telegram/types';
-import { telegramModel } from '@/models/telegram';
+import { botApi } from '@/shared/api';
+import { type TelegramLink } from '@/shared/api/telegram/types';
+import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
 import { Icon } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
@@ -46,12 +44,10 @@ const Page = () => {
 
   const navigate = useNavigate();
 
-  const webApp = useUnit(telegramModel.$webApp);
-
-  const [link, setLink] = useState<TgLink | null>(null);
+  const [link, setLink] = useState<TelegramLink | null>(null);
 
   useEffect(() => {
-    setLink(createTgLink(params));
+    setLink(botApi.createTelegramLink(params));
   }, []);
 
   return (
@@ -59,7 +55,7 @@ const Page = () => {
       <BackButton onClick={() => navigate($path('/gifts'))} />
       <div className="grid h-[93vh] items-center justify-center">
         <Icon name="Present" size={250} className="mt-auto justify-self-center" />
-        {link && webApp && <GiftDetails link={link} webApp={webApp} />}
+        {link && <GiftDetails link={link} />}
       </div>
     </>
   );

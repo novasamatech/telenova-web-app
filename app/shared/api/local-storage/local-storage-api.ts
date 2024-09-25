@@ -38,8 +38,8 @@ function setItem<T>(key: string, value: T): T {
   return value;
 }
 
-function secureSetItem<T>(key: string, value: T): T {
-  secureLocalStorage.setItem(key, JSON.stringify(value));
+function secureSetItem<T extends string | number | boolean | object>(key: string, value: T): T {
+  secureLocalStorage.setItem(key, value);
 
   return value;
 }

@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Divider, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { telegramOpenLink } from '@/common/telegram';
-import { BackButton } from '@/common/telegram/BackButton';
-import { telegramModel } from '@/models/telegram';
+import { navigationModel } from '@/models/navigation';
+import { TelegramApi, keyringApi, localStorageApi } from '@/shared/api';
+import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { MNEMONIC_STORE } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, MediumTitle, Plate } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 
@@ -22,14 +21,8 @@ export const loader = () => {
 const Page = () => {
   const { version } = useLoaderData<typeof loader>();
 
-  const navigate = useNavigate();
-
-  const webApp = useUnit(telegramModel.$webApp);
-
   const [isPopoverCurrencyOpen, setIsPopoverCurrencyOpen] = useState(false);
   const [isPopoverLanguageOpen, setIsPopoverLanguageOpen] = useState(false);
-
-  if (!webApp) return null;
 
   const handleOpenChange = (stateFunc: (state: boolean) => void) => {
     stateFunc(true);
@@ -39,9 +32,17 @@ const Page = () => {
     }, 1000);
   };
 
+  const migrateToNovaWallet = () => {
+    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
+    const entropy = keyringApi.getMnemonicEntropy(mnemonic);
+
+    TelegramApi.openLink(`https://app.novawallet.io/create/wallet?mnemonic=${entropy}`);
+  };
+
   return (
     <>
-      <BackButton onClick={() => navigate($path('/dashboard'))} />
+      <BackButton onClick={() => navigationModel.input.navigatorPushed({ type: 'history', delta: -1 })} />
       <div className="flex min-h-[95vh] flex-col items-center gap-4">
         <LinkCard
           text="Manage Backup"
@@ -108,7 +109,7 @@ const Page = () => {
 
         <button
           className="flex h-[108px] w-full overflow-hidden rounded-2xl bg-[url('/assets/misc/gradient.avif')] bg-[25%_25%]"
-          onClick={() => telegramOpenLink('https://novawallet.io', webApp)}
+          onClick={migrateToNovaWallet}
         >
           <img src="/assets/misc/phone.avif" alt="" className="ml-6 mt-1.5 w-[106px]" />
           <div className="mx-auto flex w-[190px] flex-col gap-y-4 self-center">
@@ -125,7 +126,7 @@ const Page = () => {
             textClassName="text-text-link"
             wrapperClassName="rounded-b-none"
             showArrow
-            onClick={() => telegramOpenLink('https://novasama.io/telenova/privacy', webApp)}
+            onClick={() => TelegramApi.openLink('https://novasama.io/telenova/privacy')}
           />
           <Divider className="ml-4 h-[0.5px] w-auto border-solid" />
           <LinkCard
@@ -134,7 +135,7 @@ const Page = () => {
             textClassName="text-text-link"
             wrapperClassName="rounded-t-none"
             showArrow
-            onClick={() => telegramOpenLink('https://novasama.io/telenova/terms', webApp)}
+            onClick={() => TelegramApi.openLink('https://novasama.io/telenova/terms')}
           />
         </Plate>
         <div className="mt-auto flex flex-col items-center">

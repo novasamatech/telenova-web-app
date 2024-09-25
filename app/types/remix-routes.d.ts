@@ -49,11 +49,6 @@ declare module 'remix-routes' {
       query: ExportedQuery<import('../routes/gifts/details').SearchParams>;
     };
 
-    '/onboarding': {
-      params: never;
-      query: ExportedQuery<import('../routes/onboarding/index').SearchParams>;
-    };
-
     '/onboarding/complete': {
       params: never;
       query: ExportedQuery<import('../routes/onboarding/complete').SearchParams>;
@@ -204,9 +199,7 @@ declare module 'remix-routes' {
     | 'routes/gifts'
     | 'routes/gifts/details'
     | 'routes/gifts/index'
-    | 'routes/onboarding'
     | 'routes/onboarding/complete'
-    | 'routes/onboarding/index'
     | 'routes/onboarding/password'
     | 'routes/onboarding/restore'
     | 'routes/onboarding/start'

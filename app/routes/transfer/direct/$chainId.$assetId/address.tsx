@@ -5,11 +5,9 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
+import { BackButton, MainButton, TelegramApi } from '@/shared/api';
 import { isEvmChain, toAddress, toShortAddress, validateAddress } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/ui/atoms';
 
@@ -20,7 +18,6 @@ export const clientLoader = (({ params }) => {
 const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
-  const webApp = useUnit(telegramModel.$webApp);
   const chains = useUnit(networkModel.$chains);
 
   const [address, setAddress] = useState('');
@@ -32,12 +29,9 @@ const Page = () => {
   };
 
   const handleQrCode = () => {
-    if (!webApp) return;
-
-    webApp.showScanQrPopup({ text: 'Scan QR code' }, value => {
+    TelegramApi.showScanQrPopup({ text: 'Scan QR code' }, value => {
       setAddress(value);
       setIsAddressValid(validateAddress(value, chains[chainId as ChainId]));
-      webApp.closeScanQrPopup();
     });
   };
 

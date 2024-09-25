@@ -1,9 +1,7 @@
-import { type WebApp } from '@twa-dev/types';
-
 import { type KeyringPair } from '@polkadot/keyring/types';
 
 import { type Wallet } from '@/models/wallet';
-import { keyringApi, telegramApi } from '@/shared/api';
+import { TelegramApi, keyringApi } from '@/shared/api';
 import { toAddress } from '@/shared/helpers/address.ts';
 import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
 
@@ -17,17 +15,17 @@ type BackupParams = {
   balance: string;
   chainIndex: number;
 };
-export const backupGifts = (webApp: WebApp, params: BackupParams) => {
+export const backupGifts = (params: BackupParams) => {
   const gift = { ...params, timestamp: Date.now() };
 
-  const storedGifts = localStorage.getItem(telegramApi.getStoreName(webApp, GIFT_STORE));
+  const storedGifts = localStorage.getItem(TelegramApi.getStoreName(GIFT_STORE));
   const backup = storedGifts ? [...JSON.parse(storedGifts), gift] : [gift];
 
-  localStorage.setItem(telegramApi.getStoreName(webApp, GIFT_STORE), JSON.stringify(backup));
+  localStorage.setItem(TelegramApi.getStoreName(GIFT_STORE), JSON.stringify(backup));
 };
 
-export const getGifts = (webApp: WebApp): Map<ChainId, PersistentGift[]> | null => {
-  const gifts = JSON.parse(localStorage.getItem(telegramApi.getStoreName(webApp, GIFT_STORE)) as string);
+export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
+  const gifts = JSON.parse(localStorage.getItem(TelegramApi.getStoreName(GIFT_STORE)) as string);
   if (!gifts) return null;
 
   const map = new Map<ChainId, PersistentGift[]>();

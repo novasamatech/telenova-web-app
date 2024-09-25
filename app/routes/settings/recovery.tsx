@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { telegramModel } from '@/models/telegram';
-import { telegramApi } from '@/shared/api';
+import { TelegramApi } from '@/shared/api';
+import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { RecoveryPhrase } from '@/ui/molecules';
@@ -14,15 +12,11 @@ import { RecoveryPhrase } from '@/ui/molecules';
 const Page = () => {
   const navigate = useNavigate();
 
-  const webApp = useUnit(telegramModel.$webApp);
-
   const [mnemonic, setMnemonic] = useState<Mnemonic | null>(null);
 
   useEffect(() => {
-    if (!webApp) return;
-
-    telegramApi.getItem(webApp, MNEMONIC_STORE).then(setMnemonic);
-  }, [webApp]);
+    TelegramApi.getItem(MNEMONIC_STORE).then(setMnemonic);
+  }, []);
 
   return (
     <>

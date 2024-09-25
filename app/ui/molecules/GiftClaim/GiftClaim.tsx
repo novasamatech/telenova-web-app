@@ -10,9 +10,8 @@ import { type BN, BN_ZERO } from '@polkadot/util';
 
 import { useGlobalContext } from '@/common/providers';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { balancesFactory, transferFactory } from '@/shared/api';
+import { TelegramApi, balancesFactory, transferFactory } from '@/shared/api';
 import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/ui/atoms';
@@ -34,8 +33,6 @@ export const GiftClaim = () => {
   const wallet = useUnit(walletModel.$wallet);
   const chains = useUnit(networkModel.$chains);
   const connections = useUnit(networkModel.$connections);
-  const webApp = useUnit(telegramModel.$webApp);
-  const startParam = useUnit(telegramModel.$startParam);
 
   const [giftBalance, setGiftBalance] = useState<BN | null>(null);
   const [giftAsset, setGiftAsset] = useState<Asset | null>(null);
@@ -45,6 +42,8 @@ export const GiftClaim = () => {
   const [lottie, setLottie] = useState<AnimationItem | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+
+  const startParam = TelegramApi.initDataUnsafe.start_param;
 
   useEffect(() => {
     if (isGiftClaimed || !startParam || !wallet) return;
@@ -117,7 +116,7 @@ export const GiftClaim = () => {
         transferAll: true,
       })
       .catch(() => {
-        webApp?.showAlert('Something went wrong. Failed to claim gift');
+        TelegramApi.showAlert('Something went wrong. Failed to claim the gift.');
         handleClose();
       })
       .finally(() => {

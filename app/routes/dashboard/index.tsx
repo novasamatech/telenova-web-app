@@ -5,14 +5,13 @@ import { useUnit } from 'effector-react';
 import { isEmpty } from 'lodash-es';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
 import { balancesModel } from '@/models/balances';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { telegramApi } from '@/shared/api';
+import { TelegramApi } from '@/shared/api';
+import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
 import { MNEMONIC_STORE, getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
@@ -33,7 +32,6 @@ import { AssetSkeleton, AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning
 const Page = () => {
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
-  const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
   const [chains, assets, isChainsLoading] = useUnit([
     networkModel.$chains,
     networkModel.$sortedAssets,
@@ -42,11 +40,11 @@ const Page = () => {
 
   const [isWarningOpen, toggleWarning] = useToggle();
 
-  useEffect(() => {
-    if (!webApp) return;
+  const user = TelegramApi.initDataUnsafe.user;
 
-    telegramApi.getItem(webApp, MNEMONIC_STORE).catch(clearWallet);
-  }, [webApp]);
+  useEffect(() => {
+    TelegramApi.getItem(MNEMONIC_STORE).catch(clearWallet);
+  }, []);
 
   const clearWallet = (clearRemote = false) => {
     walletModel.input.walletCleared({ clearRemote });
@@ -54,9 +52,7 @@ const Page = () => {
   };
 
   const navigateToMercuryo = () => {
-    if (!webApp) return;
-
-    if (telegramApi.isWebPlatform(webApp)) {
+    if (TelegramApi.isWebPlatform) {
       toggleWarning();
     } else {
       navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/exchange') });

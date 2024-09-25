@@ -173,15 +173,17 @@ export const getTotalFiatBalance = (
   let totalBalance = 0;
 
   for (const [chainId, assetBalance] of Object.entries(balances)) {
-    const asset = chains[chainId as ChainId].assets.find(asset => assetBalance[asset.assetId]);
+    const assets = chains[chainId as ChainId].assets.filter(asset => assetBalance[asset.assetId]);
 
-    if (!asset?.priceId) continue;
+    assets.forEach(asset => {
+      if (!asset.priceId) return;
 
-    totalBalance += toRoundedFiat(
-      assetBalance[asset.assetId].balance.total,
-      prices[asset.priceId].price || 0,
-      asset.precision,
-    );
+      totalBalance += toRoundedFiat(
+        assetBalance[asset.assetId].balance.total,
+        prices[asset.priceId].price || 0,
+        asset.precision,
+      );
+    });
   }
 
   return totalBalance;

@@ -8,10 +8,8 @@ import { useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { completeOnboarding } from '@/common/telegram';
-import { MainButton } from '@/common/telegram/MainButton';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
+import { MainButton, botApi } from '@/shared/api';
 import { BodyText, HeadlineText, LottiePlayer, TitleText } from '@/ui/atoms';
 
 export const loader = () => {
@@ -25,19 +23,17 @@ const Page = () => {
 
   const navigate = useNavigate();
 
-  const webApp = useUnit(telegramModel.$webApp);
   const wallet = useUnit(walletModel.$wallet);
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!wallet || !webApp) return;
+    if (!wallet) return;
 
-    // TODO: Handle errors here and display retry page maybe
-    completeOnboarding(webApp, wallet, botApiUrl).catch(() => {
+    botApi.submitPublicKey(wallet.getPublicKey(), botApiUrl).catch(() => {
       console.warn('Onboarding failed');
     });
-  }, [wallet, webApp]);
+  }, [wallet]);
 
   const handleOnEvent = (event: PlayerEvent) => {
     if (event === 'complete') {

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { MainButton } from '@/common/telegram/MainButton';
+import { MainButton } from '@/shared/api';
 import { Icon, TitleText } from '@/ui/atoms';
 
 const Page = () => {

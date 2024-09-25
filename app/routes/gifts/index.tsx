@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { telegramModel } from '@/models/telegram';
+import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
 import { getGifts, toFormattedBalance } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
 import { type Gift } from '@/types/substrate';
@@ -16,16 +14,12 @@ const Page = () => {
   const navigate = useNavigate();
   const { getGiftsState } = useGifts();
 
-  const webApp = useUnit(telegramModel.$webApp);
-
   const [isLoading, setIsLoading] = useState(true);
   const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
   const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
 
   useEffect(() => {
-    if (!webApp) return;
-
-    const mapGifts = getGifts(webApp);
+    const mapGifts = getGifts();
     if (!mapGifts) return;
 
     getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
@@ -33,7 +27,7 @@ const Page = () => {
       setClaimedGifts(claimed);
       setIsLoading(false);
     });
-  }, [webApp]);
+  }, []);
 
   return (
     <>

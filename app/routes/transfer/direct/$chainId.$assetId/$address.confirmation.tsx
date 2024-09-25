@@ -5,13 +5,10 @@ import { $params, $path } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { localStorageApi, telegramApi, transferFactory } from '@/shared/api';
+import { BackButton, MainButton, TelegramApi, localStorageApi, transferFactory } from '@/shared/api';
 import { MNEMONIC_STORE, isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
@@ -35,7 +32,6 @@ export const clientLoader = (({ params, request }) => {
 const Page = () => {
   const { chainId, assetId, address, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const webApp = useUnit(telegramModel.$webApp);
   const wallet = useUnit(walletModel.$wallet);
   const [chains, assets, connections] = useUnit([
     networkModel.$chains,
@@ -46,7 +42,7 @@ const Page = () => {
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!wallet || !webApp || !selectedAsset || !chains[typedChainId]) return null;
+  if (!wallet || !selectedAsset || !chains[typedChainId]) return null;
 
   const symbol = selectedAsset.symbol;
   const bnFee = new BN(fee);
@@ -55,7 +51,7 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
-    const mnemonicStore = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
+    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
     const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
 
     transferFactory
