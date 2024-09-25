@@ -5,8 +5,7 @@ import { Avatar } from '@nextui-org/react';
 import { $path } from 'remix-routes';
 
 import { walletModel } from '@/models/wallet';
-import { TelegramApi, cryptoApi } from '@/shared/api';
-import { MainButton } from '@/shared/api/telegram/ui/MainButton.tsx';
+import { MainButton, TelegramApi, cryptoApi } from '@/shared/api';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { CreatePasswordForm } from '@/ui/molecules';
 

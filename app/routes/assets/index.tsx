@@ -5,7 +5,7 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { networkModel } from '@/models/network';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton } from '@/shared/api';
 import { getParentChain } from '@/shared/helpers';
 import { AssetIcon, BodyText, Icon, Input, MediumTitle, Plate, Switch, TitleText } from '@/ui/atoms';
 

@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { TelegramApi } from '@/shared/api';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton, TelegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';

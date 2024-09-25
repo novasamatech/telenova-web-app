@@ -7,7 +7,7 @@ import { $path } from 'remix-routes';
 import { balancesModel } from '@/models/balances';
 import { assetsFilterModel, networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton } from '@/shared/api';
 import { BodyText, Icon, Input, TitleText } from '@/ui/atoms';
 import { AssetsList } from '@/ui/molecules';
 

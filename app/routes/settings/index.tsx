@@ -6,8 +6,7 @@ import { useLoaderData } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
 import { navigationModel } from '@/models/navigation';
-import { TelegramApi, keyringApi, localStorageApi } from '@/shared/api';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton, TelegramApi, keyringApi, localStorageApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, MediumTitle, Plate } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';

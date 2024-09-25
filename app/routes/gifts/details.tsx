@@ -5,9 +5,8 @@ import { json } from '@remix-run/node';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
-import { botApi } from '@/shared/api';
+import { BackButton, botApi } from '@/shared/api';
 import { type TelegramLink } from '@/shared/api/telegram/types';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
 import { Icon } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 

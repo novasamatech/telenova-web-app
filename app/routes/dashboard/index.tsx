@@ -10,8 +10,7 @@ import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
 import { walletModel } from '@/models/wallet';
-import { TelegramApi } from '@/shared/api';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton, TelegramApi } from '@/shared/api';
 import { MNEMONIC_STORE, getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {

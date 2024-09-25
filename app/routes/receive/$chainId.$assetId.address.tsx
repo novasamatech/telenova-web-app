@@ -8,8 +8,7 @@ import { $params, $path } from 'remix-routes';
 
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
-import { TelegramApi } from '@/shared/api';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton, TelegramApi } from '@/shared/api';
 import { copyToClipboard, shareQrAddress } from '@/shared/helpers';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/ui/atoms';
 

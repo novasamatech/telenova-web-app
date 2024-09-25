@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton } from '@/shared/api';
 import { getGifts, toFormattedBalance } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
 import { type Gift } from '@/types/substrate';

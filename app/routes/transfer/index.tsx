@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton } from '@/shared/api';
 import { TitleText } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 

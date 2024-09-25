@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { $path } from 'remix-routes';
 
 import { navigationModel } from '@/models/navigation';
-import { BackButton } from '@/shared/api/telegram/ui/BackButton.tsx';
+import { BackButton } from '@/shared/api';
 import { TitleText } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 
