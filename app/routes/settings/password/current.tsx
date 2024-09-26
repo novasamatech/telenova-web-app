@@ -1,20 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
-import { telegramModel } from '@/models/telegram';
-import { cryptoApi, telegramApi } from '@/shared/api';
+import { BackButton, MainButton, TelegramApi, cryptoApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 import { Input, TitleText } from '@/ui/atoms';
 
 const Page = () => {
   const navigate = useNavigate();
-
-  const webApp = useUnit(telegramModel.$webApp);
 
   const [password, setPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
@@ -24,13 +18,12 @@ const Page = () => {
   const isPasswordValid = password.length > 0;
 
   const onSubmit = () => {
-    if (!webApp || !isPasswordValid) return;
+    if (!isPasswordValid) return;
 
     setIsValidMnemonic(true);
     setIsPending(true);
 
-    telegramApi
-      .getItem(webApp, MNEMONIC_STORE)
+    TelegramApi.getItem(MNEMONIC_STORE)
       .then(mnemonic => {
         const decryptedMnemonic = cryptoApi.getDecryptedMnemonic(mnemonic, password);
 

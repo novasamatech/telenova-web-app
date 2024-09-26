@@ -1,19 +1,15 @@
-import { useEffect } from 'react';
-
 import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { isEmpty } from 'lodash-es';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
 import { balancesModel } from '@/models/balances';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { telegramApi } from '@/shared/api';
-import { MNEMONIC_STORE, getTotalFiatBalance } from '@/shared/helpers';
+import { BackButton, TelegramApi } from '@/shared/api';
+import { getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
   AccountPrice,
@@ -33,7 +29,6 @@ import { AssetSkeleton, AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning
 const Page = () => {
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
-  const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
   const [chains, assets, isChainsLoading] = useUnit([
     networkModel.$chains,
     networkModel.$sortedAssets,
@@ -42,21 +37,17 @@ const Page = () => {
 
   const [isWarningOpen, toggleWarning] = useToggle();
 
-  useEffect(() => {
-    if (!webApp) return;
-
-    telegramApi.getItem(webApp, MNEMONIC_STORE).catch(clearWallet);
-  }, [webApp]);
+  const user = TelegramApi.initDataUnsafe.user;
 
   const clearWallet = (clearRemote = false) => {
     walletModel.input.walletCleared({ clearRemote });
-    navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/onboarding') });
+
+    const path = clearRemote ? $path('/onboarding') : $path('/onboarding/restore');
+    navigationModel.input.navigatorPushed({ type: 'navigate', to: path });
   };
 
   const navigateToMercuryo = () => {
-    if (!webApp) return;
-
-    if (telegramApi.isWebPlatform(webApp)) {
+    if (TelegramApi.isWebPlatform) {
       toggleWarning();
     } else {
       navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/exchange') });

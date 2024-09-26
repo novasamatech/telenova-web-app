@@ -1,7 +1,7 @@
 import '@polkadot/api-augment';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { type ProviderInterface, type ProviderInterfaceEmitCb } from '@polkadot/rpc-provider/types';
+import { type ProviderInterface } from '@polkadot/rpc-provider/types';
 
 import { EXTENSIONS } from '@/shared/config/extensions';
 
@@ -51,17 +51,19 @@ type ProviderParams = {
   metadata?: HexString;
 };
 type ProviderListeners = {
-  onConnected: ProviderInterfaceEmitCb;
-  onDisconnected: ProviderInterfaceEmitCb;
-  onError: ProviderInterfaceEmitCb;
+  onConnected: (provider: ProviderWithMetadata) => void;
+  onDisconnected: (provider: ProviderWithMetadata) => void;
+  onError: (provider: ProviderWithMetadata) => void;
 };
 
 function createProvider(params: ProviderParams, listeners: ProviderListeners): ProviderWithMetadata | never {
   const provider = createWebsocketProvider(params);
 
-  provider.on('connected', listeners.onConnected);
-  provider.on('disconnected', listeners.onDisconnected);
-  provider.on('error', listeners.onError);
+  // API can fail connecting and loop itself with disconnected > error status
+  // Send provider through every callback to be able to disconnect if needed
+  provider.on('connected', () => listeners.onConnected(provider));
+  provider.on('disconnected', () => listeners.onDisconnected(provider));
+  provider.on('error', () => listeners.onError(provider));
 
   return provider;
 }

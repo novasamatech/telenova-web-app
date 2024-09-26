@@ -1,5 +1,7 @@
 import Keyring from '@polkadot/keyring';
 import { type KeyringPair } from '@polkadot/keyring/types';
+import { u8aToHex } from '@polkadot/util';
+import { mnemonicToEntropy } from '@polkadot/util-crypto';
 import { type KeypairType } from '@polkadot/util-crypto/types';
 
 import { isEvmChain } from '@/shared/helpers';
@@ -10,35 +12,40 @@ type SupportedPairs = Extract<KeypairType, 'sr25519' | 'ethereum'>;
 export const keyringApi = {
   getKeyringPairFromSeed,
   getKeyringPairsFromSeed,
+  getMnemonicEntropy,
 };
 
-function getKeyringPairsFromSeed(seed: string): Record<SupportedPairs, KeyringPair> {
+function getKeyringPairsFromSeed(mnemonic: Mnemonic): Record<SupportedPairs, KeyringPair> {
   return {
-    sr25519: getSubstrateKeyringPair(seed),
-    ethereum: getEvmKeyringPair(seed),
+    sr25519: getSubstrateKeyringPair(mnemonic),
+    ethereum: getEvmKeyringPair(mnemonic),
   };
 }
 
-function getKeyringPairFromSeed(seed: string, chain: Chain): KeyringPair {
+function getKeyringPairFromSeed(mnemonic: Mnemonic, chain: Chain): KeyringPair {
   const type = isEvmChain(chain) ? 'ethereum' : 'sr25519';
 
-  const KEYPAIR_TYPES: Record<SupportedPairs, (seed: string) => KeyringPair> = {
+  const KEYPAIR_TYPES: Record<SupportedPairs, (mnemonic: Mnemonic) => KeyringPair> = {
     sr25519: getSubstrateKeyringPair,
     ethereum: getEvmKeyringPair,
   };
 
-  return KEYPAIR_TYPES[type](seed);
+  return KEYPAIR_TYPES[type](mnemonic);
 }
 
-function getSubstrateKeyringPair(seed: string): KeyringPair {
-  return new Keyring({ type: 'sr25519' }).addFromUri(seed);
+function getSubstrateKeyringPair(mnemonic: Mnemonic): KeyringPair {
+  return new Keyring({ type: 'sr25519' }).addFromUri(mnemonic);
 }
 
-function getEvmKeyringPair(seed: string): KeyringPair {
+function getEvmKeyringPair(mnemonic: Mnemonic): KeyringPair {
   const keyring = new Keyring({ type: 'ethereum' });
 
   const index = 0;
   const ethDerivationPath = "m/44'/60'/0'/0/" + index;
 
-  return keyring.addFromUri(`${seed}/${ethDerivationPath}`);
+  return keyring.addFromUri(`${mnemonic}/${ethDerivationPath}`);
+}
+
+function getMnemonicEntropy(mnemonic: Mnemonic): string {
+  return u8aToHex(mnemonicToEntropy(mnemonic)).slice(2);
 }

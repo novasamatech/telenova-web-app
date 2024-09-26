@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
 import { balancesModel } from '@/models/balances';
 import { assetsFilterModel, networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
+import { BackButton } from '@/shared/api';
 import { BodyText, Icon, Input, TitleText } from '@/ui/atoms';
 import { AssetsList } from '@/ui/molecules';
 

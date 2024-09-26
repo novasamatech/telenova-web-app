@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { type BackButton as BackButtonType } from '@twa-dev/types';
 
+import { TelegramApi } from '@/shared/api';
+
 type Props = {
   hidden?: boolean;
   onClick?(): unknown;
@@ -12,13 +14,12 @@ let hideButtonTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export const BackButton = ({ hidden, onClick = defaultCallback }: Props) => {
   const backButtonEvent = useRef<VoidFunction | null>(null);
-
-  const ref = useRef<BackButtonType | null>(window?.Telegram?.WebApp?.BackButton ?? null);
+  const ref = useRef<BackButtonType | null>(TelegramApi.Buttons.Back || null);
   const backButton = ref.current;
 
   useEffect(() => {
-    ref.current = window?.Telegram?.WebApp?.BackButton || null;
-  }, [window?.Telegram]);
+    ref.current = TelegramApi.Buttons.Back || null;
+  }, [window.Telegram]);
 
   const addBackButton = useCallback(
     (fn: VoidFunction) => {

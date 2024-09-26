@@ -6,10 +6,9 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
+import { BackButton, MainButton } from '@/shared/api';
 import { runMercuryoWidget } from '@/shared/helpers';
 
 export type SearchParams = {

@@ -10,12 +10,10 @@ import { $params } from 'remix-routes';
 import { BN } from '@polkadot/util';
 import { randomAsHex } from '@polkadot/util-crypto';
 
-import { createTgLink } from '@/common/telegram';
-import { type TgLink } from '@/common/telegram/types';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
 import { Wallet, walletModel } from '@/models/wallet';
-import { localStorageApi, telegramApi, transferFactory } from '@/shared/api';
+import { TelegramApi, botApi, localStorageApi, transferFactory } from '@/shared/api';
+import { type TelegramLink } from '@/shared/api/types';
 import { MNEMONIC_STORE, backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
@@ -50,7 +48,6 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 const Page = () => {
   const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const webApp = useUnit(telegramModel.$webApp);
   const wallet = useUnit(walletModel.$wallet);
   const [chains, assets, connections] = useUnit([
     networkModel.$chains,
@@ -59,19 +56,19 @@ const Page = () => {
   ]);
 
   const [loading, setLoading] = useState(true);
-  const [link, setLink] = useState<TgLink | null>(null);
+  const [link, setLink] = useState<TelegramLink | null>(null);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!wallet || !webApp || !selectedAsset || !chains[typedChainId]) return;
+    if (!wallet || !selectedAsset || !chains[typedChainId]) return;
 
     const selectedChain = chains[typedChainId];
     const giftSeed = randomAsHex(10).slice(2);
     const giftWallet = new Wallet(giftSeed);
 
-    const mnemonicStore = telegramApi.getStoreName(webApp, MNEMONIC_STORE);
+    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
     const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
 
     transferFactory
@@ -85,7 +82,7 @@ const Page = () => {
       .then(hash => {
         console.log('🟢 Transaction hash - ', hash.toHex());
 
-        backupGifts(webApp, {
+        backupGifts({
           chainId: typedChainId,
           assetId: selectedAsset.assetId,
           address: giftWallet.toAddress(selectedChain),
@@ -93,7 +90,7 @@ const Page = () => {
           balance: amount,
           chainIndex: selectedChain.chainIndex,
         });
-        const tgLink = createTgLink({
+        const tgLink = botApi.createTelegramLink({
           botUrl,
           appName,
           amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
@@ -105,7 +102,7 @@ const Page = () => {
         setLink(tgLink);
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
-  }, [webApp, selectedAsset, chains]);
+  }, [selectedAsset, chains]);
 
   const handleLottieEvent = (event: PlayerEvent) => {
     if (event === 'complete') {
@@ -143,7 +140,7 @@ const Page = () => {
           </div>
         </div>
       ) : (
-        <GiftDetails link={link} webApp={webApp!} />
+        <GiftDetails link={link} />
       )}
     </div>
   );

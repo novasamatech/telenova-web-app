@@ -1,11 +1,9 @@
 import secureLocalStorage from 'react-secure-storage';
 
-import { type WebApp } from '@twa-dev/types';
 import { allSettled, fork } from 'effector';
 import { describe, expect, test, vi } from 'vitest';
 
-import { telegramModel } from '@/models/telegram';
-import { cryptoApi, localStorageApi, telegramApi } from '@/shared/api';
+import { TelegramApi, cryptoApi, localStorageApi } from '@/shared/api';
 
 import { walletModel } from './wallet-model';
 
@@ -27,14 +25,12 @@ describe('models/wallet/wallet-model', () => {
   });
 
   test('should save mnemonic on mnemonicChanged', async () => {
-    const spyTelegram = vi.spyOn(telegramApi, 'setItem').mockResolvedValue(true);
+    const spyTelegram = vi.spyOn(TelegramApi, 'setItem').mockResolvedValue(true);
     const spyStorage = vi.spyOn(localStorageApi, 'setItem').mockReturnValue('ok');
-    vi.spyOn(telegramApi, 'getStoreName').mockReturnValue('store');
+    vi.spyOn(TelegramApi, 'getStoreName').mockReturnValue('store');
     vi.spyOn(cryptoApi, 'getEncryptedMnemonic').mockReturnValue('encrypted');
 
-    const scope = fork({
-      values: [[telegramModel._internal.$webApp, {}]],
-    });
+    const scope = fork();
 
     await allSettled(walletModel.input.mnemonicChanged, {
       scope,
@@ -44,17 +40,14 @@ describe('models/wallet/wallet-model', () => {
     expect(spyStorage).toHaveBeenCalled();
   });
 
-  test('should construct wallet from Telegram CloudStorage mnemonic', async () => {
+  test('should construct wallet from localStorage mnemonic', async () => {
     vi.spyOn(secureLocalStorage, 'getItem').mockReturnValue('mnemonic');
     vi.spyOn(localStorageApi, 'getItem').mockReturnValue('backup_date');
-    vi.spyOn(telegramApi, 'getItem').mockResolvedValue('backup_date');
+    vi.spyOn(TelegramApi, 'getItem').mockResolvedValue('backup_date');
 
     const scope = fork();
 
-    await allSettled(telegramModel._internal.$webApp, {
-      scope,
-      params: { initDataUnsafe: { user: { id: 'id' } } } as unknown as WebApp,
-    });
+    await allSettled(walletModel.input.walletRequested, { scope });
     const walletPK = scope.getState(walletModel.$wallet)?.getPublicKey();
 
     expect(walletPK).toEqual('mnemonic');

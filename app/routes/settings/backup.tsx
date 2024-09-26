@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { telegramModel } from '@/models/telegram';
-import { telegramApi } from '@/shared/api';
+import { BackButton, TelegramApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
@@ -14,18 +11,14 @@ import { LinkCard } from '@/ui/molecules';
 const Page = () => {
   const navigate = useNavigate();
 
-  const webApp = useUnit(telegramModel.$webApp);
-
   const [backupDate, setBackupDate] = useState('');
 
   useEffect(() => {
-    if (!webApp) return;
-
-    const storeDate = localStorage.getItem(telegramApi.getStoreName(webApp, BACKUP_DATE));
+    const storeDate = localStorage.getItem(TelegramApi.getStoreName(BACKUP_DATE));
     const date = storeDate ? new Date(+storeDate).toUTCString() : '';
 
     setBackupDate(date);
-  }, [webApp]);
+  }, []);
 
   return (
     <>

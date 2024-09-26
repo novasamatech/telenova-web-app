@@ -1,3 +1,5 @@
+import type { Telegram } from '@twa-dev/types';
+
 declare global {
   export type HexString = `0x${string}`;
 
@@ -16,6 +18,8 @@ declare global {
   export type Currency = string;
 
   interface Window {
+    Telegram?: Telegram;
+
     mercuryoWidget?: {
       run: (params: {
         widgetId: string;

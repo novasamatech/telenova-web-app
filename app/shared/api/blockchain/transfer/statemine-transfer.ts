@@ -64,11 +64,11 @@ export class StatemineTransferService implements ITransfer {
     return this.#assetConversion(totalFee);
   }
 
-  // Right now it's AssetHub only USDT/DOT
+  // Right now it's AssetHub only USD(T|C)/DOT
   async #assetConversion(amount: BN): Promise<BN> {
-    const convertedFee = await this.#api!.call.assetConversionApi.quotePriceTokensForExactTokens(
+    const convertedFee = await this.#api.call.assetConversionApi.quotePriceTokensForExactTokens(
       // @ts-expect-error type error
-      ASSET_LOCATION['1984'],
+      ASSET_LOCATION[this.#asset.typeExtras.assetId],
       ASSET_LOCATION['0'],
       amount,
       true,

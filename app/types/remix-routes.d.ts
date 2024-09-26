@@ -69,11 +69,6 @@ declare module 'remix-routes' {
       query: ExportedQuery<import('../routes/onboarding/restore').SearchParams>;
     };
 
-    '/onboarding/start': {
-      params: never;
-      query: ExportedQuery<import('../routes/onboarding/start').SearchParams>;
-    };
-
     '/receive/:chainId/:assetId/address': {
       params: {
         chainId: string | number;
@@ -209,7 +204,6 @@ declare module 'remix-routes' {
     | 'routes/onboarding/index'
     | 'routes/onboarding/password'
     | 'routes/onboarding/restore'
-    | 'routes/onboarding/start'
     | 'routes/receive/$chainId.$assetId.address'
     | 'routes/receive/token-select'
     | 'routes/settings'

@@ -4,8 +4,8 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { MainButton } from '@/common/telegram/MainButton';
 import { networkModel } from '@/models/network';
+import { MainButton } from '@/shared/api';
 import { isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Icon, Identicon, MediumTitle, TitleText } from '@/ui/atoms';
 

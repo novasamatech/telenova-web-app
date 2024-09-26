@@ -1,27 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
+import { BackButton, MainButton } from '@/shared/api';
 import { TitleText } from '@/ui/atoms';
 import { CreatePasswordForm } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
 
-  const webApp = useUnit(telegramModel.$webApp);
-
   const [password, setPassword] = useState('');
   const [valid, setValid] = useState(false);
 
   const onSubmit = () => {
-    if (!webApp) return;
-
     walletModel.input.mnemonicChanged({ password });
     navigate($path('/settings/password/confirmation'));
   };
