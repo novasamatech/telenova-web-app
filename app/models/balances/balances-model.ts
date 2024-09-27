@@ -76,7 +76,11 @@ const pureSubscribeChainsAssetsFx = createEffect(
 
       assets[index].forEach(asset => {
         const service = balancesFactory.createService(api, asset);
-        assetsSubscriptions[asset.assetId] = service.subscribeBalance(chain, wallet.toAddress(chain), boundUpdate);
+        assetsSubscriptions[asset.assetId] = service.subscribeBalance(
+          chain.chainId,
+          wallet.toAddress(chain),
+          boundUpdate,
+        );
       });
 
       newChainSubscriptions[chain.chainId] = assetsSubscriptions;

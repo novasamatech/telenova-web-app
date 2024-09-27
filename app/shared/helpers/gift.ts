@@ -2,38 +2,18 @@ import { type KeyringPair } from '@polkadot/keyring/types';
 
 import { type Wallet } from '@/models/wallet';
 import { TelegramApi, keyringApi } from '@/shared/api';
-import { toAddress } from '@/shared/helpers/address.ts';
+import { toAddress } from '@/shared/helpers/address';
 import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
 
 import { GIFT_STORE } from './constants';
 
-type BackupParams = {
-  chainId: ChainId;
-  assetId: number;
-  address: string;
-  secret: string;
-  balance: string;
-  chainIndex: number;
-};
-export const backupGifts = (params: BackupParams) => {
+export const backupGifts = (params: Omit<PersistentGift, 'timestamp'>) => {
   const gift = { ...params, timestamp: Date.now() };
 
   const storedGifts = localStorage.getItem(TelegramApi.getStoreName(GIFT_STORE));
   const backup = storedGifts ? [...JSON.parse(storedGifts), gift] : [gift];
 
   localStorage.setItem(TelegramApi.getStoreName(GIFT_STORE), JSON.stringify(backup));
-};
-
-export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
-  const gifts = JSON.parse(localStorage.getItem(TelegramApi.getStoreName(GIFT_STORE)) as string);
-  if (!gifts) return null;
-
-  const map = new Map<ChainId, PersistentGift[]>();
-  gifts.forEach((gift: PersistentGift) => {
-    map.set(gift.chainId, [...(map.get(gift.chainId) || []), gift]);
-  });
-
-  return map;
 };
 
 type GiftInfo = {

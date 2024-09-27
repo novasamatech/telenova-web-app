@@ -3,7 +3,7 @@ import type { UnsubscribePromise } from '@polkadot/api/types';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
 import { assetUtils } from '@/shared/helpers';
-import { type AssetBalance, type Chain, type StatemineAsset } from '@/types/substrate';
+import { type AssetBalance, type StatemineAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
 
@@ -17,7 +17,7 @@ export class StatemineBalanceService implements IBalance {
   }
 
   async subscribeBalance(
-    chain: Chain,
+    chainId: ChainId,
     address: Address,
     callback: (newBalance: AssetBalance) => void,
   ): UnsubscribePromise {
@@ -26,7 +26,7 @@ export class StatemineBalanceService implements IBalance {
 
       callback({
         address,
-        chainId: chain.chainId,
+        chainId,
         assetId: this.#asset.assetId,
         balance: {
           free,
@@ -43,6 +43,16 @@ export class StatemineBalanceService implements IBalance {
   getFreeBalance(address: Address): Promise<BN> {
     return this.#api.query.assets.account(assetUtils.getAssetId(this.#asset), address).then(balance => {
       return balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn();
+    });
+  }
+
+  getFreeBalances(addresses: Address[]): Promise<BN[]> {
+    const addressTuples = addresses.map(address => {
+      return [assetUtils.getAssetId(this.#asset), address];
+    });
+
+    return this.#api.query.assets.account.multi(addressTuples).then(balances => {
+      return balances.map(balance => (balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn()));
     });
   }
 

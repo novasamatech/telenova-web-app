@@ -7,6 +7,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRout
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
+import { giftsModel } from '@/models/gifts';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
@@ -86,6 +87,7 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     networkModel.input.networkStarted(file);
+    giftsModel.input.giftsRequested();
 
     cryptoWaitReady()
       .then(() => walletModel.input.walletRequested())
