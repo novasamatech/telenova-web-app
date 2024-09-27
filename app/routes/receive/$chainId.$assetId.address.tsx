@@ -70,7 +70,7 @@ const Page = () => {
           <PopoverContent>Address copied</PopoverContent>
         </Popover>
         {/* @ts-expect-error share functionality doesn't exist in Mozilla */}
-        {!TelegramApi.isWebPlatform(webApp) && navigator.canShare && (
+        {!TelegramApi.isWebPlatform && navigator.canShare && (
           <Button
             color="primary"
             variant="flat"
