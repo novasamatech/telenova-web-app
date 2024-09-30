@@ -11,7 +11,7 @@ import { type BN, BN_ZERO } from '@polkadot/util';
 import { useGlobalContext } from '@/common/providers';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
-import { TelegramApi, balancesFactory, transferFactory } from '@/shared/api';
+import { TelegramApi, balancesFactory, botApi, transferFactory } from '@/shared/api';
 import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/ui/atoms';
@@ -47,6 +47,7 @@ export const GiftClaim = () => {
 
   useEffect(() => {
     if (isGiftClaimed || !startParam || !wallet) return;
+    if (!botApi.validateStartParam(startParam)) return;
     setIsOpen(true);
 
     const giftInfo = getGiftInfo(Object.values(chains), wallet, startParam);
