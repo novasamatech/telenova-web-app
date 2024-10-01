@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { $path } from 'remix-routes';
 
-import { BackButton, TelegramApi } from '@/shared/api';
+import { BackButton, TelegramApi, localStorageApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 import { BodyText, TitleText } from '@/ui/atoms';
 import { RecoveryPhrase } from '@/ui/molecules';
@@ -14,7 +14,8 @@ const Page = () => {
   const [mnemonic, setMnemonic] = useState<Mnemonic | null>(null);
 
   useEffect(() => {
-    TelegramApi.getItem(MNEMONIC_STORE).then(setMnemonic);
+    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+    setMnemonic(localStorageApi.secureGetItem(mnemonicStore, ''));
   }, []);
 
   return (

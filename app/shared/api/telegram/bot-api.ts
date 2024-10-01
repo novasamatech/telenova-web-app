@@ -7,6 +7,7 @@ const SUBMIT_WALLET_PATH = 'submit/wallet';
 export const botApi = {
   submitPublicKey,
   createTelegramLink,
+  validateStartParam,
 };
 
 async function submitPublicKey(publicKey: PublicKey, baseUrl: string): Promise<void> {
@@ -57,4 +58,8 @@ function createTelegramLink({ botUrl, appName, amount, secret, chainIndex, symbo
   }
 
   return { url: url.toString(), text };
+}
+
+function validateStartParam(value: string): boolean {
+  return /^[a-f0-9]{20}_([0-9]+_)?[a-z]+$/i.test(value);
 }

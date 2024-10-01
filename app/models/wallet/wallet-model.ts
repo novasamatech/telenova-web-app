@@ -52,7 +52,8 @@ type SaveMnemonicParams = {
   password: string;
 };
 const changeMnemonicFx = createEffect(async ({ mnemonic, password }: SaveMnemonicParams): Promise<void> => {
-  const newMnemonic = mnemonic || localStorageApi.secureGetItem(MNEMONIC_STORE, '');
+  const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+  const newMnemonic = mnemonic || localStorageApi.secureGetItem(mnemonicStore, '');
 
   const encryptedMnemonicWithSalt = cryptoApi.getEncryptedMnemonic(newMnemonic, password);
   const date = Date.now().toString();
