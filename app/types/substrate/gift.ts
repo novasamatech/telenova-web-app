@@ -1,4 +1,3 @@
-// Old gifts don't have chainIndex
 import { type Asset } from '@/types/substrate';
 
 export type Gift = Omit<PersistentGift, 'assetId'> & {
@@ -6,6 +5,7 @@ export type Gift = Omit<PersistentGift, 'assetId'> & {
   status: 'Claimed' | 'Unclaimed';
 };
 
+// Old gifts don't have chainIndex
 export type PersistentGift = {
   chainId: ChainId;
   chainIndex?: ChainIndex;

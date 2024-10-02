@@ -1,6 +1,6 @@
-import { createEffect, createEvent, createStore, sample } from 'effector';
-import { groupBy } from 'lodash-es';
-import { combineEvents, readonly } from 'patronum';
+import { combine, createEffect, createEvent, createStore, sample } from 'effector';
+import { groupBy, isEmpty } from 'lodash-es';
+import { once, readonly } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
@@ -15,24 +15,38 @@ const giftsRequested = createEvent();
 
 const $giftsMap = createStore<Record<ChainId, Gift[]>>({});
 
-const $unclaimedGifts = $giftsMap.map(giftsMap => {
-  const result: Gift[] = [];
-  for (const gifts of Object.values(giftsMap)) {
-    const unclaimed = gifts.filter(gift => gift.status === 'Unclaimed');
-    result.push(...unclaimed);
-  }
+const $enrichedGifts = combine(
+  {
+    giftsMap: $giftsMap,
+    chains: networkModel.$chains,
+  },
+  ({ giftsMap, chains }) => {
+    if (isEmpty(chains)) return [];
 
-  return result.sort((a, b) => b.timestamp - a.timestamp);
+    const assetsMap = Object.values(chains).reduce<Record<ChainId, Record<AssetId, Asset>>>((acc, chain) => {
+      acc[chain.chainId] = {};
+      chain.assets.forEach(asset => (acc[chain.chainId][asset.assetId] = asset));
+
+      return acc;
+    }, {});
+
+    const result: Gift[] = [];
+    for (const gifts of Object.values(giftsMap)) {
+      const enrichedGifts = gifts.map(gift => ({ ...gift, asset: assetsMap[gift.chainId][gift.asset.assetId] }));
+
+      result.push(...enrichedGifts);
+    }
+
+    return result;
+  },
+);
+
+const $claimedGifts = $enrichedGifts.map(gifts => {
+  return gifts.filter(gift => gift.status === 'Claimed').sort((a, b) => b.timestamp - a.timestamp);
 });
 
-const $claimedGifts = $giftsMap.map(giftsMap => {
-  const result: Gift[] = [];
-  for (const gifts of Object.values(giftsMap)) {
-    const claimed = gifts.filter(gift => gift.status === 'Claimed');
-    result.push(...claimed);
-  }
-
-  return result.sort((a, b) => b.timestamp - a.timestamp);
+const $unclaimedGifts = $enrichedGifts.map(gifts => {
+  return gifts.filter(gift => gift.status === 'Unclaimed').sort((a, b) => b.timestamp - a.timestamp);
 });
 
 // TODO: request from Tg Cloud Storage
@@ -53,28 +67,39 @@ type RequestParams = {
   assetsMap: Map<Asset, Address[]>;
 };
 type RequestResult = {
-  chainId: ChainId;
-  [assetId: AssetId]: {
-    [address: Address]: true;
+  [chainId: ChainId]: {
+    [assetId: AssetId]: {
+      [address: Address]: true;
+    };
   };
 };
-const requestClaimedAssetsFx = createEffect(async ({ api, assetsMap }: RequestParams): Promise<RequestResult> => {
-  const requests = [];
-  for (const [asset, addresses] of assetsMap) {
-    requests.push(balancesFactory.createService(api, asset).getFreeBalances(addresses));
-  }
+const requestClaimedAssetsFx = createEffect(async (params: RequestParams[]): Promise<RequestResult> => {
+  const requests = params.flatMap(({ api, assetsMap }) => {
+    return Array.from(assetsMap.entries()).map(([asset, addresses]) => {
+      return balancesFactory.createService(api, asset).getFreeBalances(addresses);
+    });
+  });
 
   const assetsBalances = await Promise.all(requests);
-  const result: RequestResult = { chainId: api.genesisHash.toHex() };
 
-  for (const [idxMap, [asset, addresses]] of Array.from(assetsMap.entries()).entries()) {
-    result[asset.assetId] = {};
+  const result: RequestResult = params.reduce((acc, { api }) => {
+    return { ...acc, [api.genesisHash.toHex()]: {} };
+  }, {});
+  // const result: RequestResult = { chainId: api.genesisHash.toHex() };
 
-    for (const [idxAddress, address] of addresses.entries()) {
-      if (!assetsBalances[idxMap][idxAddress].isZero()) continue;
-      result[asset.assetId][address] = true;
-    }
-  }
+  params.forEach(({ api, assetsMap }) => {
+    const chainId = api.genesisHash.toHex();
+
+    Array.from(assetsMap.entries()).forEach(([asset, addresses], idxMap) => {
+      result[chainId][asset.assetId] = {};
+
+      addresses.forEach((address, idxAddress) => {
+        if (assetsBalances[idxMap][idxAddress].isZero()) return;
+
+        result[chainId][asset.assetId][address] = true;
+      });
+    });
+  });
 
   return result;
 });
@@ -89,21 +114,15 @@ sample({
 });
 
 sample({
-  clock: combineEvents([retrieveLocalGiftsFx.doneData, networkModel.$chains.updates]),
-  fn: ([giftsMap, chains]) => {
-    const assetsMap = Object.values(chains).reduce<Record<ChainId, Record<AssetId, Asset>>>((acc, chain) => {
-      acc[chain.chainId] = {};
-      chain.assets.forEach(asset => (acc[chain.chainId][asset.assetId] = asset));
-
-      return acc;
-    }, {});
-
+  clock: retrieveLocalGiftsFx.doneData,
+  fn: giftsMap => {
     const result: Record<ChainId, Gift[]> = {};
     for (const [chainId, gifts] of Object.entries(giftsMap)) {
+      // Remaining asset data filled in $enrichedGifts
       result[chainId as ChainId] = gifts.map(({ assetId, ...rest }) => ({
         ...rest,
         status: 'Unclaimed',
-        asset: assetsMap[rest.chainId][Number(assetId)],
+        asset: { assetId } as Asset,
       }));
     }
 
@@ -112,15 +131,35 @@ sample({
   target: $giftsMap,
 });
 
-// TODO: get balances for all connected chains
-// sample({
-//   clock: networkModel.output.connectionChanged,
-//   source: networkModel.$connections,
-//   filter: (_, { status }) => status === 'connected',
-//   fn: (connections, { chainId }) => connections[chainId].api!,
-//   target: requestGiftsFx,
-// });
+// Connections are ready, gifts come in
+sample({
+  clock: once($giftsMap.updates),
+  source: {
+    assets: networkModel.$assets,
+    connections: networkModel.$connections,
+  },
+  fn: ({ assets, connections }, giftsMap) => {
+    const result = [];
+    for (const [chainId, gifts] of Object.entries(giftsMap)) {
+      const typedChainId = chainId as ChainId;
+      if (connections[typedChainId]?.status !== 'connected') continue;
 
+      const assetsMap = new Map<Asset, Address[]>();
+
+      for (const gift of gifts) {
+        const asset = assets[typedChainId][gift.asset.assetId];
+        assetsMap.set(asset, [...(assetsMap.get(asset) || []), gift.address]);
+      }
+
+      result.push({ api: connections[typedChainId].api!, assetsMap });
+    }
+
+    return result;
+  },
+  target: requestClaimedAssetsFx,
+});
+
+// Gifts ready, new chains connections come in
 sample({
   clock: networkModel.output.connectionChanged,
   source: {
@@ -140,7 +179,7 @@ sample({
       assetsMap.set(asset, [...(assetsMap.get(asset) || []), gift.address]);
     }
 
-    return { api: connections[chainId].api!, assetsMap };
+    return [{ api: connections[chainId].api!, assetsMap }];
   },
   target: requestClaimedAssetsFx,
 });
@@ -149,13 +188,17 @@ sample({
   clock: requestClaimedAssetsFx.doneData,
   source: $giftsMap,
   fn: (giftsMap, claimed) => {
-    const { [claimed.chainId]: chainGifts, ...rest } = giftsMap;
+    const claimedGifts: Record<ChainId, Gift[]> = {};
 
-    const modifiedChainGifts = chainGifts.map(gift =>
-      claimed[gift.asset.assetId][gift.address] ? { ...gift, status: 'Claimed' } : gift,
-    );
+    Object.entries(claimed).forEach(([chainId, assets]) => {
+      const typedChainId = chainId as ChainId;
 
-    return { [claimed.chainId]: modifiedChainGifts, ...rest };
+      claimedGifts[typedChainId] = giftsMap[typedChainId].map(gift =>
+        assets[gift.asset.assetId][gift.address] ? { ...gift, status: 'Claimed' } : gift,
+      );
+    });
+
+    return Object.assign(giftsMap, claimedGifts);
   },
   target: $giftsMap,
 });
@@ -166,5 +209,9 @@ export const giftsModel = {
 
   input: {
     giftsRequested,
+  },
+
+  _internal: {
+    $giftsMap,
   },
 };
