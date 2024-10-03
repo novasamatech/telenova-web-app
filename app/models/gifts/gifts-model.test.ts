@@ -1,7 +1,7 @@
 import { allSettled, fork } from 'effector';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { BN_ONE } from '@polkadot/util';
+import { BN_ZERO } from '@polkadot/util';
 
 import { networkModel } from '@/models/network';
 import { TelegramApi, balancesFactory, localStorageApi } from '@/shared/api';
@@ -64,7 +64,7 @@ describe('models/gifts/gifts-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn(),
       getFreeBalance: vi.fn(),
-      getFreeBalances: vi.fn().mockResolvedValue([BN_ONE]),
+      getFreeBalances: vi.fn().mockResolvedValue([BN_ZERO]),
       getExistentialDeposit: vi.fn(),
     });
 
@@ -104,7 +104,7 @@ describe('models/gifts/gifts-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn(),
       getFreeBalance: vi.fn(),
-      getFreeBalances: vi.fn().mockResolvedValue([BN_ONE]),
+      getFreeBalances: vi.fn().mockResolvedValue([BN_ZERO]),
       getExistentialDeposit: vi.fn(),
     });
 

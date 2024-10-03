@@ -94,7 +94,7 @@ const requestClaimedAssetsFx = createEffect(async (params: RequestParams[]): Pro
       result[chainId][asset.assetId] = {};
 
       addresses.forEach((address, idxAddress) => {
-        if (assetsBalances[idxMap][idxAddress].isZero()) return;
+        if (!assetsBalances[idxMap][idxAddress].isZero()) return;
 
         result[chainId][asset.assetId][address] = true;
       });
