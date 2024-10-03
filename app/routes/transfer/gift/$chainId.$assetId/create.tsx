@@ -20,7 +20,6 @@ import { GiftDetails } from '@/ui/molecules';
 
 export type SearchParams = {
   amount: string;
-  fee: string;
   all: boolean;
 };
 
@@ -38,7 +37,6 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
   const data = {
     ...$params('/transfer/gift/:chainId/:assetId/create', params),
     amount: url.searchParams.get('amount') || '',
-    fee: url.searchParams.get('fee') || '0',
     all: url.searchParams.get('all') === 'true',
   };
 
@@ -46,7 +44,7 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
-  const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
+  const { botUrl, appName, chainId, assetId, amount, all } = useLoaderData<typeof clientLoader>();
 
   const wallet = useUnit(walletModel.$wallet);
   const [chains, assets, connections] = useUnit([
@@ -75,7 +73,7 @@ const Page = () => {
       .createService(connections[typedChainId].api!, selectedAsset)
       .sendTransfer({
         keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
-        amount: new BN(amount).add(new BN(fee).divn(2)),
+        amount: new BN(amount),
         destination: giftWallet.toAddress(selectedChain),
         transferAll: all,
       })
