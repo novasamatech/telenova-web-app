@@ -95,7 +95,7 @@ describe('models/gifts/gifts-model', () => {
     });
   });
 
-  test('should update giftsMap on init chains', async () => {
+  test('should update giftsMap on claimsRequested', async () => {
     const giftsMock = {
       '0x01': [{ chainId: '0x01', asset: { assetId: 1 }, address: '555', status: 'Unclaimed' }],
       '0x02': [{ chainId: '0x02', asset: { assetId: 2 }, address: '666', status: 'Unclaimed' }],
@@ -110,6 +110,7 @@ describe('models/gifts/gifts-model', () => {
 
     const scope = fork({
       values: [
+        [giftsModel._internal.$giftsMap, giftsMock],
         [networkModel._internal.$assets, { '0x01': { 1: { assetId: 1 } } }],
         [
           networkModel._internal.$connections,
@@ -123,7 +124,7 @@ describe('models/gifts/gifts-model', () => {
       ],
     });
 
-    await allSettled(giftsModel._internal.$giftsMap, { scope, params: giftsMock });
+    await allSettled(giftsModel._internal.claimsRequested, { scope, params: giftsMock });
 
     expect(scope.getState(giftsModel._internal.$giftsMap)).toEqual({
       ...giftsMock,

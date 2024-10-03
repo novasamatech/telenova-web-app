@@ -1,6 +1,6 @@
 import { combine, createEffect, createEvent, createStore, sample } from 'effector';
 import { groupBy, isEmpty } from 'lodash-es';
-import { once, readonly } from 'patronum';
+import { inFlight, readonly, spread } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
@@ -11,7 +11,8 @@ import { GIFT_STORE } from '@/shared/helpers';
 import type { Asset, Gift, PersistentGift } from '@/types/substrate';
 
 const giftsRequested = createEvent();
-// const giftsSaved = createEvent();
+const giftSaved = createEvent<Omit<PersistentGift, 'timestamp'>>();
+const claimsRequested = createEvent<Record<ChainId, Gift[]>>();
 
 const $giftsMap = createStore<Record<ChainId, Gift[]>>({});
 
@@ -49,17 +50,28 @@ const $unclaimedGifts = $enrichedGifts.map(gifts => {
   return gifts.filter(gift => gift.status === 'Unclaimed').sort((a, b) => b.timestamp - a.timestamp);
 });
 
-// TODO: request from Tg Cloud Storage
+const saveGiftFx = createEffect((params: Omit<PersistentGift, 'timestamp'>) => {
+  const newGift = { ...params, timestamp: Date.now() };
+
+  const giftsStore = TelegramApi.getStoreName(GIFT_STORE);
+  const gifts = localStorageApi.getItem<PersistentGift[]>(giftsStore, []);
+
+  localStorageApi.setItem(giftsStore, [...gifts, newGift]);
+});
+
 const retrieveLocalGiftsFx = createEffect(() => {
   const giftStore = TelegramApi.getStoreName(GIFT_STORE);
-  const gifts = localStorageApi.getItem<PersistentGift[]>(giftStore, []);
+  const persistentGifts = localStorageApi.getItem<PersistentGift[]>(giftStore, []);
+
+  const gifts = persistentGifts.map(({ assetId, ...rest }) => {
+    return {
+      ...rest,
+      status: 'Unclaimed',
+      asset: { assetId },
+    } as Gift;
+  });
 
   return groupBy(gifts, 'chainId');
-
-  // const giftsMap = new Map<ChainId, Gift[]>();
-  // gifts.forEach(gift => {
-  //   giftsMap.set(gift.chainId, [...(giftsMap.get(gift.chainId) || []), gift]);
-  // });
 });
 
 type RequestParams = {
@@ -69,7 +81,7 @@ type RequestParams = {
 type RequestResult = {
   [chainId: ChainId]: {
     [assetId: AssetId]: {
-      [address: Address]: true;
+      [address: Address]: boolean;
     };
   };
 };
@@ -85,28 +97,29 @@ const requestClaimedAssetsFx = createEffect(async (params: RequestParams[]): Pro
   const result: RequestResult = params.reduce((acc, { api }) => {
     return { ...acc, [api.genesisHash.toHex()]: {} };
   }, {});
-  // const result: RequestResult = { chainId: api.genesisHash.toHex() };
 
+  let assetIdx = 0;
   params.forEach(({ api, assetsMap }) => {
     const chainId = api.genesisHash.toHex();
 
-    Array.from(assetsMap.entries()).forEach(([asset, addresses], idxMap) => {
+    Array.from(assetsMap.entries()).forEach(([asset, addresses]) => {
       result[chainId][asset.assetId] = {};
 
-      addresses.forEach((address, idxAddress) => {
-        if (!assetsBalances[idxMap][idxAddress].isZero()) return;
-
-        result[chainId][asset.assetId][address] = true;
+      addresses.forEach((address, addressIdx) => {
+        // TODO: Gifts for statemine / orml is not zero
+        result[chainId][asset.assetId][address] = assetsBalances[assetIdx][addressIdx].isZero();
       });
+      assetIdx += 1;
     });
   });
 
   return result;
 });
 
-// const backupGiftsFx = createEffect(() => {
-//   console.log(2);
-// });
+sample({
+  clock: giftSaved,
+  target: saveGiftFx,
+});
 
 sample({
   clock: giftsRequested,
@@ -115,25 +128,32 @@ sample({
 
 sample({
   clock: retrieveLocalGiftsFx.doneData,
-  fn: giftsMap => {
-    const result: Record<ChainId, Gift[]> = {};
-    for (const [chainId, gifts] of Object.entries(giftsMap)) {
-      // Remaining asset data filled in $enrichedGifts
-      result[chainId as ChainId] = gifts.map(({ assetId, ...rest }) => ({
-        ...rest,
-        status: 'Unclaimed',
-        asset: { assetId } as Asset,
-      }));
+  source: $giftsMap,
+  fn: (oldGiftsMap, newGiftsMap) => {
+    const mergedGiftsMap = oldGiftsMap;
+
+    // Add only new gifts to existing ones
+    for (const [chainId, gifts] of Object.entries(newGiftsMap)) {
+      const typedChainId = chainId as ChainId;
+      if (mergedGiftsMap[typedChainId]) {
+        const giftsDiff = gifts.slice(mergedGiftsMap[typedChainId].length);
+        mergedGiftsMap[typedChainId].push(...giftsDiff);
+      } else {
+        mergedGiftsMap[typedChainId] = gifts;
+      }
     }
 
-    return result;
+    return { newGiftsMap: mergedGiftsMap, event: mergedGiftsMap };
   },
-  target: $giftsMap,
+  target: spread({
+    newGiftsMap: $giftsMap,
+    event: claimsRequested,
+  }),
 });
 
 // Connections are ready, gifts come in
 sample({
-  clock: once($giftsMap.updates),
+  clock: claimsRequested,
   source: {
     assets: networkModel.$assets,
     connections: networkModel.$connections,
@@ -147,11 +167,15 @@ sample({
       const assetsMap = new Map<Asset, Address[]>();
 
       for (const gift of gifts) {
+        if (gift.status === 'Claimed') continue;
+
         const asset = assets[typedChainId][gift.asset.assetId];
         assetsMap.set(asset, [...(assetsMap.get(asset) || []), gift.address]);
       }
 
-      result.push({ api: connections[typedChainId].api!, assetsMap });
+      if (assetsMap.size > 0) {
+        result.push({ api: connections[typedChainId].api!, assetsMap });
+      }
     }
 
     return result;
@@ -173,13 +197,13 @@ sample({
   fn: ({ giftsMap, assets, connections }, { chainId }) => {
     const assetsMap = new Map<Asset, Address[]>();
     for (const gift of giftsMap[chainId]) {
-      // if (gift.status === 'Claimed') continue;
+      if (gift.status === 'Claimed') continue;
 
       const asset = assets[chainId][gift.asset.assetId];
       assetsMap.set(asset, [...(assetsMap.get(asset) || []), gift.address]);
     }
 
-    return [{ api: connections[chainId].api!, assetsMap }];
+    return assetsMap.size > 0 ? [{ api: connections[chainId].api!, assetsMap }] : [];
   },
   target: requestClaimedAssetsFx,
 });
@@ -187,6 +211,7 @@ sample({
 sample({
   clock: requestClaimedAssetsFx.doneData,
   source: $giftsMap,
+  filter: giftsMap => !isEmpty(giftsMap),
   fn: (giftsMap, claimed) => {
     const claimedGifts: Record<ChainId, Gift[]> = {};
 
@@ -198,7 +223,7 @@ sample({
       );
     });
 
-    return Object.assign(giftsMap, claimedGifts);
+    return { ...giftsMap, ...claimedGifts };
   },
   target: $giftsMap,
 });
@@ -207,11 +232,16 @@ export const giftsModel = {
   $claimedGifts: readonly($claimedGifts),
   $unclaimedGifts: readonly($unclaimedGifts),
 
+  // Flag for loading gift claims
+  $isPending: inFlight([requestClaimedAssetsFx]).map(count => count > 0),
+
   input: {
     giftsRequested,
+    giftSaved,
   },
 
   _internal: {
     $giftsMap,
+    claimsRequested,
   },
 };

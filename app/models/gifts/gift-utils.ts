@@ -1,30 +1,17 @@
 import { type KeyringPair } from '@polkadot/keyring/types';
 
-import { type Wallet } from '@/models/wallet';
-import { TelegramApi, keyringApi } from '@/shared/api';
-import { toAddress } from '@/shared/helpers/address';
-import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
-
-import { GIFT_STORE } from './constants';
-
-export const backupGifts = (params: Omit<PersistentGift, 'timestamp'>) => {
-  const gift = { ...params, timestamp: Date.now() };
-
-  const storedGifts = localStorage.getItem(TelegramApi.getStoreName(GIFT_STORE));
-  const backup = storedGifts ? [...JSON.parse(storedGifts), gift] : [gift];
-
-  localStorage.setItem(TelegramApi.getStoreName(GIFT_STORE), JSON.stringify(backup));
-};
+import { keyringApi } from '@/shared/api';
+import { toAddress } from '@/shared/helpers';
+import { type Asset, type Chain } from '@/types/substrate';
 
 type GiftInfo = {
   chainId: ChainId;
   asset: Asset;
-  address: Address;
   giftAddress: Address;
   symbol: string;
   keyring: KeyringPair;
 };
-export const getGiftInfo = (chains: Chain[], wallet: Wallet, startParam: string): GiftInfo | undefined => {
+export const getGiftInfo = (chains: Chain[], startParam: string): GiftInfo | undefined => {
   const [seed, ...rest] = startParam.split('_');
   let symbol: string | undefined;
   let chain: Chain | undefined;
@@ -53,7 +40,6 @@ export const getGiftInfo = (chains: Chain[], wallet: Wallet, startParam: string)
     keyring,
     asset,
     symbol,
-    address: wallet.toAddress(chain),
     giftAddress: toAddress(keyring.publicKey, { chain }),
     chainId: chain.chainId,
   };
