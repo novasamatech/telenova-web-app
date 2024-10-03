@@ -5,6 +5,8 @@ interface BaseAsset {
   precision: number;
   priceId?: string;
   icon: string;
+  // Fee buffer for asset converted operations
+  feeBuffer: number;
 }
 
 export interface NativeAsset extends BaseAsset {

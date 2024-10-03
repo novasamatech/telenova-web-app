@@ -34,8 +34,8 @@ export class OrmlTransferService implements ITransfer {
     });
   }
 
-  getTransferFee({ amount }: FeeParams): Promise<BN> {
-    return extrinsicApi.estimateFee({
+  async getTransferFee({ amount }: FeeParams): Promise<BN> {
+    const fee = await extrinsicApi.estimateFee({
       api: this.#api,
       transaction: {
         type: 'TRANSFER_ORML',
@@ -46,12 +46,15 @@ export class OrmlTransferService implements ITransfer {
         },
       },
     });
+
+    return fee.muln(this.#asset.feeBuffer);
   }
 
   async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
     const giftAccountFee = await this.getTransferFee({ ...rest, amount });
     const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
+    const totalFee = giftAccountFee.add(clientAccountFee).muln(this.#asset.feeBuffer);
 
-    return giftAccountFee.add(clientAccountFee);
+    return giftAccountFee.add(totalFee);
   }
 }

@@ -75,7 +75,7 @@ const Page = () => {
       .createService(connections[typedChainId].api!, selectedAsset)
       .sendTransfer({
         keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
-        amount: new BN(amount).add(new BN(fee)),
+        amount: new BN(amount).add(new BN(fee).divn(2)),
         destination: giftWallet.toAddress(selectedChain),
         transferAll: all,
       })
