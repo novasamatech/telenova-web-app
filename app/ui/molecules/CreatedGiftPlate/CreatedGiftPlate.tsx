@@ -7,7 +7,7 @@ import { giftsModel } from '@/models/gifts';
 import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/ui/atoms';
 
 export const CreatedGiftPlate = () => {
-  const [unclaimedGifts, isPending] = useUnit([giftsModel.$unclaimedGifts, giftsModel.$isPending]);
+  const [unclaimedGifts, isPending] = useUnit([giftsModel.$unclaimedGifts, giftsModel.$isLoading]);
 
   return (
     <Plate className="mt-4 h-[90px] w-full rounded-3xl border-1 border-border-neutral active:bg-bg-item-pressed">

@@ -6,13 +6,17 @@ import { $path } from 'remix-routes';
 import { giftsModel } from '@/models/gifts';
 import { BackButton } from '@/shared/api';
 import { toFormattedBalance } from '@/shared/helpers';
-import { BodyText, HelpText, TitleText } from '@/ui/atoms';
+import { BodyText, HelpText, Shimmering, TitleText } from '@/ui/atoms';
 import { GiftPlate } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
 
-  const [unclaimedGifts, claimedGifts] = useUnit([giftsModel.$unclaimedGifts, giftsModel.$claimedGifts]);
+  const [unclaimedGifts, claimedGifts, isLoading] = useUnit([
+    giftsModel.$unclaimedGifts,
+    giftsModel.$claimedGifts,
+    giftsModel.$isLoading,
+  ]);
 
   return (
     <>
@@ -26,15 +30,16 @@ const Page = () => {
           <BodyText className="text-text-hint" align="left">
             Unclaimed <span className="text-text-on-button-disabled">{unclaimedGifts.length || 0}</span>
           </BodyText>
-          {/*{isLoading && <Shimmering height={92} className="rounded-lg" />}*/}
+          {isLoading && <Shimmering height={92} className="rounded-lg" />}
 
-          {unclaimedGifts.length === 0 && (
+          {!isLoading && unclaimedGifts.length === 0 && (
             <div className="flex h-[92px] w-full items-center justify-center rounded-lg bg-bg-input">
               <HelpText className="text-text-hint">All Gifts are claimed</HelpText>
             </div>
           )}
 
-          {unclaimedGifts.length > 0 &&
+          {!isLoading &&
+            unclaimedGifts.length > 0 &&
             unclaimedGifts.map(gift => {
               // Old gifts have formatted balance
               const formattedBalance =
@@ -62,15 +67,16 @@ const Page = () => {
           <BodyText className="mb-2 text-text-hint" align="left">
             Claimed <span className="text-text-on-button-disabled">{claimedGifts.length || 0}</span>
           </BodyText>
-          {/*{isLoading && <Shimmering height={92} className="rounded-lg" />}*/}
+          {isLoading && <Shimmering height={92} className="rounded-lg" />}
 
-          {claimedGifts.length === 0 && (
+          {!isLoading && claimedGifts.length === 0 && (
             <div className="flex h-[92px] w-full items-center justify-center rounded-2xl bg-bg-input">
               <HelpText className="text-text-hint">No claimed gifts</HelpText>
             </div>
           )}
 
-          {claimedGifts.length > 0 &&
+          {!isLoading &&
+            claimedGifts.length > 0 &&
             claimedGifts.map(gift => <GiftPlate gift={gift} key={gift.timestamp} isClaimed />)}
         </div>
       </div>

@@ -232,7 +232,7 @@ export const giftsModel = {
   $unclaimedGifts: readonly($unclaimedGifts),
 
   // Flag for loading gift claims
-  $isPending: inFlight([requestClaimedAssetsFx]).map(count => count > 0),
+  $isLoading: inFlight([requestClaimedAssetsFx]).map(count => count > 0),
 
   input: {
     giftsRequested,
