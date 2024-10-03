@@ -106,7 +106,6 @@ const requestClaimedAssetsFx = createEffect(async (params: RequestParams[]): Pro
       result[chainId][asset.assetId] = {};
 
       addresses.forEach((address, addressIdx) => {
-        // TODO: Gifts for statemine / orml is not zero
         result[chainId][asset.assetId][address] = assetsBalances[assetIdx][addressIdx].isZero();
       });
       assetIdx += 1;
