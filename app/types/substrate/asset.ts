@@ -5,8 +5,6 @@ interface BaseAsset {
   precision: number;
   priceId?: string;
   icon: string;
-  // Fee buffer for asset converted operations
-  feeBuffer: number;
 }
 
 export interface NativeAsset extends BaseAsset {
@@ -15,6 +13,8 @@ export interface NativeAsset extends BaseAsset {
 
 export interface StatemineAsset extends BaseAsset {
   type: 'statemine';
+  // Fee buffer for asset converted operations
+  feeBuffer: number;
   typeExtras: {
     assetId: string;
   };

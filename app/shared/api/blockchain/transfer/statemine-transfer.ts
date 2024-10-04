@@ -59,7 +59,7 @@ export class StatemineTransferService implements ITransfer {
   async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
     const giftAccountFee = await this.getTransferFee({ ...rest, amount });
     const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
-    const totalFee = giftAccountFee.add(clientAccountFee).muln(this.#asset.feeBuffer);
+    const totalFee = giftAccountFee.add(clientAccountFee);
 
     return this.#assetConversion(totalFee);
   }
