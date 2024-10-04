@@ -59,9 +59,9 @@ export class StatemineTransferService implements ITransfer {
   async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
     const giftAccountFee = await this.getTransferFee({ ...rest, amount });
     const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
-    const totalFee = giftAccountFee.add(clientAccountFee);
 
-    return this.#assetConversion(totalFee);
+    // Fee includes conversion
+    return giftAccountFee.add(clientAccountFee);
   }
 
   // Right now it's AssetHub only USD(T|C)/DOT

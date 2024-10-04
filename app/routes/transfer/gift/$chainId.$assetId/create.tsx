@@ -95,7 +95,7 @@ const Page = () => {
         const tgLink = botApi.createTelegramLink({
           botUrl,
           appName,
-          amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
+          amount: toFormattedBalance(gift, selectedAsset.precision).formatted,
           secret: giftSeed,
           chainIndex: selectedChain.chainIndex,
           symbol: selectedAsset.symbol,
