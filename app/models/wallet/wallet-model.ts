@@ -1,78 +1,118 @@
-import secureLocalStorage from 'react-secure-storage';
-
-import { type WebApp } from '@twa-dev/types';
-import { createEffect, createEvent, createStore, sample } from 'effector';
-import { readonly, spread } from 'patronum';
+import { createEffect, createEvent, createStore, sample, split } from 'effector';
+import { readonly } from 'patronum';
 import { $path } from 'remix-routes';
 
-import { hexToU8a, u8aToHex } from '@polkadot/util';
-import { mnemonicToMiniSecret, sr25519PairFromSeed } from '@polkadot/util-crypto';
+import { navigationModel } from '../navigation';
 
-import { navigationModel } from '../navigation/navigation-model';
-import { telegramModel } from '../telegram/telegram-model';
+import { TelegramApi, cryptoApi, localStorageApi } from '@/shared/api';
+import { BACKUP_DATE, MNEMONIC_STORE } from '@/shared/helpers';
 
-import { telegramApi } from '@/shared/api';
-import { BACKUP_DATE, MNEMONIC_STORE, PUBLIC_KEY_STORE } from '@/shared/helpers';
-import { type Wallet } from '@/types/substrate';
+import { Wallet } from './wallet';
 
 const walletCreated = createEvent<Mnemonic>();
+const walletCleared = createEvent<{ clearRemote: boolean }>();
+const walletRequested = createEvent();
+const mnemonicChanged = createEvent<{ mnemonic?: Mnemonic; password: string }>();
 
 const $wallet = createStore<Wallet | null>(null);
 
-const getWalletFx = createEffect(async (webApp: WebApp): Promise<PublicKey | undefined> => {
-  const publicKey = localStorage.getItem(telegramApi.getStoreName(webApp, PUBLIC_KEY_STORE));
-  const backupLocalDate = localStorage.getItem(telegramApi.getStoreName(webApp, BACKUP_DATE));
-
+const requestWalletFx = createEffect(async (): Promise<Wallet | null> => {
   try {
-    const backupCloudDate = await telegramApi.getCloudStorageItem(webApp, BACKUP_DATE);
-    const isSameBackupDate = backupCloudDate === backupLocalDate;
+    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
+    const backupCloudDate = await TelegramApi.getItem(BACKUP_DATE);
 
-    return isSameBackupDate && Boolean(publicKey) ? u8aToHex(hexToU8a(publicKey)) : undefined;
+    const backupStore = TelegramApi.getStoreName(BACKUP_DATE);
+    const backupLocalDate = localStorageApi.getItem(backupStore, '').toString();
+
+    if (!mnemonic || backupCloudDate !== backupLocalDate) return null;
+
+    return new Wallet(mnemonic);
   } catch {
-    return undefined;
+    return null;
   }
 });
 
-const walletCreatedFx = createEffect((mnemonic: Mnemonic): PublicKey => {
-  const seed = mnemonicToMiniSecret(mnemonic);
-  const keypair = sr25519PairFromSeed(seed);
-
-  return u8aToHex(keypair.publicKey);
+const createWalletFx = createEffect((mnemonic: Mnemonic): Wallet => {
+  return new Wallet(mnemonic);
 });
 
-type SavePublicKeyParams = {
-  webApp: WebApp;
-  publicKey: PublicKey;
-};
-const publicKeySavedFx = createEffect(({ webApp, publicKey }: SavePublicKeyParams) => {
-  localStorage.setItem(telegramApi.getStoreName(webApp, PUBLIC_KEY_STORE), publicKey);
+const clearWalletFx = createEffect((clearRemote: boolean): Promise<boolean> => {
+  localStorageApi.clear();
+
+  return clearRemote ? TelegramApi.removeItems([MNEMONIC_STORE, BACKUP_DATE]) : Promise.resolve(true);
+});
+
+const requestMnemonicFx = createEffect((): Promise<Mnemonic> => {
+  return TelegramApi.getItem(MNEMONIC_STORE);
 });
 
 type SaveMnemonicParams = {
-  webApp: WebApp;
-  mnemonic: Mnemonic;
+  mnemonic?: Mnemonic;
+  password: string;
 };
-const mnemonicSavedFx = createEffect(({ webApp, mnemonic }: SaveMnemonicParams) => {
-  secureLocalStorage.setItem(telegramApi.getStoreName(webApp, MNEMONIC_STORE), mnemonic);
+const changeMnemonicFx = createEffect(async ({ mnemonic, password }: SaveMnemonicParams): Promise<void> => {
+  const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+  const newMnemonic = mnemonic || localStorageApi.secureGetItem(mnemonicStore, '');
+
+  const encryptedMnemonicWithSalt = cryptoApi.getEncryptedMnemonic(newMnemonic, password);
+  const date = Date.now().toString();
+
+  await TelegramApi.setItem(MNEMONIC_STORE, encryptedMnemonicWithSalt);
+  await TelegramApi.setItem(BACKUP_DATE, date);
+
+  const backupStore = TelegramApi.getStoreName(BACKUP_DATE);
+  localStorageApi.setItem(backupStore, date);
+});
+
+const backupMnemonicFx = createEffect((mnemonic: Mnemonic) => {
+  const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+
+  localStorageApi.secureSetItem(mnemonicStore, mnemonic);
 });
 
 sample({
-  clock: telegramModel.$webApp,
-  filter: (webApp): webApp is WebApp => Boolean(webApp),
-  target: getWalletFx,
+  clock: walletRequested,
+  target: requestWalletFx,
+});
+
+split({
+  source: requestWalletFx.doneData,
+  match: wallet => {
+    return wallet ? 'init' : 'fallback';
+  },
+  cases: {
+    init: $wallet,
+    fallback: requestMnemonicFx,
+  },
 });
 
 sample({
-  clock: getWalletFx.doneData,
-  fn: publicKey => ({ publicKey }),
-  target: $wallet,
-});
-
-sample({
-  clock: getWalletFx.doneData,
-  fn: publicKey => ({
+  clock: requestWalletFx.doneData,
+  filter: (wallet): wallet is Wallet => Boolean(wallet),
+  fn: () => ({
     type: 'navigate' as const,
-    to: publicKey ? $path('/dashboard') : $path('/onboarding'),
+    to: $path('/dashboard'),
+    options: { replace: true },
+  }),
+  target: navigationModel.input.navigatorPushed,
+});
+
+sample({
+  clock: requestMnemonicFx.doneData,
+  fn: mnemonic => ({
+    type: 'navigate' as const,
+    to: $path('/onboarding/restore'),
+    options: { replace: true, state: { mnemonic } },
+  }),
+  target: navigationModel.input.navigatorPushed,
+});
+
+sample({
+  clock: requestMnemonicFx.failData,
+  fn: () => ({
+    type: 'navigate' as const,
+    to: $path('/onboarding'),
     options: { replace: true },
   }),
   target: navigationModel.input.navigatorPushed,
@@ -80,27 +120,30 @@ sample({
 
 sample({
   clock: walletCreated,
-  target: walletCreatedFx,
+  target: createWalletFx,
 });
 
 sample({
-  clock: walletCreatedFx.done,
-  source: telegramModel.$webApp,
-  filter: (webApp: WebApp | null): webApp is WebApp => Boolean(webApp),
-  fn: (webApp, { result: publicKey, params: mnemonic }) => ({
-    savePublicKey: { webApp, publicKey },
-    saveMnemonic: { webApp, mnemonic },
-  }),
-  target: spread({
-    savePublicKey: publicKeySavedFx,
-    saveMnemonic: mnemonicSavedFx,
-  }),
-});
-
-sample({
-  clock: publicKeySavedFx.done,
-  fn: ({ params }) => ({ publicKey: params.publicKey }),
+  clock: createWalletFx.doneData,
   target: $wallet,
+});
+
+sample({
+  clock: createWalletFx.done,
+  fn: ({ params: mnemonic }) => mnemonic,
+  target: backupMnemonicFx,
+});
+
+sample({
+  clock: mnemonicChanged,
+  fn: ({ mnemonic, password }) => ({ mnemonic, password }),
+  target: changeMnemonicFx,
+});
+
+sample({
+  clock: walletCleared,
+  fn: ({ clearRemote }) => clearRemote,
+  target: clearWalletFx,
 });
 
 export const walletModel = {
@@ -108,6 +151,9 @@ export const walletModel = {
 
   input: {
     walletCreated,
+    walletCleared,
+    walletRequested,
+    mnemonicChanged,
   },
 
   /* Internal API (tests only) */

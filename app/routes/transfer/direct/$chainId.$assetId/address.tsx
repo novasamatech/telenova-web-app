@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
-import { telegramModel } from '@/models/telegram';
-import { validateAddress } from '@/shared/helpers';
+import { navigationModel } from '@/models/navigation';
+import { networkModel } from '@/models/network';
+import { BackButton, MainButton, TelegramApi } from '@/shared/api';
+import { isEvmChain, toAddress, toShortAddress, validateAddress } from '@/shared/helpers';
 import { BodyText, HelpText, Icon, Identicon, Input } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
@@ -19,38 +18,47 @@ export const clientLoader = (({ params }) => {
 const Page = () => {
   const { chainId, assetId } = useLoaderData<typeof clientLoader>();
 
-  const navigate = useNavigate();
-
-  const webApp = useUnit(telegramModel.$webApp);
+  const chains = useUnit(networkModel.$chains);
 
   const [address, setAddress] = useState('');
   const [isAddressValid, setIsAddressValid] = useState(true);
 
   const handleChange = (value: string) => {
     setAddress(value);
-    setIsAddressValid(validateAddress(value));
+    setIsAddressValid(validateAddress(value, chains[chainId as ChainId]));
   };
 
   const handleQrCode = () => {
-    if (!webApp) return;
-
-    webApp.showScanQrPopup({ text: 'Scan QR code' }, value => {
+    TelegramApi.showScanQrPopup({ text: 'Scan QR code' }, value => {
       setAddress(value);
-      setIsAddressValid(validateAddress(value));
-      webApp.closeScanQrPopup();
+      setIsAddressValid(validateAddress(value, chains[chainId as ChainId]));
+    });
+  };
+
+  const navigate = () => {
+    const params = {
+      address: toAddress(address, { chain: chains[chainId as ChainId] }),
+      assetId,
+      chainId,
+    };
+
+    navigationModel.input.navigatorPushed({
+      type: 'navigate',
+      to: $path('/transfer/direct/:chainId/:assetId/:address/amount', params),
+    });
+  };
+
+  const navigateBack = () => {
+    navigationModel.input.navigatorPushed({
+      type: 'navigate',
+      to: $path('/transfer/direct/token-select'),
     });
   };
 
   return (
     <>
-      <MainButton
-        hidden={!address.length}
-        disabled={!isAddressValid}
-        onClick={() => {
-          navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { address, chainId, assetId }));
-        }}
-      />
-      <BackButton onClick={() => navigate($path('/transfer/direct/token-select'))} />
+      <MainButton hidden={!address.length} disabled={!isAddressValid} onClick={navigate} />
+      <BackButton onClick={navigateBack} />
       <div className="flex flex-col">
         <Input
           isClearable
@@ -58,18 +66,25 @@ const Page = () => {
           placeholder="Enter address"
           className="font-manrope"
           value={address}
+          isInvalid={!isAddressValid}
           onValueChange={handleChange}
           onClear={() => setAddress('')}
         />
-        {address &&
-          (isAddressValid ? (
-            <div className="mt-4 flex items-center gap-2 break-all">
-              <Identicon address={address} />
-              <BodyText> {address}</BodyText>
-            </div>
-          ) : (
-            <HelpText className="mt-1 text-text-hint">Invalid address, enter a correct one</HelpText>
-          ))}
+        {address && isAddressValid && (
+          <div className="mt-4 flex items-center gap-x-2 break-all">
+            <Identicon
+              className="flex-shrink-0"
+              address={address}
+              theme={isEvmChain(chains[chainId as ChainId]) ? 'ethereum' : 'polkadot'}
+            />
+            <BodyText>{toShortAddress(address, 15)}</BodyText>
+          </div>
+        )}
+
+        {address && !isAddressValid && (
+          <HelpText className="mt-1 text-text-danger">Invalid address, enter a correct one</HelpText>
+        )}
+
         {!address && (
           <Button variant="light" className="mt-4 gap-0 self-start text-text-link" onClick={handleQrCode}>
             <Icon name="ScanQr" className="mr-2 h-5 w-5" />

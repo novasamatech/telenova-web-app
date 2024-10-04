@@ -24,11 +24,27 @@ export const DEFAULT_CHAINS_ORDER: Record<ChainId, Record<AssetId, number>> = {
   },
 };
 
-export const getParentChain = (chains: ChainsMap, chainId: ChainId, asset: Asset): Chain | undefined => {
+export function getParentChain(chains: ChainsMap, chainId: ChainId, asset: Asset): Chain | undefined {
   if (!DUAL_SYMBOLS.includes(asset.symbol)) return;
 
   const parentChainId = chains[chainId].parentId;
   if (!parentChainId) return;
 
   return chains[parentChainId];
-};
+}
+
+export function isEvmChain(chain: Chain): boolean {
+  return Boolean(chain.options?.includes('evm'));
+}
+
+export function isPolkadot(chain: Chain): boolean {
+  return chain.chainId === POLKADOT;
+}
+
+export function isKusama(chain: Chain): boolean {
+  return chain.chainId === KUSAMA;
+}
+
+export function isChainStartsWithNumber(chain: Chain): boolean {
+  return /^[0-9]+/.test(chain.name);
+}

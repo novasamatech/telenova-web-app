@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-
 import { Divider } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
@@ -7,13 +5,11 @@ import { $params, $path } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
 
-import { useExtrinsic } from '@/common/extrinsicService';
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
-import { getKeyringPair } from '@/common/wallet';
+import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
-import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
+import { walletModel } from '@/models/wallet';
+import { BackButton, MainButton, TelegramApi, localStorageApi, transferFactory } from '@/shared/api';
+import { MNEMONIC_STORE, isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
 export type SearchParams = {
@@ -36,17 +32,17 @@ export const clientLoader = (({ params, request }) => {
 const Page = () => {
   const { chainId, assetId, address, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const navigate = useNavigate();
-  const { sendTransfer } = useExtrinsic();
-
-  const chains = useUnit(networkModel.$chains);
-  const assets = useUnit(networkModel.$assets);
-  const webApp = useUnit(telegramModel.$webApp);
+  const wallet = useUnit(walletModel.$wallet);
+  const [chains, assets, connections] = useUnit([
+    networkModel.$chains,
+    networkModel.$assets,
+    networkModel.$connections,
+  ]);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!webApp || !selectedAsset || !chains[typedChainId]) return null;
+  if (!wallet || !selectedAsset || !chains[typedChainId]) return null;
 
   const symbol = selectedAsset.symbol;
   const bnFee = new BN(fee);
@@ -55,22 +51,27 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
-    const keyringPair = getKeyringPair(webApp);
-    if (!keyringPair) return;
+    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
 
-    sendTransfer({
-      keyringPair,
-      chainId: typedChainId,
-      asset: selectedAsset,
-      transferAmount: bnAmount,
-      destinationAddress: address,
-      transferAll: all,
-    })
-      .then(() => {
+    transferFactory
+      .createService(connections[typedChainId].api!, selectedAsset)
+      .sendTransfer({
+        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
+        amount: bnAmount,
+        destination: address,
+        transferAll: all,
+      })
+      .then(hash => {
+        console.log('🟢 Transaction hash - ', hash.toHex());
+
         const params = { chainId, assetId, address };
         const query = { amount };
 
-        navigate($path('/transfer/direct/:chainId/:assetId/:address/result', params, query));
+        navigationModel.input.navigatorPushed({
+          type: 'navigate',
+          to: $path('/transfer/direct/:chainId/:assetId/:address/result', params, query),
+        });
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
   };
@@ -80,7 +81,11 @@ const Page = () => {
       title: 'Recipients address',
       value: (
         <div className="flex items-center gap-x-1">
-          <Identicon address={address} />
+          <Identicon
+            className="flex-shrink-0"
+            address={address}
+            theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'}
+          />
           <MediumTitle>{toShortAddress(address, 15)}</MediumTitle>
         </div>
       ),
@@ -100,7 +105,10 @@ const Page = () => {
   ];
 
   const navigateBack = () => {
-    navigate($path('/transfer/direct/:chainId/:assetId/:address/amount', { chainId, assetId, address }));
+    navigationModel.input.navigatorPushed({
+      type: 'navigate',
+      to: $path('/transfer/direct/:chainId/:assetId/:address/amount', { chainId, assetId, address }),
+    });
   };
 
   return (
@@ -108,10 +116,10 @@ const Page = () => {
       <MainButton text="Confirm" onClick={mainCallback} />
       <BackButton onClick={navigateBack} />
       <div className="grid grid-cols-[40px,1fr] items-center">
-        <Identicon address={address} />
+        <Identicon address={address} theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'} />
         <HeadlineText className="flex gap-1">
           Send to
-          <Address address={address} className="max-w-[130px]" />
+          <Address address={address} className="max-w-[120px]" />
         </HeadlineText>
       </div>
       <div className="my-6 grid grid-cols-[40px,1fr,auto] items-center gap-2">

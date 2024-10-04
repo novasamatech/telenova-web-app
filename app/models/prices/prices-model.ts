@@ -13,11 +13,11 @@ const pricesRefused = createEvent();
 const $prices = createStore<AssetPrices | null>(null);
 
 const getFromStorageFx = createEffect((): AssetPrices | null => {
-  return localStorageApi.getFromStorage<AssetPrices | null>(PRICES_STORE, null);
+  return localStorageApi.getItem<AssetPrices | null>(PRICES_STORE, null);
 });
 
 const saveToStorageFx = createEffect((prices: AssetPrices) => {
-  localStorageApi.saveToStorage(PRICES_STORE, prices);
+  localStorageApi.setItem(PRICES_STORE, prices);
 });
 
 type PricesParams = {

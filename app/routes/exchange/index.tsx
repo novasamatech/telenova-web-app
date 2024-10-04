@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
 import { navigationModel } from '@/models/navigation';
+import { BackButton } from '@/shared/api';
 import { TitleText } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 

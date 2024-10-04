@@ -1,11 +1,8 @@
-import { type WebApp } from '@twa-dev/types';
-
 import { type KeyringPair } from '@polkadot/keyring/types';
-import { encodeAddress } from '@polkadot/util-crypto';
 
-import { getKeyringPairFromSeed } from '../../common/wallet';
-
-import { telegramApi } from '@/shared/api';
+import { type Wallet } from '@/models/wallet';
+import { TelegramApi, keyringApi } from '@/shared/api';
+import { toAddress } from '@/shared/helpers/address.ts';
 import { type Asset, type Chain, type PersistentGift } from '@/types/substrate';
 
 import { GIFT_STORE } from './constants';
@@ -18,17 +15,17 @@ type BackupParams = {
   balance: string;
   chainIndex: number;
 };
-export const backupGifts = (webApp: WebApp, params: BackupParams) => {
+export const backupGifts = (params: BackupParams) => {
   const gift = { ...params, timestamp: Date.now() };
 
-  const storedGifts = localStorage.getItem(telegramApi.getStoreName(webApp, GIFT_STORE));
+  const storedGifts = localStorage.getItem(TelegramApi.getStoreName(GIFT_STORE));
   const backup = storedGifts ? [...JSON.parse(storedGifts), gift] : [gift];
 
-  localStorage.setItem(telegramApi.getStoreName(webApp, GIFT_STORE), JSON.stringify(backup));
+  localStorage.setItem(TelegramApi.getStoreName(GIFT_STORE), JSON.stringify(backup));
 };
 
-export const getGifts = (webApp: WebApp): Map<ChainId, PersistentGift[]> | null => {
-  const gifts = JSON.parse(localStorage.getItem(telegramApi.getStoreName(webApp, GIFT_STORE)) as string);
+export const getGifts = (): Map<ChainId, PersistentGift[]> | null => {
+  const gifts = JSON.parse(localStorage.getItem(TelegramApi.getStoreName(GIFT_STORE)) as string);
   if (!gifts) return null;
 
   const map = new Map<ChainId, PersistentGift[]>();
@@ -47,7 +44,7 @@ type GiftInfo = {
   symbol: string;
   keyring: KeyringPair;
 };
-export const getGiftInfo = (chains: Chain[], publicKey: PublicKey, startParam: string): GiftInfo | undefined => {
+export const getGiftInfo = (chains: Chain[], wallet: Wallet, startParam: string): GiftInfo | undefined => {
   const [seed, ...rest] = startParam.split('_');
   let symbol: string | undefined;
   let chain: Chain | undefined;
@@ -70,16 +67,14 @@ export const getGiftInfo = (chains: Chain[], publicKey: PublicKey, startParam: s
 
   if (!chain || !asset || !symbol) return undefined;
 
-  const keyring = getKeyringPairFromSeed(seed);
-  const address = encodeAddress(publicKey, chain.addressPrefix);
-  const giftAddress = encodeAddress(keyring.publicKey, chain.addressPrefix);
+  const keyring = keyringApi.getKeyringPairFromSeed(seed, chain);
 
   return {
     keyring,
-    address,
-    giftAddress,
     asset,
     symbol,
+    address: wallet.toAddress(chain),
+    giftAddress: toAddress(keyring.publicKey, { chain }),
     chainId: chain.chainId,
   };
 };

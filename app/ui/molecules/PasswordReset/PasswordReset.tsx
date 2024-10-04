@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Modal, ModalContent } from '@nextui-org/react';
 import { $path } from 'remix-routes';
 
-import { resetWallet } from '@/common/wallet';
+import { walletModel } from '@/models/wallet';
 
-import { BackupDeleted } from './BackupDeleted.tsx';
-import { PasswordForgotten } from './PasswordForgotten.tsx';
+import { BackupDeleted } from './BackupDeleted';
+import { PasswordForgotten } from './PasswordForgotten';
 
 const enum Step {
   INIT,
@@ -29,14 +29,15 @@ export const PasswordReset = ({ isOpen, onClose }: Props) => {
   }
 
   const handleSubmit = () => {
-    resetWallet();
+    walletModel.input.walletCleared({ clearRemote: true });
     setStep(Step.BACKUP_DELETED);
   };
 
   const handleClose = () => {
     onClose();
+
     if (step === Step.BACKUP_DELETED) {
-      navigate($path('/onboarding/start'));
+      navigate($path('/onboarding'));
     }
   };
 
