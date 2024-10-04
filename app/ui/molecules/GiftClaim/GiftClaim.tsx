@@ -5,17 +5,15 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from
 import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
 
+import { type ApiPromise } from '@polkadot/api';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { TransactionType, useExtrinsic } from '@/common/extrinsicService';
 import { useGlobalContext } from '@/common/providers';
-import { useQueryService } from '@/common/queryService/QueryService';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
+import { TelegramApi, balancesFactory, botApi, transferFactory } from '@/shared/api';
 import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
-import { useAssetHub, useOrml } from '@/shared/hooks';
-import { type Asset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
+import { type Asset } from '@/types/substrate';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/ui/atoms';
 
 type GiftStatus = 'claimed' | 'notClaimed';
@@ -30,17 +28,11 @@ const GIFTS: Record<GiftStatus, { text: string; btnText: string }> = {
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export const GiftClaim = () => {
-  const { getFreeBalance } = useQueryService();
-  const { getGiftBalanceStatemine } = useAssetHub();
-  const { getOrmlGiftBalance } = useOrml();
-  const { sendTransfer, getTransactionFee } = useExtrinsic();
   const { isGiftClaimed, setIsGiftClaimed } = useGlobalContext();
 
   const wallet = useUnit(walletModel.$wallet);
   const chains = useUnit(networkModel.$chains);
   const connections = useUnit(networkModel.$connections);
-  const webApp = useUnit(telegramModel.$webApp);
-  const startParam = useUnit(telegramModel.$startParam);
 
   const [giftBalance, setGiftBalance] = useState<BN | null>(null);
   const [giftAsset, setGiftAsset] = useState<Asset | null>(null);
@@ -51,11 +43,14 @@ export const GiftClaim = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
 
+  const startParam = TelegramApi.initDataUnsafe.start_param;
+
   useEffect(() => {
-    if (isGiftClaimed || !startParam || !wallet?.publicKey) return;
+    if (isGiftClaimed || !startParam || !wallet) return;
+    if (!botApi.validateStartParam(startParam)) return;
     setIsOpen(true);
 
-    const giftInfo = getGiftInfo(Object.values(chains), wallet.publicKey, startParam);
+    const giftInfo = getGiftInfo(Object.values(chains), wallet, startParam);
     if (!giftInfo) return;
 
     const { chainId, asset, giftAddress, symbol } = giftInfo;
@@ -66,13 +61,7 @@ export const GiftClaim = () => {
       return;
     }
 
-    const balanceRequest: Record<Asset['type'], (chainId: ChainId, address: Address, asset?: Asset) => Promise<BN>> = {
-      native: (chainId, address) => getGiftBalance(chainId, address),
-      orml: (chainId, address) => getOrmlGiftBalance(chainId, address, asset as OrmlAsset),
-      statemine: (chainId, address, asset) => getGiftBalanceStatemine(chainId, address, asset as StatemineAsset),
-    };
-
-    balanceRequest[asset.type](chainId, giftAddress, asset).then(balance => {
+    getGiftBalance(connections[chainId].api!, giftAddress, asset).then(balance => {
       setGiftStatus(balance.isZero() ? 'claimed' : 'notClaimed');
       setGiftSymbol(balance.isZero() ? '' : symbol);
       setGiftBalance(balance);
@@ -84,11 +73,11 @@ export const GiftClaim = () => {
     };
   }, [startParam, wallet, isGiftClaimed, connections]);
 
-  const getGiftBalance = async (chainId: ChainId, giftAddress: string): Promise<BN> => {
-    const giftBalance = await getFreeBalance(giftAddress, chainId);
+  const getGiftBalance = async (api: ApiPromise, giftAddress: Address, asset: Asset): Promise<BN> => {
+    const giftBalance = await balancesFactory.createService(api, asset).getFreeBalance(giftAddress);
     if (giftBalance.isZero()) return BN_ZERO;
 
-    const fee = await getTransactionFee(chainId, TransactionType.TRANSFER_ALL);
+    const fee = await transferFactory.createService(api, asset).getTransferFee({ transferAll: true });
     const rawBalance = giftBalance.sub(fee);
 
     return rawBalance.isNeg() ? BN_ZERO : rawBalance;
@@ -104,7 +93,7 @@ export const GiftClaim = () => {
   };
 
   const handleGiftClaim = () => {
-    const giftInfo = getGiftInfo(Object.values(chains), wallet!.publicKey!, startParam!);
+    const giftInfo = getGiftInfo(Object.values(chains), wallet!, startParam!);
     if (!giftInfo) return;
 
     setIsDisabled(true);
@@ -119,16 +108,16 @@ export const GiftClaim = () => {
       lottie.play();
     }
 
-    sendTransfer({
-      chainId: giftInfo.chainId,
-      asset: giftInfo.asset,
-      destinationAddress: giftInfo.address,
-      transferAmount: giftBalance,
-      transferAll: true,
-      keyringPair: giftInfo.keyring,
-    })
+    transferFactory
+      .createService(connections[giftInfo.chainId].api!, giftInfo.asset)
+      .sendTransfer({
+        keyringPair: giftInfo.keyring,
+        amount: giftBalance,
+        destination: giftInfo.address,
+        transferAll: true,
+      })
       .catch(() => {
-        webApp?.showAlert('Something went wrong. Failed to claim gift');
+        TelegramApi.showAlert('Something went wrong. Failed to claim the gift.');
         handleClose();
       })
       .finally(() => {

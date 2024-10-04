@@ -1,5 +1,5 @@
 export { AmountDetails } from './AmountDetails/AmountDetails';
-export { TotalBalance } from './TotalBalance/TotalBalance.tsx';
+export { TotalBalance } from './TotalBalance/TotalBalance';
 export { AssetBalance } from './Assets/AssetBalance';
 export { AssetsList } from './Assets/AssetsList';
 export { AssetSkeleton } from './Assets/AssetSkeleton';

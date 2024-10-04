@@ -39,6 +39,7 @@ const config = defineConfig(({ mode }) => ({
     globals: true,
     environment: 'jsdom',
     setupFiles: './vitest.setup.ts',
+    clearMocks: true,
     coverage: {
       provider: 'v8',
       reporter: ['json-summary', 'json'],

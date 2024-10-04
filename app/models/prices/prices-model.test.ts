@@ -21,7 +21,6 @@ const mockedPrices = {
 describe('models/prices/prices-model', () => {
   beforeEach(() => {
     vi.clearAllTimers();
-    vi.restoreAllMocks();
     vi.useFakeTimers();
   });
 
@@ -39,7 +38,7 @@ describe('models/prices/prices-model', () => {
   };
 
   test('should load prices from storage', async () => {
-    vi.spyOn(localStorageApi, 'getFromStorage').mockResolvedValue(mockedPrices);
+    vi.spyOn(localStorageApi, 'getItem').mockResolvedValue(mockedPrices);
     vi.spyOn(coingekoApi, 'getPrice').mockResolvedValue(null);
 
     const scope = await setupScope();
@@ -50,7 +49,7 @@ describe('models/prices/prices-model', () => {
   test('should override prices from storage with coingeko', async () => {
     const freshMockedPrices = Object.assign(mockedPrices, { kar: { price: 5, change: 6 } });
 
-    vi.spyOn(localStorageApi, 'getFromStorage').mockResolvedValue(mockedPrices);
+    vi.spyOn(localStorageApi, 'getItem').mockResolvedValue(mockedPrices);
     vi.spyOn(coingekoApi, 'getPrice').mockResolvedValue(freshMockedPrices);
 
     const scope = await setupScope();
@@ -70,8 +69,8 @@ describe('models/prices/prices-model', () => {
 
   test('should save prices to storage after request', async () => {
     vi.spyOn(coingekoApi, 'getPrice').mockResolvedValue(mockedPrices);
-    vi.spyOn(localStorageApi, 'getFromStorage').mockResolvedValue(null);
-    const spySave = vi.spyOn(localStorageApi, 'saveToStorage').mockResolvedValue(mockedPrices);
+    vi.spyOn(localStorageApi, 'getItem').mockResolvedValue(null);
+    const spySave = vi.spyOn(localStorageApi, 'setItem').mockResolvedValue(mockedPrices);
 
     await setupScope();
 

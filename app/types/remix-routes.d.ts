@@ -54,9 +54,9 @@ declare module 'remix-routes' {
       query: ExportedQuery<import('../routes/onboarding/index').SearchParams>;
     };
 
-    '/onboarding/create-wallet': {
+    '/onboarding/complete': {
       params: never;
-      query: ExportedQuery<import('../routes/onboarding/create-wallet').SearchParams>;
+      query: ExportedQuery<import('../routes/onboarding/complete').SearchParams>;
     };
 
     '/onboarding/password': {
@@ -67,11 +67,6 @@ declare module 'remix-routes' {
     '/onboarding/restore': {
       params: never;
       query: ExportedQuery<import('../routes/onboarding/restore').SearchParams>;
-    };
-
-    '/onboarding/start': {
-      params: never;
-      query: ExportedQuery<import('../routes/onboarding/start').SearchParams>;
     };
 
     '/receive/:chainId/:assetId/address': {
@@ -205,11 +200,10 @@ declare module 'remix-routes' {
     | 'routes/gifts/details'
     | 'routes/gifts/index'
     | 'routes/onboarding'
-    | 'routes/onboarding/create-wallet'
+    | 'routes/onboarding/complete'
     | 'routes/onboarding/index'
     | 'routes/onboarding/password'
     | 'routes/onboarding/restore'
-    | 'routes/onboarding/start'
     | 'routes/receive/$chainId.$assetId.address'
     | 'routes/receive/token-select'
     | 'routes/settings'

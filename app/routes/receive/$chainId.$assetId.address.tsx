@@ -6,12 +6,10 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { telegramApi } from '@/shared/api';
-import { copyToClipboard, shareQrAddress, toAddress } from '@/shared/helpers';
+import { BackButton, TelegramApi } from '@/shared/api';
+import { copyToClipboard, shareQrAddress } from '@/shared/helpers';
 import { BodyText, HeadlineText, Icon, MediumTitle, Plate, TitleText } from '@/ui/atoms';
 
 export const clientLoader = (({ params }) => {
@@ -24,15 +22,14 @@ const Page = () => {
   const navigate = useNavigate();
 
   const wallet = useUnit(walletModel.$wallet);
-  const webApp = useUnit(telegramModel.$webApp);
   const [chains, assets] = useUnit([networkModel.$chains, networkModel.$assets]);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
-  if (!selectedAsset || !wallet?.publicKey || !chains[typedChainId] || !webApp) return null;
+  if (!selectedAsset || !wallet || !chains[typedChainId]) return null;
 
-  const address = toAddress(wallet.publicKey, { prefix: chains[typedChainId].addressPrefix });
+  const address = wallet.toAddress(chains[typedChainId]);
 
   return (
     <>
@@ -73,7 +70,7 @@ const Page = () => {
           <PopoverContent>Address copied</PopoverContent>
         </Popover>
         {/* @ts-expect-error share functionality doesn't exist in Mozilla */}
-        {!telegramApi.isWebPlatform(webApp) && navigator.canShare && (
+        {!TelegramApi.isWebPlatform && navigator.canShare && (
           <Button
             color="primary"
             variant="flat"

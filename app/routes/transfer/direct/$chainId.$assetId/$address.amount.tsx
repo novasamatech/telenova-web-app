@@ -7,11 +7,11 @@ import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
 import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
+import { BackButton, MainButton, balancesFactory, transferFactory } from '@/shared/api';
+import { isEvmChain } from '@/shared/helpers';
 import { Address, HeadlineText, Identicon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
 
@@ -34,8 +34,10 @@ const Page = () => {
 
   const typedChainId = chainId as ChainId;
   const assets = useUnit(networkModel.$assets);
+  const chains = useUnit(networkModel.$chains);
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
+  const connections = useUnit(networkModel.$connections);
 
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
   const balance = balances[typedChainId]?.[selectedAsset!.assetId]?.balance;
@@ -54,7 +56,10 @@ const Page = () => {
     isTouched,
     isTransferAll,
   } = useAmountLogic({
-    chainId: typedChainId,
+    services: {
+      balanceService: balancesFactory.createService(connections[typedChainId].api!, selectedAsset),
+      transferService: transferFactory.createService(connections[typedChainId].api!, selectedAsset),
+    },
     asset: selectedAsset!,
     isGift: false,
     balance,
@@ -86,7 +91,7 @@ const Page = () => {
       />
       <BackButton onClick={() => navigate($path('/transfer/direct/:chainId/:assetId/address', { chainId, assetId }))} />
       <div className="grid grid-cols-[40px,1fr,auto] items-center">
-        <Identicon address={address} />
+        <Identicon address={address} theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'} />
         <HeadlineText className="flex gap-1">
           Send to
           <Address address={address} className="max-w-[120px]" />

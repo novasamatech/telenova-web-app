@@ -1,20 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { MainButton } from '@/common/telegram/MainButton';
-import { initializeWalletFromCloud } from '@/common/wallet';
-import { telegramModel } from '@/models/telegram';
+import { BackButton, MainButton, TelegramApi, cryptoApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
 import { Input, TitleText } from '@/ui/atoms';
 
 const Page = () => {
   const navigate = useNavigate();
-
-  const webApp = useUnit(telegramModel.$webApp);
 
   const [password, setPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
@@ -24,21 +18,28 @@ const Page = () => {
   const isPasswordValid = password.length > 0;
 
   const onSubmit = () => {
-    if (!webApp || !isPasswordValid) return;
+    if (!isPasswordValid) return;
 
     setIsValidMnemonic(true);
     setIsPending(true);
 
-    webApp.CloudStorage.getItem(MNEMONIC_STORE, (_err, value) => {
-      const decryptedMnemonic = initializeWalletFromCloud(password, value);
-      if (decryptedMnemonic) {
-        navigate($path('/settings/password/new'));
-      } else {
+    TelegramApi.getItem(MNEMONIC_STORE)
+      .then(mnemonic => {
+        const decryptedMnemonic = cryptoApi.getDecryptedMnemonic(mnemonic, password);
+
+        if (decryptedMnemonic) {
+          navigate($path('/settings/password/new'));
+        } else {
+          throw new Error('Could not decrypt mnemonic');
+        }
+      })
+      .catch(error => {
+        console.error('Error while requesting Telegram Mnemonic_Store', error);
+
         setIsValidMnemonic(false);
         setIsPending(false);
         setIsChecked(true);
-      }
-    });
+      });
   };
 
   const shouldShowError = isChecked && !isValidMnemonic;

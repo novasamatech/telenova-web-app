@@ -4,10 +4,10 @@ import { readonly } from 'patronum';
 
 import { type ApiPromise } from '@polkadot/api';
 
-import { networkModel } from '../network/network-model';
-import { walletModel } from '../wallet/wallet-model';
+import { networkModel } from '../network';
+import { type Wallet, walletModel } from '../wallet';
 
-import { balancesApi } from '@/shared/api';
+import { balancesFactory } from '@/shared/api';
 import { type Asset, type AssetBalance, type Chain, type ChainBalances } from '@/types/substrate';
 
 import { type Subscriptions } from './types';
@@ -61,11 +61,11 @@ type SubAssetsParams = {
   apis: Record<ChainId, ApiPromise>;
   chains: Chain[];
   assets: Asset[][];
-  publicKey: PublicKey;
+  wallet: Wallet;
   subscriptions: Subscriptions;
 };
 const pureSubscribeChainsAssetsFx = createEffect(
-  ({ apis, chains, assets, publicKey, subscriptions }: SubAssetsParams): Subscriptions => {
+  ({ apis, chains, assets, wallet, subscriptions }: SubAssetsParams): Subscriptions => {
     const boundUpdate = scopeBind(balanceUpdated, { safe: true });
 
     const newChainSubscriptions: Subscriptions = {};
@@ -75,7 +75,8 @@ const pureSubscribeChainsAssetsFx = createEffect(
       const assetsSubscriptions = subscriptions[chain.chainId] || {};
 
       assets[index].forEach(asset => {
-        assetsSubscriptions[asset.assetId] = balancesApi.subscribeBalance(api, chain, asset, publicKey, boundUpdate);
+        const service = balancesFactory.createService(api, asset);
+        assetsSubscriptions[asset.assetId] = service.subscribeBalance(chain, wallet.toAddress(chain), boundUpdate);
       });
 
       newChainSubscriptions[chain.chainId] = assetsSubscriptions;
@@ -130,18 +131,18 @@ sample({
     chains: networkModel.$chains,
   },
   filter: ({ wallet, connections, chains }, data) => {
-    const isAccountExist = Boolean(wallet?.publicKey);
+    const isWalletExist = Boolean(wallet);
     const isConnected = connections[data.chainId]?.status === 'connected';
     const hasAsset = chains[data.chainId]?.assets.some(a => a.assetId === data.assetId);
 
-    return isAccountExist && isConnected && hasAsset;
+    return isWalletExist && isConnected && hasAsset;
   },
   fn: ({ wallet, connections, chains }, data) => {
     const apis = { [data.chainId]: connections[data.chainId].api! };
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => a.assetId === data.assetId)];
 
-    return { apis, chains: activeChains, assets, publicKey: wallet!.publicKey! };
+    return { apis, chains: activeChains, assets, wallet: wallet! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -170,17 +171,17 @@ sample({
     chains: networkModel.$chains,
   },
   filter: ({ wallet }, { status }) => {
-    const isAccountExist = Boolean(wallet?.publicKey);
+    const isWalletExist = Boolean(wallet);
     const isConnected = status === 'connected';
 
-    return isAccountExist && isConnected;
+    return isWalletExist && isConnected;
   },
   fn: ({ connections, chains, activeAssets, wallet }, data) => {
     const apis = { [data.chainId]: connections[data.chainId].api! };
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => activeAssets[data.chainId]?.[a.assetId])];
 
-    return { apis, chains: activeChains, assets, publicKey: wallet!.publicKey! };
+    return { apis, chains: activeChains, assets, wallet: wallet! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -208,11 +209,11 @@ sample({
     activeAssets: networkModel.$assets,
   },
   filter: ({ connections, activeAssets }, wallet) => {
-    const isAccountExist = Boolean(wallet?.publicKey);
+    const isWalletExist = Boolean(wallet);
     const isAnyToConnect = !isEmpty(activeAssets);
     const isSomeConnected = Object.values(connections).some(({ status }) => status === 'connected');
 
-    return isAccountExist && isAnyToConnect && isSomeConnected;
+    return isWalletExist && isAnyToConnect && isSomeConnected;
   },
   fn: ({ connections, chains, activeAssets }, wallet) => {
     const apis: Record<ChainId, ApiPromise> = {};
@@ -228,7 +229,7 @@ sample({
       chain.assets.filter(asset => activeAssets[chain.chainId]?.[asset.assetId]),
     );
 
-    return { apis, chains: activeChains, assets, publicKey: wallet!.publicKey! };
+    return { apis, chains: activeChains, assets, wallet: wallet! };
   },
   target: subscribeChainsAssetsFx,
 });

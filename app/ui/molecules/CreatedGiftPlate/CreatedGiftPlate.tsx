@@ -5,31 +5,26 @@ import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
 import { getGifts } from '@/shared/helpers';
 import { useGifts } from '@/shared/hooks';
 import { type Gift } from '@/types/substrate';
-import { BigTitle, BodyText, Icon, Shimmering } from '@/ui/atoms';
-import { Plate } from '@/ui/atoms/Plate/Plate.tsx';
+import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/ui/atoms';
 
 export const CreatedGiftPlate = () => {
   const { getGiftsState } = useGifts();
 
-  const webApp = useUnit(telegramModel.$webApp);
   const connections = useUnit(networkModel.$connections);
 
   const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
 
   useEffect(() => {
-    if (!webApp) return;
-
-    const localStorageGifts = getGifts(webApp);
+    const localStorageGifts = getGifts();
     if (localStorageGifts) {
       getGiftsState(localStorageGifts).then(([unclaimed]) => setUnclaimed(unclaimed));
     } else {
       setUnclaimed([]);
     }
-  }, [webApp, connections]);
+  }, [connections]);
 
   return (
     <Plate className="mt-4 h-[90px] w-full rounded-3xl border-1 border-border-neutral active:bg-bg-item-pressed">

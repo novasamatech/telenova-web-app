@@ -14,9 +14,8 @@ export const RecoveryPhrase = ({ mnemonic }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleClick = () => {
-    if (!isBlur) {
-      return;
-    }
+    if (!isBlur) return;
+
     setIsModalOpen(true);
   };
 

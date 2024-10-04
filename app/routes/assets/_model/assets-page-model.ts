@@ -3,8 +3,7 @@ import { isEmpty, orderBy } from 'lodash-es';
 import { readonly } from 'patronum';
 
 import { networkModel } from '@/models/network';
-import { nonNullable } from '@/shared/helpers';
-import { DEFAULT_CONNECTED_CHAINS } from '@/shared/helpers/chains';
+import { DEFAULT_CONNECTED_CHAINS, nonNullable } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 
 const pageMounted = createEvent();

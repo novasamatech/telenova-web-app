@@ -8,14 +8,13 @@ import { useUnit } from 'effector-react';
 import { $params } from 'remix-routes';
 
 import { BN } from '@polkadot/util';
+import { randomAsHex } from '@polkadot/util-crypto';
 
-import { useExtrinsic } from '@/common/extrinsicService';
-import { createTgLink } from '@/common/telegram';
-import { type TgLink } from '@/common/telegram/types';
-import { createGiftWallet, getKeyringPair } from '@/common/wallet';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
-import { backupGifts, toFormattedBalance } from '@/shared/helpers';
+import { Wallet, walletModel } from '@/models/wallet';
+import { TelegramApi, botApi, localStorageApi, transferFactory } from '@/shared/api';
+import { type TelegramLink } from '@/shared/api/types';
+import { MNEMONIC_STORE, backupGifts, toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
@@ -49,48 +48,53 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 const Page = () => {
   const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
 
-  const { sendGift } = useExtrinsic();
-
-  const chains = useUnit(networkModel.$chains);
-  const assets = useUnit(networkModel.$assets);
-  const webApp = useUnit(telegramModel.$webApp);
+  const wallet = useUnit(walletModel.$wallet);
+  const [chains, assets, connections] = useUnit([
+    networkModel.$chains,
+    networkModel.$assets,
+    networkModel.$connections,
+  ]);
 
   const [loading, setLoading] = useState(true);
-  const [link, setLink] = useState<TgLink | null>(null);
+  const [link, setLink] = useState<TelegramLink | null>(null);
 
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
   useEffect(() => {
-    if (!webApp || !selectedAsset || !chains[typedChainId]) return;
-
-    const keyringPair = getKeyringPair(webApp);
-    if (!keyringPair) return;
+    if (!wallet || !selectedAsset || !chains[typedChainId]) return;
 
     const selectedChain = chains[typedChainId];
-    const giftWallet = createGiftWallet(selectedChain.addressPrefix);
+    const giftSeed = randomAsHex(10).slice(2);
+    const giftWallet = new Wallet(giftSeed);
 
-    sendGift(keyringPair, giftWallet.address, {
-      chainId: typedChainId,
-      asset: selectedAsset,
-      amount: new BN(amount),
-      fee: new BN(fee),
-      transferAll: all,
-    })
-      .then(() => {
-        backupGifts(webApp, {
+    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
+    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
+
+    transferFactory
+      .createService(connections[typedChainId].api!, selectedAsset)
+      .sendTransfer({
+        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
+        amount: new BN(amount).add(new BN(fee)),
+        destination: giftWallet.toAddress(selectedChain),
+        transferAll: all,
+      })
+      .then(hash => {
+        console.log('🟢 Transaction hash - ', hash.toHex());
+
+        backupGifts({
           chainId: typedChainId,
           assetId: selectedAsset.assetId,
-          address: giftWallet.address,
-          secret: giftWallet.secret,
+          address: giftWallet.toAddress(selectedChain),
+          secret: giftSeed,
           balance: amount,
           chainIndex: selectedChain.chainIndex,
         });
-        const tgLink = createTgLink({
+        const tgLink = botApi.createTelegramLink({
           botUrl,
           appName,
           amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
-          secret: giftWallet.secret,
+          secret: giftSeed,
           chainIndex: selectedChain.chainIndex,
           symbol: selectedAsset.symbol,
         });
@@ -98,7 +102,7 @@ const Page = () => {
         setLink(tgLink);
       })
       .catch(error => alert(`Error: ${error.message}\nTry to reload`));
-  }, [webApp, selectedAsset, chains]);
+  }, [selectedAsset, chains]);
 
   const handleLottieEvent = (event: PlayerEvent) => {
     if (event === 'complete') {
@@ -136,7 +140,7 @@ const Page = () => {
           </div>
         </div>
       ) : (
-        <GiftDetails link={link} webApp={webApp!} />
+        <GiftDetails link={link} />
       )}
     </div>
   );

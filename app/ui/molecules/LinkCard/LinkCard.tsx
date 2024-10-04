@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
-import { Icon } from '../../atoms/Icon/Icon.tsx';
+import { Icon } from '../../atoms/Icon/Icon';
 import { type IconNames } from '../../atoms/Icon/types';
-import { Plate } from '../../atoms/Plate/Plate.tsx';
+import { Plate } from '../../atoms/Plate/Plate';
 import { BodyText, HelpText } from '../../atoms/Typography';
 
 import { cnTw } from '@/shared/helpers/twMerge';

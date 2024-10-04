@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type LoaderFunction, type MetaFunction, json } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
-import { useUnit } from 'effector-react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
-import { ExtrinsicProvider } from '@/common/extrinsicService';
 import { GlobalStateProvider } from '@/common/providers/contextProvider';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
-import { telegramModel } from '@/models/telegram';
+import { walletModel } from '@/models/wallet';
+import { TelegramApi } from '@/shared/api';
 import { ErrorScreen, LoadingScreen } from '@/ui/molecules';
+import '@/models/balances';
 import '@/models/prices';
 
 import stylesheet from './tailwind.css?url';
@@ -74,30 +74,34 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
   const navigate = useNavigate();
 
-  const webAppError = useUnit(telegramModel.$error);
-
+  const [telegramError, setTelegramError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    try {
+      TelegramApi.init();
+    } catch (error) {
+      setTelegramError(error as Error);
+    }
+  }, []);
+
+  useEffect(() => {
+    networkModel.input.networkStarted(file);
+
+    cryptoWaitReady()
+      .then(() => walletModel.input.walletRequested())
+      .finally(() => setIsLoading(false));
+  }, []);
 
   useEffect(() => {
     navigationModel.input.navigatorChanged(navigate);
   }, [navigate]);
 
-  useEffect(() => {
-    telegramModel.input.webAppStarted();
-    networkModel.input.networkStarted(file);
-
-    cryptoWaitReady().finally(() => setIsLoading(false));
-  }, []);
-
   if (isLoading) return <LoadingScreen />;
 
-  if (webAppError) return <ErrorScreen error={webAppError.message} />;
+  if (telegramError) return <ErrorScreen error={telegramError.message} />;
 
-  return (
-    <GlobalStateProvider>
-      <ExtrinsicProvider>{children}</ExtrinsicProvider>
-    </GlobalStateProvider>
-  );
+  return <GlobalStateProvider>{children}</GlobalStateProvider>;
 };
 
 const App = () => {

@@ -3,14 +3,10 @@ import { useNavigate } from 'react-router-dom';
 
 import { Avatar, Button } from '@nextui-org/react';
 import { useLocation } from '@remix-run/react';
-import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { MainButton } from '@/common/telegram/MainButton';
-import { initializeWalletFromCloud } from '@/common/wallet';
-import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
-import { telegramApi } from '@/shared/api';
+import { MainButton, TelegramApi, cryptoApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import { BodyText, Input, TitleText } from '@/ui/atoms';
@@ -20,15 +16,12 @@ const Page = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const webApp = useUnit(telegramModel.$webApp);
-  const user = useUnit(telegramModel.$user);
-
   const [password, setPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [isModalOpen, toggleModal] = useToggle();
   const [isPending, setIsPending] = useState(false);
 
-  if (!webApp) return null;
+  const user = TelegramApi.initDataUnsafe.user;
 
   const onSubmit = () => {
     if (password.length < 8) {
@@ -37,17 +30,19 @@ const Page = () => {
       return;
     }
 
-    const decryptedMnemonic = initializeWalletFromCloud(password, location.state.mnemonic);
-    if (!decryptedMnemonic) return;
+    const decryptedMnemonic = cryptoApi.getDecryptedMnemonic(location.state.mnemonic, password);
+    if (!decryptedMnemonic) {
+      setIsPasswordValid(false);
+
+      return;
+    }
 
     walletModel.input.walletCreated(decryptedMnemonic);
-    setIsPasswordValid(true);
     setIsPending(true);
 
-    telegramApi
-      .getCloudStorageItem(webApp, BACKUP_DATE)
+    TelegramApi.getItem(BACKUP_DATE)
       .then(backupDate => {
-        localStorage.setItem(telegramApi.getStoreName(webApp, BACKUP_DATE), backupDate);
+        localStorage.setItem(TelegramApi.getStoreName(BACKUP_DATE), backupDate);
         navigate($path('/dashboard'));
       })
       .finally(() => {
@@ -81,9 +76,15 @@ const Page = () => {
             type="password"
             value={password}
             isInvalid={!isPasswordValid}
-            errorMessage={!isPasswordValid && 'It seems your password is incorrect.'}
-            onValueChange={setPassword}
-            onClear={() => setPassword('')}
+            errorMessage={!isPasswordValid && 'It seems your password is incorrect'}
+            onValueChange={value => {
+              setPassword(value);
+              setIsPasswordValid(true);
+            }}
+            onClear={() => {
+              setPassword('');
+              setIsPasswordValid(true);
+            }}
           />
           <Button aria-label="Reset Password" className="self-baseline bg-transparent p-0" onClick={toggleModal}>
             <BodyText className="text-text-link">Forgot Password?</BodyText>

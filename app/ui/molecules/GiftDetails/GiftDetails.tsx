@@ -1,20 +1,17 @@
-import { type WebApp } from '@twa-dev/types';
 import { $path } from 'remix-routes';
 
-import { telegramShareLink } from '@/common/telegram';
-import { MainButton } from '@/common/telegram/MainButton.tsx';
-import { type TgLink } from '@/common/telegram/types';
 import { navigationModel } from '@/models/navigation';
+import { MainButton, TelegramApi } from '@/shared/api';
+import { type TelegramLink } from '@/shared/api/telegram/types';
 import { BodyText, TitleText } from '@/ui/atoms';
 
 type Props = {
-  link: TgLink;
-  webApp: WebApp;
+  link: TelegramLink;
 };
 
-export const GiftDetails = ({ link, webApp }: Props) => {
+export const GiftDetails = ({ link }: Props) => {
   const shareGiftLink = () => {
-    telegramShareLink(webApp, link, () => {
+    TelegramApi.shareLink(link, () => {
       navigationModel.input.navigatorPushed({
         type: 'navigate',
         to: $path('/dashboard'),

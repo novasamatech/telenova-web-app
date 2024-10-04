@@ -1,5 +1,5 @@
-import { Icon } from '../../atoms/Icon/Icon.tsx';
-import { Plate } from '../../atoms/Plate/Plate.tsx';
+import { Icon } from '../../atoms/Icon/Icon';
+import { Plate } from '../../atoms/Plate/Plate';
 import { HelpText, MediumTitle } from '../../atoms/Typography';
 
 import { cnTw, toFormattedBalance } from '@/shared/helpers';

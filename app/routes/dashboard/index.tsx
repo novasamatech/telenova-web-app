@@ -1,18 +1,14 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { isEmpty } from 'lodash-es';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
-import { getMnemonic, resetWallet } from '@/common/wallet';
 import { balancesModel } from '@/models/balances';
+import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { telegramModel } from '@/models/telegram';
-import { telegramApi } from '@/shared/api';
+import { walletModel } from '@/models/wallet';
+import { BackButton, TelegramApi } from '@/shared/api';
 import { getTotalFiatBalance } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
 import {
@@ -31,11 +27,8 @@ import {
 import { AssetSkeleton, AssetsList, CreatedGiftPlate, GiftClaim, MercuryoWarning } from '@/ui/molecules';
 
 const Page = () => {
-  const navigate = useNavigate();
-
   const balances = useUnit(balancesModel.$balances);
   const prices = useUnit(pricesModel.$prices);
-  const [webApp, user] = useUnit([telegramModel.$webApp, telegramModel.$user]);
   const [chains, assets, isChainsLoading] = useUnit([
     networkModel.$chains,
     networkModel.$sortedAssets,
@@ -44,24 +37,20 @@ const Page = () => {
 
   const [isWarningOpen, toggleWarning] = useToggle();
 
-  useEffect(() => {
-    if (!webApp || getMnemonic(webApp)) return;
+  const user = TelegramApi.initDataUnsafe.user;
 
-    clearWallet(true);
-  }, [webApp]);
+  const clearWallet = (clearRemote = false) => {
+    walletModel.input.walletCleared({ clearRemote });
 
-  const clearWallet = (clearLocal?: boolean) => {
-    resetWallet(clearLocal);
-    navigate($path('/onboarding'));
+    const path = clearRemote ? $path('/onboarding') : $path('/onboarding/restore');
+    navigationModel.input.navigatorPushed({ type: 'navigate', to: path });
   };
 
   const navigateToMercuryo = () => {
-    if (!webApp) return;
-
-    if (telegramApi.isWebPlatform(webApp)) {
+    if (TelegramApi.isWebPlatform) {
       toggleWarning();
     } else {
-      navigate($path('/exchange'));
+      navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/exchange') });
     }
   };
 
@@ -83,7 +72,7 @@ const Page = () => {
           <Button
             isIconOnly
             className="overflow-visible bg-transparent drop-shadow-button"
-            onClick={() => navigate($path('/settings'))}
+            onClick={() => navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/settings') })}
           >
             <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
           </Button>
@@ -93,8 +82,18 @@ const Page = () => {
           <HeadlineText className="mb-1 text-text-hint">Total Balance</HeadlineText>
           <AccountPrice amount={getTotalFiatBalance(chains, balances, prices)?.toFixed(2)} />
           <div className="mt-7 grid w-full grid-cols-3 gap-2">
-            <IconButton text="Send" iconName="Send" onClick={() => navigate($path('/transfer'))} />
-            <IconButton text="Receive" iconName="Receive" onClick={() => navigate($path('/receive/token-select'))} />
+            <IconButton
+              text="Send"
+              iconName="Send"
+              onClick={() => navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/transfer') })}
+            />
+            <IconButton
+              text="Receive"
+              iconName="Receive"
+              onClick={() =>
+                navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/receive/token-select') })
+              }
+            />
             <IconButton text="Buy/Sell" iconName="BuySell" onClick={navigateToMercuryo} />
           </div>
         </div>
@@ -149,10 +148,10 @@ const Page = () => {
           <div className="mt-10 flex flex-col justify-center gap-2 rounded-lg bg-warning p-4">
             <TextBase className="text-amber-50">DEV MODE</TextBase>
             <Divider className="bg-amber-200" />
-            <Button variant="faded" onClick={() => clearWallet()}>
+            <Button variant="faded" onClick={() => clearWallet(true)}>
               Reset Wallet
             </Button>
-            <Button variant="faded" onClick={() => clearWallet(true)}>
+            <Button variant="faded" onClick={() => clearWallet()}>
               Reset Wallet Local
             </Button>
           </div>

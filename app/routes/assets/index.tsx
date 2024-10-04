@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { BackButton } from '@/common/telegram/BackButton';
 import { networkModel } from '@/models/network';
-import { getParentChain } from '@/shared/helpers/chains';
+import { BackButton } from '@/shared/api';
+import { getParentChain } from '@/shared/helpers';
 import { AssetIcon, BodyText, Icon, Input, MediumTitle, Plate, Switch, TitleText } from '@/ui/atoms';
 
 import { assetsPageModel } from './_model/assets-page-model';

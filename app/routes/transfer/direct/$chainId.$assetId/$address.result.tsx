@@ -4,9 +4,9 @@ import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
 import { $params, $path } from 'remix-routes';
 
-import { MainButton } from '@/common/telegram/MainButton';
 import { networkModel } from '@/models/network';
-import { toFormattedBalance, toShortAddress } from '@/shared/helpers';
+import { MainButton } from '@/shared/api';
+import { isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Icon, Identicon, MediumTitle, TitleText } from '@/ui/atoms';
 
 export type SearchParams = {
@@ -26,7 +26,7 @@ const Page = () => {
 
   const navigate = useNavigate();
 
-  const assets = useUnit(networkModel.$assets);
+  const [assets, chains] = useUnit([networkModel.$assets, networkModel.$chains]);
 
   const selectedAsset = assets[chainId as ChainId]?.[Number(assetId) as AssetId];
 
@@ -41,7 +41,11 @@ const Page = () => {
           {toFormattedBalance(amount, selectedAsset.precision).formatted} {selectedAsset.symbol} Sent to
         </TitleText>
         <div className="flex items-center gap-x-1">
-          <Identicon address={address} />
+          <Identicon
+            className="flex-shrink-0"
+            address={address}
+            theme={isEvmChain(chains[chainId as ChainId]) ? 'ethereum' : 'polkadot'}
+          />
           <MediumTitle className="text-text-hint">{toShortAddress(address, 15)}</MediumTitle>
         </div>
         <MediumTitle className="text-text-hint" align="center">
