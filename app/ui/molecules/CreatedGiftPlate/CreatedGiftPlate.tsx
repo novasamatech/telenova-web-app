@@ -1,30 +1,13 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { networkModel } from '@/models/network';
-import { getGifts } from '@/shared/helpers';
-import { useGifts } from '@/shared/hooks';
-import { type Gift } from '@/types/substrate';
+import { giftsModel } from '@/models/gifts';
 import { BigTitle, BodyText, Icon, Plate, Shimmering } from '@/ui/atoms';
 
 export const CreatedGiftPlate = () => {
-  const { getGiftsState } = useGifts();
-
-  const connections = useUnit(networkModel.$connections);
-
-  const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
-
-  useEffect(() => {
-    const localStorageGifts = getGifts();
-    if (localStorageGifts) {
-      getGiftsState(localStorageGifts).then(([unclaimed]) => setUnclaimed(unclaimed));
-    } else {
-      setUnclaimed([]);
-    }
-  }, [connections]);
+  const [unclaimedGifts, isPending] = useUnit([giftsModel.$unclaimedGifts, giftsModel.$isLoading]);
 
   return (
     <Plate className="mt-4 h-[90px] w-full rounded-3xl border-1 border-border-neutral active:bg-bg-item-pressed">
@@ -32,12 +15,16 @@ export const CreatedGiftPlate = () => {
         <Icon name="Present" size={60} />
         <div className="grid">
           <BigTitle align="left">Created Gifts</BigTitle>
-          {unclaimed ? (
+          {isPending && <Shimmering width={100} height={20} />}
+          {!isPending && unclaimedGifts.length > 0 && (
             <BodyText align="left" className="text-text-hint">
-              {unclaimed.length ? `Unclaimed: ${unclaimed.length}` : 'All your gifts were claimed'}
+              Unclaimed: {unclaimedGifts.length}
             </BodyText>
-          ) : (
-            <Shimmering width={100} height={20} />
+          )}
+          {!isPending && unclaimedGifts.length === 0 && (
+            <BodyText align="left" className="text-text-hint">
+              All your gifts were claimed
+            </BodyText>
           )}
         </div>
         <Icon name="ArrowBold" className="h-10 w-10 self-center" />

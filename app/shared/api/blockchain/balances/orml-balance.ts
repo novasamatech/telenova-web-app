@@ -6,7 +6,7 @@ import { type Balance } from '@polkadot/types/interfaces';
 import { BN, BN_ZERO, hexToU8a } from '@polkadot/util';
 
 import { assetUtils } from '@/shared/helpers';
-import { type AssetBalance, type Chain, type OrmlAsset } from '@/types/substrate';
+import { type AssetBalance, type OrmlAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
 
@@ -26,7 +26,7 @@ export class OrmlBalanceService implements IBalance {
   }
 
   async subscribeBalance(
-    chain: Chain,
+    chainId: ChainId,
     address: Address,
     callback: (newBalance: AssetBalance) => void,
   ): UnsubscribePromise {
@@ -43,7 +43,7 @@ export class OrmlBalanceService implements IBalance {
 
       callback({
         address,
-        chainId: chain.chainId,
+        chainId,
         assetId: this.#asset.assetId,
         balance: {
           free,
@@ -68,6 +68,25 @@ export class OrmlBalanceService implements IBalance {
     const balance = await method(address, assetId);
 
     return (balance as OrmlAccountData).free.toBn();
+  }
+
+  async getFreeBalances(addresses: Address[]): Promise<BN[]> {
+    const method = this.#api.query['tokens']?.['accounts'];
+    if (!method) {
+      return Array.from({ length: addresses.length }, () => BN_ZERO);
+    }
+
+    const addressTuples = addresses.map(address => {
+      const ormlAssetId = assetUtils.getAssetId(this.#asset);
+      const currencyIdType = this.#asset.typeExtras.currencyIdType;
+      const assetId = this.#api.createType(currencyIdType, hexToU8a(ormlAssetId));
+
+      return [address, assetId];
+    });
+
+    return method.multi(addressTuples).then(balances => {
+      return balances.map(balance => (balance as unknown as OrmlAccountData).free.toBn());
+    });
   }
 
   getExistentialDeposit(): Promise<BN> {

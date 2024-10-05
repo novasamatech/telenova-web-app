@@ -3,7 +3,6 @@ export * from './address';
 export * from './balance';
 export * from './constants';
 export * from './exchange';
-export * from './gift';
 export * from './functions';
 export * from './arrays';
 export * from './utility';

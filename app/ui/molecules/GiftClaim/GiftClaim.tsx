@@ -9,10 +9,11 @@ import { type ApiPromise } from '@polkadot/api';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
 import { useGlobalContext } from '@/common/providers';
+import { getGiftInfo } from '@/models/gifts';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
 import { TelegramApi, balancesFactory, botApi, transferFactory } from '@/shared/api';
-import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
+import { toFormattedBalance } from '@/shared/helpers';
 import { type Asset } from '@/types/substrate';
 import { BigTitle, Icon, LottiePlayer, Shimmering } from '@/ui/atoms';
 
@@ -50,7 +51,7 @@ export const GiftClaim = () => {
     if (!botApi.validateStartParam(startParam)) return;
     setIsOpen(true);
 
-    const giftInfo = getGiftInfo(Object.values(chains), wallet, startParam);
+    const giftInfo = getGiftInfo(Object.values(chains), startParam);
     if (!giftInfo) return;
 
     const { chainId, asset, giftAddress, symbol } = giftInfo;
@@ -93,7 +94,7 @@ export const GiftClaim = () => {
   };
 
   const handleGiftClaim = () => {
-    const giftInfo = getGiftInfo(Object.values(chains), wallet!, startParam!);
+    const giftInfo = getGiftInfo(Object.values(chains), startParam!);
     if (!giftInfo) return;
 
     setIsDisabled(true);
@@ -113,7 +114,7 @@ export const GiftClaim = () => {
       .sendTransfer({
         keyringPair: giftInfo.keyring,
         amount: giftBalance,
-        destination: giftInfo.address,
+        destination: wallet!.toAddress(chains[giftInfo.chainId]),
         transferAll: true,
       })
       .catch(() => {
