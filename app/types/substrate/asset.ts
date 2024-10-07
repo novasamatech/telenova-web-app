@@ -13,6 +13,8 @@ export interface NativeAsset extends BaseAsset {
 
 export interface StatemineAsset extends BaseAsset {
   type: 'statemine';
+  // Fee buffer for asset converted operations
+  feeBuffer: number;
   typeExtras: {
     assetId: string;
   };

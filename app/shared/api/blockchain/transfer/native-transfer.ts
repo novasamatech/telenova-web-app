@@ -30,7 +30,7 @@ export class BalanceTransferService implements ITransfer {
     });
   }
 
-  getTransferFee({ transferAll, amount = BN_ZERO }: FeeParams): Promise<BN> {
+  getTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
     return extrinsicApi.estimateFee({
       api: this.#api,
       transaction: {
