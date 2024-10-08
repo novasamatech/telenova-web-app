@@ -5,7 +5,7 @@ import { $path } from 'remix-routes';
 import { navigationModel } from '../navigation';
 
 import { TelegramApi, cryptoApi, localStorageApi } from '@/shared/api';
-import { BACKUP_DATE, MNEMONIC_STORE } from '@/shared/helpers';
+import { BACKUP_DATE, CONNECTIONS_STORE, MNEMONIC_STORE } from '@/shared/helpers';
 
 import { Wallet } from './wallet';
 
@@ -40,7 +40,9 @@ const createWalletFx = createEffect((mnemonic: Mnemonic): Wallet => {
 const clearWalletFx = createEffect((clearRemote: boolean): Promise<boolean> => {
   localStorageApi.clear();
 
-  return clearRemote ? TelegramApi.removeItems([MNEMONIC_STORE, BACKUP_DATE]) : Promise.resolve(true);
+  return clearRemote
+    ? TelegramApi.removeItems([MNEMONIC_STORE, BACKUP_DATE, CONNECTIONS_STORE])
+    : Promise.resolve(true);
 });
 
 const requestMnemonicFx = createEffect((): Promise<Mnemonic> => {
