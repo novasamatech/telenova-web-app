@@ -13,6 +13,7 @@ import { useQueryService } from '@/common/queryService/QueryService';
 import { networkModel } from '@/models/network';
 import { telegramModel } from '@/models/telegram';
 import { walletModel } from '@/models/wallet';
+import { telegramApi } from '@/shared/api';
 import { getGiftInfo, toFormattedBalance } from '@/shared/helpers';
 import { useAssetHub, useOrml } from '@/shared/hooks';
 import { type Asset, type OrmlAsset, type StatemineAsset } from '@/types/substrate';
@@ -53,6 +54,7 @@ export const GiftClaim = () => {
 
   useEffect(() => {
     if (isGiftClaimed || !startParam || !wallet?.publicKey) return;
+    if (!telegramApi.validateStartParam(startParam)) return;
     setIsOpen(true);
 
     const giftInfo = getGiftInfo(Object.values(chains), wallet.publicKey, startParam);

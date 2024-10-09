@@ -4,6 +4,7 @@ export const telegramApi = {
   getStoreName,
   getCloudStorageItem,
   isWebPlatform,
+  validateStartParam,
 };
 
 function getCloudStorageItem(webApp: WebApp, store: string): Promise<string> {
@@ -24,4 +25,8 @@ function getStoreName(webApp: WebApp, key: string): string {
 
 function isWebPlatform(webApp: WebApp): boolean {
   return webApp.platform.startsWith('web');
+}
+
+function validateStartParam(value: string): boolean {
+  return /^[a-f0-9]{20}_([0-9]+_)?[a-z]+$/i.test(value);
 }
