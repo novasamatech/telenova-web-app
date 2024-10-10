@@ -176,6 +176,8 @@ const $sortedAssets = combine($assets, assets => {
     const chainToPresort = DEFAULT_CHAINS_ORDER[typedChainId];
 
     for (const asset of Object.values(assetMap)) {
+      if (!asset) continue;
+
       if (!chainToPresort || !(asset.assetId in chainToPresort)) {
         assetsToSort.push([typedChainId, asset]);
       } else {
