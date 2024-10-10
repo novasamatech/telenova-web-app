@@ -178,11 +178,11 @@ const $sortedAssets = combine($assets, assets => {
     for (const asset of Object.values(assetMap)) {
       if (!asset) continue;
 
-      if (!chainToPresort || !(asset.assetId in chainToPresort)) {
-        assetsToSort.push([typedChainId, asset]);
-      } else {
+      if (chainToPresort && asset.assetId in chainToPresort) {
         const index = chainToPresort[asset.assetId];
         preSortedAssets[index] = [typedChainId, asset];
+      } else {
+        assetsToSort.push([typedChainId, asset]);
       }
     }
   }
