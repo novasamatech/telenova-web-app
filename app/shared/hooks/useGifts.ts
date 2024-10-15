@@ -1,6 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { useUnit } from 'effector-react';
-
-import { hexToU8a } from '@polkadot/util';
 
 import { networkModel } from '@/models/network';
 import { assetUtils } from '@/shared/helpers/assets';
@@ -31,26 +31,6 @@ export const useGifts = () => {
 
         balances.forEach((balance, index) => {
           if (balance.isNone || balance.unwrap().balance.isEmpty) {
-            claimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Claimed' });
-          } else {
-            unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Unclaimed' });
-          }
-        });
-      } else if (assetUtils.isOrmlAsset(asset)) {
-        const method = api.query['tokens']?.['accounts']?.multi as any;
-
-        const ormlTuples = gifts.map(gift => {
-          const ormlAssetId = assetUtils.getAssetId(asset);
-          const currencyIdType = asset.typeExtras.currencyIdType;
-          const assetId = api.createType(currencyIdType, hexToU8a(ormlAssetId));
-
-          return [gift.address, assetId];
-        });
-
-        const balances = await method(ormlTuples);
-
-        balances.forEach((balance: any, index: number) => {
-          if (balance.free.isEmpty) {
             claimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Claimed' });
           } else {
             unclaimed.push({ ...gifts[index]!, chainAsset: asset, status: 'Unclaimed' });

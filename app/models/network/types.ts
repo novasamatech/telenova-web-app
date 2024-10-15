@@ -1,9 +1,6 @@
-import { type ApiPromise } from '@polkadot/api';
-
-import { type ProviderWithMetadata } from '@/shared/api/types';
+import { type PolkadotClient } from 'polkadot-api';
 
 export type Connection = {
-  provider?: ProviderWithMetadata;
-  api?: ApiPromise;
-  status: 'disconnected' | 'connecting' | 'connected' | 'error';
+  client?: PolkadotClient;
+  status: 'connecting' | 'connected' | 'error' | 'disconnected';
 };

@@ -1,13 +1,13 @@
 import { combine, createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
 import { isEmpty, keyBy, orderBy } from 'lodash-es';
 import { combineEvents, readonly, spread } from 'patronum';
+import { type PolkadotClient, createClient } from 'polkadot-api';
+import { withPolkadotSdkCompat } from 'polkadot-api/polkadot-sdk-compat';
+import { getWsProvider } from 'polkadot-api/ws-provider/web';
 
-import { type ApiPromise } from '@polkadot/api';
-
-import { chainsApi, metadataApi, providerApi } from '@/shared/api';
-import { type ProviderWithMetadata } from '@/shared/api/types';
+import { TelegramApi, chainsApi } from '@/shared/api';
 import { CONNECTIONS_STORE, DEFAULT_CHAINS_ORDER, DEFAULT_CONNECTED_CHAINS, nonNullable } from '@/shared/helpers';
-import { type Asset, type AssetsMap, type Chain, type ChainMetadata, type ChainsMap } from '@/types/substrate';
+import { type Asset, type AssetsMap, type Chain, type ChainsMap } from '@/types/substrate';
 
 import { type Connection } from './types';
 
@@ -32,8 +32,11 @@ const $assets = createStore<AssetsMap>({});
 
 const $connections = createStore<Record<ChainId, Connection>>({});
 
-const $metadata = createStore<ChainMetadata[]>([]);
-const $metadataSubscriptions = createStore<Record<ChainId, VoidFunction>>({});
+const requestChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'): Promise<Record<ChainId, Chain>> => {
+  const chains = await chainsApi.getChainsData({ file, sort: true });
+
+  return keyBy(chains, 'chainId');
+});
 
 const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) => {
   Object.entries(chainsMap).forEach(([chainId, assetIds]) => {
@@ -41,33 +44,18 @@ const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) =
   });
 });
 
-const requestChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'): Promise<Record<ChainId, Chain>> => {
-  const chains = await chainsApi.getChainsData({ file, sort: true });
+const getConnectedAssetsFx = createEffect(async (): Promise<Record<ChainIndex, AssetId[]>> => {
+  const connections = await TelegramApi.getItem(CONNECTIONS_STORE);
 
-  return keyBy(chains, 'chainId');
-});
+  const result: Record<ChainIndex, AssetId[]> = {};
+  const entries = connections.split(';').filter(item => item.trim() !== '');
 
-const getConnectedAssetsFx = createEffect((): Promise<Record<ChainIndex, AssetId[]>> => {
-  const webApp = window.Telegram?.WebApp;
+  for (const entry of entries) {
+    const [key, values] = entry.split('_');
+    result[Number(key)] = values.split(',').map(Number);
+  }
 
-  if (!webApp) return Promise.resolve({});
-
-  return new Promise(resolve => {
-    // connections format is chainIndex_assetId1,...,assetIdn;
-    webApp.CloudStorage.getItem(CONNECTIONS_STORE, (error, connections) => {
-      if (error || !connections) resolve({});
-
-      const result: Record<ChainIndex, AssetId[]> = {};
-      const entries = connections!.split(';').filter(item => item.trim() !== '');
-
-      entries.forEach(entry => {
-        const [key, values] = entry.split('_');
-        result[Number(key)] = values.split(',').map(Number);
-      });
-
-      resolve(result);
-    });
-  });
+  return result;
 });
 
 const updateAssetsInCloudFx = createEffect((assets: Record<ChainIndex, AssetId[]>) => {
@@ -82,77 +70,52 @@ const updateAssetsInCloudFx = createEffect((assets: Record<ChainIndex, AssetId[]
   webApp.CloudStorage.setItem(CONNECTIONS_STORE, joinedAssets);
 });
 
-type MetadataSubResult = {
-  chainId: ChainId;
-  unsubscribe: VoidFunction;
-};
-const subscribeMetadataFx = createEffect(async (api: ApiPromise): Promise<MetadataSubResult> => {
-  const unsubscribe = await metadataApi.subscribeMetadata(api, requestMetadataFx);
-
-  return { chainId: api.genesisHash.toHex(), unsubscribe };
-});
-
-const requestMetadataFx = createEffect((api: ApiPromise): Promise<ChainMetadata> => {
-  return metadataApi.requestMetadata(api);
-});
-
-const unsubscribeMetadataFx = createEffect((unsubscribe: VoidFunction) => {
-  unsubscribe();
-});
-
-type ProviderMetadataParams = {
-  provider: ProviderWithMetadata;
-  metadata: Metadata;
-};
-const updateProviderMetadataFx = createEffect(({ provider, metadata }: ProviderMetadataParams) => {
-  provider.updateMetadata(metadata);
-});
-
-type CreateProviderParams = {
+type CreateClientParams = {
   name: string;
   chainId: ChainId;
   nodes: string[];
-  metadata?: ChainMetadata;
 };
-const createProviderFx = createEffect(
-  (params: CreateProviderParams): Promise<{ provider: ProviderWithMetadata; api: ApiPromise }> => {
-    const boundConnected = scopeBind(connected, { safe: true });
-    const boundDisconnected = scopeBind(disconnected, { safe: true });
-    const boundFailed = scopeBind(failed, { safe: true });
+const createPolkadotClientFx = createEffect((params: CreateClientParams): PolkadotClient => {
+  const boundConnected = scopeBind(connected, { safe: true });
+  const boundDisconnected = scopeBind(disconnected, { safe: true });
+  const boundFailed = scopeBind(failed, { safe: true });
 
-    console.info('⚫️ Connecting to ==> ', params.name);
+  // To support old Polkadot-SDK 1.1.0 <= x < 1.11.0
+  // More => https://papi.how/requirements#polkadot-sdk-110--x--1110
+  return createClient(
+    withPolkadotSdkCompat(
+      getWsProvider(params.nodes, status => {
+        switch (status.type) {
+          // Connecting
+          case 0:
+            console.info('⚫️ Connecting to ==> ', params.name);
+            break;
+          // Connected
+          case 1:
+            console.info('🟢 Provider connecting ==> ', params.name);
+            boundConnected(params.chainId);
+            break;
+          // Error
+          case 2:
+            console.info('🔴 Provider error ==> ', params.name);
+            boundFailed(params.chainId);
+            break;
+          // Close
+          case 3:
+            console.info('🟠 Provider disconnected ==> ', params.name);
+            boundDisconnected(params.chainId);
+            break;
+        }
+      }),
+    ),
+  );
+});
 
-    return providerApi.createConnector(
-      params.chainId,
-      { nodes: params.nodes, metadata: params.metadata?.metadata },
-      {
-        onConnected: () => {
-          console.info('🟢 Provider connected ==> ', params.name);
-          boundConnected(params.chainId);
-        },
-        onDisconnected: () => {
-          console.info('🟠 Provider disconnected ==> ', params.name);
-          boundDisconnected(params.chainId);
-        },
-        onError: () => {
-          console.info('🔴 Provider error ==> ', params.name);
-          boundFailed(params.chainId);
-        },
-      },
-    );
-  },
-);
+const disconnectFx = createEffect(async (client: PolkadotClient): Promise<ChainId> => {
+  const chainSpecData = await client.getChainSpecData();
+  client.destroy();
 
-type DisconnectParams = {
-  provider: ProviderWithMetadata;
-  api: ApiPromise;
-};
-const disconnectFx = createEffect(async ({ provider, api }: DisconnectParams): Promise<ChainId> => {
-  const chainId = api.genesisHash.toHex();
-  await api.disconnect();
-  await provider.disconnect();
-
-  return chainId;
+  return chainSpecData.genesisHash as ChainId;
 });
 
 // =====================================================
@@ -344,105 +307,34 @@ sample({
 
 sample({
   clock: chainConnected,
+  source: $chains,
+  fn: (chains, chainId) => ({
+    chainId,
+    name: chains[chainId].name,
+    nodes: chains[chainId].nodes.map(node => node.url),
+  }),
+  target: createPolkadotClientFx,
+});
+
+// Updates chain's connection client & status
+sample({
+  clock: createPolkadotClientFx.done,
   source: $connections,
-  fn: (connections, chainId) => ({
+  fn: (connections, { result, params }) => ({
     ...connections,
-    [chainId]: { ...connections[chainId], status: 'connecting' },
+    [params.chainId]: { client: result, status: 'connecting' },
   }),
   target: $connections,
-});
-
-sample({
-  clock: chainConnected,
-  source: {
-    chains: $chains,
-    metadata: $metadata,
-  },
-  fn: ({ chains, metadata }, chainId) => {
-    const name = chains[chainId].name;
-    const nodes = chains[chainId].nodes.map(node => node.url);
-
-    const newMetadata: Record<ChainId, ChainMetadata> = {};
-    for (const data of metadata) {
-      if (data.version < (newMetadata[data.chainId]?.version || -1)) continue;
-
-      newMetadata[data.chainId] = data;
-    }
-
-    return { name, chainId, nodes, metadata: newMetadata[chainId] };
-  },
-  target: createProviderFx,
-});
-
-// Updates connection provider, api, status
-sample({
-  clock: createProviderFx.doneData,
-  source: $connections,
-  fn: (connections, { provider, api }) => {
-    const chainId = api.genesisHash.toHex();
-    const event = { chainId, status: 'connected' as const };
-    const data = { ...connections, [chainId]: { provider, api, status: 'connected' as const } };
-
-    return { event, data };
-  },
-  target: spread({
-    data: $connections,
-    event: connectionChanged,
-  }),
-});
-
-// Disconnect for failed Provider/ApiPromise initialization
-sample({
-  clock: createProviderFx.fail,
-  source: $connections,
-  fn: (connections, { params }) => {
-    const chainId = params.chainId;
-    const event = { chainId, status: 'disconnected' as const };
-    const data = { ...connections, [chainId]: { status: 'disconnected' as const } };
-
-    return { event, data };
-  },
-  target: spread({
-    data: $connections,
-    event: connectionChanged,
-  }),
-});
-
-// Updates connection status, provider and api are the same
-sample({
-  clock: connected,
-  source: $connections,
-  filter: (connections, chainId) => {
-    // We don't rely on connected event when start chain for the first time
-    // createProviderFx.doneData is responsible for that
-    return connections[chainId].status !== 'connecting';
-  },
-  fn: (connections, chainId) => {
-    const event = { chainId, status: 'connected' as const };
-    const data = { ...connections, [chainId]: { ...connections[chainId], status: 'connected' as const } };
-
-    return { event, data };
-  },
-  target: spread({
-    data: $connections,
-    event: connectionChanged,
-  }),
 });
 
 sample({
   clock: chainDisconnected,
   source: $connections,
   filter: (connections, chainId) => {
-    return (
-      Boolean(connections[chainId].provider) &&
-      Boolean(connections[chainId].api) &&
-      connections[chainId].status !== 'disconnected'
-    );
+    return connections[chainId].status !== 'disconnected';
   },
   fn: (connections, chainId) => {
-    const { api, provider } = connections[chainId];
-
-    return { api: api!, provider: provider! };
+    return connections[chainId].client!;
   },
   target: disconnectFx,
 });
@@ -458,6 +350,30 @@ sample({
 });
 
 sample({
+  clock: connected,
+  source: $connections,
+  // filter: (connections, chainId) => {
+  //   // We don't rely on connected event when start chain for the first time
+  //   // createProviderFx.doneData is responsible for that
+  //   return connections[chainId].status !== 'connecting';
+  // },
+  fn: (connections, chainId) => ({
+    data: {
+      ...connections,
+      [chainId]: { ...connections[chainId], status: 'connected' },
+    },
+    event: {
+      chainId,
+      status: 'connected' as const,
+    },
+  }),
+  target: spread({
+    data: $connections,
+    event: connectionChanged,
+  }),
+});
+
+sample({
   clock: disconnected,
   fn: chainId => ({ chainId, status: 'disconnected' as const }),
   target: connectionChanged,
@@ -469,76 +385,23 @@ sample({
   target: connectionChanged,
 });
 
-// =====================================================
-// ================ Metadata section ===================
-// =====================================================
-
 sample({
-  clock: createProviderFx.doneData,
-  fn: ({ api }) => api,
-  target: subscribeMetadataFx,
-});
-
-sample({
-  clock: subscribeMetadataFx.doneData,
-  source: $metadataSubscriptions,
-  fn: (subscriptions, { chainId, unsubscribe }) => ({
-    ...subscriptions,
-    [chainId]: unsubscribe,
+  clock: failed,
+  source: $connections,
+  fn: (connections, chainId) => ({
+    data: {
+      ...connections,
+      [chainId]: { status: 'disconnected' as const },
+    },
+    event: {
+      chainId,
+      status: 'disconnected' as const,
+    },
   }),
-  target: $metadataSubscriptions,
-});
-
-sample({
-  clock: disconnectFx.doneData,
-  source: $metadataSubscriptions,
-  fn: (metadataSubscriptions, chainId) => metadataSubscriptions[chainId],
-  target: unsubscribeMetadataFx,
-});
-
-sample({
-  clock: disconnectFx.doneData,
-  source: $metadataSubscriptions,
-  fn: (subscriptions, chainId) => {
-    const { [chainId]: _, ...rest } = subscriptions;
-
-    return rest;
-  },
-  target: $metadataSubscriptions,
-});
-
-sample({
-  clock: requestMetadataFx.doneData,
-  source: $metadata,
-  filter: (metadata, newMetadata) => {
-    return metadata.every(({ chainId, version }) => {
-      return chainId !== newMetadata.chainId || version !== newMetadata.version;
-    });
-  },
-  fn: (metadata, newMetadata) => metadata.concat(newMetadata),
-  target: $metadata,
-});
-
-sample({
-  clock: requestMetadataFx.doneData,
-  source: {
-    connections: $connections,
-    metadata: $metadata,
-  },
-  filter: ({ metadata }, newMetadata) => {
-    return metadata.every(({ chainId, version }) => {
-      return chainId !== newMetadata.chainId || version !== newMetadata.version;
-    });
-  },
-  fn: ({ connections }, newMetadata) => {
-    const chainId = newMetadata.chainId;
-
-    return {
-      provider: connections[chainId].provider!,
-      metadata: newMetadata.metadata,
-    };
-  },
-  target: updateProviderMetadataFx,
+  target: spread({
+    data: $connections,
+    event: connectionChanged,
+  }),
 });
 
 export const networkModel = {
@@ -574,14 +437,9 @@ export const networkModel = {
     $assets,
     $connections,
 
-    $metadata,
-    $metadataSubscriptions,
-
     requestChainsFx,
     getConnectedAssetsFx,
-    createProviderFx,
+    createPolkadotClientFx,
     disconnectFx,
-    subscribeMetadataFx,
-    requestMetadataFx,
   },
 };

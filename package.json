@@ -20,6 +20,9 @@
   "dependencies": {
     "@lottiefiles/react-lottie-player": "3.5.4",
     "@nextui-org/react": "2.4.2",
+    "@polkadot-api/descriptors": "file:.papi/descriptors",
+    "@polkadot-labs/hdkd": "^0.0.8",
+    "@polkadot-labs/hdkd-helpers": "^0.0.8",
     "@polkadot/api": "13.1.1",
     "@polkadot/keyring": "13.1.1",
     "@polkadot/react-identicon": "3.9.1",
@@ -39,6 +42,7 @@
     "isbot": "^4.4.0",
     "lodash-es": "^4.17.21",
     "patronum": "^2.2.0",
+    "polkadot-api": "^1.4.1",
     "react": "18.3.1",
     "react-countup": "6.5.3",
     "react-dom": "18.3.1",

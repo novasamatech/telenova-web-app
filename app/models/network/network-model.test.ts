@@ -52,8 +52,8 @@ const mockedChainsMap = keyBy(mockedChains, 'chainId');
 
 describe('@/common/network/network-model', () => {
   const effectMocks = {
-    createProviderFx: {
-      fx: networkModel._internal.createProviderFx,
+    createPolkadotClientFx: {
+      fx: networkModel._internal.createPolkadotClientFx,
       data: () =>
         vi.fn().mockImplementation(({ chainId }: any) => ({
           provider: {},
@@ -75,7 +75,7 @@ describe('@/common/network/network-model', () => {
     const scope = fork({
       handlers: [
         [effectMocks.requestChainsFx.fx, fakeRequestFx],
-        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()],
+        [effectMocks.createPolkadotClientFx.fx, effectMocks.createPolkadotClientFx.data()],
       ],
     });
 
@@ -104,7 +104,7 @@ describe('@/common/network/network-model', () => {
       handlers: [
         [effectMocks.requestChainsFx.fx, effectMocks.requestChainsFx.data()],
         [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.data()],
-        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()],
+        [effectMocks.createPolkadotClientFx.fx, effectMocks.createPolkadotClientFx.data()],
       ],
     });
 
@@ -135,7 +135,7 @@ describe('@/common/network/network-model', () => {
     window.Telegram = { WebApp: { CloudStorage: { getItem } } } as any;
 
     const scope = fork({
-      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()]],
+      handlers: [[effectMocks.createPolkadotClientFx.fx, effectMocks.createPolkadotClientFx.data()]],
     });
 
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
@@ -165,7 +165,7 @@ describe('@/common/network/network-model', () => {
       ],
       handlers: [
         [effectMocks.getConnectedAssetsFx.fx, effectMocks.getConnectedAssetsFx.data()],
-        [effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()],
+        [effectMocks.createPolkadotClientFx.fx, effectMocks.createPolkadotClientFx.data()],
       ],
     });
 
@@ -241,7 +241,7 @@ describe('@/common/network/network-model', () => {
           },
         ],
       ],
-      handlers: [[effectMocks.createProviderFx.fx, effectMocks.createProviderFx.data()]],
+      handlers: [[effectMocks.createPolkadotClientFx.fx, effectMocks.createPolkadotClientFx.data()]],
     });
 
     await allSettled(networkModel.input.assetConnected, {

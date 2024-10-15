@@ -4,8 +4,8 @@ import { type PlayerEvent } from '@lottiefiles/react-lottie-player';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { type AnimationItem } from 'lottie-web';
+import { type PolkadotClient } from 'polkadot-api';
 
-import { type ApiPromise } from '@polkadot/api';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
 import { useGlobalContext } from '@/common/providers';
@@ -61,7 +61,7 @@ export const GiftClaim = () => {
       return;
     }
 
-    getGiftBalance(connections[chainId].api!, giftAddress, asset).then(balance => {
+    getGiftBalance(chainId, connections[chainId].client!, giftAddress, asset).then(balance => {
       setGiftStatus(balance.isZero() ? 'claimed' : 'notClaimed');
       setGiftSymbol(balance.isZero() ? '' : symbol);
       setGiftBalance(balance);
@@ -73,11 +73,16 @@ export const GiftClaim = () => {
     };
   }, [startParam, wallet, isGiftClaimed, connections]);
 
-  const getGiftBalance = async (api: ApiPromise, giftAddress: Address, asset: Asset): Promise<BN> => {
-    const giftBalance = await balancesFactory.createService(api, asset).getFreeBalance(giftAddress);
+  const getGiftBalance = async (
+    chainId: ChainId,
+    client: PolkadotClient,
+    giftAddress: Address,
+    asset: Asset,
+  ): Promise<BN> => {
+    const giftBalance = await balancesFactory.createService(chainId, client, asset).getFreeBalance(giftAddress);
     if (giftBalance.isZero()) return BN_ZERO;
 
-    const fee = await transferFactory.createService(api, asset).getTransferFee({ transferAll: true });
+    const fee = await transferFactory.createService(client, asset).getTransferFee({ transferAll: true });
     const rawBalance = giftBalance.sub(fee);
 
     return rawBalance.isNeg() ? BN_ZERO : rawBalance;
@@ -109,15 +114,15 @@ export const GiftClaim = () => {
     }
 
     transferFactory
-      .createService(connections[giftInfo.chainId].api!, giftInfo.asset)
+      .createService(connections[giftInfo.chainId].client!, giftInfo.asset)
       .sendTransfer({
-        keyringPair: giftInfo.keyring,
+        signer: giftInfo.signer,
         amount: giftBalance,
         destination: giftInfo.address,
         transferAll: true,
       })
       .then(hash => {
-        console.log('🟢 Transaction hash - ', hash.toHex());
+        console.log('🟢 Transaction hash - ', hash);
       })
       .catch(() => {
         TelegramApi.showAlert('Something went wrong. Failed to claim the gift.');

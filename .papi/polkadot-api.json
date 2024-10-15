@@ -1,0 +1,22 @@
+{
+  "version": 0,
+  "descriptorPath": ".papi/descriptors",
+  "entries": {
+    "dot": {
+      "chain": "polkadot",
+      "metadata": ".papi/metadata/dot.scale"
+    },
+    "dotAh": {
+      "chain": "polkadot_asset_hub",
+      "metadata": ".papi/metadata/dotAh.scale"
+    },
+    "ztg": {
+      "wsUrl": "wss://main.rpc.zeitgeist.pm/ws",
+      "metadata": ".papi/metadata/ztg.scale"
+    },
+    "kar": {
+      "wsUrl": "wss://karura.api.onfinality.io/public-ws",
+      "metadata": ".papi/metadata/kar.scale"
+    }
+  }
+}

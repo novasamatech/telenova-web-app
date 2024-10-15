@@ -1,32 +1,50 @@
-import { type ApiPromise } from '@polkadot/api';
-import type { UnsubscribePromise } from '@polkadot/api/types';
-import { type BN, BN_ZERO } from '@polkadot/util';
+import { type PolkadotClient } from 'polkadot-api';
+
+import { BN, BN_ZERO } from '@polkadot/util';
+
+import { type GenericApi } from '../types';
 
 import { assetUtils } from '@/shared/helpers';
-import { type AssetBalance, type Chain, type StatemineAsset } from '@/types/substrate';
+import { type AssetBalance, type StatemineAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
 
+import { dotAh } from '@polkadot-api/descriptors';
+
+type ClientApi = GenericApi<typeof dotAh>;
+
 export class StatemineBalanceService implements IBalance {
-  readonly #api: ApiPromise;
+  readonly #client: ClientApi;
+  readonly #chainId: ChainId;
   readonly #asset: StatemineAsset;
 
-  constructor(api: ApiPromise, asset: StatemineAsset) {
-    this.#api = api;
+  constructor(chainId: ChainId, client: PolkadotClient, asset: StatemineAsset) {
     this.#asset = asset;
+    this.#chainId = chainId;
+    this.#client = this.#getTypedClientApi(client);
   }
 
-  async subscribeBalance(
-    chain: Chain,
+  #getTypedClientApi(client: PolkadotClient): ClientApi {
+    return { type: 'generic', api: client.getTypedApi(dotAh) };
+  }
+
+  subscribeBalance(address: Address, callback: (newBalance: AssetBalance) => void): VoidFunction {
+    return this.#subscribeGenericApi(this.#client.api, address, callback);
+  }
+
+  #subscribeGenericApi(
+    api: GenericApi<typeof dotAh>['api'],
     address: Address,
     callback: (newBalance: AssetBalance) => void,
-  ): UnsubscribePromise {
-    return this.#api.query.assets.account(assetUtils.getAssetId(this.#asset), address, accountInfo => {
-      const free = accountInfo.isNone ? BN_ZERO : accountInfo.unwrap().balance.toBn();
+  ): VoidFunction {
+    const assetId = Number(assetUtils.getAssetId(this.#asset));
+
+    return api.query.Assets.Account.watchValue(assetId, address).subscribe(accountInfo => {
+      const free = accountInfo ? new BN(accountInfo.balance.toString()) : BN_ZERO;
 
       callback({
         address,
-        chainId: chain.chainId,
+        chainId: this.#chainId,
         assetId: this.#asset.assetId,
         balance: {
           free,
@@ -37,18 +55,20 @@ export class StatemineBalanceService implements IBalance {
           transferable: free,
         },
       });
-    });
+    }).unsubscribe;
   }
 
   getFreeBalance(address: Address): Promise<BN> {
-    return this.#api.query.assets.account(assetUtils.getAssetId(this.#asset), address).then(balance => {
-      return balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn();
-    });
+    return this.#client.api.query.System.Account.getValue(address).then(
+      balance => new BN(balance.data.free.toString()),
+    );
   }
 
   getExistentialDeposit(): Promise<BN> {
-    const assetId = assetUtils.getAssetId(this.#asset);
+    const assetId = Number(assetUtils.getAssetId(this.#asset));
 
-    return this.#api.query.assets.asset(assetId).then(balance => balance.value.minBalance.toBn());
+    return this.#client.api.query.Assets.Asset.getValue(assetId).then(balance =>
+      balance ? new BN(balance.min_balance.toString()) : BN_ZERO,
+    );
   }
 }

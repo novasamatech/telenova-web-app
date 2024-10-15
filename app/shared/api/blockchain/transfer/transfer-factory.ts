@@ -1,9 +1,8 @@
-import { type ApiPromise } from '@polkadot/api';
+import { type PolkadotClient } from 'polkadot-api';
 
-import type { Asset, OrmlAsset, StatemineAsset } from '@/types/substrate';
+import type { Asset, StatemineAsset } from '@/types/substrate';
 
-import { BalanceTransferService } from './native-transfer';
-import { OrmlTransferService } from './orml-transfer';
+import { NativeTransferService } from './native-transfer';
 import { StatemineTransferService } from './statemine-transfer';
 import { type ITransfer } from './types';
 
@@ -11,12 +10,12 @@ export const transferFactory = {
   createService,
 };
 
-function createService(api: ApiPromise, asset: Asset): ITransfer {
-  const SERVICES: Record<Asset['type'], (api: ApiPromise, asset: Asset) => ITransfer> = {
-    native: api => new BalanceTransferService(api),
-    statemine: (api, asset) => new StatemineTransferService(api, asset as StatemineAsset),
-    orml: (api, asset) => new OrmlTransferService(api, asset as OrmlAsset),
+function createService(client: PolkadotClient, asset: Asset): ITransfer {
+  const SERVICES: Record<Asset['type'], (client: PolkadotClient, asset: Asset) => ITransfer> = {
+    native: client => new NativeTransferService(client),
+    statemine: (client, asset) => new StatemineTransferService(client, asset as StatemineAsset),
+    // orml: (client, asset) => new OrmlTransferService(client, asset as OrmlAsset),
   };
 
-  return SERVICES[asset.type](api, asset);
+  return SERVICES[asset.type](client, asset);
 }

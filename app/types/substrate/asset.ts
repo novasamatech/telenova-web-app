@@ -37,6 +37,6 @@ export type AssetPrices = {
   };
 };
 
-export type Asset = NativeAsset | StatemineAsset | OrmlAsset;
+export type Asset = NativeAsset | StatemineAsset;
 
 export type AssetsMap = Record<ChainId, Record<AssetId, Asset>>;

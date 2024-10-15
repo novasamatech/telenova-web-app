@@ -8,8 +8,8 @@ import { BN } from '@polkadot/util';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
-import { BackButton, MainButton, TelegramApi, localStorageApi, transferFactory } from '@/shared/api';
-import { MNEMONIC_STORE, isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
+import { BackButton, MainButton, transferFactory } from '@/shared/api';
+import { isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
 export type SearchParams = {
@@ -51,19 +51,16 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
-    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
-    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
-
     transferFactory
-      .createService(connections[typedChainId].api!, selectedAsset)
+      .createService(connections[typedChainId].client!, selectedAsset)
       .sendTransfer({
-        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
+        signer: wallet.getSigner(chains[typedChainId]),
         amount: bnAmount,
         destination: address,
         transferAll: all,
       })
       .then(hash => {
-        console.log('🟢 Transaction hash - ', hash.toHex());
+        console.log('🟢 Transaction hash - ', hash);
 
         const params = { chainId, assetId, address };
         const query = { amount };

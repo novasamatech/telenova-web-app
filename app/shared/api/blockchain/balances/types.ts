@@ -1,14 +1,19 @@
-import { type UnsubscribePromise } from '@polkadot/api/types';
+import { type TypedApi } from 'polkadot-api';
+
 import { type BN } from '@polkadot/util';
 
-import type { AssetBalance, Chain } from '@/types/substrate';
+import type { AssetBalance } from '@/types/substrate';
+
+import { type ztg } from '@polkadot-api/descriptors';
 
 export interface IBalance {
-  subscribeBalance: (
-    chain: Chain,
-    address: Address,
-    callback: (newBalance: AssetBalance) => void,
-  ) => UnsubscribePromise;
+  subscribeBalance: (address: Address, callback: (newBalance: AssetBalance) => void) => VoidFunction;
   getFreeBalance: (address: Address) => Promise<BN>;
   getExistentialDeposit: () => Promise<BN>;
 }
+
+// HKO/PARA/SUB use miscFrozen, feeFrozen
+export type ParaApi = {
+  type: 'para';
+  api: TypedApi<typeof ztg>; // TODO: change to HKO/PARA/SUB
+};

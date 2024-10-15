@@ -1,8 +1,8 @@
-import { type ApiPromise } from '@polkadot/api';
-import { type Hash } from '@polkadot/types/interfaces';
-import { type BN, BN_ZERO } from '@polkadot/util';
+import { Enum, type HexString, type PolkadotClient } from 'polkadot-api';
 
-import { extrinsicApi } from '../extrinsic/extrinsic-api';
+import { BN, BN_ZERO } from '@polkadot/util';
+
+import { type GenericApi } from '../types';
 
 import { FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
 import { type StatemineAsset } from '@/types/substrate';
@@ -10,50 +10,47 @@ import { type StatemineAsset } from '@/types/substrate';
 import { ASSET_LOCATION } from './constants';
 import { type FeeParams, type ITransfer, type SendTransferParams } from './types';
 
+import { dotAh } from '@polkadot-api/descriptors';
+
+type ClientApi = GenericApi<typeof dotAh>;
+
 export class StatemineTransferService implements ITransfer {
-  readonly #api: ApiPromise;
+  readonly #client: ClientApi;
   readonly #asset: StatemineAsset;
 
-  constructor(api: ApiPromise, asset: StatemineAsset) {
-    this.#api = api;
+  constructor(client: PolkadotClient, asset: StatemineAsset) {
     this.#asset = asset;
+    this.#client = this.#getTypedClientApi(client);
   }
 
-  sendTransfer({ keyringPair, destination, amount }: SendTransferParams): Promise<Hash> {
-    const assetId = assetUtils.getAssetId(this.#asset);
-
-    return extrinsicApi.submitExtrinsic({
-      keyringPair,
-      api: this.#api,
-      signOptions: { assetId: ASSET_LOCATION[assetId], nonce: -1 },
-      transaction: {
-        type: 'TRANSFER_STATEMINE',
-        args: {
-          dest: destination,
-          value: amount,
-          asset: assetId,
-        },
-      },
-    });
+  #getTypedClientApi(client: PolkadotClient): ClientApi {
+    return { type: 'generic', api: client.getTypedApi(dotAh) };
   }
 
-  async getTransferFee({ amount }: FeeParams): Promise<BN> {
+  sendTransfer({ signer, destination, amount }: SendTransferParams): Promise<HexString> {
     const assetId = assetUtils.getAssetId(this.#asset);
 
-    const fee = await extrinsicApi.estimateFee({
-      api: this.#api,
-      signOptions: { assetId: ASSET_LOCATION[assetId] },
-      transaction: {
-        type: 'TRANSFER_STATEMINE',
-        args: {
-          dest: FAKE_ACCOUNT_ID,
-          value: amount,
-          asset: assetId,
-        },
-      },
+    const tx = this.#client.api.tx.Assets.transfer_keep_alive({
+      id: Number(assetUtils.getAssetId(this.#asset)),
+      amount: BigInt(amount.toString()),
+      target: Enum('Id', destination),
     });
 
-    return this.#assetConversion(fee.muln(this.#asset.feeBuffer));
+    return tx.signAndSubmit(signer, { asset: ASSET_LOCATION[assetId] }).then(({ txHash }) => txHash);
+  }
+
+  async getTransferFee({ amount = BN_ZERO }: FeeParams): Promise<BN> {
+    const tx = this.#client.api.tx.Assets.transfer_keep_alive({
+      id: Number(assetUtils.getAssetId(this.#asset)),
+      amount: BigInt(amount.toString()),
+      target: Enum('Id', FAKE_ACCOUNT_ID),
+    });
+
+    const assetId = assetUtils.getAssetId(this.#asset);
+    const fee = await tx.getEstimatedFees(FAKE_ACCOUNT_ID, { asset: ASSET_LOCATION[assetId] });
+    const bnFee = new BN(fee.toString());
+
+    return this.#assetConversion(bnFee.muln(this.#asset.feeBuffer));
   }
 
   async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
@@ -65,17 +62,14 @@ export class StatemineTransferService implements ITransfer {
   }
 
   // Right now it's AssetHub only USD(T|C)/DOT
-  async #assetConversion(amount: BN): Promise<BN> {
+  #assetConversion(amount: BN): Promise<BN> {
     const assetId = assetUtils.getAssetId(this.#asset);
 
-    const convertedFee = await this.#api.call.assetConversionApi.quotePriceTokensForExactTokens(
-      // @ts-expect-error type error
+    return this.#client.api.apis.AssetConversionApi.quote_price_tokens_for_exact_tokens(
       ASSET_LOCATION[assetId],
       ASSET_LOCATION['0'],
-      amount,
+      BigInt(amount.toString()),
       true,
-    );
-
-    return convertedFee.isNone ? BN_ZERO : convertedFee.unwrap().toBn();
+    ).then(fee => (fee ? new BN(fee.toString()) : BN_ZERO));
   }
 }
