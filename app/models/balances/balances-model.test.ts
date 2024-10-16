@@ -124,6 +124,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(noop),
       getFreeBalance: vi.fn(),
+      getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
     });
 
@@ -152,6 +153,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(noop),
       getFreeBalance: vi.fn(),
+      getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
     });
 
@@ -185,6 +187,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(spyUnsub),
       getFreeBalance: vi.fn(),
+      getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
     });
 
@@ -220,6 +223,7 @@ describe('models/balances/balances-model', () => {
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
       subscribeBalance: vi.fn().mockResolvedValue(noop),
       getFreeBalance: vi.fn(),
+      getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
     });
 

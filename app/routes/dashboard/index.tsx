@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
+
 import { Avatar, Button, Divider } from '@nextui-org/react';
 import { useUnit } from 'effector-react';
 import { isEmpty } from 'lodash-es';
 import { $path } from 'remix-routes';
 
 import { balancesModel } from '@/models/balances';
+import { giftsModel } from '@/models/gifts';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
@@ -38,6 +41,10 @@ const Page = () => {
   const [isWarningOpen, toggleWarning] = useToggle();
 
   const user = TelegramApi.initDataUnsafe.user;
+
+  useEffect(() => {
+    giftsModel.input.giftsRequested();
+  }, []);
 
   const clearWallet = (clearRemote = false) => {
     walletModel.input.walletCleared({ clearRemote });

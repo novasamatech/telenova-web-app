@@ -10,11 +10,12 @@ import { $params } from 'remix-routes';
 import { BN } from '@polkadot/util';
 import { randomAsHex } from '@polkadot/util-crypto';
 
+import { giftsModel } from '@/models/gifts';
 import { networkModel } from '@/models/network';
 import { Wallet, walletModel } from '@/models/wallet';
 import { botApi, transferFactory } from '@/shared/api';
 import { type TelegramLink } from '@/shared/api/types';
-import { backupGifts, toFormattedBalance } from '@/shared/helpers';
+import { toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
@@ -81,7 +82,7 @@ const Page = () => {
       .then(hash => {
         console.log('🟢 Transaction hash - ', hash);
 
-        backupGifts({
+        giftsModel.input.giftSaved({
           chainId: typedChainId,
           assetId: selectedAsset.assetId,
           address: giftWallet.toAddress(selectedChain),
@@ -89,6 +90,7 @@ const Page = () => {
           balance: gift,
           chainIndex: selectedChain.chainIndex,
         });
+
         const tgLink = botApi.createTelegramLink({
           botUrl,
           appName,

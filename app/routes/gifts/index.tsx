@@ -1,33 +1,22 @@
-import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
+import { giftsModel } from '@/models/gifts';
 import { BackButton } from '@/shared/api';
-import { getGifts, toFormattedBalance } from '@/shared/helpers';
-import { useGifts } from '@/shared/hooks';
-import { type Gift } from '@/types/substrate';
+import { toFormattedBalance } from '@/shared/helpers';
 import { BodyText, HelpText, Shimmering, TitleText } from '@/ui/atoms';
 import { GiftPlate } from '@/ui/molecules';
 
 const Page = () => {
   const navigate = useNavigate();
-  const { getGiftsState } = useGifts();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [claimedGifts, setClaimedGifts] = useState<Gift[]>([]);
-  const [unclaimedGifts, setUnclaimedGifts] = useState<Gift[]>([]);
-
-  useEffect(() => {
-    const mapGifts = getGifts();
-    if (!mapGifts) return;
-
-    getGiftsState(mapGifts).then(([unclaimed, claimed]) => {
-      setUnclaimedGifts(unclaimed);
-      setClaimedGifts(claimed);
-      setIsLoading(false);
-    });
-  }, []);
+  const [unclaimedGifts, claimedGifts, isLoading] = useUnit([
+    giftsModel.$unclaimedGifts,
+    giftsModel.$claimedGifts,
+    giftsModel.$isLoading,
+  ]);
 
   return (
     <>
@@ -56,7 +45,7 @@ const Page = () => {
               const formattedBalance =
                 gift.chainIndex === undefined
                   ? gift.balance
-                  : toFormattedBalance(gift.balance, gift.chainAsset?.precision).formatted;
+                  : toFormattedBalance(gift.balance, gift.asset.precision).formatted;
 
               return (
                 <Link
@@ -64,7 +53,7 @@ const Page = () => {
                   to={$path('/gifts/details', {
                     seed: gift.secret,
                     chainIndex: gift.chainIndex?.toString() || '',
-                    symbol: gift.chainAsset?.symbol ?? '',
+                    symbol: gift.asset.symbol,
                     balance: formattedBalance,
                   })}
                 >

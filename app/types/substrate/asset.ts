@@ -1,6 +1,7 @@
 interface BaseAsset {
   name: string;
   assetId: AssetId;
+  chainId: ChainId;
   symbol: string;
   precision: number;
   priceId?: string;

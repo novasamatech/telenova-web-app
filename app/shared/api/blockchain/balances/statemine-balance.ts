@@ -1,4 +1,4 @@
-import { type PolkadotClient } from 'polkadot-api';
+import { type PolkadotClient, type SS58String } from 'polkadot-api';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 
@@ -62,6 +62,16 @@ export class StatemineBalanceService implements IBalance {
     return this.#client.api.query.System.Account.getValue(address).then(
       balance => new BN(balance.data.free.toString()),
     );
+  }
+
+  getFreeBalances(addresses: Address[]): Promise<BN[]> {
+    const addressTuples = addresses.map(address => {
+      return [Number(assetUtils.getAssetId(this.#asset)), address] as [number, SS58String];
+    });
+
+    return this.#client.api.query.Assets.Account.getValues(addressTuples).then(balances => {
+      return balances.map(balance => (balance ? new BN(balance.balance.toString()) : BN_ZERO));
+    });
   }
 
   getExistentialDeposit(): Promise<BN> {
