@@ -32,7 +32,7 @@ function getWalletCreationData(publicKey: PublicKey): string | null {
   if (!TelegramApi.initData || !TelegramApi.initDataUnsafe.user?.id) return null;
 
   return JSON.stringify({
-    publicKey,
+    accountId: publicKey,
     userId: TelegramApi.initDataUnsafe.user.id,
     auth: TelegramApi.initData,
   });
