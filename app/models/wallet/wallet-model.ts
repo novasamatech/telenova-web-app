@@ -45,8 +45,12 @@ const clearWalletFx = createEffect((clearRemote: boolean): Promise<boolean> => {
     : Promise.resolve(true);
 });
 
-const requestMnemonicFx = createEffect((): Promise<Mnemonic> => {
-  return TelegramApi.getItem(MNEMONIC_STORE);
+const requestMnemonicFx = createEffect(async (): Promise<Mnemonic> => {
+  const mnemonic = await TelegramApi.getItem(MNEMONIC_STORE);
+
+  if (!mnemonic) throw new Error('Mnemonic not found');
+
+  return mnemonic;
 });
 
 type SaveMnemonicParams = {
@@ -161,5 +165,6 @@ export const walletModel = {
   /* Internal API (tests only) */
   _internal: {
     $wallet: $wallet,
+    requestMnemonicFx,
   },
 };
