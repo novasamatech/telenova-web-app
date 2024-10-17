@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@nextui-org/react';
 
-import { walletModel } from '@/models/wallet';
 import { BigTitle, BodyText, Countdown, Icon, MediumTitle } from '@/ui/atoms';
 
 type Props = {
@@ -20,7 +19,6 @@ export const PasswordForgotten = ({ onClose, onSubmit }: Props) => {
 
   const handleSubmit = () => {
     setIsDisabled(true);
-    walletModel.input.walletCleared({ clearRemote: true });
     onSubmit();
   };
 
@@ -48,7 +46,7 @@ export const PasswordForgotten = ({ onClose, onSubmit }: Props) => {
           onPress={handleSubmit}
         >
           <MediumTitle className="text-white">
-            Delete Backup <Countdown initValue={60} onFinish={() => setIsDisabled(false)} />
+            Delete Backup <Countdown initValue={4} onFinish={() => setIsDisabled(false)} />
           </MediumTitle>
         </Button>
         <Button className="h-[50px] w-full rounded-full bg-bg-input" onPress={handleClose}>
