@@ -46,7 +46,7 @@ export const PasswordForgotten = ({ onClose, onSubmit }: Props) => {
           onPress={handleSubmit}
         >
           <MediumTitle className="text-white">
-            Delete Backup <Countdown initValue={4} onFinish={() => setIsDisabled(false)} />
+            Delete Backup <Countdown initValue={60} onFinish={() => setIsDisabled(false)} />
           </MediumTitle>
         </Button>
         <Button className="h-[50px] w-full rounded-full bg-bg-input" onPress={handleClose}>
