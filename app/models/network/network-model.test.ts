@@ -2,11 +2,9 @@ import { allSettled, fork } from 'effector';
 import { keyBy } from 'lodash-es';
 import { describe, expect, test, vi } from 'vitest';
 
-import { type ApiPromise } from '@polkadot/api';
-
 import { chainsApi } from '@/shared/api';
 import { CONNECTIONS_STORE, KUSAMA, POLKADOT, POLKADOT_ASSET_HUB } from '@/shared/helpers';
-import { type AssetsMap, type Chain, type ChainMetadata } from '@/types/substrate';
+import { type AssetsMap, type Chain } from '@/types/substrate';
 
 import { networkModel } from './network-model';
 
@@ -82,19 +80,6 @@ describe('@/common/network/network-model', () => {
     await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
     expect(fakeRequestFx).toHaveBeenCalledOnce();
     expect(scope.getState(networkModel._internal.$chains)).toEqual(mockedChainsMap);
-  });
-
-  test('should update $metadata after requestMetadataFx effect', async () => {
-    const chain = mockedChains[0];
-    const mockMetadata: ChainMetadata = { chainId: chain.chainId, version: 1, metadata: '0x0000' };
-    const scope = fork({
-      values: [[networkModel._internal.$chains, chain]],
-      handlers: [[networkModel._internal.requestMetadataFx, () => mockMetadata]],
-    });
-
-    await allSettled(networkModel._internal.requestMetadataFx, { scope, params: {} as ApiPromise });
-
-    expect(scope.getState(networkModel._internal.$metadata)).toEqual([mockMetadata]);
   });
 
   test('should connect to default_chains on networkStarted event', async () => {

@@ -1,6 +1,6 @@
 import { Enum, type HexString, type PolkadotClient } from 'polkadot-api';
 
-import { BN, BN_ZERO } from '@polkadot/util';
+import { BN, BN_ZERO, stringToU8a } from '@polkadot/util';
 
 import { type GenericApi } from '../types';
 
@@ -43,19 +43,17 @@ export class NativeTransferService implements ITransfer {
     });
   }
 
-  async getTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
+  getTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
     const tx = transferAll
       ? this.#getTransferAllTx(FAKE_ACCOUNT_ID)
       : this.#getTransferKeepAliveTx(FAKE_ACCOUNT_ID, amount);
 
-    const fee = await tx.getEstimatedFees(FAKE_ACCOUNT_ID);
-
-    return new BN(fee.toString());
+    return tx.getEstimatedFees(stringToU8a(FAKE_ACCOUNT_ID)).then(fee => new BN(fee.toString()));
   }
 
-  async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
+  async getGiftTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
     const giftAccountFee = await this.getTransferFee({ transferAll: true, amount });
-    const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
+    const clientAccountFee = await this.getTransferFee({ transferAll, amount: amount.add(giftAccountFee) });
 
     return giftAccountFee.add(clientAccountFee);
   }

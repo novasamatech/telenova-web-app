@@ -8,24 +8,24 @@ import { type Chain } from '@/types/substrate';
 
 export class Wallet {
   readonly #sr25519PublicKey: PublicKey;
-  readonly #ed25519PublicKey: PublicKey;
+  readonly #ecdsaPublicKey: PublicKey;
 
   readonly #sr25519Signer: PolkadotSigner;
-  readonly #ed25519Signer: PolkadotSigner;
+  readonly #ecdsaSigner: PolkadotSigner;
 
   constructor(mnemonic: Mnemonic) {
     const keyringPairs = keyringApi.getKeyPairsFromSeed(mnemonic);
     const signers = keyringApi.getSignersFromSeed(mnemonic);
 
     this.#sr25519PublicKey = u8aToHex(keyringPairs.sr25519.publicKey);
-    this.#ed25519PublicKey = u8aToHex(keyringPairs.ed25519.publicKey);
+    this.#ecdsaPublicKey = u8aToHex(keyringPairs.ecdsa.publicKey);
 
     this.#sr25519Signer = signers.sr25519;
-    this.#ed25519Signer = signers.ed25519;
+    this.#ecdsaSigner = signers.ecdsa;
   }
 
   getPublicKey(chain?: Chain): PublicKey {
-    return chain && isEvmChain(chain) ? this.#ed25519PublicKey : this.#sr25519PublicKey;
+    return chain && isEvmChain(chain) ? this.#ecdsaPublicKey : this.#sr25519PublicKey;
   }
 
   toAddress(chain: Chain): Address {
@@ -33,6 +33,6 @@ export class Wallet {
   }
 
   getSigner(chain: Chain): PolkadotSigner {
-    return isEvmChain(chain) ? this.#ed25519Signer : this.#sr25519Signer;
+    return isEvmChain(chain) ? this.#ecdsaSigner : this.#sr25519Signer;
   }
 }

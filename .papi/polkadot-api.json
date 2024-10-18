@@ -17,6 +17,14 @@
     "kar": {
       "wsUrl": "wss://karura.api.onfinality.io/public-ws",
       "metadata": ".papi/metadata/kar.scale"
+    },
+    "wnd": {
+      "chain": "westend2",
+      "metadata": ".papi/metadata/wnd.scale"
+    },
+    "glmr": {
+      "wsUrl": "wss://wss.api.moonbeam.network",
+      "metadata": ".papi/metadata/glmr.scale"
     }
   }
 }

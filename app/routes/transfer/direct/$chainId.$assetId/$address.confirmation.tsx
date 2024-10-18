@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Divider } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
@@ -39,6 +41,8 @@ const Page = () => {
     networkModel.$connections,
   ]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
@@ -51,6 +55,10 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
     transferFactory
       .createService(connections[typedChainId].client!, selectedAsset)
       .sendTransfer({
@@ -70,7 +78,8 @@ const Page = () => {
           to: $path('/transfer/direct/:chainId/:assetId/:address/result', params, query),
         });
       })
-      .catch(error => alert(`Error: ${error.message}\nTry to reload`));
+      .catch(error => alert(`Error: ${error.message}\nTry to reload`))
+      .finally(() => setIsLoading(false));
   };
 
   const details = [
@@ -110,7 +119,7 @@ const Page = () => {
 
   return (
     <>
-      <MainButton text="Confirm" onClick={mainCallback} />
+      <MainButton text="Confirm" disabled={isLoading} progress={isLoading} onClick={mainCallback} />
       <BackButton onClick={navigateBack} />
       <div className="grid grid-cols-[40px,1fr] items-center">
         <Identicon address={address} theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'} />

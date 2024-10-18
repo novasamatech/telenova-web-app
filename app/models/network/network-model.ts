@@ -23,9 +23,16 @@ const assetDisconnected = createEvent<{ chainId: ChainId; assetId: AssetId }>();
 const assetChanged = createEvent<{ chainId: ChainId; assetId: AssetId; status: 'on' | 'off' }>();
 const connectionChanged = createEvent<{ chainId: ChainId; status: Connection['status'] }>();
 
-const connected = createEvent<ChainId>();
-const disconnected = createEvent<ChainId>();
-const failed = createEvent<ChainId>();
+/**
+ * WsEvent.CONNECTED The connection has been established and is currently open
+ *
+ * WsEvent.CLOSE If the server was the one closing the connection, the provider
+ * will try to reconnect to other websockets or the same one.
+ *
+ * WsEvent.ERROR The provider will try to reconnect to other websockets or the
+ * same one.
+ */
+const providerStatusChanged = createEvent<{ chainId: ChainId; status: Connection['status'] }>();
 
 const $chains = createStore<ChainsMap>({});
 const $assets = createStore<AssetsMap>({});
@@ -76,9 +83,7 @@ type CreateClientParams = {
   nodes: string[];
 };
 const createPolkadotClientFx = createEffect((params: CreateClientParams): PolkadotClient => {
-  const boundConnected = scopeBind(connected, { safe: true });
-  const boundDisconnected = scopeBind(disconnected, { safe: true });
-  const boundFailed = scopeBind(failed, { safe: true });
+  const boundStatusChange = scopeBind(providerStatusChanged, { safe: true });
 
   // To support old Polkadot-SDK 1.1.0 <= x < 1.11.0
   // More => https://papi.how/requirements#polkadot-sdk-110--x--1110
@@ -93,17 +98,17 @@ const createPolkadotClientFx = createEffect((params: CreateClientParams): Polkad
           // Connected
           case 1:
             console.info('🟢 Provider connecting ==> ', params.name);
-            boundConnected(params.chainId);
+            boundStatusChange({ chainId: params.chainId, status: 'connected' });
             break;
           // Error
           case 2:
             console.info('🔴 Provider error ==> ', params.name);
-            boundFailed(params.chainId);
+            boundStatusChange({ chainId: params.chainId, status: 'error' });
             break;
           // Close
           case 3:
-            console.info('🟠 Provider disconnected ==> ', params.name);
-            boundDisconnected(params.chainId);
+            console.info('🟠 Provider closed ==> ', params.name);
+            boundStatusChange({ chainId: params.chainId, status: 'closed' });
             break;
         }
       }),
@@ -341,62 +346,19 @@ sample({
 
 sample({
   clock: disconnectFx.doneData,
-  source: $connections,
-  fn: (connections, chainId) => ({
-    ...connections,
-    [chainId]: { status: 'disconnected' },
-  }),
-  target: $connections,
-});
-
-sample({
-  clock: connected,
-  source: $connections,
-  // filter: (connections, chainId) => {
-  //   // We don't rely on connected event when start chain for the first time
-  //   // createProviderFx.doneData is responsible for that
-  //   return connections[chainId].status !== 'connecting';
-  // },
-  fn: (connections, chainId) => ({
-    data: {
-      ...connections,
-      [chainId]: { ...connections[chainId], status: 'connected' },
-    },
-    event: {
-      chainId,
-      status: 'connected' as const,
-    },
-  }),
-  target: spread({
-    data: $connections,
-    event: connectionChanged,
-  }),
-});
-
-sample({
-  clock: disconnected,
   fn: chainId => ({ chainId, status: 'disconnected' as const }),
-  target: connectionChanged,
+  target: providerStatusChanged,
 });
 
 sample({
-  clock: failed,
-  fn: chainId => ({ chainId, status: 'error' as const }),
-  target: connectionChanged,
-});
-
-sample({
-  clock: failed,
+  clock: providerStatusChanged,
   source: $connections,
-  fn: (connections, chainId) => ({
+  fn: (connections, { chainId, status }) => ({
     data: {
       ...connections,
-      [chainId]: { status: 'disconnected' as const },
+      [chainId]: { ...connections[chainId], status },
     },
-    event: {
-      chainId,
-      status: 'disconnected' as const,
-    },
+    event: { chainId, status },
   }),
   target: spread({
     data: $connections,

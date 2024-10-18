@@ -119,8 +119,6 @@ export class NativeBalanceService implements IBalance {
   }
 
   getExistentialDeposit(): Promise<BN> {
-    const existentialDeposit = this.#client.api.constants.Balances.ExistentialDeposit;
-
-    return Promise.resolve(new BN(existentialDeposit.toString()));
+    return this.#client.api.constants.Balances.ExistentialDeposit().then(ed => new BN(ed.toString()));
   }
 }
