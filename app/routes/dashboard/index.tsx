@@ -58,7 +58,7 @@ const Page = () => {
     <>
       <BackButton hidden />
       <div className="flex flex-col break-words">
-        <div className="mb-6 grid grid-cols-[auto,1fr,auto] items-center gap-2">
+        <div className="mb-8 grid grid-cols-[auto,1fr,auto] items-center gap-2">
           <Avatar
             src={user?.photo_url}
             className="h-10 w-10"
@@ -78,7 +78,7 @@ const Page = () => {
           </Button>
         </div>
 
-        <div className="mt-4 flex flex-col items-center">
+        <div className="mb-6 flex flex-col items-center">
           <HeadlineText className="mb-1 text-text-hint">Total Balance</HeadlineText>
           <AccountPrice amount={getTotalFiatBalance(chains, balances, prices)?.toFixed(2)} />
           <div className="mt-7 grid w-full grid-cols-3 gap-2">
@@ -98,10 +98,10 @@ const Page = () => {
           </div>
         </div>
 
-        <CreatedGiftPlate />
+        <CreatedGiftPlate className="mb-2" />
 
         {isChainsLoading && (
-          <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
+          <Plate className="mb-2 flex flex-col rounded-3xl border-1 border-border-neutral">
             <Shimmering width={100} height={32} />
             <div className="mt-6 flex flex-col gap-y-6">
               {Array.from({ length: 4 }).map((_, index) => (
@@ -113,7 +113,7 @@ const Page = () => {
 
         {!isChainsLoading && !isEmpty(chains) && (
           <>
-            <Plate className="my-2 flex flex-col rounded-3xl border-1 border-border-neutral">
+            <Plate className="mb-2 flex flex-col rounded-3xl border-1 border-border-neutral">
               <TitleText align="left">Assets</TitleText>
               <div className="mt-6 flex flex-col gap-y-6">
                 <AssetsList showPrice animate chains={chains} assets={assets} prices={prices} balances={balances} />
