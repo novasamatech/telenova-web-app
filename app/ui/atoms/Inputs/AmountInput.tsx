@@ -26,6 +26,7 @@ export const AmountInput = ({ value, placeholder = '0.00', isValid, className, o
         !isValid && 'focus:border-danger',
         className,
       )}
+      inputMode="decimal"
       mask={Number}
       min={0}
       scale={15}
@@ -33,7 +34,7 @@ export const AmountInput = ({ value, placeholder = '0.00', isValid, className, o
       radix="."
       mapToRadix={[',']}
       autofix={true}
-      normalizeZeros={false}
+      normalizeZeros={true}
       placeholder={placeholder}
       onAccept={handleChange}
     />

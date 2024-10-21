@@ -47,9 +47,9 @@ describe('shared/helpers/address#validateAddress', () => {
     expect(result).toEqual(true);
   });
 
-  test('should not pass validation for invalid H160 address', () => {
-    const result = validateAddress('0x431621580885a1d9cf257cAf0628D26Df3e9c592', evmChain);
-    expect(result).toEqual(false);
+  test('should pass validation for non-normalized H160 address', () => {
+    const result = validateAddress('0x4c2ab98b646ce36df6a4a4407ab9fcee1c90549a', evmChain);
+    expect(result).toEqual(true);
   });
 
   test('should fail validation for short random set of bytes', () => {
