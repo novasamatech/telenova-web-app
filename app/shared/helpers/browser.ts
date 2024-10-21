@@ -6,11 +6,16 @@
  */
 export function copyToClipboard(id: string, text: string) {
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).catch(error => {
-      console.info('Could not copy to clipboard, trying fallback', error);
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        console.log('Text copied to clipboard - ', text);
+      })
+      .catch(error => {
+        console.info('Could not copy to clipboard, trying fallback', error);
 
-      copyToClipboardLegacy(id);
-    });
+        copyToClipboardLegacy(id);
+      });
   } else {
     copyToClipboardLegacy(id);
   }
