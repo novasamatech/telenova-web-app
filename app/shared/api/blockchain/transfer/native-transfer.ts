@@ -1,16 +1,16 @@
-import { Enum, type HexString, type PolkadotClient } from 'polkadot-api';
+import { type HexString, type PolkadotClient } from 'polkadot-api';
 
-import { BN, BN_ZERO, stringToU8a } from '@polkadot/util';
+import { BN, BN_ZERO } from '@polkadot/util';
 
 import { type GenericApi } from '../types';
 
-import { FAKE_ACCOUNT_ID } from '@/shared/helpers';
+// import { FAKE_ACCOUNT_ID } from '@/shared/helpers';
 
 import { type FeeParams, type ITransfer, type SendTransferParams } from './types';
 
-import { dot } from '@polkadot-api/descriptors';
+import { glmr } from '@polkadot-api/descriptors';
 
-type ClientApi = GenericApi;
+type ClientApi = GenericApi<typeof glmr>;
 
 export class NativeTransferService implements ITransfer {
   readonly #client: ClientApi;
@@ -20,7 +20,7 @@ export class NativeTransferService implements ITransfer {
   }
 
   #getTypedClientApi(client: PolkadotClient): ClientApi {
-    return { type: 'generic', api: client.getTypedApi(dot) };
+    return { type: 'generic', api: client.getTypedApi(glmr) };
   }
 
   sendTransfer({ amount, destination, signer, transferAll }: SendTransferParams): Promise<HexString> {
@@ -32,23 +32,26 @@ export class NativeTransferService implements ITransfer {
   #getTransferKeepAliveTx(destination: Address, amount: BN) {
     return this.#client.api.tx.Balances.transfer_keep_alive({
       value: BigInt(amount.toString()),
-      dest: Enum('Id', destination),
+      dest: destination, // EVM only
+      // dest: Enum('Id', destination),
     });
   }
 
   #getTransferAllTx(destination: Address) {
     return this.#client.api.tx.Balances.transfer_all({
       keep_alive: false,
-      dest: Enum('Id', destination),
+      dest: destination, // EVM only
+      // dest: Enum('Id', destination),
     });
   }
 
   getTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
     const tx = transferAll
-      ? this.#getTransferAllTx(FAKE_ACCOUNT_ID)
-      : this.#getTransferKeepAliveTx(FAKE_ACCOUNT_ID, amount);
+      ? this.#getTransferAllTx('0x431621580885a1d9cf257Aaf0628D26Df3e9c591')
+      : this.#getTransferKeepAliveTx('0x431621580885a1d9cf257Aaf0628D26Df3e9c591', amount);
 
-    return tx.getEstimatedFees(stringToU8a(FAKE_ACCOUNT_ID)).then(fee => new BN(fee.toString()));
+    return tx.getEstimatedFees('0x431621580885a1d9cf257Aaf0628D26Df3e9c591').then(fee => new BN(fee.toString()));
+    // return tx.getEstimatedFees(stringToU8a(FAKE_ACCOUNT_ID)).then(fee => new BN(fee.toString()));
   }
 
   async getGiftTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {

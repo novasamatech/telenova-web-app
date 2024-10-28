@@ -67,7 +67,7 @@ describe('models/balances/balances-model', () => {
   });
 
   test('should unsub all $subscriptions for chainId if assetId is absent', async () => {
-    const mockedSubscriptions = { '0x001': { 0: Promise.resolve(noop), 1: Promise.resolve(noop) } };
+    const mockedSubscriptions = { '0x001': { 0: noop, 1: noop } };
     const fakeUnsubscribeFx = vi.fn().mockReturnValue({ '0x001': undefined });
 
     const scope = fork({
@@ -94,7 +94,7 @@ describe('models/balances/balances-model', () => {
 
     await allSettled(balancesModel._internal.subscribeChainsAssetsFx, {
       scope,
-      params: { apis: {}, chains: [], assets: [], wallet: new Wallet('123') },
+      params: { clients: {}, chains: [], assets: [], wallet: new Wallet('123') },
     });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 1: Promise.resolve(noop) } });
