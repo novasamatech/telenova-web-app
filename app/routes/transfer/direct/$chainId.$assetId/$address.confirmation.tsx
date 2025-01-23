@@ -60,7 +60,7 @@ const Page = () => {
     setIsLoading(true);
 
     transferFactory
-      .createService(connections[typedChainId].client!, selectedAsset)
+      .createService(typedChainId, connections[typedChainId].client!, selectedAsset)
       .sendTransfer({
         signer: wallet.getSigner(chains[typedChainId]),
         amount: bnAmount,

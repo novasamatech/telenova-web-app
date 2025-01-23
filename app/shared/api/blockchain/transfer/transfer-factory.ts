@@ -10,12 +10,14 @@ export const transferFactory = {
   createService,
 };
 
-function createService(client: PolkadotClient, asset: Asset): ITransfer {
-  const SERVICES: Record<Asset['type'], (client: PolkadotClient, asset: Asset) => ITransfer> = {
-    native: client => new NativeTransferService(client),
-    statemine: (client, asset) => new StatemineTransferService(client, asset as StatemineAsset),
+function createService(chainId: ChainId, client: PolkadotClient, asset: Asset): ITransfer {
+  const SERVICES: Record<Asset['type'], (chainId: ChainId, client: PolkadotClient, asset: Asset) => ITransfer> = {
+    native: (chainId, client) => new NativeTransferService(chainId, client),
+    statemine: (chainId, client, asset) => new StatemineTransferService(chainId, client, asset as StatemineAsset),
+    // FIXME: Cannot load metadata and produce descriptors for ORML chains
+    // Status -> https://github.com/polkadot-api/compliant-RPCs/tree/main
     // orml: (client, asset) => new OrmlTransferService(client, asset as OrmlAsset),
   };
 
-  return SERVICES[asset.type](client, asset);
+  return SERVICES[asset.type](chainId, client, asset);
 }

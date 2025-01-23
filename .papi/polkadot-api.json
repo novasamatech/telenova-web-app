@@ -6,25 +6,29 @@
       "chain": "polkadot",
       "metadata": ".papi/metadata/dot.scale"
     },
+    "kilt": {
+      "wsUrl": "wss://kilt-rpc.dwellir.com",
+      "metadata": ".papi/metadata/kilt.scale"
+    },
     "dotAh": {
       "chain": "polkadot_asset_hub",
       "metadata": ".papi/metadata/dotAh.scale"
     },
     "ztg": {
-      "wsUrl": "wss://main.rpc.zeitgeist.pm/ws",
+      "wsUrl": "wss://zeitgeist.api.onfinality.io/public-ws",
       "metadata": ".papi/metadata/ztg.scale"
     },
-    "kar": {
-      "wsUrl": "wss://karura.api.onfinality.io/public-ws",
-      "metadata": ".papi/metadata/kar.scale"
-    },
-    "wnd": {
-      "chain": "westend2",
-      "metadata": ".papi/metadata/wnd.scale"
-    },
     "glmr": {
-      "wsUrl": "wss://wss.api.moonbeam.network",
+      "wsUrl": "wss://moonbeam.public.blastapi.io",
       "metadata": ".papi/metadata/glmr.scale"
+    },
+    "movr": {
+      "wsUrl": "wss://moonriver.public.blastapi.io",
+      "metadata": ".papi/metadata/movr.scale"
+    },
+    "myth": {
+      "wsUrl": "wss://polkadot-mythos-rpc.polkadot.io",
+      "metadata": ".papi/metadata/myth.scale"
     }
   }
 }

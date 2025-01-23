@@ -4,7 +4,8 @@ import { BN, BN_ZERO } from '@polkadot/util';
 
 import { type GenericApi } from '../types';
 
-import { FAKE_ACCOUNT_ID, assetUtils } from '@/shared/helpers';
+import { EXTENSIONS } from '@/shared/config/extensions';
+import { FAKE_ADDRESS_SUBSTRATE, assetUtils } from '@/shared/helpers';
 import { type StatemineAsset } from '@/types/substrate';
 
 import { ASSET_LOCATION } from './constants';
@@ -15,10 +16,12 @@ import { dotAh } from '@polkadot-api/descriptors';
 type ClientApi = GenericApi<typeof dotAh>;
 
 export class StatemineTransferService implements ITransfer {
+  readonly #chainId: ChainId;
   readonly #client: ClientApi;
   readonly #asset: StatemineAsset;
 
-  constructor(client: PolkadotClient, asset: StatemineAsset) {
+  constructor(chainId: ChainId, client: PolkadotClient, asset: StatemineAsset) {
+    this.#chainId = chainId;
     this.#asset = asset;
     this.#client = this.#getTypedClientApi(client);
   }
@@ -36,18 +39,35 @@ export class StatemineTransferService implements ITransfer {
       target: Enum('Id', destination),
     });
 
-    return tx.signAndSubmit(signer, { asset: ASSET_LOCATION[assetId] }).then(({ txHash }) => txHash);
+    return new Promise((resolve, reject) => {
+      tx.signSubmitAndWatch(signer, {
+        asset: ASSET_LOCATION[assetId],
+        customSignedExtensions: EXTENSIONS[this.#chainId]?.signedExtensions,
+      }).subscribe(event => {
+        if (event.type !== 'txBestBlocksState') return;
+
+        if (event.found && event.ok) {
+          resolve(event.txHash);
+        } else {
+          reject(event.txHash);
+        }
+      });
+    });
   }
 
   async getTransferFee({ amount = BN_ZERO }: FeeParams): Promise<BN> {
+    const assetId = assetUtils.getAssetId(this.#asset);
+
     const tx = this.#client.api.tx.Assets.transfer_keep_alive({
-      id: Number(assetUtils.getAssetId(this.#asset)),
+      id: Number(assetId),
       amount: BigInt(amount.toString()),
-      target: Enum('Id', FAKE_ACCOUNT_ID),
+      target: Enum('Id', FAKE_ADDRESS_SUBSTRATE),
     });
 
-    const assetId = assetUtils.getAssetId(this.#asset);
-    const fee = await tx.getEstimatedFees(FAKE_ACCOUNT_ID, { asset: ASSET_LOCATION[assetId] });
+    const fee = await tx.getEstimatedFees(FAKE_ADDRESS_SUBSTRATE, {
+      asset: ASSET_LOCATION[assetId],
+      customSignedExtensions: EXTENSIONS[this.#chainId]?.signedExtensions,
+    });
     const bnFee = new BN(fee.toString());
 
     return this.#assetConversion(bnFee.muln(this.#asset.feeBuffer));

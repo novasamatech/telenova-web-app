@@ -1,57 +1,107 @@
-import { type HexString, type PolkadotClient } from 'polkadot-api';
+import { Enum, type HexString, type PolkadotClient } from 'polkadot-api';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 
-import { type GenericApi } from '../types';
+import { type GenericApi, type ParaApi } from '../types';
 
-// import { FAKE_ACCOUNT_ID } from '@/shared/helpers';
+import { EXTENSIONS } from '@/shared/config/extensions';
+import { FAKE_ADDRESS_EVM, FAKE_ADDRESS_SUBSTRATE } from '@/shared/helpers';
 
 import { type FeeParams, type ITransfer, type SendTransferParams } from './types';
 
-import { glmr } from '@polkadot-api/descriptors';
+import { dot, glmr, movr, myth } from '@polkadot-api/descriptors';
 
-type ClientApi = GenericApi<typeof glmr>;
+type ParachainsApi = ParaApi<'glmr', typeof glmr> | ParaApi<'movr', typeof movr> | ParaApi<'myth', typeof myth>;
+type ClientApi = GenericApi<typeof dot> | ParachainsApi;
 
 export class NativeTransferService implements ITransfer {
+  readonly #chainId: ChainId;
   readonly #client: ClientApi;
 
-  constructor(client: PolkadotClient) {
-    this.#client = this.#getTypedClientApi(client);
+  constructor(chainId: ChainId, client: PolkadotClient) {
+    this.#chainId = chainId;
+    this.#client = this.#getTypedClientApi(chainId, client);
   }
 
-  #getTypedClientApi(client: PolkadotClient): ClientApi {
-    return { type: 'generic', api: client.getTypedApi(glmr) };
+  #getTypedClientApi(chainId: ChainId, client: PolkadotClient): ClientApi {
+    const config: Record<ChainId, (client: PolkadotClient) => ParachainsApi> = {
+      // GLMR
+      '0xfe58ea77779b7abda7da4ec526d14db9b1e9cd40a217c34892af80a9b332b76d': client => ({
+        type: 'glmr',
+        api: client.getTypedApi(glmr),
+      }),
+      // MOVR
+      '0x401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b': client => ({
+        type: 'movr',
+        api: client.getTypedApi(movr),
+      }),
+      // MYTH
+      '0xf6ee56e9c5277df5b4ce6ae9983ee88f3cbed27d31beeb98f9f84f997a1ab0b9': client => ({
+        type: 'myth',
+        api: client.getTypedApi(myth),
+      }),
+    };
+
+    return config[chainId]?.(client) || { type: 'generic', api: client.getTypedApi(dot) };
   }
 
   sendTransfer({ amount, destination, signer, transferAll }: SendTransferParams): Promise<HexString> {
     const tx = transferAll ? this.#getTransferAllTx(destination) : this.#getTransferKeepAliveTx(destination, amount);
 
-    return tx.signAndSubmit(signer).then(({ txHash }) => txHash);
+    return new Promise((resolve, reject) => {
+      const extension = EXTENSIONS[this.#chainId]?.signedExtensions;
+      const txOptions = extension ? { customSignedExtensions: extension } : undefined;
+
+      tx.signSubmitAndWatch(signer, txOptions).subscribe(event => {
+        if (event.type !== 'txBestBlocksState') return;
+
+        if (event.found && event.ok) {
+          resolve(event.txHash);
+        } else {
+          reject(event.txHash);
+        }
+      });
+    });
   }
 
   #getTransferKeepAliveTx(destination: Address, amount: BN) {
+    if (this.#client.type === 'myth' || this.#client.type === 'glmr' || this.#client.type === 'movr') {
+      return this.#client.api.tx.Balances.transfer_keep_alive({
+        value: BigInt(amount.toString()),
+        dest: destination,
+      });
+    }
+
     return this.#client.api.tx.Balances.transfer_keep_alive({
       value: BigInt(amount.toString()),
-      dest: destination, // EVM only
-      // dest: Enum('Id', destination),
+      dest: Enum('Id', destination),
     });
   }
 
   #getTransferAllTx(destination: Address) {
+    if (this.#client.type === 'myth' || this.#client.type === 'glmr' || this.#client.type === 'movr') {
+      return this.#client.api.tx.Balances.transfer_all({
+        keep_alive: false,
+        dest: destination,
+      });
+    }
+
     return this.#client.api.tx.Balances.transfer_all({
       keep_alive: false,
-      dest: destination, // EVM only
-      // dest: Enum('Id', destination),
+      dest: Enum('Id', destination),
     });
   }
 
   getTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
-    const tx = transferAll
-      ? this.#getTransferAllTx('0x431621580885a1d9cf257Aaf0628D26Df3e9c591')
-      : this.#getTransferKeepAliveTx('0x431621580885a1d9cf257Aaf0628D26Df3e9c591', amount);
+    const fakeAddress = ['glmr', 'movr', 'myth'].includes(this.#client.type)
+      ? FAKE_ADDRESS_EVM
+      : FAKE_ADDRESS_SUBSTRATE;
 
-    return tx.getEstimatedFees('0x431621580885a1d9cf257Aaf0628D26Df3e9c591').then(fee => new BN(fee.toString()));
-    // return tx.getEstimatedFees(stringToU8a(FAKE_ACCOUNT_ID)).then(fee => new BN(fee.toString()));
+    const tx = transferAll ? this.#getTransferAllTx(fakeAddress) : this.#getTransferKeepAliveTx(fakeAddress, amount);
+    const extension = EXTENSIONS[this.#chainId]?.signedExtensions;
+    const txOptions = extension ? { customSignedExtensions: extension } : undefined;
+
+    return tx.getEstimatedFees(fakeAddress, txOptions).then(fee => new BN(fee.toString()));
   }
 
   async getGiftTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {

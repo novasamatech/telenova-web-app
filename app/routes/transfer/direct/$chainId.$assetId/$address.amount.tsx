@@ -58,7 +58,7 @@ const Page = () => {
   } = useAmountLogic({
     services: {
       balanceService: balancesFactory.createService(typedChainId, connections[typedChainId].client!, selectedAsset),
-      transferService: transferFactory.createService(connections[typedChainId].client!, selectedAsset),
+      transferService: transferFactory.createService(typedChainId, connections[typedChainId].client!, selectedAsset),
     },
     asset: selectedAsset!,
     isGift: false,

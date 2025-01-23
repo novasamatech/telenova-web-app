@@ -2,15 +2,16 @@ import { type PolkadotClient, type SS58String } from 'polkadot-api';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 
-import { type GenericApi } from '../types';
+import { type GenericApi, type ParaApi } from '../types';
 
 import { type AssetBalance, type NativeAsset } from '@/types/substrate';
 
-import { type IBalance, type ParaApi } from './types';
+import { type IBalance } from './types';
 
-import { dot, ztg } from '@polkadot-api/descriptors';
+import { dot, kilt, ztg } from '@polkadot-api/descriptors';
 
-type ClientApi = GenericApi | ParaApi;
+type ParachainsApi = ParaApi<'kilt', typeof kilt> | ParaApi<'ztg', typeof ztg>;
+type ClientApi = GenericApi<typeof dot> | ParachainsApi;
 
 export class NativeBalanceService implements IBalance {
   readonly #client: ClientApi;
@@ -24,20 +25,15 @@ export class NativeBalanceService implements IBalance {
   }
 
   #getTypedClientApi(chainId: ChainId, client: PolkadotClient): ClientApi {
-    const config: Record<ChainId, (client: PolkadotClient) => ClientApi> = {
-      // HKO
-      '0x64a1c658a48b2e70a7fb1ad4c39eea35022568c20fc44a6e2e3d0a57aee6053b': client => ({
-        type: 'para',
-        api: client.getTypedApi(ztg),
+    const config: Record<ChainId, (client: PolkadotClient) => ParachainsApi> = {
+      // KILT
+      '0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21': client => ({
+        type: 'kilt',
+        api: client.getTypedApi(kilt),
       }),
-      // PARA
-      '0xe61a41c53f5dcd0beb09df93b34402aada44cb05117b71059cce40a2723a4e97': client => ({
-        type: 'para',
-        api: client.getTypedApi(ztg),
-      }),
-      // SUB
-      '0x4a12be580bb959937a1c7a61d5cf24428ed67fa571974b4007645d1886e7c89f': client => ({
-        type: 'para',
+      // ZTG
+      '0x1bf2a2ecb4a868de66ea8610f2ce7c8c43706561b6476031315f6640fe38e060': client => ({
+        type: 'ztg',
         api: client.getTypedApi(ztg),
       }),
     };
@@ -46,19 +42,7 @@ export class NativeBalanceService implements IBalance {
   }
 
   subscribeBalance(address: Address, callback: (newBalance: AssetBalance) => void): VoidFunction {
-    if (this.#client.type === 'para') {
-      return this.#subscribeParaApi(this.#client.api, address, callback);
-    }
-
-    return this.#subscribeGenericApi(this.#client.api, address, callback);
-  }
-
-  #subscribeGenericApi(
-    api: GenericApi['api'],
-    address: Address,
-    callback: (newBalance: AssetBalance) => void,
-  ): VoidFunction {
-    return api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+    const handler = (data: { free: bigint; reserved: bigint; frozen: bigint; flags: bigint }) => {
       const frozen = new BN(data.frozen.toString());
       const free = new BN(data.free.toString());
       const reserved = new BN(data.reserved.toString());
@@ -76,31 +60,22 @@ export class NativeBalanceService implements IBalance {
           transferable: free.gt(frozen) ? free.sub(frozen) : BN_ZERO,
         },
       });
-    }).unsubscribe;
-  }
+    };
 
-  #subscribeParaApi(api: ParaApi['api'], address: Address, callback: (newBalance: AssetBalance) => void): VoidFunction {
-    return api.query.System.Account.watchValue(address).subscribe(({ data }) => {
-      // @ts-expect-error could not parse metadata for HKO PARA SUB (14.10.2024)
-      const useFrozen = data.miscFrozen > data.feeFrozen;
-      // @ts-expect-error convert to BN values
-      const frozen = useFrozen ? new BN(data.miscFrozen.toString()) : new BN(data.feeFrozen.toString());
-      const free = new BN(data.free.toString());
-      const reserved = new BN(data.reserved.toString());
+    if (this.#client.type === 'kilt') {
+      return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+        handler(data);
+      }).unsubscribe;
+    }
 
-      callback({
-        address,
-        chainId: this.#chainId,
-        assetId: this.#asset.assetId,
-        balance: {
-          free,
-          frozen,
-          reserved,
+    if (this.#client.type === 'ztg') {
+      return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+        handler(data);
+      }).unsubscribe;
+    }
 
-          total: free.add(reserved),
-          transferable: free.gt(frozen) ? free.sub(frozen) : BN_ZERO,
-        },
-      });
+    return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+      handler(data);
     }).unsubscribe;
   }
 

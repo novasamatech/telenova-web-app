@@ -1,10 +1,5 @@
-import { type ExtDef } from '@polkadot/types/extrinsic/signedExtensions/types';
-
-export const signedExtensions: ExtDef = {
+export const signedExtensions: Record<string, { value: unknown }> = {
   CheckAppId: {
-    extrinsic: {
-      appId: 'AppId',
-    },
-    payload: {},
+    value: 0,
   },
 };

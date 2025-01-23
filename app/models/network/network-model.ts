@@ -97,7 +97,7 @@ const createPolkadotClientFx = createEffect((params: CreateClientParams): Polkad
             break;
           // Connected
           case 1:
-            console.info('🟢 Provider connecting ==> ', params.name);
+            console.info('🟢 Provider connected ==> ', params.name);
             boundStatusChange({ chainId: params.chainId, status: 'connected' });
             break;
           // Error
@@ -264,7 +264,7 @@ sample({
     const { [assetId]: _a, ...restAssets } = assets[chainId]!;
     const newAssets = isLastAsset ? restChains : { ...assets, [chainId]: restAssets };
 
-    // If chain is not disconnected then disconnect, notify with asset, assets is updated anyway
+    // If chain is not disconnected then disconnect, notify with asset, $assets is updated anyway
     return {
       assets: newAssets,
       notify: { chainId, assetId, status: 'off' as const },

@@ -55,7 +55,7 @@ describe('models/balances/balances-model', () => {
   });
 
   test('should update $subscriptions on assetToUnsubSet', async () => {
-    const mockedSubscriptions = { '0x001': { 0: Promise.resolve(noop), 1: Promise.resolve(noop) } };
+    const mockedSubscriptions = { '0x001': { 0: noop, 1: noop } };
 
     const scope = fork({
       values: [[balancesModel._internal.$subscriptions, mockedSubscriptions]],
@@ -63,7 +63,7 @@ describe('models/balances/balances-model', () => {
 
     await allSettled(balancesModel.input.assetToUnsubSet, { scope, params: { chainId: '0x001', assetId: 1 } });
 
-    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 0: Promise.resolve(noop) } });
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 0: noop } });
   });
 
   test('should unsub all $subscriptions for chainId if assetId is absent', async () => {
@@ -85,7 +85,7 @@ describe('models/balances/balances-model', () => {
 
   test('should update $subscriptions on subscribeChainsAssetsFx', async () => {
     const mockedSubscriptions = { '0x001': undefined };
-    const fakeSubscribeFx = vi.fn().mockReturnValue({ '0x001': { 1: Promise.resolve(noop) } });
+    const fakeSubscribeFx = vi.fn().mockReturnValue({ '0x001': { 1: noop } });
 
     const scope = fork({
       values: [[balancesModel._internal.$subscriptions, mockedSubscriptions]],
@@ -97,7 +97,7 @@ describe('models/balances/balances-model', () => {
       params: { clients: {}, chains: [], assets: [], wallet: new Wallet('123') },
     });
 
-    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 1: Promise.resolve(noop) } });
+    expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({ '0x001': { 1: noop } });
   });
 
   test('should update $subscriptions on assetToUnsubSet', async () => {
@@ -106,7 +106,7 @@ describe('models/balances/balances-model', () => {
     const scope = fork({
       values: [
         [networkModel._internal.$assets, { '0x001': { 0: {} } }],
-        [balancesModel._internal.$subscriptions, { '0x001': { 0: Promise.resolve(spyUnsub) } }],
+        [balancesModel._internal.$subscriptions, { '0x001': { 0: spyUnsub } }],
       ],
     });
 
@@ -120,9 +120,8 @@ describe('models/balances/balances-model', () => {
   });
 
   test('should update $subscriptions on assetToSubSet', async () => {
-    const unsubPromise = Promise.resolve(noop);
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
-      subscribeBalance: vi.fn().mockResolvedValue(noop),
+      subscribeBalance: vi.fn().mockReturnValue(noop),
       getFreeBalance: vi.fn(),
       getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
@@ -131,7 +130,7 @@ describe('models/balances/balances-model', () => {
     const scope = fork({
       values: [
         [networkModel._internal.$assets, { '0x003': { 0: {} } }],
-        [balancesModel._internal.$subscriptions, { '0x003': { 0: unsubPromise } }],
+        [balancesModel._internal.$subscriptions, { '0x003': { 0: noop } }],
         [walletModel._internal.$wallet, new Wallet('123')],
         [networkModel._internal.$chains, mockedChains],
         [networkModel._internal.$connections, { '0x003': { api: {}, status: 'connected' } }],
@@ -144,14 +143,13 @@ describe('models/balances/balances-model', () => {
     });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
-      '0x003': { 0: unsubPromise, 1: unsubPromise },
+      '0x003': { 0: noop, 1: noop },
     });
   });
 
   test('should subscribe $assets for chainId on networkModel.output.connectionChanged', async () => {
-    const unsubPromise = Promise.resolve(noop);
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
-      subscribeBalance: vi.fn().mockResolvedValue(noop),
+      subscribeBalance: vi.fn().mockReturnValue(noop),
       getFreeBalance: vi.fn(),
       getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
@@ -178,14 +176,14 @@ describe('models/balances/balances-model', () => {
     });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
-      '0x003': { 0: unsubPromise, 1: unsubPromise },
+      '0x003': { 0: noop, 1: noop },
     });
   });
 
   test('should unsubscribe $assets for chainId on networkModel.output.connectionChanged', async () => {
     const spyUnsub = vi.fn();
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
-      subscribeBalance: vi.fn().mockResolvedValue(spyUnsub),
+      subscribeBalance: vi.fn().mockReturnValue(spyUnsub),
       getFreeBalance: vi.fn(),
       getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
@@ -199,8 +197,8 @@ describe('models/balances/balances-model', () => {
         [
           balancesModel._internal.$subscriptions,
           {
-            '0x001': { 1: Promise.resolve(spyUnsub) },
-            '0x003': { 0: Promise.resolve(spyUnsub), 1: Promise.resolve(spyUnsub) },
+            '0x001': { 1: spyUnsub },
+            '0x003': { 0: spyUnsub, 1: spyUnsub },
           },
         ],
       ],
@@ -213,15 +211,14 @@ describe('models/balances/balances-model', () => {
 
     expect(spyUnsub).toHaveBeenCalledTimes(2);
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
-      '0x001': { 1: Promise.resolve(spyUnsub) },
+      '0x001': { 1: spyUnsub },
       '0x003': undefined,
     });
   });
 
   test('should update $subscriptions when walletModel.$wallet updates', async () => {
-    const unsubPromise = Promise.resolve(noop);
     vi.spyOn(balancesFactory, 'createService').mockReturnValue({
-      subscribeBalance: vi.fn().mockResolvedValue(noop),
+      subscribeBalance: vi.fn().mockReturnValue(noop),
       getFreeBalance: vi.fn(),
       getFreeBalances: vi.fn(),
       getExistentialDeposit: vi.fn(),
@@ -244,8 +241,8 @@ describe('models/balances/balances-model', () => {
     await allSettled(walletModel._internal.$wallet, { scope, params: new Wallet('123') });
 
     expect(scope.getState(balancesModel._internal.$subscriptions)).toEqual({
-      '0x001': { 0: unsubPromise },
-      '0x003': { 0: unsubPromise, 1: unsubPromise },
+      '0x001': { 0: noop },
+      '0x003': { 0: noop, 1: noop },
     });
   });
 });

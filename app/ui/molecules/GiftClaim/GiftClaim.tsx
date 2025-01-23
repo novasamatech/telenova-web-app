@@ -83,7 +83,7 @@ export const GiftClaim = () => {
     const giftBalance = await balancesFactory.createService(chainId, client, asset).getFreeBalance(giftAddress);
     if (giftBalance.isZero()) return BN_ZERO;
 
-    const fee = await transferFactory.createService(client, asset).getTransferFee({ transferAll: true });
+    const fee = await transferFactory.createService(chainId, client, asset).getTransferFee({ transferAll: true });
     const rawBalance = giftBalance.sub(fee);
 
     return rawBalance.isNeg() ? BN_ZERO : rawBalance;
@@ -115,7 +115,7 @@ export const GiftClaim = () => {
     }
 
     transferFactory
-      .createService(connections[giftInfo.chainId].client!, giftInfo.asset)
+      .createService(giftInfo.chainId, connections[giftInfo.chainId].client!, giftInfo.asset)
       .sendTransfer({
         signer: giftInfo.signer,
         amount: giftBalance,

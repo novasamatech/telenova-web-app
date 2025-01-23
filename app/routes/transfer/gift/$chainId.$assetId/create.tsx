@@ -72,7 +72,7 @@ const Page = () => {
     const giftWallet = new Wallet(giftSeed);
 
     transferFactory
-      .createService(connections[typedChainId].client!, selectedAsset)
+      .createService(typedChainId, connections[typedChainId].client!, selectedAsset)
       .sendTransfer({
         signer: wallet.getSigner(chains[typedChainId]),
         amount: new BN(amount),

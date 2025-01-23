@@ -2,7 +2,7 @@ import { allSettled, fork } from 'effector';
 import { keyBy } from 'lodash-es';
 import { describe, expect, test, vi } from 'vitest';
 
-import { chainsApi } from '@/shared/api';
+import { TelegramApi, chainsApi } from '@/shared/api';
 import { CONNECTIONS_STORE, KUSAMA, POLKADOT, POLKADOT_ASSET_HUB } from '@/shared/helpers';
 import { type AssetsMap, type Chain } from '@/types/substrate';
 
@@ -52,11 +52,7 @@ describe('@/common/network/network-model', () => {
   const effectMocks = {
     createPolkadotClientFx: {
       fx: networkModel._internal.createPolkadotClientFx,
-      data: () =>
-        vi.fn().mockImplementation(({ chainId }: any) => ({
-          provider: {},
-          api: { genesisHash: { toHex: () => chainId } },
-        })),
+      data: () => vi.fn().mockResolvedValue({}),
     },
     getConnectedAssetsFx: {
       fx: networkModel._internal.getConnectedAssetsFx,
@@ -101,23 +97,19 @@ describe('@/common/network/network-model', () => {
       [mockedChains[3].chainId]: { 1: { assetId: 1 } },
     });
 
-    const connection = { provider: expect.any(Object), api: expect.any(Object) };
     expect(scope.getState(networkModel.$connections)).toEqual({
-      [mockedChains[0].chainId]: { ...connection, status: 'connected' }, // Polkadot
-      [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
+      [mockedChains[0].chainId]: { client: expect.any(Object), status: 'connecting' }, // Polkadot
+      [mockedChains[1].chainId]: { client: expect.any(Object), status: 'connecting' }, // Kusama
       [mockedChains[2].chainId]: { status: 'disconnected' }, // Karura
-      [mockedChains[3].chainId]: { ...connection, status: 'connected' }, // Polkadot Asset Hub
+      [mockedChains[3].chainId]: { client: expect.any(Object), status: 'connecting' }, // Polkadot Asset Hub
       [mockedChains[4].chainId]: { status: 'disconnected' }, // Westend
     });
   });
 
   test('should connect to default_chains + Karura from CloudStorage on networkStarted event', async () => {
-    vi.spyOn(chainsApi, 'getChainsData').mockResolvedValue(mockedChains);
-
     // Karura (index 2) and chain (index 19) that's missing in chains.json
-    const getItem = (_: string, cb: (_: null, result: string) => void) => cb(null, '2_0,2;19_0,2,3;');
-
-    window.Telegram = { WebApp: { CloudStorage: { getItem } } } as any;
+    vi.spyOn(TelegramApi, 'getItem').mockResolvedValue('2_0,2;19_0,2,3;');
+    vi.spyOn(chainsApi, 'getChainsData').mockResolvedValue(mockedChains);
 
     const scope = fork({
       handlers: [[effectMocks.createPolkadotClientFx.fx, effectMocks.createPolkadotClientFx.data()]],
@@ -132,12 +124,11 @@ describe('@/common/network/network-model', () => {
       [mockedChains[3].chainId]: { 1: { assetId: 1 } },
     });
 
-    const connection = { provider: expect.any(Object), api: expect.any(Object) };
     expect(scope.getState(networkModel.$connections)).toEqual({
-      [mockedChains[0].chainId]: { ...connection, status: 'connected' }, // Polkadot
-      [mockedChains[1].chainId]: { ...connection, status: 'connected' }, // Kusama
-      [mockedChains[2].chainId]: { ...connection, status: 'connected' }, // Karura
-      [mockedChains[3].chainId]: { ...connection, status: 'connected' }, // Polkadot Asset Hub
+      [mockedChains[0].chainId]: { client: expect.any(Object), status: 'connecting' }, // Polkadot
+      [mockedChains[1].chainId]: { client: expect.any(Object), status: 'connecting' }, // Kusama
+      [mockedChains[2].chainId]: { client: expect.any(Object), status: 'connecting' }, // Karura
+      [mockedChains[3].chainId]: { client: expect.any(Object), status: 'connecting' }, // Polkadot Asset Hub
       [mockedChains[4].chainId]: { status: 'disconnected' }, // Westend
     });
   });
@@ -159,9 +150,8 @@ describe('@/common/network/network-model', () => {
       params: { chainId: mockedChains[2].chainId, assetId: 0 },
     });
 
-    const connection = { provider: expect.any(Object), api: expect.any(Object) };
     expect(scope.getState(networkModel.$connections)).toEqual({
-      [mockedChains[2].chainId]: { ...connection, status: 'connected' }, // Karura
+      [mockedChains[2].chainId]: { client: expect.any(Object), status: 'connecting' }, // Karura
     });
   });
 
@@ -172,7 +162,7 @@ describe('@/common/network/network-model', () => {
         [networkModel._internal.$assets, { [mockedChains[0].chainId]: { 0: true } }],
         [
           networkModel._internal.$connections,
-          { [mockedChains[0].chainId]: { provider: {}, api: {}, status: 'connected' } }, // Polkadot
+          { [mockedChains[0].chainId]: { client: expect.any(Object), status: 'connecting' } }, // Polkadot
         ],
       ],
       handlers: [[networkModel._internal.disconnectFx, () => mockedChains[0].chainId]],
@@ -184,7 +174,7 @@ describe('@/common/network/network-model', () => {
     });
 
     expect(scope.getState(networkModel.$connections)).toEqual({
-      [mockedChains[0].chainId]: { status: 'disconnected' }, // Polkadot
+      [mockedChains[0].chainId]: { client: expect.any(Object), status: 'disconnected' }, // Polkadot
     });
   });
 
