@@ -1,15 +1,14 @@
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
-import { type BN } from '@polkadot/util';
+import { type BN, BN_ZERO } from '@polkadot/util';
 
 import { toFormattedBalance } from '@/shared/helpers';
 import { type Asset, type AssetPrices } from '@/types/substrate';
 import { AmountInput, AssetIcon, BodyText, Icon, LargeTitleText, TokenPrice } from '@/ui/atoms';
 
-//TODO: Change layout mobile text
 type Props = {
   asset: Asset;
-  amount: BN;
+  amount: BN | null;
   prices: AssetPrices | null;
   deposit: BN;
   maxAmount: BN;
@@ -31,10 +30,10 @@ export const AmountDetails = ({
   onAmountChange,
   children,
 }: PropsWithChildren<Props>) => {
-  const [inputAmount, setInputAmount] = useState(toFormattedBalance(amount, asset.precision).value);
+  const [inputAmount, setInputAmount] = useState(amount ? toFormattedBalance(amount, asset.precision).value : '');
 
   useEffect(() => {
-    if (maxAmount.isZero() || amount.isZero() || !maxAmount.eq(amount)) return;
+    if (maxAmount.isZero() || !amount || amount.isZero() || !maxAmount.eq(amount)) return;
 
     setInputAmount(toFormattedBalance(maxAmount, asset.precision).value);
   }, [amount, maxAmount]);
@@ -60,11 +59,11 @@ export const AmountDetails = ({
       </div>
 
       {isAmountValid && !isPending && (
-        <TokenPrice showBalance className="col-span-2" balance={amount} prices={prices} asset={asset} />
+        <TokenPrice showBalance className="col-span-2" balance={amount || BN_ZERO} prices={prices} asset={asset} />
       )}
       {!isAmountValid && (
         <BodyText align="right" className="text-text-danger">
-          {amount.gt(maxAmount) ? 'Insufficient balance' : 'Invalid amount'} <br />
+          {(amount || BN_ZERO).gt(maxAmount) ? 'Insufficient balance' : 'Invalid amount'} <br />
           {children}
         </BodyText>
       )}

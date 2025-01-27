@@ -1,5 +1,5 @@
 import { isHex, isU8a, u8aToU8a } from '@polkadot/util';
-import { base58Decode, checkAddressChecksum, encodeAddress, isEthereumChecksum } from '@polkadot/util-crypto';
+import { base58Decode, checkAddressChecksum, encodeAddress } from '@polkadot/util-crypto';
 import { ethereumEncode } from '@polkadot/util-crypto/ethereum/encode';
 
 import { isEvmChain } from '@/shared/helpers/chains.ts';
@@ -100,7 +100,7 @@ function validateEvmAddress(address: Address | PublicKey): boolean {
   try {
     if (!isU8a(address) && !isHex(address)) return false;
 
-    return u8aToU8a(address).length === ETHEREUM_PUBLIC_KEY_LENGTH_BYTES && isEthereumChecksum(address);
+    return u8aToU8a(address).length === ETHEREUM_PUBLIC_KEY_LENGTH_BYTES;
   } catch {
     return false;
   }

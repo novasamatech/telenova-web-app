@@ -3,6 +3,7 @@ export default {
   'text-on-button': 'var(--white-white900)',
   'text-on-button-disabled': 'var(--gray-gray300)',
   'text-hint': 'var(--gray-gray700)',
+  'text-light-hint': 'var(--gray-gray250)',
   'text-link': 'var(--blue-blue600)',
   'text-link-pressed': 'var(--blue-blue800)',
   'text-on-button-bold': 'var(--blue-blue600)',

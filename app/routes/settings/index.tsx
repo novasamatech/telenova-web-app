@@ -105,18 +105,27 @@ const Page = () => {
             </PopoverContent>
           </Popover>
         </Plate>
-
         <button
-          className="flex h-[108px] w-full overflow-hidden rounded-2xl bg-[url('/assets/misc/gradient.avif')] bg-[25%_25%]"
+          className="flex h-[108px] w-full rounded-2xl"
+          style={{
+            background:
+              'linear-gradient(118deg, #2955B1 -12.5%, rgba(41, 85, 177, 0) 48%),' +
+              'linear-gradient(248deg, #581BC0 -14.5%, rgba(99, 42, 196, 0) 48%),' +
+              'linear-gradient(0deg, #000000, #000000)',
+          }}
           onClick={migrateToNovaWallet}
         >
-          <img src="/assets/misc/phone.avif" alt="" className="ml-6 mt-1.5 w-[106px]" />
           <div className="mx-auto flex w-[190px] flex-col gap-y-4 self-center">
             <BodyText className="-indent-1 text-body-bold text-white">Upgrade to Nova Wallet!</BodyText>
-            <HelpText className="text-balance font-semibold text-white">
+            <HelpText className="text-balance font-semibold text-text-light-hint">
               Earn up to <b>20% APY</b> using the Polkadot’s best wallet
             </HelpText>
           </div>
+          <img
+            src="/assets/misc/phone.avif"
+            alt=""
+            className="-mt-2.5 mr-6 h-[118px] w-[106px] object-cover object-top"
+          />
         </button>
         <Plate className="w-full p-0">
           <LinkCard

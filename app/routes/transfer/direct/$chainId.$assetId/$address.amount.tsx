@@ -73,7 +73,7 @@ const Page = () => {
   }, [transferAmount]);
 
   const navigateToConfirm = () => {
-    if (!selectedAsset) return;
+    if (!selectedAsset || !amount) return;
 
     const params = { chainId, assetId, address };
     const query = { amount: amount.toString(), fee: fee.toString(), all: isTransferAll };

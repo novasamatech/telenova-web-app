@@ -18,7 +18,7 @@ type AmountLogicParams = {
 
 export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogicParams) => {
   const [fee, setFee] = useState(BN_ZERO);
-  const [amount, setAmount] = useState(BN_ZERO);
+  const [amount, setAmount] = useState<BN | null>(null);
   const [deposit, setDeposit] = useState(BN_ZERO);
   const [maxAmount, setMaxAmount] = useState(BN_ZERO);
 
@@ -31,7 +31,7 @@ export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogic
   const { balanceService, transferService } = services;
 
   useEffect(() => {
-    if (amount.isZero()) return;
+    if (!amount || amount.isZero()) return;
 
     setPending(true);
     const feeParams = { amount, transferAll: isTransferAll };
@@ -56,7 +56,7 @@ export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogic
   }, []);
 
   useEffect(() => {
-    if (!isTouched) return;
+    if (!isTouched || !amount) return;
 
     const isUnderMax = amount.lte(maxAmount);
     const isOverDeposit = maxAmount.sub(amount).gte(deposit);
@@ -74,7 +74,7 @@ export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogic
   };
 
   const getIsAccountToBeReaped = (): boolean => {
-    if (amount.isZero() || fee.isZero() || !isTouched || isTransferAll) return false;
+    if (!amount || amount.isZero() || fee.isZero() || !isTouched || isTransferAll) return false;
 
     // We don't add fee to the amount because maxAmount is already subtracted by fee
     return maxAmount.sub(amount).lt(deposit);

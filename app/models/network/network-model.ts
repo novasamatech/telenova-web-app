@@ -46,8 +46,10 @@ const requestChainsFx = createEffect(async (file: 'chains_dev' | 'chains_prod'):
 });
 
 const initConnectionsFx = createEffect((chainsMap: Record<ChainId, AssetId[]>) => {
+  const boundInit = scopeBind(assetInitialized, { safe: true });
+
   Object.entries(chainsMap).forEach(([chainId, assetIds]) => {
-    assetIds.forEach(assetId => assetInitialized({ chainId: chainId as ChainId, assetId }));
+    assetIds.forEach(assetId => boundInit({ chainId: chainId as ChainId, assetId }));
   });
 });
 
@@ -139,14 +141,16 @@ const $sortedAssets = combine($assets, assets => {
 
   for (const [chainId, assetMap] of Object.entries(assets)) {
     const typedChainId = chainId as ChainId;
-    const isChainToPresort = DEFAULT_CHAINS_ORDER[typedChainId];
+    const chainToPresort = DEFAULT_CHAINS_ORDER[typedChainId];
 
     for (const asset of Object.values(assetMap)) {
-      if (!isChainToPresort || !(asset.assetId in DEFAULT_CHAINS_ORDER[typedChainId])) {
-        assetsToSort.push([typedChainId, asset]);
-      } else {
-        const index = DEFAULT_CHAINS_ORDER[typedChainId][asset.assetId];
+      if (!asset) continue;
+
+      if (chainToPresort && asset.assetId in chainToPresort) {
+        const index = chainToPresort[asset.assetId];
         preSortedAssets[index] = [typedChainId, asset];
+      } else {
+        assetsToSort.push([typedChainId, asset]);
       }
     }
   }
@@ -183,15 +187,16 @@ sample({
   target: $connections,
 });
 
+// Init connections for DEFAULT_CONNECTED_CHAINS (dot, ksm, usdt)
 sample({
   clock: requestChainsFx.doneData,
   fn: chains => {
     const chainsMap: Record<ChainId, AssetId[]> = {};
 
-    for (const chain of Object.values(chains)) {
-      if (!DEFAULT_CONNECTED_CHAINS[chain.chainId]) continue;
+    for (const [chainId, assets] of Object.entries(DEFAULT_CONNECTED_CHAINS)) {
+      if (!chains[chainId as ChainId]) continue;
 
-      chainsMap[chain.chainId] = DEFAULT_CONNECTED_CHAINS[chain.chainId];
+      chainsMap[chainId as ChainId] = assets;
     }
 
     return chainsMap;
@@ -199,6 +204,7 @@ sample({
   target: initConnectionsFx,
 });
 
+// Init connections for chains from Telegram Cloud Storage
 sample({
   clock: combineEvents([requestChainsFx.doneData, getConnectedAssetsFx.doneData]),
   fn: ([chains, assetsMap]) => {
@@ -222,8 +228,11 @@ sample({
     assets: $assets,
     connections: $connections,
   },
-  filter: ({ assets }, { chainId, assetId }) => {
-    return !assets[chainId]?.[assetId];
+  filter: ({ chains, assets }, { chainId, assetId }) => {
+    const isChainContainsAsset = chains[chainId].assets.some(a => a.assetId === assetId);
+    const isAssetAdded = assets[chainId]?.[assetId];
+
+    return isChainContainsAsset && !isAssetAdded;
   },
   fn: ({ chains, connections, assets }, { chainId, assetId }) => {
     const isDisconnected = connections[chainId].status === 'disconnected';

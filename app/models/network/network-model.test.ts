@@ -133,6 +133,31 @@ describe('@/common/network/network-model', () => {
     });
   });
 
+  test('should connect to default_chains and filter out wrong Karura asset on networkStarted event', async () => {
+    vi.spyOn(TelegramApi, 'getItem').mockResolvedValue('2_3;19_0,2,3;');
+    vi.spyOn(chainsApi, 'getChainsData').mockResolvedValue(mockedChains);
+
+    const scope = fork({
+      handlers: [[effectMocks.createPolkadotClientFx.fx, effectMocks.createPolkadotClientFx.data()]],
+    });
+
+    await allSettled(networkModel.input.networkStarted, { scope, params: 'chains_dev' });
+
+    expect(scope.getState(networkModel.$assets)).toEqual({
+      [mockedChains[0].chainId]: { 0: { assetId: 0 } },
+      [mockedChains[1].chainId]: { 0: { assetId: 0 } },
+      [mockedChains[3].chainId]: { 1: { assetId: 1 } },
+    });
+
+    expect(scope.getState(networkModel.$connections)).toEqual({
+      [mockedChains[0].chainId]: { client: expect.any(Object), status: 'connecting' }, // Polkadot
+      [mockedChains[1].chainId]: { client: expect.any(Object), status: 'connecting' }, // Kusama
+      [mockedChains[2].chainId]: { status: 'disconnected' }, // Karura
+      [mockedChains[3].chainId]: { client: expect.any(Object), status: 'connecting' }, // Polkadot Asset Hub
+      [mockedChains[4].chainId]: { status: 'disconnected' }, // Westend
+    });
+  });
+
   test('should connect to Karura on assetConnected event', async () => {
     const scope = fork({
       values: [

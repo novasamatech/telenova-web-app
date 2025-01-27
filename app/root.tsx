@@ -55,7 +55,7 @@ export const Layout = ({ children }: PropsWithChildren) => (
       <Links />
     </head>
     <body>
-      <DataContext>{children}</DataContext>
+      {children}
       <ScrollRestoration />
       <script src="https://telegram.org/js/telegram-web-app.js" />
       <Scripts />
@@ -69,7 +69,7 @@ export const loader = (() => {
   });
 }) satisfies LoaderFunction;
 
-const DataContext = ({ children }: PropsWithChildren) => {
+const App = () => {
   const { file } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
@@ -101,16 +101,14 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
   if (telegramError) return <ErrorScreen error={telegramError.message} />;
 
-  return <GlobalStateProvider>{children}</GlobalStateProvider>;
-};
-
-const App = () => {
   return (
-    <main className="flex justify-center font-manrope">
-      <div className="min-h-screen w-full overflow-x-auto break-words p-4">
-        <Outlet />
-      </div>
-    </main>
+    <GlobalStateProvider>
+      <main className="flex justify-center font-manrope">
+        <div className="min-h-screen w-full overflow-x-auto break-words p-4">
+          <Outlet />
+        </div>
+      </main>
+    </GlobalStateProvider>
   );
 };
 
