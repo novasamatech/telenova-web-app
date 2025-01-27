@@ -29,17 +29,9 @@ export class StatemineBalanceService implements IBalance {
   }
 
   subscribeBalance(address: Address, callback: (newBalance: AssetBalance) => void): VoidFunction {
-    return this.#subscribeGenericApi(this.#client.api, address, callback);
-  }
-
-  #subscribeGenericApi(
-    api: GenericApi<typeof dotAh>['api'],
-    address: Address,
-    callback: (newBalance: AssetBalance) => void,
-  ): VoidFunction {
     const assetId = Number(assetUtils.getAssetId(this.#asset));
 
-    return api.query.Assets.Account.watchValue(assetId, address).subscribe(accountInfo => {
+    return this.#client.api.query.Assets.Account.watchValue(assetId, address).subscribe(accountInfo => {
       const free = accountInfo ? new BN(accountInfo.balance.toString()) : BN_ZERO;
 
       callback({

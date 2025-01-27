@@ -15,7 +15,6 @@ import { type Chain } from '@/types/substrate';
 type SupportedPairs = 'sr25519' | 'ecdsa';
 
 export const keyringApi = {
-  getKeyPairFromSeed,
   getKeyPairsFromSeed,
 
   getSignersFromSeed,
@@ -30,17 +29,6 @@ function getKeyPairsFromSeed(mnemonic: Mnemonic): Record<SupportedPairs, KeyPair
     sr25519: getSubstrateKeyPair(mnemonic),
     ecdsa: getEvmKeyPair(mnemonic),
   };
-}
-
-function getKeyPairFromSeed(mnemonic: Mnemonic, chain: Chain): KeyPair {
-  const type = isEvmChain(chain) ? 'ecdsa' : 'sr25519';
-
-  const KEYPAIR_TYPES: Record<SupportedPairs, (mnemonic: Mnemonic) => KeyPair> = {
-    sr25519: getSubstrateKeyPair,
-    ecdsa: getEvmKeyPair,
-  };
-
-  return KEYPAIR_TYPES[type](mnemonic);
 }
 
 function getSubstrateKeyPair(mnemonic: Mnemonic): KeyPair {
