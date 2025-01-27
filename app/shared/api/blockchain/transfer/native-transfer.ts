@@ -48,18 +48,14 @@ export class NativeTransferService implements ITransfer {
   sendTransfer({ amount, destination, signer, transferAll }: SendTransferParams): Promise<HexString> {
     const tx = transferAll ? this.#getTransferAllTx(destination) : this.#getTransferKeepAliveTx(destination, amount);
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const extension = EXTENSIONS[this.#chainId]?.signedExtensions;
       const txOptions = extension ? { customSignedExtensions: extension } : undefined;
 
       tx.signSubmitAndWatch(signer, txOptions).subscribe(event => {
-        if (event.type !== 'txBestBlocksState') return;
+        if (event.type !== 'broadcasted') return;
 
-        if (event.found && event.ok) {
-          resolve(event.txHash);
-        } else {
-          reject(event.txHash);
-        }
+        resolve(event.txHash);
       });
     });
   }

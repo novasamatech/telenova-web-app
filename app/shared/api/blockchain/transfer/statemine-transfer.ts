@@ -33,24 +33,20 @@ export class StatemineTransferService implements ITransfer {
   sendTransfer({ signer, destination, amount }: SendTransferParams): Promise<HexString> {
     const assetId = assetUtils.getAssetId(this.#asset);
 
-    const tx = this.#client.api.tx.Assets.transfer_keep_alive({
+    const tx = this.#client.api.tx.Assets.transfer({
       id: Number(assetUtils.getAssetId(this.#asset)),
       amount: BigInt(amount.toString()),
       target: Enum('Id', destination),
     });
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       tx.signSubmitAndWatch(signer, {
         asset: ASSET_LOCATION[assetId],
         customSignedExtensions: EXTENSIONS[this.#chainId]?.signedExtensions,
       }).subscribe(event => {
-        if (event.type !== 'txBestBlocksState') return;
+        if (event.type !== 'broadcasted') return;
 
-        if (event.found && event.ok) {
-          resolve(event.txHash);
-        } else {
-          reject(event.txHash);
-        }
+        resolve(event.txHash);
       });
     });
   }

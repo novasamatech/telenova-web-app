@@ -51,9 +51,11 @@ export class StatemineBalanceService implements IBalance {
   }
 
   getFreeBalance(address: Address): Promise<BN> {
-    return this.#client.api.query.System.Account.getValue(address).then(
-      balance => new BN(balance.data.free.toString()),
-    );
+    const assetId = Number(assetUtils.getAssetId(this.#asset));
+
+    return this.#client.api.query.Assets.Account.getValue(assetId, address).then(balance => {
+      return balance ? new BN(balance.balance.toString()) : BN_ZERO;
+    });
   }
 
   getFreeBalances(addresses: Address[]): Promise<BN[]> {

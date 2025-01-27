@@ -31,14 +31,31 @@ function getKeyPairsFromSeed(mnemonic: Mnemonic): Record<SupportedPairs, KeyPair
   };
 }
 
+function getNormalizedMnemonic(mnemonic: Mnemonic): Record<SupportedPairs, () => Uint8Array> {
+  if (mnemonic.length === 20) {
+    const normalizedMnemonic = new TextEncoder().encode(mnemonic.padEnd(32));
+
+    return {
+      sr25519: () => normalizedMnemonic,
+      ecdsa: () => normalizedMnemonic,
+    };
+  }
+
+  return {
+    sr25519: () => mnemonicToMiniSecret(mnemonic),
+    ecdsa: () => mnemonicToSeedSync(mnemonic),
+  };
+}
+
 function getSubstrateKeyPair(mnemonic: Mnemonic): KeyPair {
-  const seed = mnemonicToMiniSecret(mnemonic);
+  const seed = getNormalizedMnemonic(mnemonic).sr25519();
 
   return sr25519CreateDerive(seed)('');
 }
 
 function getEvmKeyPair(mnemonic: Mnemonic): KeyPair {
-  const seed = mnemonicToSeedSync(mnemonic);
+  const seed = getNormalizedMnemonic(mnemonic).ecdsa();
+
   const keyPair = HDKey.fromMasterSeed(seed).derive("m/44'/60'/0'/0/0");
   const publicKey = keccak_256(secp256k1.getPublicKey(keyPair.privateKey!, false).slice(1)).slice(-20);
 
