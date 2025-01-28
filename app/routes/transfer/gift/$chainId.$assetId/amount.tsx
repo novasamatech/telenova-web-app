@@ -62,13 +62,19 @@ const Page = () => {
   };
 
   const navigateToCreate = () => {
+    if (!amount) return;
+
     const params = { chainId, assetId };
-    const query = { amount: amount.toString(), fee: fee.toString(), all: isTransferAll };
+    const query = {
+      amount: amount.add(fee.divn(2)).toString(),
+      gift: amount.toString(),
+      all: isTransferAll,
+    };
 
     navigate($path('/transfer/gift/:chainId/:assetId/create', params, query));
   };
 
-  const isAboveDeposit = amount.gte(deposit);
+  const isAboveDeposit = Boolean(!amount || amount.gte(deposit));
 
   if (!selectedAsset) return null;
 

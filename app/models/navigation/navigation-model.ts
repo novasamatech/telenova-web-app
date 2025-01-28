@@ -35,4 +35,9 @@ export const navigationModel = {
     navigatorChanged,
     navigatorPushed,
   },
+
+  /* Internal API (tests only) */
+  _internal: {
+    navigateFx,
+  },
 };

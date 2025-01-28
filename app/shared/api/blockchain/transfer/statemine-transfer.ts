@@ -53,22 +53,24 @@ export class StatemineTransferService implements ITransfer {
       },
     });
 
-    return this.#assetConversion(fee);
+    return this.#assetConversion(fee.muln(this.#asset.feeBuffer));
   }
 
   async getGiftTransferFee({ amount = BN_ZERO, ...rest }: FeeParams): Promise<BN> {
     const giftAccountFee = await this.getTransferFee({ ...rest, amount });
     const clientAccountFee = await this.getTransferFee({ ...rest, amount: amount.add(giftAccountFee) });
-    const totalFee = giftAccountFee.add(clientAccountFee);
 
-    return this.#assetConversion(totalFee);
+    // Fee includes conversion
+    return giftAccountFee.add(clientAccountFee);
   }
 
   // Right now it's AssetHub only USD(T|C)/DOT
   async #assetConversion(amount: BN): Promise<BN> {
+    const assetId = assetUtils.getAssetId(this.#asset);
+
     const convertedFee = await this.#api.call.assetConversionApi.quotePriceTokensForExactTokens(
       // @ts-expect-error type error
-      ASSET_LOCATION[this.#asset.typeExtras.assetId],
+      ASSET_LOCATION[assetId],
       ASSET_LOCATION['0'],
       amount,
       true,

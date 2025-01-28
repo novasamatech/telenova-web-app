@@ -86,7 +86,7 @@ const Page = () => {
             address={address}
             theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'}
           />
-          <MediumTitle>{toShortAddress(address, 15)}</MediumTitle>
+          <MediumTitle>{toShortAddress(address, 13)}</MediumTitle>
         </div>
       ),
     },

@@ -117,6 +117,9 @@ export const GiftClaim = () => {
         destination: wallet!.toAddress(chains[giftInfo.chainId]),
         transferAll: true,
       })
+      .then(hash => {
+        console.log('🟢 Transaction hash - ', hash.toHex());
+      })
       .catch(() => {
         TelegramApi.showAlert('Something went wrong. Failed to claim the gift.');
         handleClose();

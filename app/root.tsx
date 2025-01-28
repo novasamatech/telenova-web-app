@@ -21,6 +21,7 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesheet },
   { rel: 'shortcut icon', href: 'data:image/x-icon;,', type: 'image/x-icon' },
 
+  { rel: 'preconnect', href: 'https://telegram.org/js/telegram-web-app.js' },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
   { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap' },
@@ -52,11 +53,11 @@ export const Layout = ({ children }: PropsWithChildren) => (
     <head>
       <Meta />
       <Links />
-      <script defer src="https://telegram.org/js/telegram-web-app.js" />
     </head>
     <body>
-      <DataContext>{children}</DataContext>
+      {children}
       <ScrollRestoration />
+      <script src="https://telegram.org/js/telegram-web-app.js" />
       <Scripts />
     </body>
   </html>
@@ -68,7 +69,7 @@ export const loader = (() => {
   });
 }) satisfies LoaderFunction;
 
-const DataContext = ({ children }: PropsWithChildren) => {
+const App = () => {
   const { file } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
@@ -100,16 +101,14 @@ const DataContext = ({ children }: PropsWithChildren) => {
 
   if (telegramError) return <ErrorScreen error={telegramError.message} />;
 
-  return <GlobalStateProvider>{children}</GlobalStateProvider>;
-};
-
-const App = () => {
   return (
-    <main className="flex justify-center font-manrope">
-      <div className="min-h-screen w-full overflow-x-auto break-words p-4">
-        <Outlet />
-      </div>
-    </main>
+    <GlobalStateProvider>
+      <main className="flex justify-center font-manrope">
+        <div className="min-h-screen w-full overflow-x-auto break-words p-4">
+          <Outlet />
+        </div>
+      </main>
+    </GlobalStateProvider>
   );
 };
 

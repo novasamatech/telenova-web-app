@@ -46,4 +46,5 @@ function secureSetItem<T extends string | number | boolean | object>(key: string
 
 function clear() {
   localStorage.clear();
+  secureLocalStorage.clear();
 }

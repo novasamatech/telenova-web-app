@@ -20,8 +20,10 @@ import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
 export type SearchParams = {
+  // Transfer amount with fee
   amount: string;
-  fee: string;
+  // Pure gift amount
+  gift: string;
   all: boolean;
 };
 
@@ -39,7 +41,7 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
   const data = {
     ...$params('/transfer/gift/:chainId/:assetId/create', params),
     amount: url.searchParams.get('amount') || '',
-    fee: url.searchParams.get('fee') || '0',
+    gift: url.searchParams.get('gift') || '',
     all: url.searchParams.get('all') === 'true',
   };
 
@@ -47,7 +49,7 @@ export const clientLoader = (async ({ request, params, serverLoader }) => {
 }) satisfies ClientLoaderFunction;
 
 const Page = () => {
-  const { botUrl, appName, chainId, assetId, amount, fee, all } = useLoaderData<typeof clientLoader>();
+  const { botUrl, appName, chainId, assetId, amount, gift, all } = useLoaderData<typeof clientLoader>();
 
   const wallet = useUnit(walletModel.$wallet);
   const [chains, assets, connections] = useUnit([
@@ -76,7 +78,7 @@ const Page = () => {
       .createService(connections[typedChainId].api!, selectedAsset)
       .sendTransfer({
         keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
-        amount: new BN(amount).add(new BN(fee)),
+        amount: new BN(amount),
         destination: giftWallet.toAddress(selectedChain),
         transferAll: all,
       })
@@ -88,14 +90,14 @@ const Page = () => {
           assetId: selectedAsset.assetId,
           address: giftWallet.toAddress(selectedChain),
           secret: giftSeed,
-          balance: amount,
+          balance: gift,
           chainIndex: selectedChain.chainIndex,
         });
 
         const tgLink = botApi.createTelegramLink({
           botUrl,
           appName,
-          amount: toFormattedBalance(amount, selectedAsset.precision).formatted,
+          amount: toFormattedBalance(gift, selectedAsset.precision).formatted,
           secret: giftSeed,
           chainIndex: selectedChain.chainIndex,
           symbol: selectedAsset.symbol,
