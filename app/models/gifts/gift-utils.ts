@@ -11,7 +11,7 @@ type GiftInfo = {
   symbol: string;
   signer: PolkadotSigner;
 };
-export const getGiftInfo = (chains: Chain[], startParam: string): GiftInfo | undefined => {
+export const getGiftInfo = (chains: Chain[], startParam: string): GiftInfo | null => {
   const [seed, ...rest] = startParam.split('_');
   let symbol: string | undefined;
   let chain: Chain | undefined;
@@ -32,7 +32,7 @@ export const getGiftInfo = (chains: Chain[], startParam: string): GiftInfo | und
     asset = chain?.assets.find(asset => asset.symbol === symbol);
   }
 
-  if (!chain || !asset || !symbol) return undefined;
+  if (!chain || !asset || !symbol) return null;
 
   const signer = keyringApi.getSignerFromSeed(seed, chain);
 
