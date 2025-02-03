@@ -21,8 +21,8 @@ export const GiftPlate = ({ gift, isClaimed }: Props) => {
           {/* Balance for old gifts are already formatted */}
           {gift.chainIndex === undefined
             ? `${gift.balance}`
-            : `${toFormattedBalance(gift.balance, gift.chainAsset?.precision).formatted}`}
-          &nbsp;{gift.chainAsset?.symbol}
+            : `${toFormattedBalance(gift.balance, gift.asset.precision).formatted}`}
+          &nbsp;{gift.asset.symbol}
         </MediumTitle>
         <HelpText as="p" className="text-text-hint">
           Created: {date}

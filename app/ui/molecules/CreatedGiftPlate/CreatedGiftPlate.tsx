@@ -1,13 +1,10 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useUnit } from 'effector-react';
 import { $path } from 'remix-routes';
 
-import { networkModel } from '@/models/network';
-import { cnTw, getGifts } from '@/shared/helpers';
-import { useGifts } from '@/shared/hooks';
-import { type Gift } from '@/types/substrate';
+import { giftsModel } from '@/models/gifts';
+import { cnTw } from '@/shared/helpers';
 import { BodyText, Icon, MediumTitle, Plate, Shimmering } from '@/ui/atoms';
 
 type Props = {
@@ -15,20 +12,7 @@ type Props = {
 };
 
 export const CreatedGiftPlate = ({ className }: Props) => {
-  const { getGiftsState } = useGifts();
-
-  const connections = useUnit(networkModel.$connections);
-
-  const [unclaimed, setUnclaimed] = useState<Gift[] | null>(null);
-
-  useEffect(() => {
-    const localStorageGifts = getGifts();
-    if (localStorageGifts) {
-      getGiftsState(localStorageGifts).then(([unclaimed]) => setUnclaimed(unclaimed));
-    } else {
-      setUnclaimed([]);
-    }
-  }, [connections]);
+  const unclaimed = useUnit(giftsModel.$unclaimedGifts);
 
   return (
     <Plate

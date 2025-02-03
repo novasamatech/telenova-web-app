@@ -3,7 +3,7 @@ import type { UnsubscribePromise } from '@polkadot/api/types';
 import { type AccountData } from '@polkadot/types/interfaces';
 import { type BN, BN_ZERO } from '@polkadot/util';
 
-import { type AssetBalance, type Chain, type NativeAsset } from '@/types/substrate';
+import { type AssetBalance, type NativeAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
 
@@ -17,7 +17,7 @@ export class NativeBalanceService implements IBalance {
   }
 
   async subscribeBalance(
-    chain: Chain,
+    chainId: ChainId,
     address: Address,
     callback: (newBalance: AssetBalance) => void,
   ): UnsubscribePromise {
@@ -36,7 +36,7 @@ export class NativeBalanceService implements IBalance {
 
       callback({
         address,
-        chainId: chain.chainId,
+        chainId,
         assetId: this.#asset.assetId,
         balance: {
           free,
@@ -52,6 +52,12 @@ export class NativeBalanceService implements IBalance {
 
   getFreeBalance(address: Address): Promise<BN> {
     return this.#api.query.system.account(address).then(balance => balance.data.free.toBn());
+  }
+
+  getFreeBalances(addresses: Address[]): Promise<BN[]> {
+    return this.#api.query.system.account.multi(addresses).then(balances => {
+      return balances.map(balance => balance.data.free.toBn());
+    });
   }
 
   getExistentialDeposit(): Promise<BN> {
