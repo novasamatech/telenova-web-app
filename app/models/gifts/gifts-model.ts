@@ -239,8 +239,10 @@ export const giftsModel = {
     giftSaved,
   },
 
+  /* Internal API (tests only) */
   _internal: {
     $giftsMap,
     claimsRequested,
+    retrieveLocalGiftsFx,
   },
 };

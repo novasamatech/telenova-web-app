@@ -4,30 +4,41 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { BN_ZERO } from '@polkadot/util';
 
 import { networkModel } from '@/models/network';
-import { TelegramApi, balancesFactory, localStorageApi } from '@/shared/api';
+import { balancesFactory } from '@/shared/api';
 import { type Gift } from '@/types/substrate';
 
 import { giftsModel } from './gifts-model';
 
 describe('models/gifts/gifts-model', () => {
+  const effectMocks = {
+    retrieveLocalGiftsFx: {
+      fx: giftsModel._internal.retrieveLocalGiftsFx,
+      data: (value: unknown) => vi.fn().mockResolvedValue(value),
+    },
+  };
+
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
   test('should request local gifts on giftsRequested', async () => {
-    vi.spyOn(TelegramApi, 'getStoreName').mockReturnValue('store');
-    vi.spyOn(localStorageApi, 'getItem').mockReturnValue([
-      { chainId: '0x01', assetId: 1 },
-      { chainId: '0x02', assetId: 2 },
-    ]);
+    const existingGifts = {
+      '0x01': [{ chainId: '0x01', asset: { assetId: 1 }, status: 'Unclaimed' }],
+    };
+    const requestedGifts = {
+      '0x02': [{ chainId: '0x02', asset: { assetId: 2 }, status: 'Unclaimed' }],
+    };
 
-    const scope = fork({});
+    const scope = fork({
+      values: [[giftsModel._internal.$giftsMap, existingGifts]],
+      handlers: [[effectMocks.retrieveLocalGiftsFx.fx, effectMocks.retrieveLocalGiftsFx.data(requestedGifts)]],
+    });
 
     await allSettled(giftsModel.input.giftsRequested, { scope });
 
     expect(scope.getState(giftsModel._internal.$giftsMap)).toEqual({
-      '0x01': [{ chainId: '0x01', asset: { assetId: 1 }, status: 'Unclaimed' }],
-      '0x02': [{ chainId: '0x02', asset: { assetId: 2 }, status: 'Unclaimed' }],
+      ...existingGifts,
+      ...requestedGifts,
     });
   });
 
