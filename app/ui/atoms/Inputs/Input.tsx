@@ -32,6 +32,7 @@ export const Input = ({ onEnter, ...props }: Props) => {
         inputWrapper: [
           'bg-bg-input border-1 shadow-none h-14',
           'rounded-lg group-data-[focus=true]:bg-bg-input group-data-[focus=true]:border-border-active',
+          'group-data-[focus-visible=true]:ring-0 group-data-[focus-visible=true]:ring-offset-0',
           props.isInvalid && 'border-border-danger',
         ],
         clearButton: ['text-text-hint'],
