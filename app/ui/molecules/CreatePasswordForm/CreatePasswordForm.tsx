@@ -15,9 +15,10 @@ type Props = {
   password: string;
   onStatusChange: (completed: boolean) => void;
   onChange: (password: string) => void;
+  onSubmit: () => void;
 };
 
-export const CreatePasswordForm = ({ password, onStatusChange, onChange }: Props) => {
+export const CreatePasswordForm = ({ password, onStatusChange, onChange, onSubmit }: Props) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [touched, setTouched] = useState(false);
@@ -74,6 +75,7 @@ export const CreatePasswordForm = ({ password, onStatusChange, onChange }: Props
         errorMessage={isConfirmInvalid && 'Passwords did not match'}
         onValueChange={setConfirmPassword}
         onClear={() => setConfirmPassword('')}
+        onEnter={onSubmit}
       />
       <BodyText align="left" as="span" className={cnTw('mt-4 self-start', VariantStyles[hintColor])}>
         <ul className="mb-1 ml-5 list-disc space-y-1">

@@ -51,6 +51,7 @@ const Page = () => {
       <div className="flex flex-col items-center pt-14">
         <TitleText>Enter your current password</TitleText>
         <Input
+          autoFocus
           isClearable
           variant="flat"
           placeholder="Enter Password Here"
@@ -61,6 +62,7 @@ const Page = () => {
           errorMessage={shouldShowError && 'It seems your password is incorrect.'}
           onValueChange={setPassword}
           onClear={() => setPassword('')}
+          onEnter={onSubmit}
         />
       </div>
     </>

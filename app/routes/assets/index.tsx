@@ -31,6 +31,7 @@ const Page = () => {
       <div className="flex flex-col gap-y-4">
         <TitleText align="left">Manage tokens</TitleText>
         <Input
+          autoFocus
           isClearable
           variant="flat"
           placeholder="Search"

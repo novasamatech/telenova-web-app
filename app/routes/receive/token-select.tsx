@@ -38,6 +38,7 @@ const Page = () => {
       <div className="flex flex-col gap-y-4">
         <TitleText align="left">Select a token to receive</TitleText>
         <Input
+          autoFocus
           isClearable
           variant="flat"
           placeholder="Search"

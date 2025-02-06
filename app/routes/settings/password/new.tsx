@@ -25,7 +25,7 @@ const Page = () => {
       <BackButton onClick={() => navigate($path('/settings/password/current'))} />
       <div className="flex flex-col items-center pt-14">
         <TitleText>Enter your new password</TitleText>
-        <CreatePasswordForm password={password} onChange={setPassword} onStatusChange={setValid} />
+        <CreatePasswordForm password={password} onChange={setPassword} onStatusChange={setValid} onSubmit={onSubmit} />
       </div>
     </>
   );

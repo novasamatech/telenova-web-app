@@ -47,7 +47,12 @@ const Page = () => {
           You should set a strong password to secure your wallet. The password you choose will keep your assets safe and
           sound.
         </BodyText>
-        <CreatePasswordForm password={password} onChange={setPassword} onStatusChange={setIsValid} />
+        <CreatePasswordForm
+          password={password}
+          onChange={setPassword}
+          onStatusChange={setIsValid}
+          onSubmit={onSubmit}
+        />
       </div>
     </>
   );
