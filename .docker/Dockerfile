@@ -1,4 +1,4 @@
-FROM node:lts-buster-slim
+FROM node:22-slim
 
 WORKDIR /app
 COPY . .
