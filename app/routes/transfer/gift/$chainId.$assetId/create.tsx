@@ -13,9 +13,9 @@ import { randomAsHex } from '@polkadot/util-crypto';
 import { giftsModel } from '@/models/gifts';
 import { networkModel } from '@/models/network';
 import { Wallet, walletModel } from '@/models/wallet';
-import { TelegramApi, botApi, localStorageApi, transferFactory } from '@/shared/api';
+import { botApi, transferFactory } from '@/shared/api';
 import { type TelegramLink } from '@/shared/api/types';
-import { MNEMONIC_STORE, toFormattedBalance } from '@/shared/helpers';
+import { toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, LottiePlayer } from '@/ui/atoms';
 import { GiftDetails } from '@/ui/molecules';
 
@@ -71,19 +71,16 @@ const Page = () => {
     const giftSeed = randomAsHex(10).slice(2);
     const giftWallet = new Wallet(giftSeed);
 
-    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
-    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
-
     transferFactory
-      .createService(connections[typedChainId].api!, selectedAsset)
+      .createService(typedChainId, connections[typedChainId].client!, selectedAsset)
       .sendTransfer({
-        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
+        signer: wallet.getSigner(chains[typedChainId]),
         amount: new BN(amount),
         destination: giftWallet.toAddress(selectedChain),
         transferAll: all,
       })
       .then(hash => {
-        console.log('🟢 Transaction hash - ', hash.toHex());
+        console.log('🟢 Transaction hash - ', hash);
 
         giftsModel.input.giftSaved({
           chainId: typedChainId,

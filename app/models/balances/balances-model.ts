@@ -1,8 +1,7 @@
 import { attach, createEffect, createEvent, createStore, sample, scopeBind } from 'effector';
 import { isEmpty } from 'lodash-es';
 import { readonly } from 'patronum';
-
-import { type ApiPromise } from '@polkadot/api';
+import { type PolkadotClient } from 'polkadot-api';
 
 import { networkModel } from '../network';
 import { type Wallet, walletModel } from '../wallet';
@@ -32,25 +31,21 @@ const unsubscribeChainAssetsFx = createEffect(
 
     const newSubscriptions = restChains;
 
-    for (const [subAssetId, unsubPromise] of Object.entries(chainSubscriptions)) {
+    for (const [subAssetId, unsub] of Object.entries(chainSubscriptions)) {
       // Save unsub function if assetId is absent or is not the one we're looking for
       const isAssetToHold = assetId && assetId !== Number(subAssetId);
 
       if (isAssetToHold && newSubscriptions[chainId]) {
-        newSubscriptions[chainId][Number(subAssetId)] = unsubPromise;
+        newSubscriptions[chainId][Number(subAssetId)] = unsub;
         continue;
       }
       if (isAssetToHold && !newSubscriptions[chainId]) {
-        newSubscriptions[chainId] = { [subAssetId]: unsubPromise };
+        newSubscriptions[chainId] = { [subAssetId]: unsub };
         continue;
       }
 
       // If this is our assetId or all assets must be unsubscribed
-      unsubPromise
-        .then(unsub => unsub())
-        .catch(error => {
-          console.log(`Error while unsubscribing from balances for asset - ${assetId}`, error);
-        });
+      unsub();
     }
 
     return newSubscriptions;
@@ -58,29 +53,24 @@ const unsubscribeChainAssetsFx = createEffect(
 );
 
 type SubAssetsParams = {
-  apis: Record<ChainId, ApiPromise>;
+  clients: Record<ChainId, PolkadotClient>;
   chains: Chain[];
   assets: Asset[][];
   wallet: Wallet;
   subscriptions: Subscriptions;
 };
 const pureSubscribeChainsAssetsFx = createEffect(
-  ({ apis, chains, assets, wallet, subscriptions }: SubAssetsParams): Subscriptions => {
+  ({ clients, chains, assets, wallet, subscriptions }: SubAssetsParams): Subscriptions => {
     const boundUpdate = scopeBind(balanceUpdated, { safe: true });
 
     const newChainSubscriptions: Subscriptions = {};
 
     chains.forEach((chain, index) => {
-      const api = apis[chain.chainId];
       const assetsSubscriptions = subscriptions[chain.chainId] || {};
 
       assets[index].forEach(asset => {
-        const service = balancesFactory.createService(api, asset);
-        assetsSubscriptions[asset.assetId] = service.subscribeBalance(
-          chain.chainId,
-          wallet.toAddress(chain),
-          boundUpdate,
-        );
+        const service = balancesFactory.createService(chain.chainId, clients[chain.chainId], asset);
+        assetsSubscriptions[asset.assetId] = service.subscribeBalance(wallet.toAddress(chain), boundUpdate);
       });
 
       newChainSubscriptions[chain.chainId] = assetsSubscriptions;
@@ -123,7 +113,11 @@ sample({
 sample({
   clock: assetToUnsubSet,
   source: $subscriptions,
-  fn: (subscriptions, { chainId, assetId }) => ({ chainId, assetId, subscriptions }),
+  fn: (subscriptions, { chainId, assetId }) => ({
+    chainId,
+    assetId,
+    subscriptions,
+  }),
   target: unsubscribeChainAssetsFx,
 });
 
@@ -142,11 +136,11 @@ sample({
     return isWalletExist && isConnected && hasAsset;
   },
   fn: ({ wallet, connections, chains }, data) => {
-    const apis = { [data.chainId]: connections[data.chainId].api! };
+    const clients = { [data.chainId]: connections[data.chainId].client! };
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => a.assetId === data.assetId)];
 
-    return { apis, chains: activeChains, assets, wallet: wallet! };
+    return { clients, chains: activeChains, assets, wallet: wallet! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -181,11 +175,11 @@ sample({
     return isWalletExist && isConnected;
   },
   fn: ({ connections, chains, activeAssets, wallet }, data) => {
-    const apis = { [data.chainId]: connections[data.chainId].api! };
+    const clients = { [data.chainId]: connections[data.chainId].client! };
     const activeChains = [chains[data.chainId]];
     const assets = [chains[data.chainId].assets.filter(a => activeAssets[data.chainId]?.[a.assetId])];
 
-    return { apis, chains: activeChains, assets, wallet: wallet! };
+    return { clients, chains: activeChains, assets, wallet: wallet! };
   },
   target: subscribeChainsAssetsFx,
 });
@@ -220,11 +214,11 @@ sample({
     return isWalletExist && isAnyToConnect && isSomeConnected;
   },
   fn: ({ connections, chains, activeAssets }, wallet) => {
-    const apis: Record<ChainId, ApiPromise> = {};
+    const clients: Record<ChainId, PolkadotClient> = {};
     for (const [chainId, connection] of Object.entries(connections)) {
       if (!activeAssets[chainId as ChainId] || connection.status !== 'connected') continue;
 
-      apis[chainId as ChainId] = connection.api!;
+      clients[chainId as ChainId] = connection.client!;
     }
 
     const activeChains = Object.values(chains).filter(chain => activeAssets[chain.chainId]);
@@ -233,7 +227,7 @@ sample({
       chain.assets.filter(asset => activeAssets[chain.chainId]?.[asset.assetId]),
     );
 
-    return { apis, chains: activeChains, assets, wallet: wallet! };
+    return { clients, chains: activeChains, assets, wallet: wallet! };
   },
   target: subscribeChainsAssetsFx,
 });

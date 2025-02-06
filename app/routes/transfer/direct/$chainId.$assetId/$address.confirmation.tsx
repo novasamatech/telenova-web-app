@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Divider } from '@nextui-org/react';
 import { type ClientLoaderFunction, useLoaderData } from '@remix-run/react';
 import { useUnit } from 'effector-react';
@@ -8,8 +10,8 @@ import { BN } from '@polkadot/util';
 import { navigationModel } from '@/models/navigation';
 import { networkModel } from '@/models/network';
 import { walletModel } from '@/models/wallet';
-import { BackButton, MainButton, TelegramApi, localStorageApi, transferFactory } from '@/shared/api';
-import { MNEMONIC_STORE, isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
+import { BackButton, MainButton, transferFactory } from '@/shared/api';
+import { isEvmChain, toFormattedBalance, toShortAddress } from '@/shared/helpers';
 import { Address, AssetIcon, BodyText, HeadlineText, Identicon, LargeTitleText, MediumTitle, Plate } from '@/ui/atoms';
 
 export type SearchParams = {
@@ -39,6 +41,8 @@ const Page = () => {
     networkModel.$connections,
   ]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const typedChainId = chainId as ChainId;
   const selectedAsset = assets[typedChainId]?.[Number(assetId) as AssetId];
 
@@ -51,19 +55,20 @@ const Page = () => {
   const formattedTotal = toFormattedBalance(bnAmount.add(bnFee), selectedAsset.precision);
 
   const mainCallback = () => {
-    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
-    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
+    if (isLoading) return;
+
+    setIsLoading(true);
 
     transferFactory
-      .createService(connections[typedChainId].api!, selectedAsset)
+      .createService(typedChainId, connections[typedChainId].client!, selectedAsset)
       .sendTransfer({
-        keyringPair: wallet.getKeyringPair(mnemonic, chains[typedChainId]),
+        signer: wallet.getSigner(chains[typedChainId]),
         amount: bnAmount,
         destination: address,
         transferAll: all,
       })
       .then(hash => {
-        console.log('🟢 Transaction hash - ', hash.toHex());
+        console.log('🟢 Transaction hash - ', hash);
 
         const params = { chainId, assetId, address };
         const query = { amount };
@@ -73,7 +78,8 @@ const Page = () => {
           to: $path('/transfer/direct/:chainId/:assetId/:address/result', params, query),
         });
       })
-      .catch(error => alert(`Error: ${error.message}\nTry to reload`));
+      .catch(error => alert(`Error: ${error.message}\nTry to reload`))
+      .finally(() => setIsLoading(false));
   };
 
   const details = [
@@ -113,7 +119,7 @@ const Page = () => {
 
   return (
     <>
-      <MainButton text="Confirm" onClick={mainCallback} />
+      <MainButton text="Confirm" disabled={isLoading} progress={isLoading} onClick={mainCallback} />
       <BackButton onClick={navigateBack} />
       <div className="grid grid-cols-[40px,1fr] items-center">
         <Identicon address={address} theme={isEvmChain(chains[typedChainId]) ? 'ethereum' : 'polkadot'} />

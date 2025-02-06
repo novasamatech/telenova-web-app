@@ -1,0 +1,34 @@
+{
+  "version": 0,
+  "descriptorPath": ".papi/descriptors",
+  "entries": {
+    "dot": {
+      "chain": "polkadot",
+      "metadata": ".papi/metadata/dot.scale"
+    },
+    "kilt": {
+      "wsUrl": "wss://kilt-rpc.dwellir.com",
+      "metadata": ".papi/metadata/kilt.scale"
+    },
+    "dotAh": {
+      "chain": "polkadot_asset_hub",
+      "metadata": ".papi/metadata/dotAh.scale"
+    },
+    "ztg": {
+      "wsUrl": "wss://zeitgeist.api.onfinality.io/public-ws",
+      "metadata": ".papi/metadata/ztg.scale"
+    },
+    "glmr": {
+      "wsUrl": "wss://moonbeam.public.blastapi.io",
+      "metadata": ".papi/metadata/glmr.scale"
+    },
+    "movr": {
+      "wsUrl": "wss://moonriver.public.blastapi.io",
+      "metadata": ".papi/metadata/movr.scale"
+    },
+    "myth": {
+      "wsUrl": "wss://polkadot-mythos-rpc.polkadot.io",
+      "metadata": ".papi/metadata/myth.scale"
+    }
+  }
+}

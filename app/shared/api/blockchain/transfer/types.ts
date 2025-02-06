@@ -1,15 +1,15 @@
-import type { KeyringPair } from '@polkadot/keyring/types';
-import { type Hash } from '@polkadot/types/interfaces';
+import { type HexString, type PolkadotSigner } from 'polkadot-api';
+
 import type { BN } from '@polkadot/util';
 
 export interface ITransfer {
-  sendTransfer: (params: SendTransferParams) => Promise<Hash>;
+  sendTransfer: (params: SendTransferParams) => Promise<HexString>;
   getTransferFee: (params: FeeParams) => Promise<BN>;
   getGiftTransferFee: (params: FeeParams) => Promise<BN>;
 }
 
 export type SendTransferParams = {
-  keyringPair: KeyringPair;
+  signer: PolkadotSigner;
   destination: Address;
   amount: BN;
   transferAll?: boolean;

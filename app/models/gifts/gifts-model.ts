@@ -1,8 +1,7 @@
 import { combine, createEffect, createEvent, createStore, sample } from 'effector';
 import { groupBy, isEmpty } from 'lodash-es';
 import { inFlight, readonly, spread } from 'patronum';
-
-import { type ApiPromise } from '@polkadot/api';
+import { type PolkadotClient } from 'polkadot-api';
 
 import { networkModel } from '../network';
 
@@ -75,7 +74,8 @@ const retrieveLocalGiftsFx = createEffect(() => {
 });
 
 type RequestParams = {
-  api: ApiPromise;
+  chainId: ChainId;
+  client: PolkadotClient;
   assetsMap: Map<Asset, Address[]>;
 };
 type RequestResult = {
@@ -86,22 +86,20 @@ type RequestResult = {
   };
 };
 const requestClaimedAssetsFx = createEffect(async (params: RequestParams[]): Promise<RequestResult> => {
-  const requests = params.flatMap(({ api, assetsMap }) => {
+  const requests = params.flatMap(({ client, assetsMap }) => {
     return Array.from(assetsMap.entries()).map(([asset, addresses]) => {
-      return balancesFactory.createService(api, asset).getFreeBalances(addresses);
+      return balancesFactory.createService(asset.chainId, client, asset).getFreeBalances(addresses);
     });
   });
 
   const assetsBalances = await Promise.all(requests);
 
-  const result: RequestResult = params.reduce((acc, { api }) => {
-    return { ...acc, [api.genesisHash.toHex()]: {} };
+  const result: RequestResult = params.reduce((acc, { chainId }) => {
+    return { ...acc, [chainId]: {} };
   }, {});
 
   let assetIdx = 0;
-  params.forEach(({ api, assetsMap }) => {
-    const chainId = api.genesisHash.toHex();
-
+  params.forEach(({ chainId, assetsMap }) => {
     Array.from(assetsMap.entries()).forEach(([asset, addresses]) => {
       result[chainId][asset.assetId] = {};
 
@@ -173,7 +171,7 @@ sample({
       }
 
       if (assetsMap.size > 0) {
-        result.push({ api: connections[typedChainId].api!, assetsMap });
+        result.push({ chainId: typedChainId, client: connections[typedChainId].client!, assetsMap });
       }
     }
 
@@ -202,7 +200,7 @@ sample({
       assetsMap.set(asset, [...(assetsMap.get(asset) || []), gift.address]);
     }
 
-    return assetsMap.size > 0 ? [{ api: connections[chainId].api!, assetsMap }] : [];
+    return assetsMap.size > 0 ? [{ chainId, client: connections[chainId].client!, assetsMap }] : [];
   },
   target: requestClaimedAssetsFx,
 });

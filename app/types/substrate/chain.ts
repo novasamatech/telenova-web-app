@@ -19,10 +19,4 @@ export type RpcNode = {
   name: string;
 };
 
-export type ChainMetadata = {
-  chainId: ChainId;
-  version: number;
-  metadata: Metadata;
-};
-
 export type ChainsMap = Record<ChainId, Chain>;

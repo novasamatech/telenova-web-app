@@ -1,4 +1,4 @@
-import { type KeyringPair } from '@polkadot/keyring/types';
+import { type PolkadotSigner } from 'polkadot-api';
 
 import { keyringApi } from '@/shared/api';
 import { toAddress } from '@/shared/helpers';
@@ -9,7 +9,7 @@ type GiftInfo = {
   asset: Asset;
   giftAddress: Address;
   symbol: string;
-  keyring: KeyringPair;
+  signer: PolkadotSigner;
 };
 export const getGiftInfo = (chains: Chain[], startParam: string): GiftInfo | null => {
   const [seed, ...rest] = startParam.split('_');
@@ -34,13 +34,13 @@ export const getGiftInfo = (chains: Chain[], startParam: string): GiftInfo | nul
 
   if (!chain || !asset || !symbol) return null;
 
-  const keyring = keyringApi.getKeyringPairFromSeed(seed, chain);
+  const signer = keyringApi.getSignerFromSeed(seed, chain);
 
   return {
-    keyring,
+    signer,
     asset,
     symbol,
-    giftAddress: toAddress(keyring.publicKey, { chain }),
+    giftAddress: toAddress(signer.publicKey, { chain }),
     chainId: chain.chainId,
   };
 };

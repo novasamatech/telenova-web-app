@@ -1,32 +1,42 @@
-import { type ApiPromise } from '@polkadot/api';
-import type { UnsubscribePromise } from '@polkadot/api/types';
-import { type BN, BN_ZERO } from '@polkadot/util';
+import { type PolkadotClient, type SS58String } from 'polkadot-api';
+
+import { BN, BN_ZERO } from '@polkadot/util';
+
+import { type GenericApi } from '../types';
 
 import { assetUtils } from '@/shared/helpers';
 import { type AssetBalance, type StatemineAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
 
+import { dotAh } from '@polkadot-api/descriptors';
+
+type ClientApi = GenericApi<typeof dotAh>;
+
 export class StatemineBalanceService implements IBalance {
-  readonly #api: ApiPromise;
+  readonly #client: ClientApi;
+  readonly #chainId: ChainId;
   readonly #asset: StatemineAsset;
 
-  constructor(api: ApiPromise, asset: StatemineAsset) {
-    this.#api = api;
+  constructor(chainId: ChainId, client: PolkadotClient, asset: StatemineAsset) {
     this.#asset = asset;
+    this.#chainId = chainId;
+    this.#client = this.#getTypedClientApi(client);
   }
 
-  async subscribeBalance(
-    chainId: ChainId,
-    address: Address,
-    callback: (newBalance: AssetBalance) => void,
-  ): UnsubscribePromise {
-    return this.#api.query.assets.account(assetUtils.getAssetId(this.#asset), address, accountInfo => {
-      const free = accountInfo.isNone ? BN_ZERO : accountInfo.unwrap().balance.toBn();
+  #getTypedClientApi(client: PolkadotClient): ClientApi {
+    return { type: 'generic', api: client.getTypedApi(dotAh) };
+  }
+
+  subscribeBalance(address: Address, callback: (newBalance: AssetBalance) => void): VoidFunction {
+    const assetId = Number(assetUtils.getAssetId(this.#asset));
+
+    return this.#client.api.query.Assets.Account.watchValue(assetId, address).subscribe(accountInfo => {
+      const free = accountInfo ? new BN(accountInfo.balance.toString()) : BN_ZERO;
 
       callback({
         address,
-        chainId,
+        chainId: this.#chainId,
         assetId: this.#asset.assetId,
         balance: {
           free,
@@ -37,28 +47,32 @@ export class StatemineBalanceService implements IBalance {
           transferable: free,
         },
       });
-    });
+    }).unsubscribe;
   }
 
   getFreeBalance(address: Address): Promise<BN> {
-    return this.#api.query.assets.account(assetUtils.getAssetId(this.#asset), address).then(balance => {
-      return balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn();
+    const assetId = Number(assetUtils.getAssetId(this.#asset));
+
+    return this.#client.api.query.Assets.Account.getValue(assetId, address).then(balance => {
+      return balance ? new BN(balance.balance.toString()) : BN_ZERO;
     });
   }
 
   getFreeBalances(addresses: Address[]): Promise<BN[]> {
     const addressTuples = addresses.map(address => {
-      return [assetUtils.getAssetId(this.#asset), address];
+      return [Number(assetUtils.getAssetId(this.#asset)), address] as [number, SS58String];
     });
 
-    return this.#api.query.assets.account.multi(addressTuples).then(balances => {
-      return balances.map(balance => (balance.isNone ? BN_ZERO : balance.unwrap().balance.toBn()));
+    return this.#client.api.query.Assets.Account.getValues(addressTuples).then(balances => {
+      return balances.map(balance => (balance ? new BN(balance.balance.toString()) : BN_ZERO));
     });
   }
 
   getExistentialDeposit(): Promise<BN> {
-    const assetId = assetUtils.getAssetId(this.#asset);
+    const assetId = Number(assetUtils.getAssetId(this.#asset));
 
-    return this.#api.query.assets.asset(assetId).then(balance => balance.value.minBalance.toBn());
+    return this.#client.api.query.Assets.Asset.getValue(assetId).then(balance =>
+      balance ? new BN(balance.min_balance.toString()) : BN_ZERO,
+    );
   }
 }

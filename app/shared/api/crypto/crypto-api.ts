@@ -1,7 +1,6 @@
+import { generateMnemonic as getFreshMnemonic } from '@polkadot-labs/hdkd-helpers';
 import CryptoJS from 'crypto-js';
 import scryptJS from 'scrypt-js';
-
-import { mnemonicGenerate } from '@polkadot/util-crypto';
 
 export const cryptoApi = {
   generateMnemonic,
@@ -12,7 +11,7 @@ export const cryptoApi = {
 const SALT_SIZE_BYTES = 16;
 
 function generateMnemonic(): string {
-  return mnemonicGenerate();
+  return getFreshMnemonic();
 }
 
 function getEncryptedMnemonic(mnemonic: string, password: string): string {

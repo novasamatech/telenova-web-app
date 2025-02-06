@@ -1,42 +1,55 @@
-import { type ApiPromise } from '@polkadot/api';
-import type { UnsubscribePromise } from '@polkadot/api/types';
-import { type AccountData } from '@polkadot/types/interfaces';
-import { type BN, BN_ZERO } from '@polkadot/util';
+import { type PolkadotClient, type SS58String } from 'polkadot-api';
+
+import { BN, BN_ZERO } from '@polkadot/util';
+
+import { type GenericApi, type ParaApi } from '../types';
 
 import { type AssetBalance, type NativeAsset } from '@/types/substrate';
 
 import { type IBalance } from './types';
 
+import { dot, kilt, ztg } from '@polkadot-api/descriptors';
+
+type ParachainsApi = ParaApi<'kilt', typeof kilt> | ParaApi<'ztg', typeof ztg>;
+type ClientApi = GenericApi<typeof dot> | ParachainsApi;
+
 export class NativeBalanceService implements IBalance {
-  readonly #api: ApiPromise;
+  readonly #client: ClientApi;
+  readonly #chainId: ChainId;
   readonly #asset: NativeAsset;
 
-  constructor(api: ApiPromise, asset: NativeAsset) {
-    this.#api = api;
+  constructor(chainId: ChainId, client: PolkadotClient, asset: NativeAsset) {
     this.#asset = asset;
+    this.#chainId = chainId;
+    this.#client = this.#getTypedClientApi(chainId, client);
   }
 
-  async subscribeBalance(
-    chainId: ChainId,
-    address: Address,
-    callback: (newBalance: AssetBalance) => void,
-  ): UnsubscribePromise {
-    return this.#api.query.system.account(address, frameAccountInfo => {
-      let frozen = frameAccountInfo.data.frozen?.toBn();
-      const free = frameAccountInfo.data.free.toBn();
-      const reserved = frameAccountInfo.data.reserved.toBn();
+  #getTypedClientApi(chainId: ChainId, client: PolkadotClient): ClientApi {
+    const config: Record<ChainId, (client: PolkadotClient) => ParachainsApi> = {
+      // KILT
+      '0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21': client => ({
+        type: 'kilt',
+        api: client.getTypedApi(kilt),
+      }),
+      // ZTG
+      '0x1bf2a2ecb4a868de66ea8610f2ce7c8c43706561b6476031315f6640fe38e060': client => ({
+        type: 'ztg',
+        api: client.getTypedApi(ztg),
+      }),
+    };
 
-      // Some chains still use "feeFrozen" or "miscFrozen" (HKO, PARA, XRT, ZTG, SUB)
-      const accountData = frameAccountInfo.data as unknown as AccountData;
-      if (accountData.feeFrozen || accountData.miscFrozen) {
-        frozen = accountData.miscFrozen.gt(accountData.feeFrozen)
-          ? accountData.miscFrozen.toBn()
-          : accountData.feeFrozen.toBn();
-      }
+    return config[chainId]?.(client) || { type: 'generic', api: client.getTypedApi(dot) };
+  }
+
+  subscribeBalance(address: Address, callback: (newBalance: AssetBalance) => void): VoidFunction {
+    const handler = (data: { free: bigint; reserved: bigint; frozen: bigint; flags: bigint }) => {
+      const frozen = new BN(data.frozen.toString());
+      const free = new BN(data.free.toString());
+      const reserved = new BN(data.reserved.toString());
 
       callback({
         address,
-        chainId,
+        chainId: this.#chainId,
         assetId: this.#asset.assetId,
         balance: {
           free,
@@ -47,20 +60,40 @@ export class NativeBalanceService implements IBalance {
           transferable: free.gt(frozen) ? free.sub(frozen) : BN_ZERO,
         },
       });
-    });
+    };
+
+    if (this.#client.type === 'kilt') {
+      return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+        handler(data);
+      }).unsubscribe;
+    }
+
+    if (this.#client.type === 'ztg') {
+      return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+        handler(data);
+      }).unsubscribe;
+    }
+
+    return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+      handler(data);
+    }).unsubscribe;
   }
 
   getFreeBalance(address: Address): Promise<BN> {
-    return this.#api.query.system.account(address).then(balance => balance.data.free.toBn());
+    return this.#client.api.query.System.Account.getValue(address).then(
+      balance => new BN(balance.data.free.toString()),
+    );
   }
 
   getFreeBalances(addresses: Address[]): Promise<BN[]> {
-    return this.#api.query.system.account.multi(addresses).then(balances => {
-      return balances.map(balance => balance.data.free.toBn());
+    const addressTuples = addresses.map(address => [address] as [SS58String]);
+
+    return this.#client.api.query.System.Account.getValues(addressTuples).then(balances => {
+      return balances.map(balance => new BN(balance.data.free.toString()));
     });
   }
 
   getExistentialDeposit(): Promise<BN> {
-    return Promise.resolve(this.#api.consts.balances.existentialDeposit.toBn());
+    return this.#client.api.constants.Balances.ExistentialDeposit().then(ed => new BN(ed.toString()));
   }
 }

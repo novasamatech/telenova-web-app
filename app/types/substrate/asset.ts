@@ -1,6 +1,7 @@
 interface BaseAsset {
   name: string;
   assetId: AssetId;
+  chainId: ChainId;
   symbol: string;
   precision: number;
   priceId?: string;
@@ -37,6 +38,6 @@ export type AssetPrices = {
   };
 };
 
-export type Asset = NativeAsset | StatemineAsset | OrmlAsset;
+export type Asset = NativeAsset | StatemineAsset;
 
 export type AssetsMap = Record<ChainId, Record<AssetId, Asset>>;
