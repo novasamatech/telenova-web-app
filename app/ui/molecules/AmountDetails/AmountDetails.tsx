@@ -52,6 +52,7 @@ export const AmountDetails = ({
         <LargeTitleText>{asset.symbol}</LargeTitleText>
         <div className="ml-auto px-1">
           <AmountInput
+            autoFocus
             className="max-w-[7ch]"
             value={inputAmount}
             isValid={isAmountValid}

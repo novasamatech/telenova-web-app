@@ -7,12 +7,21 @@ type Props = {
   value: string;
   placeholder?: string;
   isValid: boolean;
+  autoFocus?: boolean;
   className?: string;
   onChange: (value: string) => void;
   onEnter?: () => void;
 };
 
-export const AmountInput = ({ value, placeholder = '0.00', isValid, className, onChange, onEnter }: Props) => {
+export const AmountInput = ({
+  value,
+  placeholder = '0.00',
+  isValid,
+  autoFocus,
+  className,
+  onChange,
+  onEnter,
+}: Props) => {
   const ref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -45,6 +54,7 @@ export const AmountInput = ({ value, placeholder = '0.00', isValid, className, o
         className,
       )}
       inputRef={ref}
+      autoFocus={autoFocus}
       inputMode="decimal"
       mask={Number}
       min={0}
