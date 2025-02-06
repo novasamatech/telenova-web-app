@@ -10,7 +10,6 @@ export { GiftDetails } from './GiftDetails/GiftDetails';
 export { GiftPlate } from './GiftPlate/GiftPlate';
 export { LinkCard } from './LinkCard/LinkCard';
 export { LoadingScreen } from './LoadingScreen/LoadingScreen';
-export { PasswordForm } from './PasswordForm/PasswordForm';
 export { RecoveryPhrase } from './RecoveryPhrase/RecoveryPhrase';
 export { GiftClaim } from './GiftClaim/GiftClaim';
 export { MercuryoWarning } from './MercuryoWarning/MercuryoWarning';

@@ -16,6 +16,7 @@ type Props = {
   isPending: boolean;
   isAccountToBeReaped: boolean;
   onAmountChange: (value: string) => void;
+  onSubmit: () => void;
 };
 
 export const AmountDetails = ({
@@ -28,6 +29,7 @@ export const AmountDetails = ({
   isAccountToBeReaped,
   isAmountValid,
   onAmountChange,
+  onSubmit,
   children,
 }: PropsWithChildren<Props>) => {
   const [inputAmount, setInputAmount] = useState(amount ? toFormattedBalance(amount, asset.precision).value : '');
@@ -50,10 +52,12 @@ export const AmountDetails = ({
         <LargeTitleText>{asset.symbol}</LargeTitleText>
         <div className="ml-auto px-1">
           <AmountInput
+            autoFocus
             className="max-w-[7ch]"
             value={inputAmount}
             isValid={isAmountValid}
             onChange={handleAmountChange}
+            onEnter={onSubmit}
           />
         </div>
       </div>

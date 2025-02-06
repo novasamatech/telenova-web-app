@@ -85,6 +85,7 @@ const Page = () => {
               setPassword('');
               setIsPasswordValid(true);
             }}
+            onEnter={onSubmit}
           />
           <Button aria-label="Reset Password" className="self-baseline bg-transparent p-0" onClick={toggleModal}>
             <BodyText className="text-text-link">Forgot Password?</BodyText>

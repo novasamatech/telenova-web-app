@@ -61,6 +61,7 @@ const Page = () => {
       <BackButton onClick={navigateBack} />
       <div className="flex flex-col">
         <Input
+          autoFocus
           isClearable
           variant="flat"
           placeholder="Enter address"
@@ -69,6 +70,7 @@ const Page = () => {
           isInvalid={!isAddressValid}
           onValueChange={handleChange}
           onClear={() => setAddress('')}
+          onEnter={navigate}
         />
         {address && isAddressValid && (
           <div className="mt-4 flex items-center gap-x-2 break-all">

@@ -111,6 +111,7 @@ const Page = () => {
         deposit={deposit}
         isAccountToBeReaped={getIsAccountToBeReaped()}
         onAmountChange={onAmountChange}
+        onSubmit={navigateToCreate}
       >
         {isTouched && !isAboveDeposit && (
           <>

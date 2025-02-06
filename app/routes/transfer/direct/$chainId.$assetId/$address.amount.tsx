@@ -116,6 +116,7 @@ const Page = () => {
         isAmountValid={!isTouched || isAmountValid}
         isAccountToBeReaped={getIsAccountToBeReaped()}
         onAmountChange={onAmountChange}
+        onSubmit={navigateToConfirm}
       />
     </>
   );

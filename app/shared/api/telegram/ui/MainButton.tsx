@@ -30,6 +30,7 @@ export const MainButton = ({ disabled, progress, hidden, color, textColor, text 
     MainButton.setParams({
       color: color ?? TelegramApi.themeParams.button_color,
       text_color: textColor ?? TelegramApi.themeParams.button_text_color,
+      has_shine_effect: true,
     });
   }, [color, textColor]);
 
