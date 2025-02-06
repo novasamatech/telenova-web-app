@@ -31,21 +31,21 @@ const unsubscribeChainAssetsFx = createEffect(
 
     const newSubscriptions = restChains;
 
-    for (const [subAssetId, unsubPromise] of Object.entries(chainSubscriptions)) {
+    for (const [subAssetId, unsub] of Object.entries(chainSubscriptions)) {
       // Save unsub function if assetId is absent or is not the one we're looking for
       const isAssetToHold = assetId && assetId !== Number(subAssetId);
 
       if (isAssetToHold && newSubscriptions[chainId]) {
-        newSubscriptions[chainId][Number(subAssetId)] = unsubPromise;
+        newSubscriptions[chainId][Number(subAssetId)] = unsub;
         continue;
       }
       if (isAssetToHold && !newSubscriptions[chainId]) {
-        newSubscriptions[chainId] = { [subAssetId]: unsubPromise };
+        newSubscriptions[chainId] = { [subAssetId]: unsub };
         continue;
       }
 
       // If this is our assetId or all assets must be unsubscribed
-      unsubPromise();
+      unsub();
     }
 
     return newSubscriptions;
