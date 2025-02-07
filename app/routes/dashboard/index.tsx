@@ -78,10 +78,10 @@ const Page = () => {
           <MediumTitle className="self-center">Hello, {user?.first_name || 'friend'}</MediumTitle>
           <Button
             isIconOnly
-            className="overflow-visible bg-transparent drop-shadow-button"
+            className="flex items-center justify-center rounded-full bg-white shadow-md-sm"
             onClick={() => navigationModel.input.navigatorPushed({ type: 'navigate', to: $path('/settings') })}
           >
-            <Icon name="Settings" size={40} className="text-[--tg-theme-button-color]" />
+            <Icon name="Settings" size={22} className="text-[--tg-theme-button-color]" />
           </Button>
         </div>
 
