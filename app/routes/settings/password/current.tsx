@@ -5,7 +5,7 @@ import { $path } from 'remix-routes';
 
 import { BackButton, MainButton, TelegramApi, cryptoApi } from '@/shared/api';
 import { MNEMONIC_STORE } from '@/shared/helpers';
-import { Input, TitleText } from '@/ui/atoms';
+import { PasswordInput, TitleText } from '@/ui/atoms';
 
 const Page = () => {
   const navigate = useNavigate();
@@ -50,18 +50,18 @@ const Page = () => {
       <BackButton onClick={() => navigate($path('/settings/backup'))} />
       <div className="flex flex-col items-center pt-14">
         <TitleText>Enter your current password</TitleText>
-        <Input
+        <PasswordInput
           autoFocus
-          isClearable
           variant="flat"
           placeholder="Enter Password Here"
-          type="password"
           className="mt-8 max-w-sm text-left"
           value={password}
           isInvalid={shouldShowError}
           errorMessage={shouldShowError && 'It seems your password is incorrect.'}
-          onValueChange={setPassword}
-          onClear={() => setPassword('')}
+          onValueChange={value => {
+            setPassword(value);
+            setIsChecked(false);
+          }}
           onEnter={onSubmit}
         />
       </div>

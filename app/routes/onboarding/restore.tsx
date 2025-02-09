@@ -9,7 +9,7 @@ import { walletModel } from '@/models/wallet';
 import { MainButton, TelegramApi, cryptoApi } from '@/shared/api';
 import { BACKUP_DATE } from '@/shared/helpers';
 import { useToggle } from '@/shared/hooks';
-import { BodyText, Input, TitleText } from '@/ui/atoms';
+import { BodyText, PasswordInput, TitleText } from '@/ui/atoms';
 import { PasswordReset } from '@/ui/molecules';
 
 const Page = () => {
@@ -64,28 +64,24 @@ const Page = () => {
           className="h-[64px] w-[64px]"
           name={user?.first_name[0]}
         />
+
         <TitleText className="m-4 px-6">Welcome back, {user?.first_name || 'friend'}!</TitleText>
         <BodyText as="span" className="mb-8 px-6 text-text-hint">
           We&apos;ve found a backup of your existing Telenova wallet in the cloud. To get access to it just enter the
           password you used when creating the wallet
         </BodyText>
+
         <div className="w-full max-w-sm text-start">
-          <Input
-            isClearable
+          <PasswordInput
             placeholder="Enter Password Here"
-            type="password"
             value={password}
             isInvalid={!isPasswordValid}
             errorMessage={!isPasswordValid && 'It seems your password is incorrect'}
+            onEnter={onSubmit}
             onValueChange={value => {
               setPassword(value);
               setIsPasswordValid(true);
             }}
-            onClear={() => {
-              setPassword('');
-              setIsPasswordValid(true);
-            }}
-            onEnter={onSubmit}
           />
           <Button aria-label="Reset Password" className="self-baseline bg-transparent p-0" onClick={toggleModal}>
             <BodyText className="text-text-link">Forgot Password?</BodyText>

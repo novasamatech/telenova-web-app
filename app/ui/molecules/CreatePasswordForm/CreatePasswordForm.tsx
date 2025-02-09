@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { cnTw } from '@/shared/helpers/twMerge';
-import { BodyText, Input } from '@/ui/atoms';
+import { BodyText, PasswordInput } from '@/ui/atoms';
 
 type Variants = 'error' | 'success' | 'default';
 
@@ -51,30 +51,24 @@ export const CreatePasswordForm = ({ password, onStatusChange, onChange, onSubmi
 
   return (
     <form className="mt-8 flex w-full flex-col items-center gap-4">
-      <Input
-        isClearable
+      <PasswordInput
         variant="flat"
         placeholder="Enter Password Here"
-        type="password"
         className="max-w-sm text-left"
         value={password}
         isInvalid={!isPasswordValid}
         errorMessage={!isPasswordValid && 'Enter correct password here'}
         onBlur={validateOnBlur}
         onValueChange={validateOnChange}
-        onClear={() => onChange('')}
       />
-      <Input
-        isClearable
+      <PasswordInput
         variant="flat"
         placeholder="Confirm Password"
-        type="password"
         className="max-w-sm text-left"
         value={confirmPassword}
         isInvalid={isConfirmInvalid}
         errorMessage={isConfirmInvalid && 'Passwords did not match'}
         onValueChange={setConfirmPassword}
-        onClear={() => setConfirmPassword('')}
         onEnter={onSubmit}
       />
       <BodyText align="left" as="span" className={cnTw('mt-4 self-start', VariantStyles[hintColor])}>
@@ -84,7 +78,9 @@ export const CreatePasswordForm = ({ password, onStatusChange, onChange, onSubmi
           <li className={cnTw(/[a-zA-Z]/.test(password) && VariantStyles.success)}>Include at least 1 letter (A-z)</li>
         </ul>
         <BodyText align="left" className="text-text-hint">
-          Make your password stronger - special characters (e.g., @, #, %) and uppercase letters are recommended
+          Make your password stronger - special characters
+          <br />
+          (e.g., @, #, %) and uppercase letters are recommended
         </BodyText>
       </BodyText>
     </form>

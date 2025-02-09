@@ -29,16 +29,25 @@ function getEncryptedMnemonic(mnemonic: string, password: string): string {
   return `${saltHex}${mnemonicHex}`;
 }
 
-function getDecryptedMnemonic(encryptedMnemonicWithSalt: string, password: string): string {
+function getDecryptedMnemonic(encryptedMnemonicWithSalt: string, password: string): string | null {
   const salt = CryptoJS.enc.Hex.parse(encryptedMnemonicWithSalt.slice(0, SALT_SIZE_BYTES * 2));
   const encryptedHexMnemonic = encryptedMnemonicWithSalt.slice(SALT_SIZE_BYTES * 2);
   const derivedKey = getScryptKey(password, salt);
 
-  return CryptoJS.AES.decrypt(encryptedHexMnemonic, derivedKey, {
-    format: CryptoJS.format.Hex,
-    mode: CryptoJS.mode.CBC,
-    iv: salt,
-  }).toString(CryptoJS.enc.Utf8);
+  try {
+    return CryptoJS.AES.decrypt(encryptedHexMnemonic, derivedKey, {
+      format: CryptoJS.format.Hex,
+      mode: CryptoJS.mode.CBC,
+      iv: salt,
+    }).toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    console.error(
+      `Could not decrypt encrypted mnemonic - ${encryptedMnemonicWithSalt} using password - ${password}`,
+      error,
+    );
+
+    return null;
+  }
 }
 
 function getScryptKey(password: string, salt: CryptoJS.lib.WordArray): CryptoJS.lib.WordArray {

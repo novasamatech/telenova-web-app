@@ -2,6 +2,7 @@ import Address from '@/assets/svg/Address.svg';
 import Buy from '@/assets/svg/Buy.svg';
 import BuySell from '@/assets/svg/BuySell.svg';
 import GiftClaimed from '@/assets/svg/GiftClaimed.svg';
+import Hide from '@/assets/svg/Hide.svg';
 import Loader from '@/assets/svg/Loader.svg';
 import NoResult from '@/assets/svg/NoResult.svg';
 import Novasama from '@/assets/svg/Novasama.svg';
@@ -12,6 +13,8 @@ import ResetPasswordDone from '@/assets/svg/ResetPasswordDone.svg';
 import Search from '@/assets/svg/Search.svg';
 import Sell from '@/assets/svg/Sell.svg';
 import Send from '@/assets/svg/Send.svg';
+import Settings from '@/assets/svg/Settings.svg';
+import Show from '@/assets/svg/Show.svg';
 import Star from '@/assets/svg/Star.svg';
 import Success from '@/assets/svg/Success.svg';
 import User from '@/assets/svg/User.svg';
@@ -30,7 +33,6 @@ import Pen from '@/assets/svg/pen.svg';
 import PendingGift from '@/assets/svg/pendingGift.svg';
 import Present from '@/assets/svg/present.svg';
 import ScanQr from '@/assets/svg/scan.svg';
-import Settings from '@/assets/svg/settings.svg';
 import UserBlock from '@/assets/svg/user-block.svg';
 import DotWelcome from '@/assets/svg/welcome/Polkadot.svg';
 import UserWelcome from '@/assets/svg/welcome/User.svg';
@@ -68,6 +70,8 @@ export const AllIcons = {
   ExclamationMark,
   Buy,
   Sell,
+  Show,
+  Hide,
   BuySell,
   ArrowUp,
   ResetPassword,
