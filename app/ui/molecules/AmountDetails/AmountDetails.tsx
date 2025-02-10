@@ -75,9 +75,9 @@ export const AmountDetails = ({
         <div className="mt-4 grid grid-cols-[auto,1fr] rounded-lg border border-border-danger bg-[#FFE2E0] p-4">
           <Icon name="ExclamationMark" size={28} />
           <BodyText align="left" className="text-text-danger">
-            The balance that remains after sending your amount is less than the minimal network deposit (
-            {toFormattedBalance(deposit, asset.precision).value} {asset.symbol}), please choose a different amount or
-            use Max instead.
+            The balance that would remain on your account after sending this amount of tokens is less than the network
+            minimum deposit ({toFormattedBalance(deposit, asset.precision).value} {asset.symbol}). To proceed either
+            send less tokens, or select the Use MAX option.
           </BodyText>
         </div>
       )}
