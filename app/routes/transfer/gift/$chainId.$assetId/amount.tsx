@@ -9,7 +9,7 @@ import { useAmountLogic } from '@/common/_temp_hooks/useAmountLogic';
 import { balancesModel } from '@/models/balances';
 import { networkModel } from '@/models/network';
 import { pricesModel } from '@/models/prices';
-import { BackButton, MainButton, balancesFactory, transferFactory } from '@/shared/api';
+import { BackButton, MainButton } from '@/shared/api';
 import { toFormattedBalance } from '@/shared/helpers';
 import { HeadlineText, Icon } from '@/ui/atoms';
 import { AmountDetails } from '@/ui/molecules';
@@ -47,10 +47,8 @@ const Page = () => {
     isTouched,
     isTransferAll,
   } = useAmountLogic({
-    services: {
-      balanceService: balancesFactory.createService(typedChainId, connections[typedChainId].client!, selectedAsset),
-      transferService: transferFactory.createService(typedChainId, connections[typedChainId].client!, selectedAsset),
-    },
+    chainId: typedChainId,
+    connection: connections[typedChainId],
     asset: selectedAsset!,
     isGift: true,
     balance,

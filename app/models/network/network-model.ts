@@ -91,28 +91,32 @@ const createPolkadotClientFx = createEffect((params: CreateClientParams): Polkad
   // More => https://papi.how/requirements#polkadot-sdk-110--x--1110
   return createClient(
     withPolkadotSdkCompat(
-      getWsProvider(params.nodes, status => {
-        switch (status.type) {
-          // Connecting
-          case 0:
-            console.info('⚫️ Connecting to ==> ', params.name);
-            break;
-          // Connected
-          case 1:
-            console.info('🟢 Provider connected ==> ', params.name);
-            boundStatusChange({ chainId: params.chainId, status: 'connected' });
-            break;
-          // Error
-          case 2:
-            console.info('🔴 Provider error ==> ', params.name);
-            boundStatusChange({ chainId: params.chainId, status: 'error' });
-            break;
-          // Close
-          case 3:
-            console.info('🟠 Provider closed ==> ', params.name);
-            boundStatusChange({ chainId: params.chainId, status: 'closed' });
-            break;
-        }
+      getWsProvider({
+        endpoints: params.nodes,
+        timeout: 3500,
+        onStatusChanged: status => {
+          switch (status.type) {
+            // Connecting
+            case 0:
+              console.info('⚫️ Connecting to ==> ', params.name);
+              break;
+            // Connected
+            case 1:
+              console.info('🟢 Provider connected ==> ', params.name);
+              boundStatusChange({ chainId: params.chainId, status: 'connected' });
+              break;
+            // Error
+            case 2:
+              console.info('🔴 Provider error ==> ', params.name);
+              boundStatusChange({ chainId: params.chainId, status: 'error' });
+              break;
+            // Close
+            case 3:
+              console.info('🟠 Provider closed ==> ', params.name);
+              boundStatusChange({ chainId: params.chainId, status: 'closed' });
+              break;
+          }
+        },
       }),
     ),
   );

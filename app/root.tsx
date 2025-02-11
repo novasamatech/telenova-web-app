@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { type LinksFunction, type LoaderFunction, type MetaFunction, json } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
+import { useUnit } from 'effector-react';
 
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
@@ -74,8 +75,9 @@ const App = () => {
 
   const navigate = useNavigate();
 
+  const isWalletLoaded = useUnit(walletModel.$isWalletLoaded);
+
   const [telegramError, setTelegramError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     try {
@@ -88,16 +90,14 @@ const App = () => {
   useEffect(() => {
     networkModel.input.networkStarted(file);
 
-    cryptoWaitReady()
-      .then(() => walletModel.input.walletRequested())
-      .finally(() => setIsLoading(false));
+    cryptoWaitReady().then(() => walletModel.input.walletRequested());
   }, []);
 
   useEffect(() => {
     navigationModel.input.navigatorChanged(navigate);
   }, [navigate]);
 
-  if (isLoading) return <LoadingScreen />;
+  if (!isWalletLoaded) return <LoadingScreen />;
 
   if (telegramError) return <ErrorScreen error={telegramError.message} />;
 

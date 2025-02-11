@@ -2,21 +2,22 @@ import { useEffect, useState } from 'react';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 
-import { type IBalance, type ITransfer } from '@/shared/api/types';
+import type { Connection } from '@/models/network/types';
+import { balancesFactory, transferFactory } from '@/shared/api';
+import { type IBalance } from '@/shared/api/blockchain/balances/types.ts';
+import { type ITransfer } from '@/shared/api/blockchain/transfer/types.ts';
 import { toPreciseBalance } from '@/shared/helpers';
 import { type Asset, type Balance } from '@/types/substrate';
 
 type AmountLogicParams = {
-  services: {
-    transferService: ITransfer;
-    balanceService: IBalance;
-  };
+  chainId: ChainId;
   asset: Asset;
+  connection?: Connection;
   balance?: Balance;
   isGift: boolean;
 };
 
-export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogicParams) => {
+export const useAmountLogic = ({ chainId, connection, asset, balance, isGift }: AmountLogicParams) => {
   const [fee, setFee] = useState(BN_ZERO);
   const [amount, setAmount] = useState<BN | null>(null);
   const [deposit, setDeposit] = useState(BN_ZERO);
@@ -28,10 +29,18 @@ export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogic
   const [isTransferAll, setIsTransferAll] = useState(false);
   const [isAmountValid, setIsAmountValid] = useState(true);
 
-  const { balanceService, transferService } = services;
+  const [balanceService, setBalanceService] = useState<IBalance | null>(null);
+  const [transferService, setTransferService] = useState<ITransfer | null>(null);
 
   useEffect(() => {
-    if (!amount || amount.isZero()) return;
+    if (!connection?.client) return;
+
+    setBalanceService(balancesFactory.createService(chainId, connection.client, asset));
+    setTransferService(transferFactory.createService(chainId, connection.client, asset));
+  }, [connection]);
+
+  useEffect(() => {
+    if (!amount || amount.isZero() || !transferService || !balanceService) return;
 
     setPending(true);
     const feeParams = { amount, transferAll: isTransferAll };
@@ -45,15 +54,22 @@ export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogic
         setDeposit(deposit);
       })
       .finally(() => setPending(false));
-  }, [amount, isTransferAll]);
+  }, [transferService, balanceService, amount, isTransferAll]);
 
   useEffect(() => {
-    if (!asset) return;
+    if (!asset || !balance || !transferService) {
+      setMaxAmount(BN_ZERO);
 
-    getMaxAmount(balance?.transferable)
-      .then(setMaxAmount)
+      return;
+    }
+
+    const feeParams = { amount: balance.transferable, transferAll: true };
+    const getFee = isGift ? transferService.getGiftTransferFee(feeParams) : transferService.getTransferFee(feeParams);
+
+    getFee
+      .then(fee => setMaxAmount(BN.max(balance.transferable.sub(fee), BN_ZERO)))
       .finally(() => setIsMaxPending(false));
-  }, []);
+  }, [transferService, balance]);
 
   useEffect(() => {
     if (!isTouched || !amount) return;
@@ -63,15 +79,6 @@ export const useAmountLogic = ({ services, asset, balance, isGift }: AmountLogic
 
     setIsAmountValid(!amount.isZero() && isUnderMax && (isTransferAll || isOverDeposit));
   }, [isTransferAll, maxAmount, amount, deposit, isTouched]);
-
-  const getMaxAmount = async (transferable = BN_ZERO): Promise<BN> => {
-    const feeParams = { amount: transferable, transferAll: true };
-    const fee = isGift
-      ? await transferService.getGiftTransferFee(feeParams)
-      : await transferService.getTransferFee(feeParams);
-
-    return BN.max(transferable.sub(fee), BN_ZERO);
-  };
 
   const getIsAccountToBeReaped = (): boolean => {
     if (!amount || amount.isZero() || fee.isZero() || !isTouched || isTransferAll) return false;
