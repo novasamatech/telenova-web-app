@@ -29,6 +29,10 @@
     "myth": {
       "wsUrl": "wss://polkadot-mythos-rpc.polkadot.io",
       "metadata": ".papi/metadata/myth.scale"
+    },
+    "bsx": {
+      "wsUrl": "wss://rpc.basilisk.cloud",
+      "metadata": ".papi/metadata/bsx.scale"
     }
   }
 }

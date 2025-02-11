@@ -9,9 +9,14 @@ import { FAKE_ADDRESS_EVM, FAKE_ADDRESS_SUBSTRATE } from '@/shared/helpers';
 
 import { type FeeParams, type ITransfer, type SendTransferParams } from './types';
 
-import { dot, glmr, movr, myth } from '@polkadot-api/descriptors';
+import { bsx, dot, glmr, movr, myth } from '@polkadot-api/descriptors';
 
-type ParachainsApi = ParaApi<'glmr', typeof glmr> | ParaApi<'movr', typeof movr> | ParaApi<'myth', typeof myth>;
+type ParachainsApi =
+  | ParaApi<'glmr', typeof glmr>
+  | ParaApi<'movr', typeof movr>
+  | ParaApi<'myth', typeof myth>
+  | ParaApi<'bsx', typeof bsx>;
+
 type ClientApi = GenericApi<typeof dot> | ParachainsApi;
 
 export class NativeTransferService implements ITransfer {
@@ -39,6 +44,11 @@ export class NativeTransferService implements ITransfer {
       '0xf6ee56e9c5277df5b4ce6ae9983ee88f3cbed27d31beeb98f9f84f997a1ab0b9': client => ({
         type: 'myth',
         api: client.getTypedApi(myth),
+      }),
+      // BSX
+      '0xa85cfb9b9fd4d622a5b28289a02347af987d8f73fa3108450e2b4a11c1ce5755': client => ({
+        type: 'bsx',
+        api: client.getTypedApi(bsx),
       }),
     };
 
@@ -68,6 +78,13 @@ export class NativeTransferService implements ITransfer {
       });
     }
 
+    if (this.#client.type === 'bsx') {
+      return this.#client.api.tx.Balances.transfer_keep_alive({
+        value: BigInt(amount.toString()),
+        dest: destination,
+      });
+    }
+
     return this.#client.api.tx.Balances.transfer_keep_alive({
       value: BigInt(amount.toString()),
       dest: Enum('Id', destination),
@@ -76,6 +93,13 @@ export class NativeTransferService implements ITransfer {
 
   #getTransferAllTx(destination: Address) {
     if (this.#client.type === 'myth' || this.#client.type === 'glmr' || this.#client.type === 'movr') {
+      return this.#client.api.tx.Balances.transfer_all({
+        keep_alive: false,
+        dest: destination,
+      });
+    }
+
+    if (this.#client.type === 'bsx') {
       return this.#client.api.tx.Balances.transfer_all({
         keep_alive: false,
         dest: destination,
