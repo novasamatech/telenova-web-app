@@ -62,21 +62,17 @@ export class NativeBalanceService implements IBalance {
       });
     };
 
-    if (this.#client.type === 'kilt') {
-      return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
-        handler(data);
-      }).unsubscribe;
+    switch (this.#client.type) {
+      case 'ztg':
+      case 'kilt':
+        return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+          handler(data);
+        }).unsubscribe;
+      default:
+        return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+          handler(data);
+        }).unsubscribe;
     }
-
-    if (this.#client.type === 'ztg') {
-      return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
-        handler(data);
-      }).unsubscribe;
-    }
-
-    return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
-      handler(data);
-    }).unsubscribe;
   }
 
   getFreeBalance(address: Address): Promise<BN> {

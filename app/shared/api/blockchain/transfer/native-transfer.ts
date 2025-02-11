@@ -71,45 +71,39 @@ export class NativeTransferService implements ITransfer {
   }
 
   #getTransferKeepAliveTx(destination: Address, amount: BN) {
-    if (this.#client.type === 'myth' || this.#client.type === 'glmr' || this.#client.type === 'movr') {
-      return this.#client.api.tx.Balances.transfer_keep_alive({
-        value: BigInt(amount.toString()),
-        dest: destination,
-      });
+    switch (this.#client.type) {
+      case 'myth':
+      case 'glmr':
+      case 'movr':
+      case 'bsx':
+        return this.#client.api.tx.Balances.transfer_keep_alive({
+          value: BigInt(amount.toString()),
+          dest: destination,
+        });
+      default:
+        return this.#client.api.tx.Balances.transfer_keep_alive({
+          value: BigInt(amount.toString()),
+          dest: Enum('Id', destination),
+        });
     }
-
-    if (this.#client.type === 'bsx') {
-      return this.#client.api.tx.Balances.transfer_keep_alive({
-        value: BigInt(amount.toString()),
-        dest: destination,
-      });
-    }
-
-    return this.#client.api.tx.Balances.transfer_keep_alive({
-      value: BigInt(amount.toString()),
-      dest: Enum('Id', destination),
-    });
   }
 
   #getTransferAllTx(destination: Address) {
-    if (this.#client.type === 'myth' || this.#client.type === 'glmr' || this.#client.type === 'movr') {
-      return this.#client.api.tx.Balances.transfer_all({
-        keep_alive: false,
-        dest: destination,
-      });
+    switch (this.#client.type) {
+      case 'myth':
+      case 'glmr':
+      case 'movr':
+      case 'bsx':
+        return this.#client.api.tx.Balances.transfer_all({
+          keep_alive: false,
+          dest: destination,
+        });
+      default:
+        return this.#client.api.tx.Balances.transfer_all({
+          keep_alive: false,
+          dest: Enum('Id', destination),
+        });
     }
-
-    if (this.#client.type === 'bsx') {
-      return this.#client.api.tx.Balances.transfer_all({
-        keep_alive: false,
-        dest: destination,
-      });
-    }
-
-    return this.#client.api.tx.Balances.transfer_all({
-      keep_alive: false,
-      dest: Enum('Id', destination),
-    });
   }
 
   getTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
