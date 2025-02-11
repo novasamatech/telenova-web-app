@@ -9,9 +9,14 @@ import { FAKE_ADDRESS_EVM, FAKE_ADDRESS_SUBSTRATE } from '@/shared/helpers';
 
 import { type FeeParams, type ITransfer, type SendTransferParams } from './types';
 
-import { dot, glmr, movr, myth } from '@polkadot-api/descriptors';
+import { bsx, dot, glmr, movr, myth } from '@polkadot-api/descriptors';
 
-type ParachainsApi = ParaApi<'glmr', typeof glmr> | ParaApi<'movr', typeof movr> | ParaApi<'myth', typeof myth>;
+type ParachainsApi =
+  | ParaApi<'glmr', typeof glmr>
+  | ParaApi<'movr', typeof movr>
+  | ParaApi<'myth', typeof myth>
+  | ParaApi<'bsx', typeof bsx>;
+
 type ClientApi = GenericApi<typeof dot> | ParachainsApi;
 
 export class NativeTransferService implements ITransfer {
@@ -40,6 +45,11 @@ export class NativeTransferService implements ITransfer {
         type: 'myth',
         api: client.getTypedApi(myth),
       }),
+      // BSX
+      '0xa85cfb9b9fd4d622a5b28289a02347af987d8f73fa3108450e2b4a11c1ce5755': client => ({
+        type: 'bsx',
+        api: client.getTypedApi(bsx),
+      }),
     };
 
     return config[chainId]?.(client) || { type: 'generic', api: client.getTypedApi(dot) };
@@ -61,31 +71,39 @@ export class NativeTransferService implements ITransfer {
   }
 
   #getTransferKeepAliveTx(destination: Address, amount: BN) {
-    if (this.#client.type === 'myth' || this.#client.type === 'glmr' || this.#client.type === 'movr') {
-      return this.#client.api.tx.Balances.transfer_keep_alive({
-        value: BigInt(amount.toString()),
-        dest: destination,
-      });
+    switch (this.#client.type) {
+      case 'myth':
+      case 'glmr':
+      case 'movr':
+      case 'bsx':
+        return this.#client.api.tx.Balances.transfer_keep_alive({
+          value: BigInt(amount.toString()),
+          dest: destination,
+        });
+      default:
+        return this.#client.api.tx.Balances.transfer_keep_alive({
+          value: BigInt(amount.toString()),
+          dest: Enum('Id', destination),
+        });
     }
-
-    return this.#client.api.tx.Balances.transfer_keep_alive({
-      value: BigInt(amount.toString()),
-      dest: Enum('Id', destination),
-    });
   }
 
   #getTransferAllTx(destination: Address) {
-    if (this.#client.type === 'myth' || this.#client.type === 'glmr' || this.#client.type === 'movr') {
-      return this.#client.api.tx.Balances.transfer_all({
-        keep_alive: false,
-        dest: destination,
-      });
+    switch (this.#client.type) {
+      case 'myth':
+      case 'glmr':
+      case 'movr':
+      case 'bsx':
+        return this.#client.api.tx.Balances.transfer_all({
+          keep_alive: false,
+          dest: destination,
+        });
+      default:
+        return this.#client.api.tx.Balances.transfer_all({
+          keep_alive: false,
+          dest: Enum('Id', destination),
+        });
     }
-
-    return this.#client.api.tx.Balances.transfer_all({
-      keep_alive: false,
-      dest: Enum('Id', destination),
-    });
   }
 
   getTransferFee({ amount = BN_ZERO, transferAll }: FeeParams): Promise<BN> {
