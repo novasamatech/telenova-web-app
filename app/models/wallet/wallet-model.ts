@@ -1,5 +1,5 @@
 import { createEffect, createEvent, createStore, restore, sample, split } from 'effector';
-import { debug, delay, or, readonly, spread } from 'patronum';
+import { delay, readonly, spread } from 'patronum';
 import { $path } from 'remix-routes';
 
 import { navigationModel } from '../navigation';
@@ -177,10 +177,6 @@ sample({
   fn: ({ clearRemote }) => clearRemote,
   target: clearWalletFx,
 });
-
-debug(requestWalletFx.pending);
-debug(requestMnemonicFx.pending);
-debug(or(requestWalletFx.pending, requestMnemonicFx.pending));
 
 export const walletModel = {
   $wallet: readonly($wallet),
