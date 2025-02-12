@@ -1,20 +1,24 @@
-import { createEffect, createEvent, createStore, sample, split } from 'effector';
-import { readonly } from 'patronum';
+import { createEffect, createEvent, createStore, restore, sample, split } from 'effector';
+import { delay, readonly, spread } from 'patronum';
 import { $path } from 'remix-routes';
 
 import { navigationModel } from '../navigation';
 
 import { TelegramApi, cryptoApi, localStorageApi } from '@/shared/api';
-import { BACKUP_DATE, CONNECTIONS_STORE, MNEMONIC_STORE } from '@/shared/helpers';
+import { BACKUP_DATE, CONNECTIONS_STORE, MNEMONIC_STORE, nonNullable } from '@/shared/helpers';
 
 import { Wallet } from './wallet';
 
+const ROUTING_DELAY = 1000;
+
+const walletLoaded = createEvent<boolean>();
 const walletCreated = createEvent<Mnemonic>();
 const walletCleared = createEvent<{ clearRemote: boolean }>();
 const walletRequested = createEvent();
 const mnemonicChanged = createEvent<{ mnemonic?: Mnemonic; password: string }>();
 
 const $wallet = createStore<Wallet | null>(null);
+const $isWalletLoaded = restore(delay(walletLoaded, ROUTING_DELAY), false);
 
 const requestWalletFx = createEffect(async (): Promise<Wallet | null> => {
   try {
@@ -84,9 +88,7 @@ sample({
 
 split({
   source: requestWalletFx.doneData,
-  match: wallet => {
-    return wallet ? 'init' : 'fallback';
-  },
+  match: wallet => (nonNullable(wallet) ? 'init' : 'fallback'),
   cases: {
     init: $wallet,
     fallback: requestMnemonicFx,
@@ -95,33 +97,57 @@ split({
 
 sample({
   clock: requestWalletFx.doneData,
-  filter: (wallet): wallet is Wallet => Boolean(wallet),
-  fn: () => ({
-    type: 'navigate' as const,
-    to: $path('/dashboard'),
-    options: { replace: true },
+  filter: wallet => nonNullable(wallet),
+  fn: () => {
+    return {
+      navigate: {
+        type: 'navigate' as const,
+        to: $path('/dashboard'),
+        options: { replace: true },
+      },
+      loaded: true,
+    };
+  },
+  target: spread({
+    navigate: navigationModel.input.navigatorPushed,
+    loaded: walletLoaded,
   }),
-  target: navigationModel.input.navigatorPushed,
 });
 
 sample({
   clock: requestMnemonicFx.doneData,
-  fn: mnemonic => ({
-    type: 'navigate' as const,
-    to: $path('/onboarding/restore'),
-    options: { replace: true, state: { mnemonic } },
+  fn: mnemonic => {
+    return {
+      navigate: {
+        type: 'navigate' as const,
+        to: $path('/onboarding/restore'),
+        options: { replace: true, state: { mnemonic } },
+      },
+      loaded: true,
+    };
+  },
+  target: spread({
+    navigate: navigationModel.input.navigatorPushed,
+    loaded: $isWalletLoaded,
   }),
-  target: navigationModel.input.navigatorPushed,
 });
 
 sample({
   clock: requestMnemonicFx.failData,
-  fn: () => ({
-    type: 'navigate' as const,
-    to: $path('/onboarding'),
-    options: { replace: true },
+  fn: () => {
+    return {
+      navigate: {
+        type: 'navigate' as const,
+        to: $path('/onboarding'),
+        options: { replace: true },
+      },
+      loaded: true,
+    };
+  },
+  target: spread({
+    navigate: navigationModel.input.navigatorPushed,
+    loaded: $isWalletLoaded,
   }),
-  target: navigationModel.input.navigatorPushed,
 });
 
 sample({
@@ -154,6 +180,7 @@ sample({
 
 export const walletModel = {
   $wallet: readonly($wallet),
+  $isWalletLoaded: readonly($isWalletLoaded),
 
   input: {
     walletCreated,
