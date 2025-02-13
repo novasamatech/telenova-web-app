@@ -33,6 +33,10 @@
     "bsx": {
       "wsUrl": "wss://rpc.basilisk.cloud",
       "metadata": ".papi/metadata/bsx.scale"
+    },
+    "hdx": {
+      "wsUrl": "wss://rpc-hydra.novasama-tech.org",
+      "metadata": ".papi/metadata/hdx.scale"
     }
   }
 }
