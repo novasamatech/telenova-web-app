@@ -9,12 +9,13 @@ import { FAKE_ADDRESS_EVM, FAKE_ADDRESS_SUBSTRATE } from '@/shared/helpers';
 
 import { type FeeParams, type ITransfer, type SendTransferParams } from './types';
 
-import { bsx, dot, glmr, movr, myth } from '@polkadot-api/descriptors';
+import { bsx, dot, glmr, hdx, movr, myth } from '@polkadot-api/descriptors';
 
 type ParachainsApi =
   | ParaApi<'glmr', typeof glmr>
   | ParaApi<'movr', typeof movr>
   | ParaApi<'myth', typeof myth>
+  | ParaApi<'hdx', typeof hdx>
   | ParaApi<'bsx', typeof bsx>;
 
 type ClientApi = GenericApi<typeof dot> | ParachainsApi;
@@ -50,6 +51,11 @@ export class NativeTransferService implements ITransfer {
         type: 'bsx',
         api: client.getTypedApi(bsx),
       }),
+      // HDX
+      '0xafdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d': client => ({
+        type: 'hdx',
+        api: client.getTypedApi(hdx),
+      }),
     };
 
     return config[chainId]?.(client) || { type: 'generic', api: client.getTypedApi(dot) };
@@ -76,6 +82,7 @@ export class NativeTransferService implements ITransfer {
       case 'glmr':
       case 'movr':
       case 'bsx':
+      case 'hdx':
         return this.#client.api.tx.Balances.transfer_keep_alive({
           value: BigInt(amount.toString()),
           dest: destination,
@@ -94,6 +101,7 @@ export class NativeTransferService implements ITransfer {
       case 'glmr':
       case 'movr':
       case 'bsx':
+      case 'hdx':
         return this.#client.api.tx.Balances.transfer_all({
           keep_alive: false,
           dest: destination,
