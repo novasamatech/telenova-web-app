@@ -65,11 +65,11 @@ export class NativeBalanceService implements IBalance {
     switch (this.#client.type) {
       case 'ztg':
       case 'kilt':
-        return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+        return this.#client.api.query.System.Account.watchValue(address, 'best').subscribe(({ data }) => {
           handler(data);
         }).unsubscribe;
       default:
-        return this.#client.api.query.System.Account.watchValue(address).subscribe(({ data }) => {
+        return this.#client.api.query.System.Account.watchValue(address, 'best').subscribe(({ data }) => {
           handler(data);
         }).unsubscribe;
     }
