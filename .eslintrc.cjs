@@ -179,5 +179,5 @@ module.exports = {
     'react/function-component-definition': 'off',
 
   },
-  ignorePatterns: ['.vscode', '.idea', 'coverage', 'node_modules', 'package.json', 'remix-routes.d.ts'],
+  ignorePatterns: ['.vscode', '.idea', 'coverage', 'node_modules', 'package.json', 'remix-routes.d.ts']
 };
