@@ -11,7 +11,6 @@ import { type FeeParams, type ITransfer, type SendTransferParams } from './types
 
 import { bsx, dot, glmr, hdx, movr, myth } from '@polkadot-api/descriptors';
 
-
 type ParachainsApi =
   | ParaApi<'glmr', typeof glmr>
   | ParaApi<'movr', typeof movr>
