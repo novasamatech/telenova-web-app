@@ -76,7 +76,7 @@ export class NativeBalanceService implements IBalance {
   }
 
   getFreeBalance(address: Address): Promise<BN> {
-    return this.#client.api.query.System.Account.getValue(address).then(
+    return this.#client.api.query.System.Account.getValue(address, { at: 'best' }).then(
       balance => new BN(balance.data.free.toString()),
     );
   }
@@ -84,7 +84,7 @@ export class NativeBalanceService implements IBalance {
   getFreeBalances(addresses: Address[]): Promise<BN[]> {
     const addressTuples = addresses.map(address => [address] as [SS58String]);
 
-    return this.#client.api.query.System.Account.getValues(addressTuples).then(balances => {
+    return this.#client.api.query.System.Account.getValues(addressTuples, { at: 'best' }).then(balances => {
       return balances.map(balance => new BN(balance.data.free.toString()));
     });
   }

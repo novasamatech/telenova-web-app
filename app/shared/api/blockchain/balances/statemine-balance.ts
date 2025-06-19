@@ -53,7 +53,7 @@ export class StatemineBalanceService implements IBalance {
   getFreeBalance(address: Address): Promise<BN> {
     const assetId = Number(assetUtils.getAssetId(this.#asset));
 
-    return this.#client.api.query.Assets.Account.getValue(assetId, address).then(balance => {
+    return this.#client.api.query.Assets.Account.getValue(assetId, address, { at: 'best' }).then(balance => {
       return balance ? new BN(balance.balance.toString()) : BN_ZERO;
     });
   }
@@ -63,7 +63,7 @@ export class StatemineBalanceService implements IBalance {
       return [Number(assetUtils.getAssetId(this.#asset)), address] as [number, SS58String];
     });
 
-    return this.#client.api.query.Assets.Account.getValues(addressTuples).then(balances => {
+    return this.#client.api.query.Assets.Account.getValues(addressTuples, { at: 'best' }).then(balances => {
       return balances.map(balance => (balance ? new BN(balance.balance.toString()) : BN_ZERO));
     });
   }
@@ -71,7 +71,7 @@ export class StatemineBalanceService implements IBalance {
   getExistentialDeposit(): Promise<BN> {
     const assetId = Number(assetUtils.getAssetId(this.#asset));
 
-    return this.#client.api.query.Assets.Asset.getValue(assetId).then(balance =>
+    return this.#client.api.query.Assets.Asset.getValue(assetId, { at: 'best' }).then(balance =>
       balance ? new BN(balance.min_balance.toString()) : BN_ZERO,
     );
   }
