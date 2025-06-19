@@ -1,4 +1,4 @@
-import { Enum, type HexString, type PolkadotClient } from 'polkadot-api';
+import { Enum, type HexString, type PolkadotClient, type TxOptions } from 'polkadot-api';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 
@@ -121,7 +121,10 @@ export class NativeTransferService implements ITransfer {
 
     const tx = transferAll ? this.#getTransferAllTx(fakeAddress) : this.#getTransferKeepAliveTx(fakeAddress, amount);
     const extension = EXTENSIONS[this.#chainId]?.signedExtensions;
-    const txOptions = extension ? { customSignedExtensions: extension } : undefined;
+    let txOptions: TxOptions<void> = { at: 'best' };
+    if (extension) {
+      txOptions = { ...txOptions, customSignedExtensions: extension };
+    }
 
     return tx.getEstimatedFees(fakeAddress, txOptions).then(fee => new BN(fee.toString()));
   }

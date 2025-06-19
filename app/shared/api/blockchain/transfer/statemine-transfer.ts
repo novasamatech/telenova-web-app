@@ -62,6 +62,7 @@ export class StatemineTransferService implements ITransfer {
 
     const fee = await tx.getEstimatedFees(FAKE_ADDRESS_SUBSTRATE, {
       asset: ASSET_LOCATION[assetId],
+      at: 'best',
       customSignedExtensions: EXTENSIONS[this.#chainId]?.signedExtensions,
     });
     const bnFee = new BN(fee.toString());
