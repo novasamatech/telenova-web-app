@@ -43,6 +43,7 @@ export class StatemineTransferService implements ITransfer {
       tx.signSubmitAndWatch(signer, {
         asset: ASSET_LOCATION[assetId],
         customSignedExtensions: EXTENSIONS[this.#chainId]?.signedExtensions,
+        at: 'best',
       }).subscribe(event => {
         if (event.type !== 'broadcasted') return;
 

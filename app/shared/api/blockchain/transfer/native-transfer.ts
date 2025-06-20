@@ -66,7 +66,10 @@ export class NativeTransferService implements ITransfer {
 
     return new Promise(resolve => {
       const extension = EXTENSIONS[this.#chainId]?.signedExtensions;
-      const txOptions = extension ? { customSignedExtensions: extension } : undefined;
+      let txOptions: TxOptions<void> = { at: 'best' };
+      if (extension) {
+        txOptions = { ...txOptions, customSignedExtensions: extension };
+      }
 
       tx.signSubmitAndWatch(signer, txOptions).subscribe(event => {
         if (event.type !== 'broadcasted') return;
