@@ -6,8 +6,7 @@ import { useLoaderData } from '@remix-run/react';
 import { $path } from 'remix-routes';
 
 import { navigationModel } from '@/models/navigation';
-import { BackButton, TelegramApi, keyringApi, localStorageApi } from '@/shared/api';
-import { MNEMONIC_STORE } from '@/shared/helpers';
+import { BackButton, TelegramApi } from '@/shared/api';
 import { BodyText, HelpText, Icon, MediumTitle, Plate } from '@/ui/atoms';
 import { LinkCard } from '@/ui/molecules';
 
@@ -29,14 +28,6 @@ const Page = () => {
     setTimeout(() => {
       stateFunc(false);
     }, 1000);
-  };
-
-  const migrateToNovaWallet = () => {
-    const mnemonicStore = TelegramApi.getStoreName(MNEMONIC_STORE);
-    const mnemonic = localStorageApi.secureGetItem(mnemonicStore, '');
-    const entropy = keyringApi.getMnemonicEntropy(mnemonic);
-
-    TelegramApi.openLink(`https://app.novawallet.io/create/wallet?mnemonic=${entropy}`);
   };
 
   return (
@@ -106,14 +97,13 @@ const Page = () => {
           </Popover>
         </Plate>
         <button
-          className="flex h-[108px] w-full rounded-2xl"
+          className="pointer-events-none flex h-[108px] w-full cursor-default rounded-2xl"
           style={{
             background:
               'linear-gradient(118deg, #2955B1 -12.5%, rgba(41, 85, 177, 0) 48%),' +
               'linear-gradient(248deg, #581BC0 -14.5%, rgba(99, 42, 196, 0) 48%),' +
               'linear-gradient(0deg, #000000, #000000)',
           }}
-          onClick={migrateToNovaWallet}
         >
           <div className="mx-auto flex w-[190px] flex-col gap-y-4 self-center">
             <BodyText className="-indent-1 text-body-bold text-white">Upgrade to Nova Wallet!</BodyText>
